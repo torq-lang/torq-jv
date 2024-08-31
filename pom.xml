@@ -27,12 +27,12 @@
     </properties>
 
     <modules>
-        <module>examples</module>
-        <module>server</module>
-        <module>local</module>
-        <module>lang</module>
-        <module>klvm</module>
-        <module>util</module>
+        <module>torqlang-examples</module>
+        <module>torqlang-server</module>
+        <module>torqlang-local</module>
+        <module>torqlang-lang</module>
+        <module>torqlang-klvm</module>
+        <module>torqlang-util</module>
     </modules>
 
     <distributionManagement>
