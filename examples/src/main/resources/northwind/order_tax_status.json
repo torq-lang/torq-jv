@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "tax_status_name": "Taxable"
+  },
+  {
+    "id": 0,
+    "tax_status_name": "Tax Exempt"
+  }
+]

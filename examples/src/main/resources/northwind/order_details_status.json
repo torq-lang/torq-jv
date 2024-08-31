@@ -1,0 +1,26 @@
+[
+  {
+    "id": 3,
+    "status_name": "Shipped"
+  },
+  {
+    "id": 4,
+    "status_name": "On Order"
+  },
+  {
+    "id": 0,
+    "status_name": "None"
+  },
+  {
+    "id": 5,
+    "status_name": "No Stock"
+  },
+  {
+    "id": 1,
+    "status_name": "Allocated"
+  },
+  {
+    "id": 2,
+    "status_name": "Invoiced"
+  }
+]
