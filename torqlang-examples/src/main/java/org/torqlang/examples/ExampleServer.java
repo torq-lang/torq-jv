@@ -25,7 +25,8 @@ public class ExampleServer {
 
     public static void main(String[] args) throws Exception {
 
-        String queryOrdersSource = QueryOrders.SOURCE.replace("${1}", NorthwindCache.ordersJsonText());
+        String queryOrdersSource = QueryOrders.SOURCE.replace("${1}",
+            NorthwindTools.fetchJsonText(NorthwindTools.NORTHWIND_ORDERS_JSON));
 
         ActorImage ordersImage = Actor.captureImage(queryOrdersSource);
 

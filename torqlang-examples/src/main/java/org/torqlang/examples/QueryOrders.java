@@ -70,7 +70,7 @@ public class QueryOrders extends AbstractExample {
     public final void perform() throws Exception {
 
         // Compile Orders API handler and capture its image. Usually, this is performed once at startup.
-        String queryOrdersSource = SOURCE.replace("${1}", NorthwindCache.ordersJsonText());
+        String queryOrdersSource = SOURCE.replace("${1}", NorthwindTools.fetchJsonText(NorthwindTools.NORTHWIND_ORDERS_JSON));
         ActorImage ordersImage = Actor.captureImage(queryOrdersSource);
         ApiRouter router = ApiRouter.staticBuilder()
             .addRoute("/orders", ordersImage)

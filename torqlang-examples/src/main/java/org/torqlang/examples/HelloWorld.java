@@ -33,7 +33,7 @@ public final class HelloWorld extends AbstractExample {
 
         // Build and spawn HelloWorld. After spawning, `HelloWorld` is waiting to
         // receive the 'hello' message. The spawn method returns an actorRef used
-        // subsequently to send the actor messages.
+        // subsequently to send it messages.
         ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
 
         // Send the 'hello' message to the actor reference returned above. Wait a

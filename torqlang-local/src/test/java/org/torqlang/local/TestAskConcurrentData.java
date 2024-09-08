@@ -10,6 +10,7 @@ package org.torqlang.local;
 import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.CompleteTuple;
+import org.torqlang.klvm.Int32;
 import org.torqlang.klvm.Rec;
 import org.torqlang.klvm.Str;
 
@@ -191,6 +192,132 @@ public class TestAskConcurrentData {
                     .addField(Str.of("order"), Str.of("50 pounds of Flour"))
                     .build()
             )
+            .build();
+        assertEquals(expectedTuple, response);
+    }
+
+    @Test
+    public void test03() throws Exception {
+        String source = """
+            actor ConcurrentMathTuple() in
+                actor Number(n) in
+                    handle ask 'get' in
+                        n
+                    end
+                end
+                var n1 = spawn(Number.cfg(1)),
+                    n2 = spawn(Number.cfg(2)),
+                    n3 = spawn(Number.cfg(3))
+                handle ask 'construct' in
+                    [n1.ask('get'), n2.ask('get'), n3.ask('get')]
+                end
+            end""";
+        ActorBuilderGenerated g = Actor.builder()
+            .setAddress(Address.create(getClass().getName() + "Actor"))
+            .setSource(source)
+            .generate();
+        String expected = """
+            local $actor_cfgtr in
+                $create_actor_cfgtr(proc ($r) in // free vars: $respond, $spawn
+                    local Number, $actor_cfgtr, n1, n2, n3, $v10, $v17 in
+                        $create_actor_cfgtr(proc (n, $r) in // free vars: $respond
+                            local $v0, $v4 in
+                                $create_proc(proc ($m) in // free vars: $respond, n
+                                    local $else in
+                                        $create_proc(proc () in // free vars: $m
+                                            local $v1 in
+                                                local $v2 in
+                                                    $create_rec({'request': $m}, $v2)
+                                                    $create_rec('error'#{'name': 'org.torqlang.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v2}, $v1)
+                                                end
+                                                throw $v1
+                                            end
+                                        end, $else)
+                                        case $m of 'get' then
+                                            local $v3 in
+                                                $bind(n, $v3)
+                                                $respond($v3)
+                                            end
+                                        else
+                                            $else()
+                                        end
+                                    end
+                                end, $v0)
+                                $create_proc(proc ($m) in
+                                    local $v5 in
+                                        local $v6 in
+                                            $create_rec({'notify': $m}, $v6)
+                                            $create_rec('error'#{'name': 'org.torqlang.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v6}, $v5)
+                                        end
+                                        throw $v5
+                                    end
+                                end, $v4)
+                                $create_tuple('handlers'#[$v0, $v4], $r)
+                            end
+                        end, $actor_cfgtr)
+                        $create_rec('Number'#{'cfg': $actor_cfgtr}, Number)
+                        local $v7 in
+                            $select_apply(Number, ['cfg'], 1, $v7)
+                            $spawn($v7, n1)
+                        end
+                        local $v8 in
+                            $select_apply(Number, ['cfg'], 2, $v8)
+                            $spawn($v8, n2)
+                        end
+                        local $v9 in
+                            $select_apply(Number, ['cfg'], 3, $v9)
+                            $spawn($v9, n3)
+                        end
+                        $create_proc(proc ($m) in // free vars: $respond, n1, n2, n3
+                            local $else in
+                                $create_proc(proc () in // free vars: $m
+                                    local $v11 in
+                                        local $v12 in
+                                            $create_rec({'request': $m}, $v12)
+                                            $create_rec('error'#{'name': 'org.torqlang.lang.AskNotHandledError', 'message': 'Actor could not match request message with an \\'ask\\' handler.', 'details': $v12}, $v11)
+                                        end
+                                        throw $v11
+                                    end
+                                end, $else)
+                                case $m of 'construct' then
+                                    local $v13 in
+                                        local $v14, $v15, $v16 in
+                                            $select_apply(n1, ['ask'], 'get', $v14)
+                                            $select_apply(n2, ['ask'], 'get', $v15)
+                                            $select_apply(n3, ['ask'], 'get', $v16)
+                                            $create_tuple([$v14, $v15, $v16], $v13)
+                                        end
+                                        $respond($v13)
+                                    end
+                                else
+                                    $else()
+                                end
+                            end
+                        end, $v10)
+                        $create_proc(proc ($m) in
+                            local $v18 in
+                                local $v19 in
+                                    $create_rec({'notify': $m}, $v19)
+                                    $create_rec('error'#{'name': 'org.torqlang.lang.TellNotHandledError', 'message': 'Actor could not match notify message with a \\'tell\\' handler.', 'details': $v19}, $v18)
+                                end
+                                throw $v18
+                            end
+                        end, $v17)
+                        $create_tuple('handlers'#[$v10, $v17], $r)
+                    end
+                end, $actor_cfgtr)
+                $create_rec('ConcurrentMathTuple'#{'cfg': $actor_cfgtr}, ConcurrentMathTuple)
+            end""";
+        assertEquals(expected, g.createActorRecStmt().toString());
+        ActorRef actorRef = g.spawn().actorRef();
+        Object response = RequestClient.builder()
+            .setAddress(Address.create("ConcurrentDataClient"))
+            .send(actorRef, Str.of("construct"))
+            .awaitResponse(100, TimeUnit.MILLISECONDS);
+        CompleteTuple expectedTuple = Rec.completeTupleBuilder()
+            .addValue(Int32.of(1))
+            .addValue(Int32.of(2))
+            .addValue(Int32.of(3))
             .build();
         assertEquals(expectedTuple, response);
     }

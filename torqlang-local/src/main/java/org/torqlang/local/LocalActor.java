@@ -735,7 +735,7 @@ final class LocalActor extends AbstractActor {
         // Check complete accomplishes the following:
         //   1. If candidate value is not completable, throw a CannotConvertToComplete error
         //   2. If candidate value is complete, we can progress and the value will be sent
-        //   2. If candidate value is partial, a WaitException is thrown
+        //   3. If candidate value is partial, a WaitException is thrown
         Complete responseValue = candidateValue.checkComplete();
         // Check for the subtle case where a 'respond' expression simply returns the result of an 'ask'
         // expression. For example, consider the following 'query' handler that returns the result of a call
