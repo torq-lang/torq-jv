@@ -10,8 +10,12 @@ package org.torqlang.local;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.PartialField;
 import org.torqlang.klvm.Rec;
+import org.torqlang.klvm.Str;
+import org.torqlang.lang.Generator;
 
 public final class Actor {
+
+    public static final Str CFG = Generator.CFG;
 
     public static ActorBuilderInit builder() {
         return new ActorBuilder();

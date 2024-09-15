@@ -20,6 +20,8 @@ public interface ActorBuilderInit {
 
     ActorBuilderConfigured configure(String source) throws Exception;
 
+    ActorBuilderConfigured configure(String source, List<? extends CompleteOrIdent> args) throws Exception;
+
     ActorBuilderConstructed construct(String source) throws Exception;
 
     ActorBuilderConfigured setActorCfg(ActorCfg actorCfg);
@@ -29,8 +31,6 @@ public interface ActorBuilderInit {
     ActorBuilderParsed setActorSntc(ActorSntc actorSntc);
 
     ActorBuilderInit setAddress(Address address);
-
-    ActorBuilderInit setArgs(List<? extends CompleteOrIdent> args);
 
     ActorBuilderReady setSource(String source);
 
@@ -43,4 +43,6 @@ public interface ActorBuilderInit {
     ActorBuilderSpawned spawn(Rec actorRec) throws Exception;
 
     ActorBuilderSpawned spawn(String source) throws Exception;
+
+    ActorBuilderSpawned spawn(String source, List<? extends CompleteOrIdent> args) throws Exception;
 }

@@ -57,7 +57,7 @@ public final class MergeIntStreams extends AbstractExample {
 
         ActorSystem system = ActorSystem.builder()
             .addDefaultModules()
-            .addModule("examples", ExamplesMod.moduleRec())
+            .addModule("examples", IntPublisherMod.moduleRec())
             .build();
 
         ActorRef actorRef = Actor.builder()

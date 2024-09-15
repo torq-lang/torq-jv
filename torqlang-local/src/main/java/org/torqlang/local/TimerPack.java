@@ -10,27 +10,16 @@ package org.torqlang.local;
 import org.torqlang.klvm.*;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.torqlang.local.Envelope.createResponse;
 
 /*
- * A Timer generates a stream of ticks as `<period 1>, <tick 1>, ..., <period n>, <tick n>` where `<period>` is a delay
- * and '<tick 1>' through `<tick n>` are the tick events requested.
- *
- * A timer can be configured with a period and a time unit:
- *     var timer_cfg = Timer.cfg(1, 'seconds')
- *
- * Subsequently, a timer is spawned as a publisher, such as in the following:
- *     var timer_pub = spawn(timer_cfg)
- *
- * Once spawned, a timer can be used as a stream. Consider this code snippet:
- *     var tick_count = Cell.new(0)
- *     var timer_stream = Stream.new(timer_pub, 'request'#{'ticks': 5})
- *     for tick in Iter.new(timer_stream) do
- *         tick_count := @tick_count + 1
- *     end
- *     @tick_count
+ * A Timer generates a stream of ticks as `<period 1>, <tick 1>, ..., <period n>, <tick n>` where each `<period n>` is
+ * a delay and each `<tick 1>` is a response.
  *
  * A timer can only be used by one requester (subscriber) at a time.
  */
@@ -42,12 +31,12 @@ final class TimerPack {
     public static final CompleteRec TIMER_ACTOR = createTimerActor();
 
     private static CompleteRec createTimerActor() {
-        return CompleteRec.singleton(Str.of("cfg"), TIMER_CFGTR);
+        return CompleteRec.singleton(Actor.CFG, TIMER_CFGTR);
     }
 
     private static void timerCfgtr(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         if (ys.size() != TIMER_CFGTR_ARG_COUNT) {
-            throw new InvalidArgCountError(TIMER_CFGTR_ARG_COUNT, ys, "TimerCfgCtor");
+            throw new InvalidArgCountError(TIMER_CFGTR_ARG_COUNT, ys, "timerCfgtr");
         }
         Num period = (Num) ys.get(0).resolveValue(env);
         Str timeUnit = (Str) ys.get(1).resolveValue(env);
@@ -59,19 +48,17 @@ final class TimerPack {
 
         public static final Str TICKS_FEAT = Str.of("ticks");
 
-        public static final ScheduledThreadPoolExecutor SCHEDULED_EXECUTOR =
-            new ScheduledThreadPoolExecutor(2, Timer::newTimerThread);
-
         private static final CompleteRec EOF_RECORD = Rec.completeRecBuilder()
             .setLabel(Eof.SINGLETON)
             .addField(Str.of("more"), Bool.FALSE)
             .build();
-
+        private static final ScheduledThreadPoolExecutor SCHEDULED_EXECUTOR =
+            new ScheduledThreadPoolExecutor(2, Timer::newTimerThread);
         private static final Object TIMER_CALLBACK = new Object();
+
         private final Num periodNum;
-        private final Str timeUnitStr;
+        private final TimeUnit timeUnit;
         private Envelope activeRequest;
-        private CompleteRec activeMessage;
         private int currentTicks;
         private int requestedTicks;
         private ScheduledFuture<?> scheduledFuture;
@@ -81,7 +68,15 @@ final class TimerPack {
             super(address, system.createMailbox(), system.executor(), system.createLogger());
             this.trace = trace;
             this.periodNum = periodNum;
-            this.timeUnitStr = timeUnitStr;
+            if (timeUnitStr.value.equalsIgnoreCase("microseconds")) {
+                timeUnit = TimeUnit.MICROSECONDS;
+            } else if (timeUnitStr.value.equalsIgnoreCase("milliseconds")) {
+                timeUnit = TimeUnit.MILLISECONDS;
+            } else if (timeUnitStr.value.equalsIgnoreCase("seconds")) {
+                timeUnit = TimeUnit.SECONDS;
+            } else {
+                throw new IllegalArgumentException("Not 'microseconds', 'milliseconds', or 'seconds'");
+            }
             if (trace) {
                 logInfo("Timer created");
             }
@@ -91,6 +86,27 @@ final class TimerPack {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
             return t;
+        }
+
+        private static CompleteRec validateMessage(Envelope activeRequest) {
+            if (!(activeRequest.message() instanceof CompleteRec completeRec)) {
+                throw new IllegalArgumentException("Invalid timer request: " + activeRequest);
+            }
+            if (!completeRec.label().equals(Str.of("request"))) {
+                throw new IllegalArgumentException("Invalid timer request: " + activeRequest);
+            }
+            if (completeRec.fieldCount() != 1) {
+                throw new IllegalArgumentException("Timer request must contain a 'ticks' feature");
+            }
+            return completeRec;
+        }
+
+        private static int validateTicks(CompleteRec activeMessage) {
+            Complete ticks = activeMessage.findValue(TICKS_FEAT);
+            if (!(ticks instanceof Int64 int32)) {
+                throw new IllegalArgumentException("Not an Int32");
+            }
+            return int32.intValue();
         }
 
         @Override
@@ -149,48 +165,11 @@ final class TimerPack {
                 throw new IllegalStateException("Timer is already active: " + envelope);
             }
             activeRequest = envelope;
-            activeMessage = validateMessage();
-            requestedTicks = validateTicks();
-            TimeUnit timeUnit = validateTimeUnit();
+            requestedTicks = validateTicks(validateMessage(activeRequest));
             scheduledFuture = SCHEDULED_EXECUTOR.scheduleAtFixedRate(() ->
                     this.send(createResponse(TIMER_CALLBACK, activeRequest.requestId())),
                 periodNum.longValue(), periodNum.longValue(), timeUnit);
             return OnMessageResult.NOT_FINISHED;
-        }
-
-        private CompleteRec validateMessage() {
-            if (!(activeRequest.message() instanceof CompleteRec completeRec)) {
-                throw new IllegalArgumentException("Invalid timer request: " + activeRequest);
-            }
-            if (!completeRec.label().equals(Str.of("request"))) {
-                throw new IllegalArgumentException("Invalid timer request: " + activeRequest);
-            }
-            if (completeRec.fieldCount() != 1) {
-                throw new IllegalArgumentException("Timer request must contain a 'ticks' feature");
-            }
-            return completeRec;
-        }
-
-        private int validateTicks() {
-            Complete ticks = activeMessage.findValue(TICKS_FEAT);
-            if (!(ticks instanceof Int64 int32)) {
-                throw new IllegalArgumentException("Not an Int32");
-            }
-            return int32.intValue();
-        }
-
-        private TimeUnit validateTimeUnit() {
-            TimeUnit timeUnit;
-            if (timeUnitStr.value.equalsIgnoreCase("microseconds")) {
-                timeUnit = TimeUnit.MICROSECONDS;
-            } else if (timeUnitStr.value.equalsIgnoreCase("milliseconds")) {
-                timeUnit = TimeUnit.MILLISECONDS;
-            } else if (timeUnitStr.value.equalsIgnoreCase("seconds")) {
-                timeUnit = TimeUnit.SECONDS;
-            } else {
-                throw new IllegalArgumentException("Not 'microseconds', 'milliseconds', or 'seconds'");
-            }
-            return timeUnit;
         }
     }
 

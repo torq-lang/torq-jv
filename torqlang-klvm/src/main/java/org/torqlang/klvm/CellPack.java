@@ -17,13 +17,15 @@ public final class CellPack {
     private static final ObjProcTable<CellObj> objProcTable = ObjProcTable.<CellObj>builder()
         .build();
 
+    // Signatures:
+    //     Cell.new(initial::Value) -> Cell
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 2;
         if (ys.size() != expectedArgCount) {
             throw new InvalidArgCountError(expectedArgCount, ys, "Cell.new");
         }
-        ValueOrVar cellContent = ys.get(0).resolveValueOrVar(env);
-        CellObj cellObj = new CellObj(cellContent);
+        ValueOrVar initial = ys.get(0).resolveValueOrVar(env);
+        CellObj cellObj = new CellObj(initial);
         ValueOrVar target = ys.get(1).resolveValueOrVar(env);
         target.bindToValue(cellObj, null);
     }

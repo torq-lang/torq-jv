@@ -44,7 +44,7 @@ import java.util.Set;
  *
  * Complete values hierarchy:
  *   - Complete
- *     - CompleteActorCfgCtor
+ *     - CompleteActorCfgtr
  *     - CompleteObj
  *     - CompleteProc
  *     - CompleteRec
@@ -69,8 +69,8 @@ import java.util.Set;
  *     - OpaqueValue
  *     - RequestId
  *
- * The `CompleteActorCfgCtor` exists for modularity. An actor system can contain modules, and a module can export an
- * actor construct as a `Rec` containing a `CompleteActorCfgCtor`.
+ * The `CompleteActorCfgtr` exists for modularity. An actor system can contain modules, and a module can export an
+ * actor construct as a `Rec` containing a `CompleteActorCfgtr`.
  *
  * There is one exception to all of the above. When an actor spawns another actor, we delay verifying the actor
  * configuration for as long as possible to opportunistically increase concurrency. During the spawn callback, we

@@ -64,6 +64,15 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     public static final int CONTINUE_ID = 2;
     public static final int RETURN_ID = 3;
 
+    public static final Str CFG = Str.of("cfg");
+    public static final Str ERROR = Str.of("error");
+    public static final Str NAME = Str.of("name");
+    public static final Str MESSAGE = Str.of("message");
+    public static final Str DETAILS = Str.of("details");
+    public static final Str REQUEST = Str.of("request");
+    public static final Str NOTIFY = Str.of("notify");
+    public static final Str HANDLERS = Str.of("handlers");
+
     public static final String ASK_NOT_HANDLED_ERROR_NAME = "org.torqlang.lang.AskNotHandledError";
     public static final String ASK_NOT_HANDLED_ERROR_MESSAGE = """
         Actor could not match request message with an 'ask' handler.""";
@@ -108,20 +117,20 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             endOfActorSpan
         );
         RecExpr errorExpr = new RecExpr(
-            new StrAsExpr(Str.of("error"), endOfActorSpan),
+            new StrAsExpr(ERROR, endOfActorSpan),
             List.of(
                 new FieldExpr(
-                    new StrAsExpr(Str.of("name"), endOfActorSpan),
+                    new StrAsExpr(NAME, endOfActorSpan),
                     new StrAsExpr(Str.of(errorName), endOfActorSpan),
                     endOfActorSpan
                 ),
                 new FieldExpr(
-                    new StrAsExpr(Str.of("message"), endOfActorSpan),
+                    new StrAsExpr(MESSAGE, endOfActorSpan),
                     new StrAsExpr(Str.of(errorMessage), endOfActorSpan),
                     endOfActorSpan
                 ),
                 new FieldExpr(
-                    new StrAsExpr(Str.of("details"), endOfActorSpan),
+                    new StrAsExpr(DETAILS, endOfActorSpan),
                     errorDetails,
                     endOfActorSpan
                 )
@@ -357,7 +366,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         RecExpr askErrorDetails = new RecExpr(
             List.of(
                 new FieldExpr(
-                    new StrAsExpr(Str.of("request"), endOfActorSpan),
+                    new StrAsExpr(REQUEST, endOfActorSpan),
                     new IdentAsExpr(Ident.$M, endOfActorSpan),
                     endOfActorSpan
                 )
@@ -371,7 +380,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         RecExpr tellErrorDetails = new RecExpr(
             List.of(
                 new FieldExpr(
-                    new StrAsExpr(Str.of("notify"), endOfActorSpan),
+                    new StrAsExpr(NOTIFY, endOfActorSpan),
                     new IdentAsExpr(Ident.$M, endOfActorSpan),
                     endOfActorSpan
                 )
@@ -382,7 +391,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         // Create and bind handlers tuple to result
         List<ValueDef> handlers = List.of(new ValueDef(askProcIdent, endOfActorSpan),
             new ValueDef(tellProcIdent, endOfActorSpan));
-        TupleDef handlersDef = new TupleDef(Str.of("handlers"), handlers, endOfActorSpan);
+        TupleDef handlersDef = new TupleDef(HANDLERS, handlers, endOfActorSpan);
         actorBodyTarget.addStmt(new CreateTupleStmt(Ident.$R, handlersDef, endOfActorSpan));
         // --- Build body containing initializer, ask handlers, and tell handlers
         Stmt bodyStmt = actorBodyTarget.build();
@@ -390,7 +399,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addStmt(new CreateActorCfgtrStmt(Ident.$ACTOR_CFGTR, actorCfgtrDef, lang));
 
         // Build the actor record
-        FieldDef configDef = new FieldDef(Str.of("cfg"), Ident.$ACTOR_CFGTR, endOfActorSpan);
+        FieldDef configDef = new FieldDef(CFG, Ident.$ACTOR_CFGTR, endOfActorSpan);
         RecDef actorRecDef = new RecDef(Str.of(exprIdent.name), List.of(configDef), endOfActorSpan);
         childTarget.addStmt(new CreateRecStmt(exprIdent, actorRecDef, endOfActorSpan));
 

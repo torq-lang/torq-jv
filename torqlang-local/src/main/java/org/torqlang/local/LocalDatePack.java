@@ -20,6 +20,8 @@ final class LocalDatePack {
     private static final ObjProcTable<LocalDateObj> objProcTable = ObjProcTable.<LocalDateObj>builder()
         .build();
 
+    // Signatures:
+    //     LocalDate.new(date::Str) -> LocalDate
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedCount = 2;
         if (ys.size() != expectedCount) {

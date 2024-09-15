@@ -7,22 +7,20 @@
 
 package org.torqlang.examples;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public final class RunNorthwindJava {
+public final class BenchNorthwindJava {
 
     public static void main(String[] args) throws Exception {
-        new RunNorthwindJava().perform();
+        new BenchNorthwindJava().perform();
     }
 
     public void perform() throws Exception {
         int iterations = 100_000;
         String collName = "customers";
-        Map<String, List<Map<String, Object>>> cache = new HashMap<>();
-        List<Map<String, Object>> coll = NorthwindTools.fetchColl(cache, NorthwindTools.ROOT_DIR, collName);
-        cache.put(collName, coll);
+        NorthwindCache cache = new NorthwindCache();
+        NorthwindColl coll = NorthwindFiles.fetchColl(cache, NorthwindFiles.FILES_DIR, collName);
+        cache.data.put(collName, coll);
         performRepeatedly(cache, collName, iterations);
         long start = System.currentTimeMillis();
         int readCount = performRepeatedly(cache, collName, iterations);
@@ -36,32 +34,32 @@ public final class RunNorthwindJava {
         System.out.printf("  Reads per second: %,.2f\n", (readsPerSecond * readCount));
     }
 
-    private int performRepeatedly(Map<String, List<Map<String, Object>>> cache, String collName, int iterations)
+    private int performRepeatedly(NorthwindCache cache, String collName, int iterations)
         throws Exception
     {
         int recordInFile = 29;
         int readCount = 0;
         for (int i = 0; i < iterations; i++) {
-            int id = (i % recordInFile) + 1;
-            performRead(cache, collName, id);
+            long id = (i % recordInFile) + 1;
+            performRead(cache, collName, Map.of("id", id));
             readCount ++;
             id = ((i + 1) % recordInFile) + 1;
-            performRead(cache, collName, id);
+            performRead(cache, collName, Map.of("id", id));
             readCount ++;
         }
         return readCount;
     }
 
-    private void performRead(Map<String, List<Map<String, Object>>> cache, String collName, int id)
+    private void performRead(NorthwindCache cache, String collName, Map<String, Object> key)
         throws Exception
     {
-        Map<String, Object> rec = NorthwindTools.fetchRec(cache, NorthwindTools.ROOT_DIR, collName, id);
+        Map<String, Object> rec = NorthwindFiles.fetchRec(cache, NorthwindFiles.FILES_DIR, collName, key);
         if (rec == null) {
-            throw new IllegalStateException("Rec not found: " + id);
+            throw new IllegalStateException("Rec not found: " + key);
         }
-        long actualId = (Long) rec.get("id");
-        if (actualId != id) {
-            throw new IllegalStateException("id:" + id + " != actualId:" + actualId);
+        Map<String, Object> actualKey = NorthwindFiles.extractKey(rec, key.keySet());
+        if (!key.equals(actualKey)) {
+            throw new IllegalStateException("key:" + key + " != actualKey:" + actualKey);
         }
     }
 

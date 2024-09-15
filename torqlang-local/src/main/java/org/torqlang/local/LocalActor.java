@@ -104,7 +104,7 @@ final class LocalActor extends AbstractActor {
     static void onCallbackToActorAt(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         LocalActor owner = machine.owner();
         if (ys.size() != 2) {
-            throw new InvalidArgCountError(2, ys, "LocalActor.onCallbackForActorAt");
+            throw new InvalidArgCountError(2, ys, "LocalActor.onCallbackToActorAt");
         }
         Str addressStr = (Str) ys.get(0).resolveValue(env);
         Address address = Address.create(addressStr.value);
@@ -758,13 +758,16 @@ final class LocalActor extends AbstractActor {
     private ActorRefObj spawnActorCfg(ActorCfg parentCfg) throws WaitException {
 
         // Only complete values are shared across process boundaries.
-
+        // Note that createRootEnv() only creates CompleteProc values.
         HashMap<Ident, Complete> childCapturedEnvMap = new HashMap<>();
-
         for (EnvEntry rootEntry : ROOT_ENV) {
             childCapturedEnvMap.put(rootEntry.ident, (Complete) rootEntry.var.valueOrVarSet());
         }
 
+        // The parent ActorCfg may contain partial values until used to spawn a child actor. Checking completeness as
+        // late as possible can increase the opportunity to run in parallel. Here, as we transport the configuration
+        // from the parent process to the child process, so we must ensure that the configuration is complete, or that
+        // we can suspend until it becomes complete.
         Closure parentHandlersCtor = parentCfg.handlersCtor();
         Env parentCapturedEnv = parentHandlersCtor.capturedEnv();
         for (EnvEntry parentEntry : parentCapturedEnv) {
@@ -775,13 +778,12 @@ final class LocalActor extends AbstractActor {
             ValueOrVar parentValueOrVar = parentEntry.var.resolveValueOrVar();
             childCapturedEnvMap.put(parentEntry.ident, parentValueOrVar.checkComplete());
         }
-
-        Closure childHandlersCtor = new CompleteClosure(parentHandlersCtor.procDef(), childCapturedEnvMap);
+        CompleteClosure childHandlersCtor = new CompleteClosure(parentHandlersCtor.procDef(), childCapturedEnvMap);
         Configure configure = new Configure(new ActorCfg(parentCfg.args(), childHandlersCtor));
         LocalActor childActor = new LocalActor(nextChildAddress(), system, trace);
 
+        // We have a complete configuration and can now configure a concurrent actor process.
         childActor.send(Envelope.createControlNotify(configure));
-
         return new ActorRefObj(childActor);
     }
 

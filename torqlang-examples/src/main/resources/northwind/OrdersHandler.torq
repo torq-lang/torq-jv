@@ -1,0 +1,55 @@
+actor OrdersHandler() in
+    import examples.NorthwindDb
+    var northwind_db = NorthwindDb.new()
+    handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+        case path
+            of ['orders', order_id] then
+                var header = northwind_db.ask(
+                    'findByKey'#{
+                        'entity': 'orders',
+                        'key': {'id': order_id}
+                    }
+                )
+                var details = northwind_db.ask(
+                    'findAllByKey'#{
+                        'entity': 'order_details',
+                        'key': {'order_id': order_id}
+                    }
+                )
+                // TODO: Build a complex order containing its details
+            else
+                throw 'error'#{
+                    'message': 'Invalid request',
+                    'details': {
+                        'path': path
+                    }
+                }
+        end
+    end
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+        case path
+            of ['orders', order_id] then
+                var header = northwind_db.ask(
+                    'findByKey'#{
+                        'entity': 'orders',
+                        'key': {'id': order_id}
+                    }
+                )
+                var details = northwind_db.ask(
+                    'findAllByKey'#{
+                        'entity': 'order_details',
+                        'key': {'order_id': order_id}
+                    }
+                )
+                // TODO: Update the targeted order header and all of its details. Update matching lines,
+                //       delete omitted lines, create additional lines.
+            else
+                throw 'error'#{
+                    'message': 'Invalid request',
+                    'details': {
+                        'path': path
+                    }
+                }
+        end
+    end
+end

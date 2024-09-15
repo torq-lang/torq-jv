@@ -21,6 +21,8 @@ final class HashMapPack {
         .addEntry(CommonFeatures.PUT, HashMapPack::objPut)
         .build();
 
+    // Signatures:
+    //     HashMap.new() -> HashMap
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedCount = 1;
         if (ys.size() != expectedCount) {
@@ -31,6 +33,8 @@ final class HashMapPack {
         y0.bindToValue(obj, null);
     }
 
+    // Signatures:
+    //     hash_map.get(key::Value) -> Value
     static void objGet(HashMapObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedCount = 2;
         if (ys.size() != expectedCount) {
@@ -50,6 +54,8 @@ final class HashMapPack {
         target.bindToValueOrVar(elem, null);
     }
 
+    // Signatures:
+    //     hash_map.put(key::Value, value::Value)
     static void objPut(HashMapObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedCount = 2;
         if (ys.size() != expectedCount) {

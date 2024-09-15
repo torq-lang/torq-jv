@@ -17,7 +17,7 @@ import org.torqlang.server.ApiHandler;
 import org.torqlang.server.CoreServer;
 import org.torqlang.server.EchoHandler;
 
-public class ExampleServer {
+public final class NorthwindServer {
 
     public static CompleteRec contextProvider(Request request) {
         return Rec.completeRecBuilder().build();
@@ -26,7 +26,7 @@ public class ExampleServer {
     public static void main(String[] args) throws Exception {
 
         String queryOrdersSource = QueryOrders.SOURCE.replace("${1}",
-            NorthwindTools.fetchJsonText(NorthwindTools.NORTHWIND_ORDERS_JSON));
+            NorthwindFiles.fetchJsonText(NorthwindFiles.ORDERS_JSON_RESOURCE));
 
         ActorImage ordersImage = Actor.captureImage(queryOrdersSource);
 
@@ -38,7 +38,7 @@ public class ExampleServer {
                     .addRoute("/orders", ordersImage)
                     .addRoute("/orders/{id}", ordersImage)
                     .build())
-                .setContextProvider(ExampleServer::contextProvider)
+                .setContextProvider(NorthwindServer::contextProvider)
                 .build(), "/api")
             .build();
         server.start();

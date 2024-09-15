@@ -12,17 +12,17 @@ import org.torqlang.klvm.Rec;
 import org.torqlang.klvm.Str;
 import org.torqlang.local.Actor;
 
-final class ExamplesMod {
+final class IntPublisherMod {
 
     private final CompleteRec moduleRec;
 
-    private ExamplesMod() {
+    private IntPublisherMod() {
         try {
             moduleRec = Rec.completeRecBuilder()
                 .addField(Str.of("IntPublisher"), Actor.compileForImport(IntPublisher.SOURCE))
                 .build();
         } catch (Exception exc) {
-            throw new IllegalStateException("ExamplesMod error", exc);
+            throw new IllegalStateException("IntPublisherMod error", exc);
         }
     }
 
@@ -31,7 +31,7 @@ final class ExamplesMod {
     }
 
     private static class LazySingleton {
-        private static final ExamplesMod SINGLETON = new ExamplesMod();
+        private static final IntPublisherMod SINGLETON = new IntPublisherMod();
     }
 
 }

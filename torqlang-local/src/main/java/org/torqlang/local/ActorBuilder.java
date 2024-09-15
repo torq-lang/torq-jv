@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /*
- * Note that as we transition forward in the process, we gain properties and loose methods.
+ * Note that as we progress in the builder process, we gain access to properties while loosing access to methods.
  *
  * State transitions
  * =================
@@ -67,7 +67,6 @@ import java.util.concurrent.TimeUnit;
 public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, ActorBuilderParsed,
     ActorBuilderRewritten, ActorBuilderGenerated, ActorBuilderConstructed, ActorBuilderConfigured, ActorBuilderSpawned
 {
-    private static final Str CFG = Str.of("cfg");
     private static final int TIME_SLICE_10_000 = 10_000;
 
     private State state;
@@ -182,7 +181,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot spawn at state: " + state);
         }
         // The actor record will contain values (not vars). Therefore, we can access the ActorCfgtr directly.
-        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(CFG);
+        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(Actor.CFG);
         Env env = Env.create(LocalActor.rootEnv(),
             List.of(
                 new EnvEntry(Ident.$ACTOR_CFGTR, new Var(actorCfgtr)),
@@ -205,8 +204,21 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
+    public final ActorBuilderConfigured configure(List<? extends CompleteOrIdent> args) throws Exception {
+        setArgs(args);
+        return configure();
+    }
+
+    @Override
     public final ActorBuilderConfigured configure(String source) throws Exception {
         setSource(source);
+        return configure();
+    }
+
+    @Override
+    public final ActorBuilderConfigured configure(String source, List<? extends CompleteOrIdent> args) throws Exception {
+        setSource(source);
+        setArgs(args);
         return configure();
     }
 
@@ -361,9 +373,9 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorBuilderInit setArgs(List<? extends CompleteOrIdent> args) {
-        if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setArgs at state: " + state);
+    public final ActorBuilderConstructed setArgs(List<? extends CompleteOrIdent> args) {
+        if (state.ordinal() > State.CONSTRUCTED.ordinal()) {
+            throw new IllegalStateException("Cannot setArgs at after CONSTRUCTED: " + state);
         }
         if (args == null) {
             throw new NullPointerException("args");
@@ -420,6 +432,13 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     @Override
     public final ActorBuilderSpawned spawn(String source) throws Exception {
         setSource(source);
+        return spawn();
+    }
+
+    @Override
+    public final ActorBuilderSpawned spawn(String source, List<? extends CompleteOrIdent> args) throws Exception {
+        setSource(source);
+        setArgs(args);
         return spawn();
     }
 

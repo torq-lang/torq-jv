@@ -24,6 +24,9 @@ final class ArrayListPack {
         .addEntry(CommonFeatures.TO_TUPLE, ArrayListPack::objToTuple)
         .build();
 
+    // Signatures:
+    //     ArrayList.new() -> ArrayList
+    //     ArrayList.new(values::Tuple) -> ArrayList
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         int argCount = ys.size();
         if (argCount < 1 || argCount > 2) {
@@ -59,6 +62,8 @@ final class ArrayListPack {
         target.bindToValue(arrayListObj, null);
     }
 
+    // Signatures:
+    //     array_list.add(element::Value)
     static void objAdd(ArrayListObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) {
         final int expectedArgCount = 1;
         if (ys.size() != expectedArgCount) {
@@ -68,6 +73,8 @@ final class ArrayListPack {
         obj.state.add(elem);
     }
 
+    // Signatures:
+    //     array_list.clear()
     static void objClear(ArrayListObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) {
         final int expectedArgCount = 0;
         if (ys.size() != expectedArgCount) {
@@ -76,6 +83,8 @@ final class ArrayListPack {
         obj.state.clear();
     }
 
+    // Signatures:
+    //     array_list.size() -> Int32
     static void objSize(ArrayListObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 1;
         if (ys.size() != expectedArgCount) {
@@ -85,6 +94,8 @@ final class ArrayListPack {
         target.bindToValueOrVar(Int32.of(obj.state.size()), null);
     }
 
+    // Signatures:
+    //     array_list.to_tuple() -> Tuple
     static void objToTuple(ArrayListObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 1;
         if (ys.size() != expectedArgCount) {

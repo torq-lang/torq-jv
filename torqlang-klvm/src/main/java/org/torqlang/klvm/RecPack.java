@@ -20,7 +20,7 @@ public final class RecPack {
         .build();
 
     /*
-     * Rec.assign(from, to, result)
+     * Rec.assign(from::Rec, to::Rec) -> Rec
      *
      * Assign fields from the left argument to the right argument, which effectively adds or replaces fields on the
      * right side.
@@ -54,6 +54,8 @@ public final class RecPack {
         target.bindToValue(assigned, null);
     }
 
+    // Signatures:
+    //    Rec.size(rec::Rec) -> Int32
     static void clsSize(RecCls cls, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 2;
         if (ys.size() != expectedArgCount) {

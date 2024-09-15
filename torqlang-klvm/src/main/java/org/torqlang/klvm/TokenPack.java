@@ -14,6 +14,8 @@ public final class TokenPack {
     public static final Ident TOKEN_IDENT = Ident.create("Token");
     public static final CompleteObj TOKEN_CLS = TokenCls.SINGLETON;
 
+    // Signatures:
+    //     Token.new() -> Token
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 1;
         if (ys.size() != expectedArgCount) {

@@ -35,7 +35,9 @@ public final class IntPublisher extends AbstractExample {
                     response.add(@next_int)
                     next_int := @next_int + incr
                 end
-                respond(response.to_tuple())
+                if response.size() > 0 then
+                    respond(response.to_tuple())
+                end
                 if @next_int <= last then
                     eof#{'more': true}
                 else
@@ -53,8 +55,7 @@ public final class IntPublisher extends AbstractExample {
     public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder()
-            .setArgs(List.of(Int32.of(10), Int32.of(20), Int32.I32_1))
-            .spawn(SOURCE)
+            .spawn(SOURCE, List.of(Int32.of(10), Int32.of(20), Int32.I32_1))
             .actorRef();
 
         CompleteRec m = Rec.completeRecBuilder()

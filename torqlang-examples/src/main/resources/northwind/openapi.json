@@ -1,17 +1,17 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Torqlang Northwind DB API",
-    "description": "This is an example API for the Northwind DB",
+    "title": "Northwind Database",
+    "description": "This is an example API for the Northwind database",
     "license": {
-      "name": "Torqlang License v1.0",
-      "url": "https://github.com/torqlang/torqlang/blob/main/LICENSE.md"
+      "name": "Torq Lang License v1.0",
+      "url": "https://github.com/torq-lang/torq-jv/blob/main/LICENSE.md"
     },
     "version": "1.0"
   },
   "servers": [
     {
-      "url": "https://northwind.torqlang.org/api/v1"
+      "url": "https://northwind.example.com/api/v1"
     }
   ],
   "tags": [
@@ -140,7 +140,7 @@
           },
           "name": {
             "type": "string",
-            "example": "com.my.application.ZeroQuantityError"
+            "example": "com.example.ZeroQuantityError"
           },
           "trace_id": {
             "type": "string",

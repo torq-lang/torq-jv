@@ -11,6 +11,9 @@ import java.util.List;
 
 public class StrPack {
 
+    // Signatures:
+    //     str.substring(start::Int32) -> Str
+    //     str.substring(start::Int32, stop::Int32) -> Str
     static void objSubstring(Str obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         int argCount = ys.size();
         if (argCount < 2 || argCount > 3) {

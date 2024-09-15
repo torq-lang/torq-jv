@@ -8,21 +8,21 @@
 package org.torqlang.examples;
 
 import org.torqlang.examples.NorthwindReader.ReadAll;
-import org.torqlang.examples.NorthwindReader.ReadById;
-import org.torqlang.examples.NorthwindWriter.Write;
+import org.torqlang.examples.NorthwindReader.ReadByKey;
+import org.torqlang.examples.NorthwindWriter.WriteCreate;
+import org.torqlang.examples.NorthwindWriter.WriteDelete;
+import org.torqlang.examples.NorthwindWriter.WriteUpdate;
 import org.torqlang.klvm.FailedValue;
 import org.torqlang.local.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.torqlang.local.Envelope.createResponse;
 
 public final class NorthwindDb extends AbstractActor {
 
-    private final Map<String, List<Map<String, Object>>> cache;
+    private final NorthwindCache cache;
     private final NorthwindReader[] readers;
     private final NorthwindWriter writer;
 
@@ -35,14 +35,14 @@ public final class NorthwindDb extends AbstractActor {
         if (concurrencyLevel < 2) {
             throw new IllegalArgumentException("concurrencyLevel < 2");
         }
-        cache = new HashMap<>();
+        cache = new NorthwindCache();
         readers = new NorthwindReader[concurrencyLevel - 1];
         for (int i = 0; i < readers.length; i++) {
             Address childAddress = Address.create(address, "reader" + i);
             readers[i] = new NorthwindReader(childAddress, system, cache, readLatencyInNanos);
         }
         Address childAddress = Address.create(address, "writer");
-        writer = new NorthwindWriter(childAddress, system, cache);
+        writer = new NorthwindWriter(childAddress, system, cache, readLatencyInNanos);
     }
 
     /*
@@ -63,13 +63,13 @@ public final class NorthwindDb extends AbstractActor {
             return true;
         }
         Object message = envelope.message();
-        if (message instanceof FindById || message instanceof FindAll) {
+        if (message instanceof Reader) {
             return !activeWriter;
+        } else if (message instanceof Writer) {
+            return activeReaders == 0 && !activeWriter;
+        } else {
+            return false;
         }
-        if (message instanceof Update) {
-            return activeReaders == 0;
-        }
-        return false;
     }
 
     @Override
@@ -100,28 +100,40 @@ public final class NorthwindDb extends AbstractActor {
             try {
                 Object message = envelope.message();
                 if (envelope.isRequest()) {
-                    if (message instanceof Update databaseUpdate) {
-                        Write cacheWrite = new Write(databaseUpdate.collName(),
-                            databaseUpdate.data, envelope.requester());
-                        writer.send(Envelope.createRequest(cacheWrite, this, cacheWrite));
-                    } else if (message instanceof FindById databaseFindById) {
-                        ReadById cacheReadById =
-                            new ReadById(databaseFindById.collName, databaseFindById.id,
-                                envelope.requester());
-                        readers[nextReader].send(Envelope.createRequest(cacheReadById, this, cacheReadById));
+                    if (message instanceof Reader) {
+                        Object readRequest;
+                        if (message instanceof FindByKey findByKey) {
+                            readRequest = new ReadByKey(findByKey.collName, findByKey.key, envelope.requester());
+                        } else if (message instanceof FindAll findAll) {
+                            readRequest = new ReadAll(findAll.collName, envelope.requester());
+                        } else {
+                            throw new IllegalArgumentException("Unrecognized read request: " + envelope);
+                        }
+                        readers[nextReader].send(Envelope.createRequest(readRequest, this, readRequest));
                         activeReaders++;
                         nextReader++;
                         if (nextReader == readers.length) {
                             nextReader = 0;
                         }
                     } else {
-                        throw new IllegalArgumentException("Unrecognized request: " + envelope);
+                        Object writeRequest;
+                        if (message instanceof Update update) {
+                            writeRequest = new WriteUpdate(update.collName(), update.data, envelope.requester());
+                        } else if (message instanceof Create create) {
+                            writeRequest = new WriteCreate(create.collName(), create.data, envelope.requester());
+                        } else if (message instanceof Delete delete) {
+                            writeRequest = new WriteDelete(delete.collName(), delete.key, envelope.requester());
+                        } else {
+                            throw new IllegalArgumentException("Unrecognized write request: " + envelope);
+                        }
+                        writer.send(Envelope.createRequest(writeRequest, this, writeRequest));
+                        activeWriter = true;
                     }
                 } else if (envelope.isResponse()) {
                     Object requestId = envelope.requestId();
-                    if (requestId instanceof Write) {
+                    if (requestId instanceof NorthwindReader.Read) {
                         activeWriter = false;
-                    } else if (requestId instanceof ReadById || requestId instanceof ReadAll) {
+                    } else if (requestId instanceof NorthwindWriter.Write) {
                         activeReaders--;
                     } else {
                         throw new IllegalArgumentException("Unrecognized response: " + envelope);
@@ -143,13 +155,25 @@ public final class NorthwindDb extends AbstractActor {
         return OnMessageResult.NOT_FINISHED;
     }
 
-    record FindById(String collName, long id) {
+    interface Reader {
     }
 
-    record FindAll(String collName) {
+    interface Writer {
     }
 
-    record Update(String collName, Map<String, Object> data) {
+    record Create(String collName, Map<String, Object> data) implements Writer {
+    }
+
+    record Delete(String collName, Map<String, Object> key) implements Writer {
+    }
+
+    record FindAll(String collName) implements Reader {
+    }
+
+    record FindByKey(String collName, Map<String, Object> key) implements Reader {
+    }
+
+    record Update(String collName, Map<String, Object> data) implements Writer {
     }
 
 }

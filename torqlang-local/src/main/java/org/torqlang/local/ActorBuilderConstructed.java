@@ -31,7 +31,11 @@ public interface ActorBuilderConstructed {
 
     ActorBuilderConfigured configure() throws Exception;
 
+    ActorBuilderConfigured configure(List<? extends CompleteOrIdent> args) throws Exception;
+
     Stmt createActorRecStmt();
+
+    ActorBuilderConstructed setArgs(List<? extends CompleteOrIdent> args);
 
     String source();
 
