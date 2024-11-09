@@ -17,7 +17,7 @@ public interface KernelVisitor<T, R> {
 
     R visitAddStmt(AddStmt kernel, T state) throws Exception;
 
-    R visitApplyProcStmt(ApplyStmt kernel, T state) throws Exception;
+    R visitApplyStmt(ApplyStmt kernel, T state) throws Exception;
 
     R visitBindCompleteToCompleteStmt(BindCompleteToCompleteStmt kernel, T state) throws Exception;
 
@@ -46,6 +46,8 @@ public interface KernelVisitor<T, R> {
     R visitCreateRecStmt(CreateRecStmt kernel, T state) throws Exception;
 
     R visitCreateTupleStmt(CreateTupleStmt kernel, T state) throws Exception;
+
+    R visitDebugStmt(DebugStmt kernel, T state) throws Exception;
 
     R visitDec128(Dec128 kernel, T state) throws Exception;
 

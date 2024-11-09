@@ -1,8 +1,39 @@
+
 actor OrdersHandler() in
+
+    // TODO: `shipping_fee` needs to be a decimal value
+    // TODO: `taxes` needs to be a decimal value
+
+    import system[ArrayList, Int64, LocalDate, Rec, ValueIter]
     import examples.NorthwindDb
-    var northwind_db = NorthwindDb.new()
+
     handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+        var northwind_db = spawn(NorthwindDb.cfg())
         case path
+            of ['orders'] then
+                var answer = ArrayList.new()
+                var headers = northwind_db.ask(
+                    'findAll'#{
+                        'entity': 'orders',
+                        'criteria': query
+                    }
+                )
+                for h in ValueIter.new(headers) do
+                    var employee = northwind_db.ask(
+                        'findByKey'#{
+                            'entity': 'employees',
+                            'key': {'id': h.employee_id}
+                        }
+                    )
+                    var customer = northwind_db.ask(
+                        'findByKey'#{
+                            'entity': 'customers',
+                            'key': {'id': h.customer_id}
+                        }
+                    )
+                    answer.add(Rec.assign({'employee': employee, 'customer': customer}, h))
+                end
+                answer.to_tuple()
             of ['orders', order_id] then
                 var header = northwind_db.ask(
                     'findByKey'#{
@@ -10,46 +41,62 @@ actor OrdersHandler() in
                         'key': {'id': order_id}
                     }
                 )
+                if header == null then
+                    throw 'error'#{'message': 'Order header not found', 'details': {'order_id': order_id}}
+                end
                 var details = northwind_db.ask(
-                    'findAllByKey'#{
+                    'findAll'#{
                         'entity': 'order_details',
-                        'key': {'order_id': order_id}
+                        'criteria': {'order_id': order_id}
                     }
                 )
-                // TODO: Build a complex order containing its details
-            else
-                throw 'error'#{
-                    'message': 'Invalid request',
-                    'details': {
-                        'path': path
+                Rec.assign({'details': if details == null then [] else details end}, header)
+            of ['orders', order_id, 'details'] then
+                var answer = ArrayList.new()
+                var details = northwind_db.ask(
+                    'findAll'#{
+                        'entity': 'order_details',
+                        'criteria': {'order_id': order_id}
                     }
-                }
+                )
+                for d in ValueIter.new(details) do
+                    var product = northwind_db.ask(
+                        'findByKey'#{
+                            'entity': 'products',
+                            'key': {'id': d.product_id}
+                        }
+                    )
+                    if product == null then
+                        throw 'error'#{'message': 'Product not found', 'details': {'order_id': order_id}}
+                    end
+                    var product_suppliers = northwind_db.ask(
+                        'findAll'#{
+                            'entity': 'product_suppliers',
+                            'criteria': {'product_id': d.product_id}
+                        }
+                    )
+                    var suppliers_for_product = ArrayList.new()
+                    for ps in ValueIter.new(product_suppliers) do
+                        suppliers_for_product.add(
+                            northwind_db.ask(
+                                'findByKey'#{
+                                    'entity': 'suppliers',
+                                    'key': {'id': ps.supplier_id}
+                                }
+                            )
+                        )
+                    end
+                    var product_with_suppliers = Rec.assign({'suppliers': suppliers_for_product.to_tuple()}, product)
+                    answer.add(Rec.assign({'product': product_with_suppliers}, d))
+                end
+                answer.to_tuple()
+            else
+                throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
         end
     end
-    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
-        case path
-            of ['orders', order_id] then
-                var header = northwind_db.ask(
-                    'findByKey'#{
-                        'entity': 'orders',
-                        'key': {'id': order_id}
-                    }
-                )
-                var details = northwind_db.ask(
-                    'findAllByKey'#{
-                        'entity': 'order_details',
-                        'key': {'order_id': order_id}
-                    }
-                )
-                // TODO: Update the targeted order header and all of its details. Update matching lines,
-                //       delete omitted lines, create additional lines.
-            else
-                throw 'error'#{
-                    'message': 'Invalid request',
-                    'details': {
-                        'path': path
-                    }
-                }
-        end
+
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
+        throw 'error'#{'message': 'PATCH needs impl', 'details': {'path': path}}
     end
+
 end

@@ -8,7 +8,6 @@
 package org.torqlang.local;
 
 import org.torqlang.klvm.*;
-import org.torqlang.lang.ValueTools;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;

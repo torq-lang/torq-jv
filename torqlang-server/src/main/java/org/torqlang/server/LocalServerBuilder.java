@@ -14,15 +14,15 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
-public final class CoreServerBuilder {
+public final class LocalServerBuilder {
 
     private int port;
     private final ContextHandlerCollection contextHandlers = new ContextHandlerCollection();
 
-    CoreServerBuilder() {
+    LocalServerBuilder() {
     }
 
-    public final CoreServerBuilder setPort(int port) {
+    public final LocalServerBuilder setPort(int port) {
         this.port = port;
         return this;
     }
@@ -31,18 +31,18 @@ public final class CoreServerBuilder {
         return port;
     }
 
-    public final CoreServerBuilder addContextHandler(Handler handler, String contextPath) {
+    public final LocalServerBuilder addContextHandler(Handler handler, String contextPath) {
         ContextHandler contextHandler = new ContextHandler(handler, contextPath);
         contextHandlers.addHandler(contextHandler);
         return this;
     }
 
-    public CoreServer build() {
+    public LocalServer build() {
         Server server = new Server(port);
         Connector connector = new ServerConnector(server);
         server.addConnector(connector);
         server.setHandler(contextHandlers);
-        return new CoreServer(server, port);
+        return new LocalServer(server, port);
     }
 
 }

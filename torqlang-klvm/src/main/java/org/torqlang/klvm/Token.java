@@ -57,7 +57,7 @@ public final class Token implements Literal {
 
     @Override
     public final String formatValue() {
-        return "<<$token " + id + ">>";
+        return "$token(" + id + ")";
     }
 
     @Override

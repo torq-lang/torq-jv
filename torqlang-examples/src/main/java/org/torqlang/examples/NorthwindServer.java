@@ -10,35 +10,112 @@ package org.torqlang.examples;
 import org.eclipse.jetty.server.Request;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.Rec;
-import org.torqlang.local.Actor;
-import org.torqlang.local.ActorImage;
-import org.torqlang.local.ApiRouter;
-import org.torqlang.server.ApiHandler;
-import org.torqlang.server.CoreServer;
-import org.torqlang.server.EchoHandler;
+import org.torqlang.klvm.Str;
+import org.torqlang.local.*;
+import org.torqlang.server.*;
 
+/*
+ * Example data:
+ *     Example data must be copied from the project directory `resources/northwind/` to the local home
+ *     directory `/home/USER/.torq_lang/northwind`.
+ * Run with all hardware threads:
+ *     java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ * Run with 8 hardware threads:
+ *     taskset -c 0-7 java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ */
 public final class NorthwindServer {
 
-    public static CompleteRec contextProvider(Request request) {
+    private static CompleteRec emptyContextProvider(Request request) {
         return Rec.completeRecBuilder().build();
     }
 
     public static void main(String[] args) throws Exception {
 
-        String queryOrdersSource = QueryOrders.SOURCE.replace("${1}",
-            NorthwindFiles.fetchJsonText(NorthwindFiles.ORDERS_JSON_RESOURCE));
+        CompleteRec examplesMod = Rec.completeRecBuilder()
+            .addField(Str.of("NorthwindDb"), NorthwindDbPack.NORTHWIND_DB_ACTOR)
+            .build();
+        ActorSystem system = ActorSystem.builder()
+            .addDefaultModules()
+            .addModule("examples", examplesMod)
+            .build();
 
-        ActorImage ordersImage = Actor.captureImage(queryOrdersSource);
+        ApiDesc customersApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
+            .setQueryDesc(NorthwindDescs.CUSTOMER_DESC)
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        String customersHandlerSource = NorthwindJson.readTextFromResource(
+            NorthwindJson.RESOURCES_DIR + "CustomersHandler.torq");
+        ActorImage customersHandlerImage = Actor.builder()
+            .setSystem(system)
+            .actorImage(customersHandlerSource);
 
-        CoreServer server = CoreServer.builder()
+        ApiDesc employeesApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
+            .setQueryDesc(NorthwindDescs.EMPLOYEE_DESC)
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        String employeesHandlerSource = NorthwindJson.readTextFromResource(
+            NorthwindJson.RESOURCES_DIR + "EmployeesHandler.torq");
+        ActorImage employeesHandlerImage = Actor.builder()
+            .setSystem(system)
+            .actorImage(employeesHandlerSource);
+
+        ApiDesc orderApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        ApiDesc ordersApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
+            .setQueryDesc(NorthwindDescs.ORDER_DESC)
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        ApiDesc orderDetailsApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC, StrDesc.BASIC))
+            .setQueryDesc(NorthwindDescs.ORDER_DETAILS_DESC)
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        String ordersHandlerSource = NorthwindJson.readTextFromResource(
+            NorthwindJson.RESOURCES_DIR + "OrdersHandler.torq");
+        ActorImage ordersHandlerImage = Actor.builder()
+            .setSystem(system)
+            .actorImage(ordersHandlerSource);
+
+        ApiDesc productsApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
+            .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        String productsHandlerSource = NorthwindJson.readTextFromResource(
+            NorthwindJson.RESOURCES_DIR + "ProductsHandler.torq");
+        ActorImage productsHandlerImage = Actor.builder()
+            .setSystem(system)
+            .actorImage(productsHandlerSource);
+
+        ApiDesc suppliersApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
+            .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
+        String suppliersHandlerSource = NorthwindJson.readTextFromResource(
+            NorthwindJson.RESOURCES_DIR + "SuppliersHandler.torq");
+        ActorImage suppliersHandlerImage = Actor.builder()
+            .setSystem(system)
+            .actorImage(suppliersHandlerSource);
+
+        LocalServer server = LocalServer.builder()
             .setPort(8080)
             .addContextHandler(new EchoHandler(), "/echo")
             .addContextHandler(ApiHandler.builder()
-                .setApiRouter(ApiRouter.staticBuilder()
-                    .addRoute("/orders", ordersImage)
-                    .addRoute("/orders/{id}", ordersImage)
+                .setRouter(ApiRouter.staticBuilder()
+                    .addRoute("/customers", customersHandlerImage, customersApiDesc)
+                    .addRoute("/employees", employeesHandlerImage, employeesApiDesc)
+                    .addRoute("/orders", ordersHandlerImage, ordersApiDesc)
+                    .addRoute("/orders/{id}", ordersHandlerImage, orderApiDesc)
+                    .addRoute("/orders/{id}/details", ordersHandlerImage, orderDetailsApiDesc)
+                    .addRoute("/products", productsHandlerImage, productsApiDesc)
+                    .addRoute("/suppliers", suppliersHandlerImage, suppliersApiDesc)
                     .build())
-                .setContextProvider(NorthwindServer::contextProvider)
                 .build(), "/api")
             .build();
         server.start();

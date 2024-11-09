@@ -8,7 +8,6 @@
 package org.torqlang.examples;
 
 import org.torqlang.klvm.*;
-import org.torqlang.lang.ValueTools;
 import org.torqlang.local.*;
 
 import java.util.List;

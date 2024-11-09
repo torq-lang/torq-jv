@@ -5,7 +5,7 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.server;
 
 import org.torqlang.util.BinarySearchTools;
 
@@ -17,13 +17,9 @@ final class StaticApiRouter implements ApiRouter {
         this.routingTable = routingTable;
     }
 
-    private int binarySearchRoutes(ApiPath path) {
-        return BinarySearchTools.search(routingTable, (r) -> path.compareTo(r.apiPath));
-    }
-
     @Override
     public final ApiRoute findRoute(ApiPath path) {
-        int index = binarySearchRoutes(path);
+        int index = BinarySearchTools.search(routingTable, (r) -> path.compareTo(r.path));
         if (index < 0) {
             return null;
         }

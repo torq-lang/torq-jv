@@ -14,8 +14,7 @@
     "state_province": "WA",
     "zip_postal_code": 99999,
     "country_region": "USA",
-    "web_page": "http://northwindtraders.com",
-    "privileges": []
+    "web_page": "http://northwindtraders.com"
   },
   {
     "id": 4,
@@ -32,8 +31,7 @@
     "state_province": "WA",
     "zip_postal_code": 99999,
     "country_region": "USA",
-    "web_page": "http://northwindtraders.com",
-    "privileges": []
+    "web_page": "http://northwindtraders.com"
   },
   {
     "id": 5,
@@ -51,8 +49,7 @@
     "zip_postal_code": 99999,
     "country_region": "USA",
     "web_page": "http://northwindtraders.com",
-    "notes": "Joined the company as a sales representative and was promoted to sales manager.  Fluent in French.",
-    "privileges": []
+    "notes": "Joined the company as a sales representative and was promoted to sales manager.  Fluent in French."
   },
   {
     "id": 3,
@@ -70,8 +67,7 @@
     "zip_postal_code": 99999,
     "country_region": "USA",
     "web_page": "http://northwindtraders.com",
-    "notes": "Was hired as a sales associate and was promoted to sales representative.",
-    "privileges": []
+    "notes": "Was hired as a sales associate and was promoted to sales representative."
   },
   {
     "id": 2,
@@ -89,10 +85,7 @@
     "zip_postal_code": 99999,
     "country_region": "USA",
     "web_page": "http://northwindtraders.com",
-    "notes": "Joined the company as a sales representative, was promoted to sales manager and was then named vice president of sales.",
-    "privileges": [
-      2
-    ]
+    "notes": "Joined the company as a sales representative, was promoted to sales manager and was then named vice president of sales."
   },
   {
     "id": 6,
@@ -110,8 +103,7 @@
     "zip_postal_code": 99999,
     "country_region": "USA",
     "web_page": "http://northwindtraders.com",
-    "notes": "Fluent in Japanese and can read and write French, Portuguese, and Spanish.",
-    "privileges": []
+    "notes": "Fluent in Japanese and can read and write French, Portuguese, and Spanish."
   },
   {
     "id": 7,
@@ -128,8 +120,7 @@
     "state_province": "WA",
     "zip_postal_code": 99999,
     "country_region": "USA",
-    "web_page": "http://northwindtraders.com",
-    "privileges": []
+    "web_page": "http://northwindtraders.com"
   },
   {
     "id": 8,
@@ -147,8 +138,7 @@
     "zip_postal_code": 99999,
     "country_region": "USA",
     "web_page": "http://northwindtraders.com",
-    "notes": "Reads and writes French.",
-    "privileges": []
+    "notes": "Reads and writes French."
   },
   {
     "id": 9,
@@ -166,7 +156,6 @@
     "zip_postal_code": 99999,
     "country_region": "USA",
     "web_page": "http://northwindtraders.com",
-    "notes": "Fluent in French and German.",
-    "privileges": []
+    "notes": "Fluent in French and German."
   }
 ]

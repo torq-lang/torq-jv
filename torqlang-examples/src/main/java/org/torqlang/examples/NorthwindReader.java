@@ -55,23 +55,29 @@ public final class NorthwindReader extends NorthwindAccessor {
             sendResponseToBoth(next, rec);
         } else if (message instanceof ReadAll readAll) {
             NorthwindColl coll = fetchColl(cache(), FILES_DIR, readAll.collName);
+            if (readAll.criteria != null) {
+                coll = NorthwindFiles.filterColl(coll, readAll.criteria);
+            }
             sendResponseToBoth(next, coll.list());
         } else {
             throw new IllegalArgumentException("Unrecognized request: " + next);
         }
     }
 
-    interface Read extends ClientRequest {
+    interface Read extends DelegatedRequest {
     }
 
     record ReadAll(String collName,
-                   ActorRef clientRequester)
+                   Map<String, Object> criteria,
+                   ActorRef originalRequester,
+                   Object originalRequestId)
         implements Read {
     }
 
     record ReadByKey(String collName,
                      Map<String, Object> key,
-                     ActorRef clientRequester)
+                     ActorRef originalRequester,
+                     Object originalRequestId)
         implements Read {
     }
 

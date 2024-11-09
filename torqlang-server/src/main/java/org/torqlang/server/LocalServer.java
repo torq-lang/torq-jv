@@ -10,20 +10,20 @@ package org.torqlang.server;
 import org.eclipse.jetty.server.Server;
 import org.torqlang.local.ConsoleLogger;
 
-public class CoreServer {
+public class LocalServer {
 
     private static final ConsoleLogger LOGGER = ConsoleLogger.SINGLETON;
 
     private final Server server;
     private final int port;
 
-    public CoreServer(Server server, int port) {
+    public LocalServer(Server server, int port) {
         this.server = server;
         this.port = port;
     }
 
-    public static CoreServerBuilder builder() {
-        return new CoreServerBuilder();
+    public static LocalServerBuilder builder() {
+        return new LocalServerBuilder();
     }
 
     public final void join() throws InterruptedException {

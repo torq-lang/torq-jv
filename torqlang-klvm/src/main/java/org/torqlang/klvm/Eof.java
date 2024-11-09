@@ -7,14 +7,12 @@
 
 package org.torqlang.klvm;
 
-import java.util.Map;
-
 public final class Eof implements Literal {
 
     public static final Eof SINGLETON = new Eof();
 
     public static final String EOF_NAME = "eof";
-    public static final String NATIVE_VALUE = Eof.class.getName();
+    public static final String NATIVE_VALUE = Eof.class.getName() + ".CAFE0F0E";
 
     private Eof() {
     }

@@ -5,24 +5,27 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.server;
 
-public interface ApiTarget {
+import org.torqlang.local.ActorImage;
+import org.torqlang.local.ActorRef;
 
-    static ApiTarget create(ActorImage actorImage) {
-        return new ApiTargetActorImage(actorImage);
+public interface ApiReceiver {
+
+    static ApiReceiver create(ActorImage actorImage) {
+        return new ApiReceiverImage(actorImage);
     }
 
-    static ApiTarget create(ActorRef actorRef) {
-        return new ApiTargetActorRef(actorRef);
+    static ApiReceiver create(ActorRef actorRef) {
+        return new ApiReceiverRef(actorRef);
     }
 
     Object value();
 
-    final class ApiTargetActorImage implements ApiTarget {
+    final class ApiReceiverImage implements ApiReceiver {
         public final ActorImage actorImage;
 
-        ApiTargetActorImage(ActorImage actorImage) {
+        ApiReceiverImage(ActorImage actorImage) {
             this.actorImage = actorImage;
         }
 
@@ -32,10 +35,10 @@ public interface ApiTarget {
         }
     }
 
-    final class ApiTargetActorRef implements ApiTarget {
+    final class ApiReceiverRef implements ApiReceiver {
         public final ActorRef actorRef;
 
-        ApiTargetActorRef(ActorRef actorRef) {
+        ApiReceiverRef(ActorRef actorRef) {
             this.actorRef = actorRef;
         }
 

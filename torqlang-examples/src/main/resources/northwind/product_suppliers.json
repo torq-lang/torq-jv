@@ -1,0 +1,198 @@
+[
+  {
+    "product_id": 5,
+    "supplier_id": 10
+  },
+  {
+    "product_id": 3,
+    "supplier_id": 10
+  },
+  {
+    "product_id": 6,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 6,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 7,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 8,
+    "supplier_id": 8
+  },
+  {
+    "product_id": 14,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 14,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 17,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 1,
+    "supplier_id": 4
+  },
+  {
+    "product_id": 4,
+    "supplier_id": 10
+  },
+  {
+    "product_id": 19,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 20,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 20,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 21,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 34,
+    "supplier_id": 4
+  },
+  {
+    "product_id": 40,
+    "supplier_id": 7
+  },
+  {
+    "product_id": 41,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 43,
+    "supplier_id": 3
+  },
+  {
+    "product_id": 43,
+    "supplier_id": 4
+  },
+  {
+    "product_id": 48,
+    "supplier_id": 10
+  },
+  {
+    "product_id": 51,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 52,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 56,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 57,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 65,
+    "supplier_id": 8
+  },
+  {
+    "product_id": 72,
+    "supplier_id": 5
+  },
+  {
+    "product_id": 66,
+    "supplier_id": 8
+  },
+  {
+    "product_id": 74,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 77,
+    "supplier_id": 10
+  },
+  {
+    "product_id": 80,
+    "supplier_id": 2
+  },
+  {
+    "product_id": 81,
+    "supplier_id": 3
+  },
+  {
+    "product_id": 82,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 83,
+    "supplier_id": 9
+  },
+  {
+    "product_id": 85,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 86,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 87,
+    "supplier_id": 7
+  },
+  {
+    "product_id": 88,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 89,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 90,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 92,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 95,
+    "supplier_id": 7
+  },
+  {
+    "product_id": 93,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 97,
+    "supplier_id": 1
+  },
+  {
+    "product_id": 91,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 98,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 99,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 94,
+    "supplier_id": 6
+  },
+  {
+    "product_id": 96,
+    "supplier_id": 7
+  }
+]

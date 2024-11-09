@@ -8,28 +8,21 @@
 package org.torqlang.server;
 
 import org.torqlang.local.ActorSystem;
-import org.torqlang.local.ApiRouter;
 
 public final class ApiHandlerBuilder {
 
     private ActorSystem system;
-    private ApiRouter apiRouter;
-    private ContextProvider contextProvider;
+    private ApiRouter router;
 
     ApiHandlerBuilder() {
     }
 
     public ApiHandler build() {
-        return new ApiHandler(system, apiRouter, contextProvider);
+        return new ApiHandler(system, router);
     }
 
-    public final ApiHandlerBuilder setApiRouter(ApiRouter apiRouter) {
-        this.apiRouter = apiRouter;
-        return this;
-    }
-
-    public final ApiHandlerBuilder setContextProvider(ContextProvider contextProvider) {
-        this.contextProvider = contextProvider;
+    public final ApiHandlerBuilder setRouter(ApiRouter router) {
+        this.router = router;
         return this;
     }
 

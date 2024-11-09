@@ -1,0 +1,26 @@
+
+actor SuppliersHandler() in
+
+    import system[ArrayList, Int64, LocalDate, Rec, ValueIter]
+    import examples.NorthwindDb
+
+    handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+        var northwind_db = spawn(NorthwindDb.cfg())
+        case path
+            of ['suppliers'] then
+                northwind_db.ask(
+                    'findAll'#{
+                        'entity': 'suppliers',
+                        'criteria': query
+                    }
+                )
+            else
+                throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
+        end
+    end
+
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
+        throw 'error'#{'message': 'PATCH needs impl', 'details': {'path': path}}
+    end
+
+end

@@ -129,7 +129,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     public final ActorImage actorImage(String source) throws Exception {
         setSource(source);
         spawn();
-        return actorImage;
+        return actorImage();
     }
 
     @Override

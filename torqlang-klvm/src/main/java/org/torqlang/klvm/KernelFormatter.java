@@ -42,6 +42,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     private static final String $CREATE_PROC = "$create_proc";
     private static final String $CREATE_REC = "$create_rec";
     private static final String $CREATE_TUPLE = "$create_tuple";
+    private static final String $DEBUG = "$debug";
     private static final String $DIV = "$div";
     private static final String $EQ = "$eq";
     private static final String $GE = "$ge";
@@ -70,6 +71,19 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private void formatApplyArgs(List<CompleteOrIdent> args, FormatterState state) throws Exception {
+        state.write('(');
+        for (int i = 0; i < args.size(); i++) {
+            if (i > 0) {
+                state.write(',');
+                state.write(FormatterState.SPACE);
+            }
+            CompleteOrIdent y = args.get(i);
+            y.accept(this, state.inline());
+        }
+        state.write(')');
     }
 
     private void formatBinaryStmt(String oper, CompleteOrIdent a, CompleteOrIdent b, Ident x, FormatterState state) throws Exception {
@@ -135,18 +149,9 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitApplyProcStmt(ApplyStmt stmt, FormatterState state) throws Exception {
+    public final Void visitApplyStmt(ApplyStmt stmt, FormatterState state) throws Exception {
         stmt.x.accept(this, state.inline());
-        state.write('(');
-        for (int i = 0; i < stmt.ys.size(); i++) {
-            if (i > 0) {
-                state.write(',');
-                state.write(FormatterState.SPACE);
-            }
-            CompleteOrIdent y = stmt.ys.get(i);
-            y.accept(this, state.inline());
-        }
-        state.write(')');
+        formatApplyArgs(stmt.ys, state);
         return null;
     }
 
@@ -282,6 +287,13 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         state.write(", ");
         stmt.x.accept(this, state.inline());
         state.write(')');
+        return null;
+    }
+
+    @Override
+    public final Void visitDebugStmt(DebugStmt stmt, FormatterState state) throws Exception {
+        state.write($DEBUG);
+        formatApplyArgs(stmt.args, state);
         return null;
     }
 

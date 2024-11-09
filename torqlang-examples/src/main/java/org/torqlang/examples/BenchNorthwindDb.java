@@ -17,9 +17,9 @@ import java.util.concurrent.Executor;
  *     Example data must be copied from the project directory `resources/northwind/` to the local home
  *     directory `/home/USER/.torq_lang/northwind`.
  * Run with all hardware threads:
- *     java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.RunNorthwindDb
+ *     java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
  * Run with 3 hardware threads:
- *     taskset -c 0-2 java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.RunNorthwindDb
+ *     taskset -c 0-2 java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
  */
 public final class BenchNorthwindDb {
 
@@ -28,6 +28,16 @@ public final class BenchNorthwindDb {
             new BenchNorthwindDb().perform();
         }
         System.exit(0);
+    }
+
+    public static void printTimingResults(String owner, long start, long stop, int readCount) {
+        long totalTimeMillis = stop - start;
+        System.out.println(owner);
+        System.out.printf("  Total time: %,d millis\n", totalTimeMillis);
+        System.out.printf("  Total reads: %,d\n", readCount);
+        System.out.printf("  Millis per read: %,.5f\n", ((double) totalTimeMillis / readCount));
+        double readsPerSecond = 1_000.0 / totalTimeMillis;
+        System.out.printf("  Reads per second: %,.2f\n", (readsPerSecond * readCount));
     }
 
     private int checkResponses(Sample... samples) throws Exception {
@@ -64,7 +74,7 @@ public final class BenchNorthwindDb {
             readCount += performSampling(db);
         }
         long stop = System.currentTimeMillis();
-        NorthwindFiles.printTimingResults(getClass().getSimpleName(), start, stop, readCount);
+        printTimingResults(getClass().getSimpleName(), start, stop, readCount);
     }
 
     private int performSampling(NorthwindDb db) throws Exception {

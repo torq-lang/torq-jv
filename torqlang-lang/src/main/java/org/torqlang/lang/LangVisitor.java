@@ -39,6 +39,8 @@ public interface LangVisitor<T, R> {
 
     R visitContinueSntc(ContinueSntc lang, T state) throws Exception;
 
+    R visitDebugSntc(DebugSntc lang, T state) throws Exception;
+
     R visitDec128AsExpr(Dec128AsExpr lang, T state) throws Exception;
 
     R visitDotSelectExpr(DotSelectExpr lang, T state) throws Exception;

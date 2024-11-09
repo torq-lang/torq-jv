@@ -26,7 +26,7 @@ public class TestToken {
 
         t = new Token();
         assertNotNull(t.appendToString(""));
-        assertTrue(t.appendToString("X-").startsWith("X-<<$token "));
+        assertTrue(t.appendToString("X-").startsWith("X-$token"));
     }
 
     @Test
@@ -68,10 +68,10 @@ public class TestToken {
 
     @Test
     public void testToValues() {
-        assertTrue(t1.toString().startsWith("<<$token "));
-        assertTrue(t1.formatValue().startsWith("<<$token "));
+        assertTrue(t1.toString().startsWith("$token"));
+        assertTrue(t1.formatValue().startsWith("$token"));
         assertTrue(t1.toNativeValue().startsWith("org.torqlang.klvm.Token."));
-        assertTrue(t1.toKernelString().startsWith("<<$token "));
+        assertTrue(t1.toKernelString().startsWith("$token"));
     }
 
     @Test

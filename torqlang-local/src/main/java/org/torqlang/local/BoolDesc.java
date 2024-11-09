@@ -7,11 +7,6 @@
 
 package org.torqlang.local;
 
-public interface ApiRouter {
-
-    static StaticApiRouterBuilder staticBuilder() {
-        return new StaticApiRouterBuilder();
-    }
-
-    ApiRoute findRoute(ApiPath path);
+public final class BoolDesc implements ScalarDesc {
+    public static final BoolDesc BASIC = new BoolDesc();
 }

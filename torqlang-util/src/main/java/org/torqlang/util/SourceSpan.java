@@ -39,6 +39,23 @@ public interface SourceSpan {
             (i > lineIndex && (i - lineIndex) <= showAfter);
     }
 
+    static LineAndChar toLineAndChar(SourceSpan sourceSpan, int baseLineNr, int baseCharNr) {
+        int lineNr = baseLineNr;
+        int charNr = baseCharNr;
+        int i = 0;
+        while (i < sourceSpan.source().length() && i < sourceSpan.begin()) {
+            char c = sourceSpan.source().charAt(i);
+            if (c == '\n') {
+                lineNr++;
+                charNr = baseCharNr;
+            } else {
+                charNr++;
+            }
+            i++;
+        }
+        return new LineAndChar(lineNr, charNr);
+    }
+
     private static List<String> toSourceLines(String source, int baseLineNr, int lineNrWidth) {
         int lineNr = baseLineNr;
         List<String> answer = new ArrayList<>();
@@ -67,23 +84,6 @@ public interface SourceSpan {
         return answer;
     }
 
-    private static SourceLocation toSourceLocation(SourceSpan sourceSpan, int baseLineNr) {
-        int lineNumber = baseLineNr;
-        int charPosInLine = 0;
-        int i = 0;
-        while (i < sourceSpan.source().length() && i < sourceSpan.begin()) {
-            char c = sourceSpan.source().charAt(i);
-            if (c == '\n') {
-                lineNumber++;
-                charPosInLine = 0;
-            } else {
-                charPosInLine++;
-            }
-            i++;
-        }
-        return new SourceLocation(lineNumber, charPosInLine);
-    }
-
     default SourceSpan adjoin(SourceSpan other) {
         return new AdjoinedSourceSpan(this, other);
     }
@@ -93,9 +93,9 @@ public interface SourceSpan {
     int end();
 
     default String formatWithMessage(String message, int lineNrWidth, int showBefore, int showAfter) {
-        SourceLocation location = toSourceLocation(this, 0);
+        LineAndChar location = toLineAndChar(this, 0, 0);
         StringBuilder answerBuf = new StringBuilder();
-        int lineIndex = location.lineIndex;
+        int lineIndex = location.lineNr;
         List<String> sourceLines = SourceSpan.toSourceLines(source(), 1, lineNrWidth);
         boolean lineAppended = false;
         for (int i = 0; i < sourceLines.size(); i++) {
@@ -112,7 +112,7 @@ public interface SourceSpan {
                     answerBuf.append('\n');
                 }
                 StringBuilder indentBuf = new StringBuilder();
-                int indentLength = lineNrWidth + 1 + location.charIndexInLine;
+                int indentLength = lineNrWidth + 1 + location.charNr;
                 while (indentBuf.length() < indentLength) {
                     indentBuf.insert(0, " ");
                 }

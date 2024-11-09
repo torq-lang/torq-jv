@@ -21,6 +21,8 @@ final class SystemMod {
             .addField(Str.of("Cell"), CellPack.CELL_CLS)
             .addField(Str.of("HashMap"), HashMapPack.HASH_MAP_CLS)
             .addField(Str.of("FieldIter"), FieldIterPack.FIELD_ITER_CLS)
+            .addField(Str.of("Int32"), Int32Pack.INT32_CLS)
+            .addField(Str.of("Int64"), Int64Pack.INT64_CLS)
             .addField(Str.of("LocalDate"), LocalDatePack.LOCAL_DATE_CLS)
             .addField(Str.of("RangeIter"), RangeIterPack.RANGE_ITER_CLS)
             .addField(Str.of("Rec"), RecPack.REC_CLS)

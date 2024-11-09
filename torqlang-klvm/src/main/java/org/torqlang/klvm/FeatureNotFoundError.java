@@ -12,7 +12,7 @@ public final class FeatureNotFoundError extends MachineError {
     public final Feature feature;
 
     public FeatureNotFoundError(Composite composite, Feature feature) {
-        super("Feature not found");
+        super("Feature not found: " + feature);
         this.composite = composite;
         this.feature = feature;
     }

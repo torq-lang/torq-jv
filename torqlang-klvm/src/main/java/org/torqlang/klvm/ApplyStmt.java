@@ -29,7 +29,7 @@ public final class ApplyStmt extends AbstractStmt {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitApplyProcStmt(this, state);
+        return visitor.visitApplyStmt(this, state);
     }
 
     @Override

@@ -106,7 +106,12 @@ public final class FailedValue implements Value, Complete {
             sb.append(INDENT + "Source context: ");
             sb.append('\n');
             SourceSpan sourceSpan = current.stmt;
-            String inlineMessage = Objects.toString(error);
+            String inlineMessage;
+            if (error != null) {
+                inlineMessage = Objects.toString(error);
+            } else {
+                inlineMessage = Objects.toString(nativeCause);
+            }
             String formatted = sourceSpan.formatWithMessage(inlineMessage, 4, 5, 5);
             sb.append(IndentLines.apply(formatted, INDENT.length() * 2));
         }

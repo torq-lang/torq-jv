@@ -65,14 +65,17 @@ public abstract class NorthwindAccessor extends AbstractActor {
     }
 
     protected final void sendResponseToBoth(Envelope request, Object result) {
-        ClientRequest clientRequest = (ClientRequest) request.message();
+        DelegatedRequest delegatedRequest = (DelegatedRequest) request.message();
         Envelope response = Envelope.createResponse(result, request.requestId());
         request.requester().send(response);
-        clientRequest.clientRequester().send(response);
+        delegatedRequest.originalRequester()
+            .send(Envelope.createResponse(result, delegatedRequest.originalRequestId()));
     }
 
-    interface ClientRequest {
-        ActorRef clientRequester();
+    interface DelegatedRequest {
+        ActorRef originalRequester();
+
+        Object originalRequestId();
     }
 
 }

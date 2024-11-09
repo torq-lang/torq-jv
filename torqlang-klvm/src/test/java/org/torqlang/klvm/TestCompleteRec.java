@@ -333,9 +333,9 @@ public class TestCompleteRec {
 
         r1 = CompleteRec.create(List.of());
         exc = assertThrows(FeatureNotFoundError.class, () -> r1.select(Int32.I32_0));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: 0", exc.getMessage());
         exc = assertThrows(FeatureNotFoundError.class, () -> r1.select(Str.of("not-a-feature")));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: not-a-feature", exc.getMessage());
     }
 
     @Test
@@ -352,9 +352,9 @@ public class TestCompleteRec {
 
         r1 = CompleteRec.create(List.of(new CompleteField(zero, a)));
         exc = assertThrows(FeatureNotFoundError.class, () -> r1.select(one));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: 1-one", exc.getMessage());
         exc = assertThrows(FeatureNotFoundError.class, () -> r1.select(Int32.I32_2));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: 2", exc.getMessage());
     }
 
     @Test

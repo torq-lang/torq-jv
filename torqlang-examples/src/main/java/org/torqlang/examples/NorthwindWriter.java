@@ -69,7 +69,7 @@ public class NorthwindWriter extends NorthwindAccessor {
 
     private void performDelete(WriteDelete writeDelete) throws IOException {
         NorthwindColl coll = fetchColl(cache(), FILES_DIR, writeDelete.collName);
-        boolean removed = coll.list().removeIf(r -> NorthwindFiles.containsKey(r, writeDelete.key));
+        boolean removed = coll.list().removeIf(r -> NorthwindFiles.containsCriteria(r, writeDelete.key));
         if (!removed) {
             throw new IllegalArgumentException("Record not found: " + writeDelete.collName + " at " + writeDelete.key);
         }
@@ -87,24 +87,27 @@ public class NorthwindWriter extends NorthwindAccessor {
         saveColl(coll, FILES_DIR);
     }
 
-    interface Write extends ClientRequest {
+    interface Write extends DelegatedRequest {
     }
 
     record WriteCreate(String collName,
                        Map<String, Object> data,
-                       ActorRef clientRequester)
+                       ActorRef originalRequester,
+                       Object originalRequestId)
         implements Write {
     }
 
     record WriteDelete(String collName,
                        Map<String, Object> key,
-                       ActorRef clientRequester)
+                       ActorRef originalRequester,
+                       Object originalRequestId)
         implements Write {
     }
 
     record WriteUpdate(String collName,
                        Map<String, Object> data,
-                       ActorRef clientRequester)
+                       ActorRef originalRequester,
+                       Object originalRequestId)
         implements Write {
     }
 

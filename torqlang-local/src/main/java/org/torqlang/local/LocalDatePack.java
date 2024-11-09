@@ -20,12 +20,16 @@ final class LocalDatePack {
     private static final ObjProcTable<LocalDateObj> objProcTable = ObjProcTable.<LocalDateObj>builder()
         .build();
 
+    static LocalDateObj newObj(LocalDate date) {
+        return new LocalDateObj(date);
+    }
+
     // Signatures:
-    //     LocalDate.new(date::Str) -> LocalDate
-    static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+    //     LocalDate.parse(date::Str) -> LocalDate
+    static void clsParse(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedCount = 2;
         if (ys.size() != expectedCount) {
-            throw new InvalidArgCountError(expectedCount, ys, "LocalDate.new");
+            throw new InvalidArgCountError(expectedCount, ys, "LocalDate.parse");
         }
         Str dateStr = (Str) ys.get(0).resolveValue(env);
         LocalDateObj localDateObj = new LocalDateObj(LocalDate.parse(dateStr.value));
@@ -35,15 +39,15 @@ final class LocalDatePack {
 
     static class LocalDateCls implements CompleteObj {
         private static final LocalDateCls SINGLETON = new LocalDateCls();
-        private static final CompleteProc LOCAL_DATE_CLS_NEW = LocalDatePack::clsNew;
+        private static final CompleteProc LOCAL_DATE_CLS_PARSE = LocalDatePack::clsParse;
 
         private LocalDateCls() {
         }
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
-                return LOCAL_DATE_CLS_NEW;
+            if (feature.equals(CommonFeatures.PARSE)) {
+                return LOCAL_DATE_CLS_PARSE;
             }
             throw new FeatureNotFoundError(this, feature);
         }
@@ -54,6 +58,7 @@ final class LocalDatePack {
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     static class LocalDateObj implements CompleteObj {
         private final LocalDate state;
 

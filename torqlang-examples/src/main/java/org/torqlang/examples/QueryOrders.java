@@ -7,9 +7,12 @@
 
 package org.torqlang.examples;
 
+import org.eclipse.jetty.server.Request;
 import org.torqlang.klvm.Complete;
-import org.torqlang.lang.ValueTools;
+import org.torqlang.klvm.CompleteRec;
+import org.torqlang.klvm.Rec;
 import org.torqlang.local.*;
+import org.torqlang.server.*;
 
 import java.util.List;
 import java.util.Map;
@@ -61,6 +64,10 @@ public class QueryOrders extends AbstractExample {
             end
         end""";
 
+    private static CompleteRec emptyContextProvider(Request request) {
+        return Rec.completeRecBuilder().build();
+    }
+
     public static void main(String[] args) throws Exception {
         new QueryOrders().performWithErrorCheck();
         System.exit(0);
@@ -69,18 +76,22 @@ public class QueryOrders extends AbstractExample {
     @Override
     public final void perform() throws Exception {
 
+        ApiDesc emptyApiDesc = ApiDesc.builder()
+            .setContextProvider(QueryOrders::emptyContextProvider)
+            .build();
+
         // Compile Orders API handler and capture its image. Usually, this is performed once at startup.
-        String queryOrdersSource = SOURCE.replace("${1}", NorthwindFiles.fetchJsonText(NorthwindFiles.ORDERS_JSON_RESOURCE));
-        ActorImage ordersImage = Actor.captureImage(queryOrdersSource);
+        String queryOrdersSource = SOURCE.replace("${1}", NorthwindJson.fetchJsonText(NorthwindJson.ORDERS_JSON_RESOURCE));
+        ActorImage queryOrdersImage = Actor.captureImage(queryOrdersSource);
         ApiRouter router = ApiRouter.staticBuilder()
-            .addRoute("/orders", ordersImage)
+            .addRoute("/orders", queryOrdersImage, emptyApiDesc)
             .build();
 
         // Spawn orders API handler using an actor image. Usually, this is performed by a REST server each
         // time a request is received. Spawning an actor using an image is fast.
         ApiRoute route = router.findRoute(new ApiPath("/orders"));
         ActorRef actorRef = Actor.spawn(Address.create(getClass().getName() + "Actor"),
-            (ActorImage) route.apiTarget.value());
+            (ActorImage) route.receiver.value());
 
         // Test the orders API handler by sending it a request
         Map<?, ?> requestMap = Map.of(

@@ -18,9 +18,6 @@ import org.torqlang.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-/*
- * TODO: Delete OrderDao later when its value has been replaced by Northwind examples
- */
 public final class OrderDao extends AbstractExample {
 
     public static final String SOURCE = """
@@ -31,8 +28,8 @@ public final class OrderDao extends AbstractExample {
             orders.put('ORDER-001', {
                 'id': 'ORDER-001',
                 'customerId': 'CUST-001',
-                'orderDate': LocalDate.new('2021-01-15'),
-                'promiseDate': LocalDate.new('2021-02-15')
+                'orderDate': LocalDate.parse('2021-01-15'),
+                'promiseDate': LocalDate.parse('2021-02-15')
             })
             order_lines.put(['ORDER-001', 'LINE-001'], {
                 'id': 'LINE-001',
@@ -55,8 +52,8 @@ public final class OrderDao extends AbstractExample {
             orders.put('ORDER-002', {
                 'id': 'ORDER-002',
                 'customerId': 'CUST-002',
-                'orderDate': LocalDate.new('2021-01-25'),
-                'promiseDate': LocalDate.new('2021-02-25')
+                'orderDate': LocalDate.parse('2021-01-25'),
+                'promiseDate': LocalDate.parse('2021-02-25')
             })
             order_lines.put(['ORDER-002', 'LINE-001'], {
                 'id': 'LINE-001',

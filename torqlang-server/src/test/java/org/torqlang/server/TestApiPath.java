@@ -5,7 +5,7 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.server;
 
 import org.junit.jupiter.api.Test;
 

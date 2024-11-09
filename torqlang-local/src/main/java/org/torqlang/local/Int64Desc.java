@@ -7,5 +7,6 @@
 
 package org.torqlang.local;
 
-public record ApiPathParam(int pos, String name) {
+public final class Int64Desc implements ScalarDesc {
+    public static final Int64Desc BASIC = new Int64Desc();
 }

@@ -30,19 +30,19 @@ public final class NorthwindDb extends AbstractActor {
     private boolean activeWriter;
     private int nextReader = 0;
 
-    NorthwindDb(Address address, ActorSystem system, int concurrencyLevel, int readLatencyInNanos) {
+    NorthwindDb(Address address, ActorSystem system, int concurrency, int readLatency) {
         super(address, system.createMailbox(), system.executor(), system.createLogger());
-        if (concurrencyLevel < 2) {
-            throw new IllegalArgumentException("concurrencyLevel < 2");
+        if (concurrency < 2) {
+            throw new IllegalArgumentException("concurrency < 2");
         }
         cache = new NorthwindCache();
-        readers = new NorthwindReader[concurrencyLevel - 1];
+        readers = new NorthwindReader[concurrency - 1];
         for (int i = 0; i < readers.length; i++) {
             Address childAddress = Address.create(address, "reader" + i);
-            readers[i] = new NorthwindReader(childAddress, system, cache, readLatencyInNanos);
+            readers[i] = new NorthwindReader(childAddress, system, cache, readLatency);
         }
         Address childAddress = Address.create(address, "writer");
-        writer = new NorthwindWriter(childAddress, system, cache, readLatencyInNanos);
+        writer = new NorthwindWriter(childAddress, system, cache, readLatency);
     }
 
     /*
@@ -103,9 +103,11 @@ public final class NorthwindDb extends AbstractActor {
                     if (message instanceof Reader) {
                         Object readRequest;
                         if (message instanceof FindByKey findByKey) {
-                            readRequest = new ReadByKey(findByKey.collName, findByKey.key, envelope.requester());
+                            readRequest = new ReadByKey(findByKey.collName, findByKey.key,
+                                envelope.requester(), envelope.requestId());
                         } else if (message instanceof FindAll findAll) {
-                            readRequest = new ReadAll(findAll.collName, envelope.requester());
+                            readRequest = new ReadAll(findAll.collName, findAll.criteria, envelope.requester(),
+                                envelope.requestId());
                         } else {
                             throw new IllegalArgumentException("Unrecognized read request: " + envelope);
                         }
@@ -118,11 +120,14 @@ public final class NorthwindDb extends AbstractActor {
                     } else {
                         Object writeRequest;
                         if (message instanceof Update update) {
-                            writeRequest = new WriteUpdate(update.collName(), update.data, envelope.requester());
+                            writeRequest = new WriteUpdate(update.collName(), update.data, envelope.requester(),
+                                envelope.requestId());
                         } else if (message instanceof Create create) {
-                            writeRequest = new WriteCreate(create.collName(), create.data, envelope.requester());
+                            writeRequest = new WriteCreate(create.collName(), create.data, envelope.requester(),
+                                envelope.requestId());
                         } else if (message instanceof Delete delete) {
-                            writeRequest = new WriteDelete(delete.collName(), delete.key, envelope.requester());
+                            writeRequest = new WriteDelete(delete.collName(), delete.key, envelope.requester(),
+                                envelope.requestId());
                         } else {
                             throw new IllegalArgumentException("Unrecognized write request: " + envelope);
                         }
@@ -131,9 +136,9 @@ public final class NorthwindDb extends AbstractActor {
                     }
                 } else if (envelope.isResponse()) {
                     Object requestId = envelope.requestId();
-                    if (requestId instanceof NorthwindReader.Read) {
+                    if (requestId instanceof NorthwindWriter.Write) {
                         activeWriter = false;
-                    } else if (requestId instanceof NorthwindWriter.Write) {
+                    } else if (requestId instanceof NorthwindReader.Read) {
                         activeReaders--;
                     } else {
                         throw new IllegalArgumentException("Unrecognized response: " + envelope);
@@ -167,7 +172,7 @@ public final class NorthwindDb extends AbstractActor {
     record Delete(String collName, Map<String, Object> key) implements Writer {
     }
 
-    record FindAll(String collName) implements Reader {
+    record FindAll(String collName, Map<String, Object> criteria) implements Reader {
     }
 
     record FindByKey(String collName, Map<String, Object> key) implements Reader {

@@ -21,6 +21,76 @@
     }
   ],
   "paths": {
+    "/customers": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Employee"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/orders": {
       "get": {
         "tags": [
@@ -122,10 +192,200 @@
           }
         }
       }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/suppliers": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Supplier"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "company": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "email_address": {
+            "type": "string"
+          },
+          "job_title": {
+            "type": "string"
+          },
+          "business_phone": {
+            "type": "string"
+          },
+          "home_phone": {
+            "type": "string"
+          },
+          "mobile_phone": {
+            "type": "string"
+          },
+          "fax_number": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state_province": {
+            "type": "string"
+          },
+          "zip_postal_code": {
+            "type": "string"
+          },
+          "country_region": {
+            "type": "string"
+          },
+          "web_page": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "attachments": {
+            "type": "string"
+          }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "company": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "email_address": {
+            "type": "string"
+          },
+          "job_title": {
+            "type": "string"
+          },
+          "business_phone": {
+            "type": "string"
+          },
+          "home_phone": {
+            "type": "string"
+          },
+          "mobile_phone": {
+            "type": "string"
+          },
+          "fax_number": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state_province": {
+            "type": "string"
+          },
+          "zip_postal_code": {
+            "type": "string"
+          },
+          "country_region": {
+            "type": "string"
+          },
+          "web_page": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "attachments": {
+            "type": "string"
+          }
+        }
+      },
       "Message": {
         "type": "object",
         "required": ["name", "message", "type"],
@@ -170,12 +430,12 @@
           },
           "order_date": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "example": "2006-01-15T00:00:00Z"
           },
           "shipped_date": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "example": "2006-01-22T00:00:00Z"
           },
           "shipper_id": {
@@ -220,7 +480,7 @@
           },
           "paid_date": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "example": "2006-01-15T00:00:00Z"
           },
           "notes": {
@@ -244,11 +504,11 @@
       "OrderDetails": {
         "type": "object",
         "properties": {
-          "id": {
+          "order_id": {
             "type": "integer",
             "format": "int64"
           },
-          "order_id": {
+          "line_seq": {
             "type": "integer",
             "format": "int64"
           },
@@ -265,7 +525,8 @@
             "format": "decimal(19, 4)"
           },
           "discount": {
-            "type": "number"
+            "type": "number",
+            "format": "double"
           },
           "status_id": {
             "type": "integer",
@@ -283,6 +544,110 @@
           "inventory_id": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "supplier_ids": {
+            "type": "string"
+          },
+          "product_code": {
+            "type": "string"
+          },
+          "product_name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "standard_cost": {
+            "type": "string",
+            "format": "decimal(19,4)"
+          },
+          "list_price": {
+            "type": "string",
+            "format": "decimal(19,4)"
+          },
+          "reorder_level": {
+            "type": "integer"
+          },
+          "target_level": {
+            "type": "integer"
+          },
+          "quantity_per_unit": {
+            "type": "string"
+          },
+          "discontinued": {
+            "type": "boolean"
+          },
+          "minimum_reorder_quantity": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      },
+      "Supplier": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "company": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "email_address": {
+            "type": "string"
+          },
+          "job_title": {
+            "type": "string"
+          },
+          "business_phone": {
+            "type": "string"
+          },
+          "home_phone": {
+            "type": "string"
+          },
+          "mobile_phone": {
+            "type": "string"
+          },
+          "fax_number": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state_province": {
+            "type": "string"
+          },
+          "zip_postal_code": {
+            "type": "string"
+          },
+          "country_region": {
+            "type": "string"
+          },
+          "web_page": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
           }
         }
       }

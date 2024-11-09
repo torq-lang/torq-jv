@@ -259,9 +259,9 @@ public class TestCompleteTuple {
 
         t1 = CompleteTuple.create(List.of());
         exc = assertThrows(FeatureNotFoundError.class, () -> t1.select(Int32.I32_0));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: 0", exc.getMessage());
         exc = assertThrows(FeatureNotFoundError.class, () -> t1.select(Str.of("not-a-feature")));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: not-a-feature", exc.getMessage());
     }
 
     @Test
@@ -273,9 +273,9 @@ public class TestCompleteTuple {
 
         t1 = CompleteTuple.create(List.of(a));
         exc = assertThrows(FeatureNotFoundError.class, () -> t1.select(Int32.I32_1));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: 1", exc.getMessage());
         exc = assertThrows(FeatureNotFoundError.class, () -> t1.select(Str.of("not-a-feature")));
-        assertEquals("Feature not found", exc.getMessage());
+        assertEquals("Feature not found: not-a-feature", exc.getMessage());
     }
 
     @Test

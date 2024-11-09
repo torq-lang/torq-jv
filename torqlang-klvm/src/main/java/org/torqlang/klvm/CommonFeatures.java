@@ -17,6 +17,7 @@ public class CommonFeatures {
     public static final Str ITER = Str.of("iter");
     public static final Str NEW = Str.of("new");
     public static final Str NEXT = Str.of("next");
+    public static final Str PARSE = Str.of("parse");
     public static final Str PUT = Str.of("put");
     public static final Str SIZE = Str.of("size");
     public static final Str SUBSTRING = Str.of("substring");

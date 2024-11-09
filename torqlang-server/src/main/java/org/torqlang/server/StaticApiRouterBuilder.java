@@ -5,7 +5,10 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.server;
+
+import org.torqlang.local.ActorImage;
+import org.torqlang.local.ActorRef;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,20 +18,20 @@ public final class StaticApiRouterBuilder {
 
     private final List<ApiRoute> routes = new ArrayList<>();
 
-    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorImage actorImage) {
+    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorImage actorImage, ApiDesc desc) {
         ApiPath path = new ApiPath(pathExpr);
-        routes.add(new ApiRoute(path, actorImage));
+        routes.add(new ApiRoute(path, actorImage, desc));
         return this;
     }
 
-    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorRef actorRef) {
+    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorRef actorRef, ApiDesc desc) {
         ApiPath path = new ApiPath(pathExpr);
-        routes.add(new ApiRoute(path, actorRef));
+        routes.add(new ApiRoute(path, actorRef, desc));
         return this;
     }
 
     public final ApiRouter build() {
-        routes.sort(Comparator.comparing(a -> a.apiPath));
+        routes.sort(Comparator.comparing(a -> a.path));
         return new StaticApiRouter(routes.toArray(new ApiRoute[0]));
     }
 
