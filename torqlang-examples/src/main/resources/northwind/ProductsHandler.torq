@@ -14,6 +14,13 @@ actor ProductsHandler() in
                         'criteria': query
                     }
                 )
+            of ['products', product_id] then
+                northwind_db.ask(
+                    'findByKey'#{
+                        'entity': 'products',
+                        'key': {'id': product_id}
+                    }
+                )
             else
                 throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
         end

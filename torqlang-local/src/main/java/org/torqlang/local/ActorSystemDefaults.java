@@ -7,33 +7,25 @@
 
 package org.torqlang.local;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executor;
 
 final class ActorSystemDefaults {
 
     static final ActorSystem DEFAULT_SYSTEM;
-    static final ExecutorService DEFAULT_EXECUTOR;
+    static final AffinityExecutor DEFAULT_EXECUTOR;
 
     static {
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        DEFAULT_EXECUTOR = Executors.newFixedThreadPool(Math.max(4, availableProcessors));
+        final String systemName = "System";
+        int concurrency = Runtime.getRuntime().availableProcessors();
+        DEFAULT_EXECUTOR = new AffinityExecutor(systemName, concurrency);
         DEFAULT_SYSTEM = ActorSystem.builder()
-            .setName("Default")
+            .setName(systemName)
             .setExecutor(DEFAULT_EXECUTOR)
             .build();
     }
 
-    static ExecutorService executor() {
+    static Executor executor() {
         return DEFAULT_EXECUTOR;
-    }
-
-    static void shutdownAndAwait(long millis) throws InterruptedException {
-        DEFAULT_EXECUTOR.shutdown();
-        if (!DEFAULT_EXECUTOR.awaitTermination(millis, TimeUnit.MILLISECONDS)) {
-            throw new IllegalStateException("Time expired awaiting termination");
-        }
     }
 
 }

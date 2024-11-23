@@ -16,15 +16,31 @@
   ],
   "tags": [
     {
+      "name": "Customers",
+      "description": "Customers"
+    },
+    {
+      "name": "Employees",
+      "description": "Employees"
+    },
+    {
       "name": "Orders",
       "description": "Orders"
+    },
+    {
+      "name": "Products",
+      "description": "Products"
+    },
+    {
+      "name": "Suppliers",
+      "description": "Suppliers"
     }
   ],
   "paths": {
     "/customers": {
       "get": {
         "tags": [
-          "Orders"
+          "Customers"
         ],
         "responses": {
           "200": {
@@ -56,10 +72,42 @@
         }
       }
     },
+    "/customers/{id}": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Customer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/employees": {
       "get": {
         "tags": [
-          "Orders"
+          "Employees"
         ],
         "responses": {
           "200": {
@@ -71,6 +119,38 @@
                   "items": {
                     "$ref": "#/components/schemas/Employee"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}": {
+      "get": {
+        "tags": [
+          "Employees"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employee"
                 }
               }
             }
@@ -196,7 +276,7 @@
     "/products": {
       "get": {
         "tags": [
-          "Orders"
+          "Products"
         ],
         "responses": {
           "200": {
@@ -228,10 +308,42 @@
         }
       }
     },
+    "/products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/suppliers": {
       "get": {
         "tags": [
-          "Orders"
+          "Suppliers"
         ],
         "responses": {
           "200": {
@@ -243,6 +355,38 @@
                   "items": {
                     "$ref": "#/components/schemas/Supplier"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/suppliers/{id}": {
+      "get": {
+        "tags": [
+          "Suppliers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Supplier"
                 }
               }
             }

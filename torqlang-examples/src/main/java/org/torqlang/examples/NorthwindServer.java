@@ -31,6 +31,10 @@ public final class NorthwindServer {
 
     public static void main(String[] args) throws Exception {
 
+        ConsoleLogger.SINGLETON.info("Process ID: " + ProcessHandle.current().pid());
+        ConsoleLogger.SINGLETON.info("System executor: " + ActorSystem.defaultExecutor());
+        ConsoleLogger.SINGLETON.info("NorthwindDb executor: " + NorthwindDbPack.NORTHWIND_DB_EXECUTOR);
+
         CompleteRec examplesMod = Rec.completeRecBuilder()
             .addField(Str.of("NorthwindDb"), NorthwindDbPack.NORTHWIND_DB_ACTOR)
             .build();
@@ -39,6 +43,10 @@ public final class NorthwindServer {
             .addModule("examples", examplesMod)
             .build();
 
+        ApiDesc customerApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
         ApiDesc customersApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.CUSTOMER_DESC)
@@ -50,6 +58,10 @@ public final class NorthwindServer {
             .setSystem(system)
             .actorImage(customersHandlerSource);
 
+        ApiDesc employeeApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
         ApiDesc employeesApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.EMPLOYEE_DESC)
@@ -81,6 +93,10 @@ public final class NorthwindServer {
             .setSystem(system)
             .actorImage(ordersHandlerSource);
 
+        ApiDesc productApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
         ApiDesc productsApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
@@ -92,6 +108,10 @@ public final class NorthwindServer {
             .setSystem(system)
             .actorImage(productsHandlerSource);
 
+        ApiDesc supplierApiDesc = ApiDesc.builder()
+            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setContextProvider(NorthwindServer::emptyContextProvider)
+            .build();
         ApiDesc suppliersApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
@@ -109,12 +129,16 @@ public final class NorthwindServer {
             .addContextHandler(ApiHandler.builder()
                 .setRouter(ApiRouter.staticBuilder()
                     .addRoute("/customers", customersHandlerImage, customersApiDesc)
+                    .addRoute("/customers/{id}", customersHandlerImage, customerApiDesc)
                     .addRoute("/employees", employeesHandlerImage, employeesApiDesc)
+                    .addRoute("/employees/{id}", employeesHandlerImage, employeeApiDesc)
                     .addRoute("/orders", ordersHandlerImage, ordersApiDesc)
                     .addRoute("/orders/{id}", ordersHandlerImage, orderApiDesc)
                     .addRoute("/orders/{id}/details", ordersHandlerImage, orderDetailsApiDesc)
                     .addRoute("/products", productsHandlerImage, productsApiDesc)
+                    .addRoute("/products/{id}", productsHandlerImage, productApiDesc)
                     .addRoute("/suppliers", suppliersHandlerImage, suppliersApiDesc)
+                    .addRoute("/suppliers/{id}", suppliersHandlerImage, supplierApiDesc)
                     .build())
                 .build(), "/api")
             .build();

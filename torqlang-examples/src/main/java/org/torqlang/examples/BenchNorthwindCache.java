@@ -9,29 +9,26 @@ package org.torqlang.examples;
 
 import java.util.Map;
 
-public final class BenchNorthwindJava {
+public final class BenchNorthwindCache {
 
     public static void main(String[] args) throws Exception {
-        new BenchNorthwindJava().perform();
+        new BenchNorthwindCache().perform();
     }
 
-    public void perform() throws Exception {
+    public final void perform() throws Exception {
         int iterations = 100_000;
         String collName = "customers";
         NorthwindCache cache = new NorthwindCache();
         NorthwindColl coll = NorthwindFiles.fetchColl(cache, NorthwindFiles.FILES_DIR, collName);
         cache.data.put(collName, coll);
+        // WARMUP
         performRepeatedly(cache, collName, iterations);
+        // SAMPLES
         long start = System.currentTimeMillis();
         int readCount = performRepeatedly(cache, collName, iterations);
         long stop = System.currentTimeMillis();
         long totalTimeMillis = stop - start;
-        System.out.println(getClass().getSimpleName());
-        System.out.printf("  Total time: %,d millis\n", totalTimeMillis);
-        System.out.printf("  Total reads: %,d\n", readCount);
-        System.out.printf("  Millis per read: %,.5f\n", ((double) totalTimeMillis / readCount));
-        double readsPerSecond = 1_000.0 / totalTimeMillis;
-        System.out.printf("  Reads per second: %,.2f\n", (readsPerSecond * readCount));
+        System.out.println(BenchTools.formatTotalsMessage(getClass().getSimpleName(), totalTimeMillis, readCount));
     }
 
     private int performRepeatedly(NorthwindCache cache, String collName, int iterations)

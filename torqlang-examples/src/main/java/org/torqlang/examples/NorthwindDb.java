@@ -31,18 +31,21 @@ public final class NorthwindDb extends AbstractActor {
     private int nextReader = 0;
 
     NorthwindDb(Address address, ActorSystem system, int concurrency, int readLatency) {
-        super(address, system.createMailbox(), system.executor(), system.createLogger());
-        if (concurrency < 2) {
-            throw new IllegalArgumentException("concurrency < 2");
+        // ID = 0
+        super(0, address, system.createMailbox(), system.executor(), system.createLogger());
+        if (concurrency < 4) {
+            throw new IllegalArgumentException("concurrency < 4");
         }
         cache = new NorthwindCache();
-        readers = new NorthwindReader[concurrency - 1];
+        Address writerAddress = Address.create(address, "writer");
+        // ID = 1
+        writer = new NorthwindWriter(1, writerAddress, system, cache, readLatency);
+        readers = new NorthwindReader[concurrency - 2];
         for (int i = 0; i < readers.length; i++) {
-            Address childAddress = Address.create(address, "reader" + i);
-            readers[i] = new NorthwindReader(childAddress, system, cache, readLatency);
+            Address readerAddress = Address.create(address, "reader" + i);
+            // IDs = 2 through (concurrency - 1)
+            readers[i] = new NorthwindReader(i + 2, readerAddress, system, cache, readLatency);
         }
-        Address childAddress = Address.create(address, "writer");
-        writer = new NorthwindWriter(childAddress, system, cache, readLatency);
     }
 
     /*

@@ -7,6 +7,7 @@
 
 package org.torqlang.examples;
 
+import org.torqlang.lang.JsonFormatter;
 import org.torqlang.lang.JsonParser;
 
 import java.io.FileNotFoundException;
@@ -48,20 +49,11 @@ public final class NorthwindJson {
         convertToNldjson(NorthwindJson.PRODUCT_SUPPLIERS_JSON_RESOURCE);
     }
 
-    public static String fetchJsonText(String filePath) throws Exception {
-        String jsonText = jsonTextCache.get(filePath);
-        if (jsonText == null) {
-            jsonText = readTextFromResource(filePath);
-            jsonTextCache.put(filePath, jsonText);
-        }
-        return jsonText;
-    }
-
     public static void convertToNldjson(String filePath) throws Exception {
         System.out.println("============ " + filePath + " ============");
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> list = (List<Map<String, Object>>) JsonParser.parse(fetchJsonText(filePath));
-        System.out.println(NorthwindFiles.listToNldJson(list));
+        System.out.println(listToNldJson(list));
     }
 
     private static void convertAllToNldJson() throws Exception {
@@ -84,6 +76,29 @@ public final class NorthwindJson {
         convertToNldjson(PURCHASE_ORDERS_JSON_RESOURCE);
         convertToNldjson(SHIPPERS_JSON_RESOURCE);
         convertToNldjson(SUPPLIERS_JSON_RESOURCE);
+    }
+
+    public static String fetchJsonText(String filePath) throws Exception {
+        String jsonText = jsonTextCache.get(filePath);
+        if (jsonText == null) {
+            jsonText = readTextFromResource(filePath);
+            jsonTextCache.put(filePath, jsonText);
+        }
+        return jsonText;
+    }
+
+    public static String listToNldJson(List<Map<String, Object>> list) {
+        StringBuilder buf = new StringBuilder();
+        boolean first = true;
+        for (Map<String, Object> obj : list) {
+            String s = JsonFormatter.SINGLETON.format(obj);
+            if (!first) {
+                buf.append("\n");
+            }
+            buf.append(s);
+            first = false;
+        }
+        return buf.toString();
     }
 
     public static String readTextFromResource(String absolutePath) throws IOException {

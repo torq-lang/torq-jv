@@ -7,10 +7,12 @@
 
 package org.torqlang.examples;
 
+import org.torqlang.examples.BenchTools.MapSample;
 import org.torqlang.local.*;
 
 import java.util.Map;
-import java.util.concurrent.Executor;
+
+import static org.torqlang.examples.NorthwindDbPack.NORTHWIND_DB;
 
 /*
  * Example data:
@@ -30,23 +32,6 @@ public final class BenchNorthwindDb {
         System.exit(0);
     }
 
-    public static void printTimingResults(String owner, long start, long stop, int readCount) {
-        long totalTimeMillis = stop - start;
-        System.out.println(owner);
-        System.out.printf("  Total time: %,d millis\n", totalTimeMillis);
-        System.out.printf("  Total reads: %,d\n", readCount);
-        System.out.printf("  Millis per read: %,.5f\n", ((double) totalTimeMillis / readCount));
-        double readsPerSecond = 1_000.0 / totalTimeMillis;
-        System.out.printf("  Reads per second: %,.2f\n", (readsPerSecond * readCount));
-    }
-
-    private int checkResponses(Sample... samples) throws Exception {
-        for (Sample sample : samples) {
-            NorthwindFiles.checkResponse(sample.id, sample.result);
-        }
-        return samples.length;
-    }
-
     private FutureResponse findByKey(NorthwindDb db, Map<String, Object> key) {
         FutureResponse futureResp = new FutureResponse(Address.create("future_response"));
         Envelope rqs = Envelope.createRequest(new NorthwindDb.FindByKey("customers", key),
@@ -56,65 +41,59 @@ public final class BenchNorthwindDb {
     }
 
     private void perform() throws Exception {
-        int concurrencyLevel = Runtime.getRuntime().availableProcessors();
-        Executor executor = new AffinityExecutor(Runtime.getRuntime().availableProcessors());
-        ActorSystem system = ActorSystem.builder()
-            .setName("NorthwindDb")
-            .setExecutor(executor)
-            .build();
-        NorthwindDb db = new NorthwindDb(Address.create("northwind_db"), system, concurrencyLevel, 0);
+        // SETUP
         int iterCount = 100_000;
+        // WARMUP
         for (int i = 0; i < iterCount; i++) {
-            performSampling(db);
+            performSampling(NORTHWIND_DB);
         }
+        // SAMPLES
         int readCount = 0;
         long start = System.currentTimeMillis();
         for (int i = 0; i < iterCount; i++) {
             // Take 31 samples per iteration
-            readCount += performSampling(db);
+            readCount += performSampling(NORTHWIND_DB);
         }
         long stop = System.currentTimeMillis();
-        printTimingResults(getClass().getSimpleName(), start, stop, readCount);
+        // REPORTING
+        BenchTools.printTimingResults(getClass().getSimpleName(), start, stop, readCount);
     }
 
     private int performSampling(NorthwindDb db) throws Exception {
-        // perform 31 concurrent samples
-        return checkResponses(
-            new Sample(3, findByKey(db, Map.of("id", 3L))),
-            new Sample(7, findByKey(db, Map.of("id", 7L))),
-            new Sample(9, findByKey(db, Map.of("id", 9L))),
-            new Sample(11, findByKey(db, Map.of("id", 11L))),
-            new Sample(17, findByKey(db, Map.of("id", 17L))),
-            new Sample(23, findByKey(db, Map.of("id", 23L))),
-            new Sample(2, findByKey(db, Map.of("id", 2L))),
-            new Sample(6, findByKey(db, Map.of("id", 6L))),
-            new Sample(8, findByKey(db, Map.of("id", 8L))),
-            new Sample(10, findByKey(db, Map.of("id", 10L))),
-            new Sample(16, findByKey(db, Map.of("id", 16L))),
-            new Sample(22, findByKey(db, Map.of("id", 22L))),
-            new Sample(4, findByKey(db, Map.of("id", 4L))),
-            new Sample(8, findByKey(db, Map.of("id", 8L))),
-            new Sample(10, findByKey(db, Map.of("id", 10L))),
-            new Sample(12, findByKey(db, Map.of("id", 12L))),
-            new Sample(18, findByKey(db, Map.of("id", 18L))),
-            new Sample(24, findByKey(db, Map.of("id", 24L))),
-            new Sample(5, findByKey(db, Map.of("id", 5L))),
-            new Sample(9, findByKey(db, Map.of("id", 9L))),
-            new Sample(11, findByKey(db, Map.of("id", 11L))),
-            new Sample(13, findByKey(db, Map.of("id", 13L))),
-            new Sample(19, findByKey(db, Map.of("id", 19L))),
-            new Sample(25, findByKey(db, Map.of("id", 25L))),
-            new Sample(6, findByKey(db, Map.of("id", 6L))),
-            new Sample(10, findByKey(db, Map.of("id", 10L))),
-            new Sample(12, findByKey(db, Map.of("id", 12L))),
-            new Sample(14, findByKey(db, Map.of("id", 14L))),
-            new Sample(20, findByKey(db, Map.of("id", 20L))),
-            new Sample(26, findByKey(db, Map.of("id", 26L))),
-            new Sample(8, findByKey(db, Map.of("id", 8L)))
+        // perform 31 concurrent record samples
+        return BenchTools.checkMapResponses(
+            new MapSample(3, findByKey(db, Map.of("id", 3L))),
+            new MapSample(7, findByKey(db, Map.of("id", 7L))),
+            new MapSample(9, findByKey(db, Map.of("id", 9L))),
+            new MapSample(11, findByKey(db, Map.of("id", 11L))),
+            new MapSample(17, findByKey(db, Map.of("id", 17L))),
+            new MapSample(23, findByKey(db, Map.of("id", 23L))),
+            new MapSample(2, findByKey(db, Map.of("id", 2L))),
+            new MapSample(6, findByKey(db, Map.of("id", 6L))),
+            new MapSample(8, findByKey(db, Map.of("id", 8L))),
+            new MapSample(10, findByKey(db, Map.of("id", 10L))),
+            new MapSample(16, findByKey(db, Map.of("id", 16L))),
+            new MapSample(22, findByKey(db, Map.of("id", 22L))),
+            new MapSample(4, findByKey(db, Map.of("id", 4L))),
+            new MapSample(8, findByKey(db, Map.of("id", 8L))),
+            new MapSample(10, findByKey(db, Map.of("id", 10L))),
+            new MapSample(12, findByKey(db, Map.of("id", 12L))),
+            new MapSample(18, findByKey(db, Map.of("id", 18L))),
+            new MapSample(24, findByKey(db, Map.of("id", 24L))),
+            new MapSample(5, findByKey(db, Map.of("id", 5L))),
+            new MapSample(9, findByKey(db, Map.of("id", 9L))),
+            new MapSample(11, findByKey(db, Map.of("id", 11L))),
+            new MapSample(13, findByKey(db, Map.of("id", 13L))),
+            new MapSample(19, findByKey(db, Map.of("id", 19L))),
+            new MapSample(25, findByKey(db, Map.of("id", 25L))),
+            new MapSample(6, findByKey(db, Map.of("id", 6L))),
+            new MapSample(10, findByKey(db, Map.of("id", 10L))),
+            new MapSample(12, findByKey(db, Map.of("id", 12L))),
+            new MapSample(14, findByKey(db, Map.of("id", 14L))),
+            new MapSample(20, findByKey(db, Map.of("id", 20L))),
+            new MapSample(26, findByKey(db, Map.of("id", 26L))),
+            new MapSample(8, findByKey(db, Map.of("id", 8L)))
         );
-    }
-
-    record Sample(int id, FutureResponse result) {
     }
 
 }

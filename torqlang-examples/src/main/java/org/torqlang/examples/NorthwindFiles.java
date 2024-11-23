@@ -7,17 +7,12 @@
 
 package org.torqlang.examples;
 
-import org.torqlang.klvm.FailedValue;
 import org.torqlang.lang.JsonFormatter;
 import org.torqlang.lang.JsonParser;
-import org.torqlang.local.Envelope;
-import org.torqlang.local.FutureResponse;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("unchecked")
 public final class NorthwindFiles {
 
     public static final String FILES_DIR = System.getProperty("user.home") + "/.torq_lang/northwind";
@@ -86,18 +81,6 @@ public final class NorthwindFiles {
         map.put(SHIPPERS_COLL_NAME, SHIPPERS_KEY_NAMES);
         map.put(SUPPLIERS_COLL_NAME, SUPPLIERS_KEY_NAMES);
         KEY_NAMES_BY_COLL = Map.copyOf(map);
-    }
-
-    public static void checkResponse(int expectedId, FutureResponse futureResponse) throws Exception {
-        Envelope resp = futureResponse.future().get(1, TimeUnit.SECONDS);
-        if (resp.message() instanceof FailedValue) {
-            throw new IllegalStateException("Request failed");
-        }
-        Map<String, Object> rec = (Map<String, Object>) resp.message();
-        long id = (Long) rec.get("id");
-        if (id != expectedId) {
-            throw new IllegalStateException("id is not " + expectedId);
-        }
     }
 
     public static boolean containsCriteria(Map<String, Object> rec, Map<String, Object> criteria) {
@@ -182,20 +165,6 @@ public final class NorthwindFiles {
             }
         }
         return new NorthwindColl(coll.name(), list);
-    }
-
-    public static String listToNldJson(List<Map<String, Object>> list) {
-        StringBuilder buf = new StringBuilder();
-        boolean first = true;
-        for (Map<String, Object> obj : list) {
-            String s = JsonFormatter.SINGLETON.format(obj);
-            if (!first) {
-                buf.append("\n");
-            }
-            buf.append(s);
-            first = false;
-        }
-        return buf.toString();
     }
 
     public static void saveColl(NorthwindColl coll, String directory)

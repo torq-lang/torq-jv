@@ -12,6 +12,7 @@ import org.torqlang.local.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class NorthwindDbPack {
 
@@ -26,8 +27,17 @@ public class NorthwindDbPack {
     private static final CompleteProc NORTHWIND_DB_CFGTR = NorthwindDbPack::northwindDbCfgtr;
     public static final CompleteRec NORTHWIND_DB_ACTOR = createNorthwindDbActor();
 
-    private static final NorthwindDb NORTHWIND_DB = new NorthwindDb(Address.create("northwind_db"),
-        ActorSystem.defaultSystem(), Runtime.getRuntime().availableProcessors(), 0);
+    static final Executor NORTHWIND_DB_EXECUTOR = new AffinityExecutor("NorthwindDb", 4);
+    static final ActorSystem NORTHWIND_DB_SYSTEM;
+    static {
+        NORTHWIND_DB_SYSTEM = ActorSystem.builder()
+            .setName("NorthwindDb")
+            .setExecutor(NORTHWIND_DB_EXECUTOR)
+            .build();
+    }
+
+    public static final NorthwindDb NORTHWIND_DB = new NorthwindDb(Address.create("northwind_db"),
+        NORTHWIND_DB_SYSTEM, 4, 0);
 
     private static CompleteRec createNorthwindDbActor() {
         return CompleteRec.singleton(Actor.CFG, NORTHWIND_DB_CFGTR);

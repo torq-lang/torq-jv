@@ -22,22 +22,24 @@ import static org.torqlang.examples.NorthwindFiles.*;
  */
 public class NorthwindWriter extends NorthwindAccessor {
 
-    NorthwindWriter(Address address,
+    NorthwindWriter(int id,
+                    Address address,
                     Mailbox mailbox,
                     Executor executor,
                     Logger logger,
                     NorthwindCache cache,
                     int latencyInNanos)
     {
-        super(address, mailbox, executor, logger, cache, latencyInNanos);
+        super(id, address, mailbox, executor, logger, cache, latencyInNanos);
     }
 
-    NorthwindWriter(Address address,
+    NorthwindWriter(int id,
+                    Address address,
                     ActorSystem system,
                     NorthwindCache cache,
                     int latencyInNanos)
     {
-        this(address, system.createMailbox(), system.executor(), system.createLogger(), cache, latencyInNanos);
+        this(id, address, system.createMailbox(), system.executor(), system.createLogger(), cache, latencyInNanos);
     }
 
     @Override

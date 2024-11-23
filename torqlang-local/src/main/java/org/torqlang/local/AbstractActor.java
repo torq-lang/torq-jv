@@ -14,6 +14,25 @@ import java.util.concurrent.RejectedExecutionException;
 
 import static org.torqlang.local.OnMessageResult.NOT_FINISHED;
 
+/*
+ * Actors are typically run in one of two strategies:
+ * 1. An actor per core
+ * 2. Many actors per core
+ *
+ * An actor per core -- Explicit IDs are provided in actor-per-core strategy. Consider a runtime consisting of four
+ * cores. To implement the actor-per-core strategy, create four actors with identifiers 0-3, and an AffinityExecutor
+ * with a size of 4. The explicit IDs create a perfect distribution across the 4 threads contained within the
+ * AffinityExecutor.
+ *
+ * Many actors per core -- Explicit IDs are not provided in a many-actors-per-core strategy. Instead, the actors
+ * default their ID to their identity hash code. Consider a runtime consisting of four cores for running thousands of
+ * actors. To implement the many-actors-per-core strategy, create an AffinityExecutor with a size of 4. The identity
+ * hash codes approximate an even distribution across the 4 threads contained within the AffinityExecutor, dynamically
+ * partitioning the actors across the available threads.
+ *
+ * The actor-per-core strategy is typically used to implement long-running actors, such as I/O services.
+ * The many-actors-per-core strategy is typically used to implement short-lived actors, such as REST handlers.
+ */
 public abstract class AbstractActor implements ActorRef {
 
     /*
@@ -22,6 +41,7 @@ public abstract class AbstractActor implements ActorRef {
      *     2. All access to the state value must be synchronized on mailboxLock
      */
 
+    private final int id;
     private final Address address;
     private final Executor executor;
     private final Dispatcher dispatcher = new Dispatcher();
@@ -31,15 +51,38 @@ public abstract class AbstractActor implements ActorRef {
 
     private volatile State state = State.WAITING;
 
-    protected AbstractActor(Address address, Mailbox mailbox, Executor executor, Logger logger) {
+    protected AbstractActor(int id, Address address, Mailbox mailbox, Executor executor, Logger logger) {
+        this.id = id == Integer.MIN_VALUE ? System.identityHashCode(this) : id;
         this.address = address;
         this.mailbox = mailbox;
         this.executor = executor;
         this.logger = logger;
     }
 
+    protected AbstractActor(Address address, Mailbox mailbox, Executor executor, Logger logger) {
+        // We cannot call `System.identityHashCode(this)` here, so we pass `Integer.MIN_VALUE` as a sentinel value
+        this(Integer.MIN_VALUE, address, mailbox, executor, logger);
+    }
+
     public final Address address() {
         return address;
+    }
+
+    @Override
+    public final boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        AbstractActor that = (AbstractActor) other;
+        return id == that.id;
+    }
+
+    @Override
+    public final int hashCode() {
+        return id;
     }
 
     protected boolean isExecutable(Mailbox mailbox) {
@@ -124,6 +167,27 @@ public abstract class AbstractActor implements ActorRef {
     }
 
     private final class Dispatcher implements Runnable {
+
+        private int actorId() {
+            return id;
+        }
+
+        @Override
+        public final boolean equals(Object other) {
+            if (this == other) {
+                return true;
+            }
+            if (other == null || getClass() != other.getClass()) {
+                return false;
+            }
+            Dispatcher that = (Dispatcher) other;
+            return actorId() == that.actorId();
+        }
+
+        @Override
+        public final int hashCode() {
+            return id;
+        }
 
         @Override
         public final void run() {

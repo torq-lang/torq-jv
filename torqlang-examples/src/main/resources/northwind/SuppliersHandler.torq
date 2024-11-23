@@ -14,6 +14,13 @@ actor SuppliersHandler() in
                         'criteria': query
                     }
                 )
+            of ['suppliers', supplier_id] then
+                northwind_db.ask(
+                    'findByKey'#{
+                        'entity': 'suppliers',
+                        'key': {'id': supplier_id}
+                    }
+                )
             else
                 throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
         end

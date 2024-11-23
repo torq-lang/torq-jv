@@ -18,10 +18,11 @@ import java.util.concurrent.TimeUnit;
 import static org.torqlang.local.Envelope.createResponse;
 
 /*
- * A Timer generates a stream of ticks as `<period 1>, <tick 1>, ..., <period n>, <tick n>` where each `<period n>` is
- * a delay and each `<tick 1>` is a response.
+ * A Timer generates a stream of ticks where each tick is preceded by a period of delay.
  *
- * A timer can only be used by one requester (subscriber) at a time.
+ * Rules:
+ * - Timers are a single-producer, single-consumer design.
+ * - A timer can be reused after it reaches end-of-file.
  */
 final class TimerPack {
 

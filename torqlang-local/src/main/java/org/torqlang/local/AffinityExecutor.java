@@ -11,18 +11,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 /*
- * An AffinityExecutor is a thread-per-core executor. Once an actor is assigned an executor, it is pinned to that
- * executor for life. Since Torq actors use the CPU in short bursts because they suspend or finish quickly--Torq actors
- * are non-blocking and preempted. An affinity executor groups together actors, memory, and CPU caches (L1, L2, L3).
- *
- * NOTE: Ideally, we should pin each Java thread to an underlying hardware thread. We tried using the
- *       `net.openhft.affinity` package, but our dependencies clash with its dependencies, and it does not use JPMS.
+ * An AffinityExecutor is a thread-per-core design containing a pool of single-thread executors. When dispatched
+ * to an AffinityExecutor, a runnable is mapped to a single-thread executor using its `hashCode()`. The idea is to
+ * reduce CPU cache misses by executing a runnable on the same thread each time it is dispatched. At this time, there
+ * is no ability to pin a Java thread to a hardware core.
  */
-public class AffinityExecutor implements Executor {
+public final class AffinityExecutor implements Executor {
 
+    private final String name;
     private final AffinityThreadExecutor[] executors;
 
-    public AffinityExecutor(int concurrency) {
+    public AffinityExecutor(String name, int concurrency) {
+        this.name = name;
         if (concurrency < 1) {
             throw new IllegalArgumentException("concurrency < 1");
         }
@@ -33,10 +33,18 @@ public class AffinityExecutor implements Executor {
     }
 
     @Override
-    public void execute(Runnable runnable) throws RejectedExecutionException {
-        int hash = System.identityHashCode(runnable);
-        int index = hash % executors.length;
+    public final void execute(Runnable runnable) throws RejectedExecutionException {
+        int index = Math.abs(runnable.hashCode() % executors.length);
         executors[index].execute(runnable);
+    }
+
+    public final String name() {
+        return name;
+    }
+
+    @Override
+    public final String toString() {
+        return "AffinityExecutor{name='" + name + "', size=" + executors.length + "}";
     }
 
 }

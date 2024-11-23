@@ -14,6 +14,13 @@ actor EmployeesHandler() in
                         'criteria': query
                     }
                 )
+            of ['employees', employee_id] then
+                northwind_db.ask(
+                    'findByKey'#{
+                        'entity': 'employees',
+                        'key': {'id': employee_id}
+                    }
+                )
             else
                 throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
         end

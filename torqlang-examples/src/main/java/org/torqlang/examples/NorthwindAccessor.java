@@ -18,14 +18,15 @@ public abstract class NorthwindAccessor extends AbstractActor {
     private final NorthwindCache cache;
     private final int latencyInNanos;
 
-    protected NorthwindAccessor(Address address,
+    protected NorthwindAccessor(int id,
+                                Address address,
                                 Mailbox mailbox,
                                 Executor executor,
                                 Logger logger,
                                 NorthwindCache cache,
                                 int latencyInNanos)
     {
-        super(address, mailbox, executor, logger);
+        super(id, address, mailbox, executor, logger);
         this.cache = cache;
         this.latencyInNanos = latencyInNanos;
     }
