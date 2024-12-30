@@ -76,8 +76,8 @@ public final class Machine {
                 stack = new Stack(ts, current.env, current);
             }
             if (stack == null) {
-                // INVARIANT: Even though we completed the computation, the field 'current' still holds the last
-                // instruction.
+                // INVARIANT: Even though we completed the computation, the field 'current' must hold the last
+                // instruction computed.
                 return ComputeEnd.SINGLETON;
             }
         }

@@ -10,7 +10,7 @@ Torqlang server uses Jetty per the Apache License Version 2.0
 
 ### Attribution
 
-Some Torqlang examples use the Mongo DB Northwind data forked from <https://github.com/jasny/mongodb-northwind> and residing at <https://github.com/torqlang/mongodb-northwind>.
+Some Torqlang examples use the Mongo DB Northwind data forked from <https://github.com/jasny/mongodb-northwind> and residing at <https://github.com/torq-lang/mongodb-northwind>.
 
 Changes made in the core-examples module:
 1) Orders are normalized. Details are extracted from `orders.json` and placed into `order_details.json`.

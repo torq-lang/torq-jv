@@ -1,8 +1,33 @@
 
+/*
+type Order <: Rec = {
+    "id"::Int64,
+    "employee_id"::Int64,
+    "customer_id"::Int64,
+    "order_date"::Date,
+    "shipped_date"::Date,
+    "shipper_id"::Int64,
+    "ship_name"::Str,
+    "ship_address"::Str,
+    "ship_city"::Str,
+    "ship_state_province"::Str,
+    "ship_zip_postal_code"::Int64,
+    "ship_country_region"::Str,
+    "shipping_fee"::Dec128,
+    "taxes"::Dec128,
+    "payment_type"::Str,
+    "paid_date"::Date,
+    "notes"::Str,
+    "tax_rate"::Flt64,
+    "tax_status_id"::Int32,
+    "status_id"::Int32
+}
+*/
+
 actor OrdersHandler() in
 
-    // TODO: `shipping_fee` needs to be a decimal value
-    // TODO: `taxes` needs to be a decimal value
+    // TODO: change `shipping_fee` in JSON files to be a decimal string
+    // TODO: change `taxes` in JSON files to be a decimal string
 
     import system[ArrayList, Int64, LocalDate, Rec, ValueIter]
     import examples.NorthwindDb
@@ -11,38 +36,38 @@ actor OrdersHandler() in
         var northwind_db = spawn(NorthwindDb.cfg())
         case path
             of ['orders'] then
-                var answer = ArrayList.new()
-                var headers = northwind_db.ask(
+                var orders_ext = ArrayList.new()
+                var orders = northwind_db.ask(
                     'findAll'#{
                         'entity': 'orders',
                         'criteria': query
                     }
                 )
-                for h in ValueIter.new(headers) do
+                for order in ValueIter.new(orders) do
                     var employee = northwind_db.ask(
                         'findByKey'#{
                             'entity': 'employees',
-                            'key': {'id': h.employee_id}
+                            'key': {'id': order.employee_id}
                         }
                     )
                     var customer = northwind_db.ask(
                         'findByKey'#{
                             'entity': 'customers',
-                            'key': {'id': h.customer_id}
+                            'key': {'id': order.customer_id}
                         }
                     )
-                    answer.add(Rec.assign({'employee': employee, 'customer': customer}, h))
+                    orders_ext.add(Rec.assign({'employee': employee, 'customer': customer}, order))
                 end
-                answer.to_tuple()
+                orders_ext.to_tuple()
             of ['orders', order_id] then
-                var header = northwind_db.ask(
+                var order = northwind_db.ask(
                     'findByKey'#{
                         'entity': 'orders',
                         'key': {'id': order_id}
                     }
                 )
-                if header == null then
-                    throw 'error'#{'message': 'Order header not found', 'details': {'order_id': order_id}}
+                if order == null then
+                    throw 'error'#{'message': 'Order not found', 'details': {'order_id': order_id}}
                 end
                 var details = northwind_db.ask(
                     'findAll'#{
@@ -50,9 +75,9 @@ actor OrdersHandler() in
                         'criteria': {'order_id': order_id}
                     }
                 )
-                Rec.assign({'details': if details == null then [] else details end}, header)
+                Rec.assign({'details': if details == null then [] else details end}, order)
             of ['orders', order_id, 'details'] then
-                var answer = ArrayList.new()
+                var details_ext = ArrayList.new()
                 var details = northwind_db.ask(
                     'findAll'#{
                         'entity': 'order_details',
@@ -75,9 +100,9 @@ actor OrdersHandler() in
                             'criteria': {'product_id': d.product_id}
                         }
                     )
-                    var suppliers_for_product = ArrayList.new()
+                    var product_suppliers = ArrayList.new()
                     for ps in ValueIter.new(product_suppliers) do
-                        suppliers_for_product.add(
+                        product_suppliers.add(
                             northwind_db.ask(
                                 'findByKey'#{
                                     'entity': 'suppliers',
@@ -86,10 +111,10 @@ actor OrdersHandler() in
                             )
                         )
                     end
-                    var product_with_suppliers = Rec.assign({'suppliers': suppliers_for_product.to_tuple()}, product)
-                    answer.add(Rec.assign({'product': product_with_suppliers}, d))
+                    var product_ext = Rec.assign({'suppliers': product_suppliers.to_tuple()}, product)
+                    details_ext.add(Rec.assign({'product': product_ext}, d))
                 end
-                answer.to_tuple()
+                details_ext.to_tuple()
             else
                 throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
         end
