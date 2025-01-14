@@ -95,12 +95,6 @@ public final class LexerToken implements SourceSpan {
         return type == LexerTokenType.COMMENT_TOKEN && substringEquals(text);
     }
 
-    public final boolean isContextualKeyword(String word) {
-        return type == LexerTokenType.IDENT_TOKEN &&
-            SymbolsAndKeywords.isContextualKeyword(source, begin, end) &&
-            substringEquals(word);
-    }
-
     public final boolean isDec() {
         return type == LexerTokenType.DEC_TOKEN;
     }
@@ -175,6 +169,12 @@ public final class LexerToken implements SourceSpan {
 
     public final boolean isTwoCharSymbol(String symbol) {
         return type == LexerTokenType.TWO_CHAR_TOKEN && substringEquals(symbol);
+    }
+
+    public final boolean isWeakKeyword(String word) {
+        return type == LexerTokenType.IDENT_TOKEN &&
+            SymbolsAndKeywords.isWeakKeyword(source, begin, end) &&
+            substringEquals(word);
     }
 
     public final int length() {

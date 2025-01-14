@@ -15,7 +15,7 @@ import java.util.*;
 
 public final class NorthwindFiles {
 
-    public static final String FILES_DIR = System.getProperty("user.home") + "/.torq_lang/northwind";
+    public static final String FILES_DIR = System.getProperty("user.home") + "/.torq_lang/resources/northwind";
 
     public static final List<String> CUSTOMERS_KEY_NAMES = List.of("id");
     public static final List<String> EMPLOYEE_PRIVILEGES_KEY_NAMES = List.of("employee_id", "privilege_id");

@@ -90,7 +90,7 @@
                                     <type>${project.packaging}</type>
                                 </artifactItem>
                             </artifactItems>
-                            <outputDirectory>${user.home}/workspace/torq_jv_runtime</outputDirectory>
+                            <outputDirectory>${user.home}/.torq_lang/lib</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -100,7 +100,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/workspace/torq_jv_runtime</outputDirectory>
+                            <outputDirectory>${user.home}/.torq_lang/lib</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>

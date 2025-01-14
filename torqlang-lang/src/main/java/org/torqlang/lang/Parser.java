@@ -187,12 +187,12 @@ public final class Parser {
         nextToken(); // accept 'in' token
         List<SntcOrExpr> body = new ArrayList<>();
         while (true) {
-            if (currentToken.isContextualKeyword(HANDLE_VALUE)) {
+            if (currentToken.isWeakKeyword(HANDLE_VALUE)) {
                 LexerToken handleToken = currentToken;
                 nextToken(); // accept 'handle' token
-                if (currentToken.isContextualKeyword(ASK_VALUE)) {
+                if (currentToken.isWeakKeyword(ASK_VALUE)) {
                     body.add(parseAsk(handleToken));
-                } else if (currentToken.isContextualKeyword(TELL_VALUE)) {
+                } else if (currentToken.isWeakKeyword(TELL_VALUE)) {
                     body.add(parseTell(handleToken));
                 } else {
                     throw new ParserError(ASK_OR_TELL_EXPECTED, currentToken);
@@ -607,7 +607,7 @@ public final class Parser {
             while (current.isIdent()) {
                 Str name = Str.of(current.substring());
                 current = nextToken(); // accept Ident
-                if (current.isContextualKeyword(AS_VALUE)) {
+                if (current.isWeakKeyword(AS_VALUE)) {
                     current = nextToken(); // accept 'as'
                     if (!current.isIdent()) {
                         throw new ParserError(IDENT_EXPECTED, current);

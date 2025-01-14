@@ -22,7 +22,7 @@ import static org.torqlang.examples.NorthwindFiles.FILES_DIR;
  * the application. If the data is not in memory, the cache loads it from the database, stores it in memory, and then
  * returns it to the application.
  *
- * The Northwind data is stored in the `/home/USER/.torq_lang/northwind` directory.
+ * The Northwind data is stored in the `/home/USER/.torq_lang/resources/northwind` directory.
  */
 public final class NorthwindReader extends NorthwindAccessor {
 

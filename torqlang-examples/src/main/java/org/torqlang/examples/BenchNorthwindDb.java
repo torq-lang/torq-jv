@@ -17,7 +17,7 @@ import static org.torqlang.examples.NorthwindDbPack.NORTHWIND_DB;
 /*
  * Example data:
  *     Example data must be copied from the project directory `resources/northwind/` to the local home
- *     directory `/home/USER/.torq_lang/northwind`.
+ *     directory `/home/USER/.torq_lang/resources/northwind`.
  * Run with all hardware threads:
  *     java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
  * Run with 3 hardware threads:

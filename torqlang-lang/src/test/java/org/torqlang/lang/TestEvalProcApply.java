@@ -46,6 +46,32 @@ public class TestEvalProcApply {
     }
 
     @Test
+    public void testFuncLambdaApply() throws Exception {
+        String source = """
+            begin
+                x = (func (n) in n + 2 end)(3)
+            end""";
+        EvaluatorPerformed e = Evaluator.builder()
+            .addVar(Ident.create("x"))
+            .setSource(source)
+            .perform();
+        String expected = """
+            begin
+                x = (func (n) in n + 2 end)(3)
+            end""";
+        assertEquals(expected, e.sntcOrExpr().toString());
+        expected = """         
+            local $v0 in
+                $create_proc(proc (n, $r) in
+                    $add(n, 2, $r)
+                end, $v0)
+                $v0(3, x)
+            end""";
+        assertEquals(expected, e.kernel().toString());
+        assertEquals(Int32.of(5), e.varAtName("x").valueOrVarSet());
+    }
+
+    @Test
     public void testFuncSntcApply() throws Exception {
         String source = """
             begin

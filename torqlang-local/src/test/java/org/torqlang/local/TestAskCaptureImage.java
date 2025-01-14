@@ -39,7 +39,7 @@ public class TestAskCaptureImage {
                 end
             end""";
 
-        ActorImage actorImage = Actor.captureImage(source);
+        ActorImage actorImage = Actor.builder().actorImage(source);
 
         ActorRef actorRef = Actor.spawn(Address.create(getClass().getName() + "Actor"), actorImage);
 
@@ -74,7 +74,7 @@ public class TestAskCaptureImage {
                 end
             end""";
 
-        ActorImage actorImage = Actor.captureImage(source);
+        ActorImage actorImage = Actor.builder().actorImage(source);
 
         ActorRef actorRef = Actor.spawn(Address.create(getClass().getName() + "Actor"), actorImage);
 
@@ -96,7 +96,7 @@ public class TestAskCaptureImage {
                 end
             end""";
 
-        ActorImage actorImage = Actor.captureImage(source);
+        ActorImage actorImage = Actor.builder().actorImage(source);
 
         ActorRef actorRef = Actor.spawn(Address.create(getClass().getName() + "Actor"), actorImage);
 
@@ -115,7 +115,7 @@ public class TestAskCaptureImage {
     }
 
     @Test
-    public void testMutableNotAllowed() throws Exception {
+    public void testMutableNotAllowed() {
 
         // This example captures a function closure as part of the actor image
 
@@ -138,7 +138,7 @@ public class TestAskCaptureImage {
                 end
             end""";
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> Actor.captureImage(source));
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> Actor.builder().actorImage(source));
         assertTrue(exception.getMessage().contains("Cannot complete"));
     }
 

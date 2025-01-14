@@ -13,23 +13,22 @@ import java.util.List;
 public final class GetArg {
 
     /*
-     * Return null if the requested option is not found. Otherwise, return the number of arguments following
-     * that option.
+     * Return null if the requested option is not found. Otherwise, return its arguments.
      *
      * Throw an IllegalArgumentException if a duplicate option is found.
      */
     public static List<String> get(String option, List<String> args) {
-        List<String> values = null;
+        List<String> argsAtOpt = null;
         int i = 0;
         while (i < args.size()) {
             if (args.get(i).equals(option)) {
-                values = new ArrayList<>();
+                argsAtOpt = new ArrayList<>();
                 while (++i < args.size()) {
                     String a = args.get(i);
                     if (a.startsWith("-")) {
                         break;
                     }
-                    values.add(a);
+                    argsAtOpt.add(a);
                 }
                 while (i < args.size()) {
                     if (args.get(i).equals(option)) {
@@ -41,7 +40,34 @@ public final class GetArg {
                 i++;
             }
         }
-        return values != null ? List.copyOf(values) : null;
+        return argsAtOpt != null ? List.copyOf(argsAtOpt) : null;
+    }
+
+    public static List<String> getEither(String option1, String option2, List<String> args) {
+        List<String> answer = get(option1, args);
+        if (answer == null) {
+            answer = get(option2, args);
+        }
+        return answer;
+    }
+
+    public static String getSingle(String option, List<String> args) {
+        List<String> argsAtOpt = GetArg.get(option, args);
+        if (argsAtOpt == null || argsAtOpt.isEmpty()) {
+            return null;
+        }
+        if (argsAtOpt.size() > 1) {
+            throw new IllegalArgumentException("More than one argument found for option: " + option);
+        }
+        return argsAtOpt.get(0);
+    }
+
+    public static String getSingleFromEither(String option1, String option2, List<String> args) {
+        String answer = getSingle(option1, args);
+        if (answer == null) {
+            answer = getSingle(option2, args);
+        }
+        return answer;
     }
 
 }

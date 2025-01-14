@@ -21,14 +21,6 @@ public final class Actor {
         return new ActorBuilder();
     }
 
-    public static ActorImage captureImage(String source) throws Exception {
-        return Actor.builder()
-            .setSource(source)
-            .generate()
-            .spawn()
-            .actorImage();
-    }
-
     public static CompleteRec compileForImport(String source) throws Exception {
         Rec actorRec = builder()
             .setSource(source)

@@ -40,12 +40,13 @@ public class TestLexerSymbols {
     @Test
     public void test03() {
         String keywords = """
-            act actor ask begin break case catch continue debug do else elseif end eof false finally for func if
-            import in local null of proc return self skip spawn tell then throw true try var when while""";
+            act actor as ask begin break case catch continue debug do else elseif end eof false finally for func handle
+            if import in local null of proc return self skip spawn stream tell then throw true try var when while""";
         Lexer lexer = new Lexer(keywords);
         assertTrue(lexer.nextToken().isKeyword("act"));
         assertTrue(lexer.nextToken().isKeyword("actor"));
-        assertTrue(lexer.nextToken().isContextualKeyword("ask"));
+        assertTrue(lexer.nextToken().isWeakKeyword("as"));
+        assertTrue(lexer.nextToken().isWeakKeyword("ask"));
         assertTrue(lexer.nextToken().isKeyword("begin"));
         assertTrue(lexer.nextToken().isKeyword("break"));
         assertTrue(lexer.nextToken().isKeyword("case"));
@@ -61,6 +62,7 @@ public class TestLexerSymbols {
         assertTrue(lexer.nextToken().isKeyword("finally"));
         assertTrue(lexer.nextToken().isKeyword("for"));
         assertTrue(lexer.nextToken().isKeyword("func"));
+        assertTrue(lexer.nextToken().isWeakKeyword("handle"));
         assertTrue(lexer.nextToken().isKeyword("if"));
         assertTrue(lexer.nextToken().isKeyword("import"));
         assertTrue(lexer.nextToken().isKeyword("in"));
@@ -72,7 +74,8 @@ public class TestLexerSymbols {
         assertTrue(lexer.nextToken().isKeyword("self"));
         assertTrue(lexer.nextToken().isKeyword("skip"));
         assertTrue(lexer.nextToken().isKeyword("spawn"));
-        assertTrue(lexer.nextToken().isContextualKeyword("tell"));
+        assertTrue(lexer.nextToken().isWeakKeyword("stream"));
+        assertTrue(lexer.nextToken().isWeakKeyword("tell"));
         assertTrue(lexer.nextToken().isKeyword("then"));
         assertTrue(lexer.nextToken().isKeyword("throw"));
         assertTrue(lexer.nextToken().isKeyword("true"));

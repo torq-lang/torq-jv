@@ -25,15 +25,6 @@ public abstract class ErrorWithSourceSpan extends RuntimeException implements So
         super(cause);
     }
 
-    public static void runWithPrintError(SourceRoutine routine) throws Exception {
-        try {
-            routine.apply();
-        } catch (ErrorWithSourceSpan exc) {
-            exc.printError();
-            throw exc;
-        }
-    }
-
     public final String formatWithSource(int lineNrWidth, int showBefore, int showAfter) {
         return sourceSpan() != null ?
             sourceSpan().formatWithMessage(getMessage(), lineNrWidth, showBefore, showAfter) :
@@ -44,10 +35,6 @@ public abstract class ErrorWithSourceSpan extends RuntimeException implements So
         System.err.println("==== BEGIN ====");
         System.err.println(formatWithSource(4, 5, 5));
         System.err.println("==== END ====");
-    }
-
-    public interface SourceRoutine {
-        void apply() throws Exception;
     }
 
 }

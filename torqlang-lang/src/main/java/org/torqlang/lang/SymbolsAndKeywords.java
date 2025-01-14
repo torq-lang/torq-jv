@@ -80,6 +80,7 @@ public final class SymbolsAndKeywords {
     static final String SELF_VALUE = "self";
     static final String SKIP_VALUE = "skip";
     static final String SPAWN_VALUE = "spawn";
+    static final String STREAM_VALUE = "stream";
     static final String TELL_VALUE = "tell";
     static final String THEN_VALUE = "then";
     static final String THROW_VALUE = "throw";
@@ -118,13 +119,6 @@ public final class SymbolsAndKeywords {
     }
 
     private SymbolsAndKeywords() {
-    }
-
-    public static boolean isContextualKeyword(String source, int begin, int end) {
-        return substringEquals(source, begin, end, HANDLE_VALUE) ||
-            substringEquals(source, begin, end, ASK_VALUE) ||
-            substringEquals(source, begin, end, TELL_VALUE) ||
-            substringEquals(source, begin, end, AS_VALUE);
     }
 
     public static boolean isKeyword(String source, int begin, int end) {
@@ -195,6 +189,14 @@ public final class SymbolsAndKeywords {
             return c2 == '>';
         }
         return false;
+    }
+
+    public static boolean isWeakKeyword(String source, int begin, int end) {
+        return substringEquals(source, begin, end, HANDLE_VALUE) ||
+            substringEquals(source, begin, end, ASK_VALUE) ||
+            substringEquals(source, begin, end, STREAM_VALUE) ||
+            substringEquals(source, begin, end, TELL_VALUE) ||
+            substringEquals(source, begin, end, AS_VALUE);
     }
 
     private static boolean substringEquals(String source, int begin, int end, String value) {

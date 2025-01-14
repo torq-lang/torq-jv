@@ -1,12 +1,13 @@
 act
 actor
-as
-ask
+as (weak)
+ask (weak)
 begin
 break
 case
 catch
 continue
+debug
 do
 else
 elseif
@@ -16,7 +17,7 @@ false
 finally
 for
 func
-handle
+handle (weak)
 if
 import
 in
@@ -29,7 +30,8 @@ return
 self
 skip
 spawn
-tell
+stream (weak)
+tell (weak)
 then
 throw
 true
