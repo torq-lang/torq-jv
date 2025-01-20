@@ -417,27 +417,8 @@ public final class Parser {
                 nextToken(); // accept 'skip' token
                 return new SkipSntc(current);
             }
-            if (current.substringEquals(DEBUG_VALUE)) {
-                return parseDebug();
-            }
         }
         return null;
-    }
-
-    private DebugSntc parseDebug() {
-        LexerToken debugToken = currentToken;
-        LexerToken current = nextToken(); // accept 'debug' token
-        if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
-            throw new ParserError(L_PAREN_EXPECTED, current);
-        }
-        nextToken(); // accept '(' token
-        List<SntcOrExpr> args = parseArgList();
-        current = currentToken;
-        if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
-            throw new ParserError(R_PAREN_EXPECTED, current);
-        }
-        nextToken(); // accept ')' token
-        return new DebugSntc(args, debugToken.adjoin(current));
     }
 
     private FieldExpr parseFieldExpr() {

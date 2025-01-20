@@ -92,7 +92,7 @@ public interface SourceSpan {
 
     int end();
 
-    default String formatWithMessage(String message, int lineNrWidth, int showBefore, int showAfter) {
+    default String formatSource(String message, int lineNrWidth, int showBefore, int showAfter) {
         LineAndChar location = toLineAndChar(this, 0, 0);
         StringBuilder answerBuf = new StringBuilder();
         int lineIndex = location.lineNr;

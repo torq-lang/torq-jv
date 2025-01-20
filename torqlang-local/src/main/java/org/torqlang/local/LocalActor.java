@@ -12,7 +12,6 @@ import org.torqlang.klvm.*;
 import org.torqlang.util.NeedsImpl;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.torqlang.local.OnMessageResult.FINISHED;
 import static org.torqlang.local.OnMessageResult.NOT_FINISHED;
@@ -45,7 +44,7 @@ final class LocalActor extends AbstractActor {
     private final ActorSystem system;
     private final IdentityHashMap<Var, List<ChildVar>> triggers = new IdentityHashMap<>();
 
-    private boolean trace;
+    private boolean streamTrace = false;
     private Machine machine;
     private EnvEntry askHandlerEntry;
     private EnvEntry tellHandlerEntry;
@@ -57,23 +56,22 @@ final class LocalActor extends AbstractActor {
     private List<Envelope> selectableResponses = Collections.emptyList();
     private List<Envelope> suspendedResponses = Collections.emptyList();
 
-    LocalActor(Address address, ActorImage image, boolean trace) {
-        this(address, image.system, image.askHandlerEntry, image.tellHandlerEntry, trace);
+    LocalActor(Address address, ActorImage image) {
+        this(address, image.system, image.askHandlerEntry, image.tellHandlerEntry);
         machine = new Machine(this, null);
     }
 
-    LocalActor(Address address, ActorSystem system, boolean trace) {
-        this(address, system, null, null, trace);
+    LocalActor(Address address, ActorSystem system) {
+        this(address, system, null, null);
     }
 
-    private LocalActor(Address address, ActorSystem system, EnvEntry askHandlerEntry, EnvEntry tellHandlerEntry, boolean trace) {
+    private LocalActor(Address address, ActorSystem system, EnvEntry askHandlerEntry, EnvEntry tellHandlerEntry) {
         super(address, system.createMailbox(), system.executor(), system.createLogger());
         this.system = system;
         this.askHandlerEntry = askHandlerEntry;
         this.tellHandlerEntry = tellHandlerEntry;
-        this.trace = trace;
-        if (trace) {
-            logInfo("Created");
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorCreate(this, system, askHandlerEntry, tellHandlerEntry);
         }
     }
 
@@ -179,13 +177,12 @@ final class LocalActor extends AbstractActor {
     }
 
     static ActorRef spawn(Address address, ActorImage image) {
-        return new LocalActor(address, image, false);
+        return new LocalActor(address, image);
     }
 
     private void addParentVarDependency(Var triggerVar, Var parentVar, Var childVar, LocalActor child) {
-        if (trace) {
-            logInfo("Adding bind dependency on var " + triggerVar + " to synchronize parent var " +
-                    parentVar + " with child var: " + childVar + " at child " + child.address());
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorAddParentVarDependency(this, triggerVar, parentVar, childVar, child);
         }
         List<ChildVar> childVars = triggers.get(triggerVar);
         if (childVars == null) {
@@ -217,9 +214,6 @@ final class LocalActor extends AbstractActor {
         // and bind it explicitly.
 
         if (envelope.message() instanceof FailedValue childFailedValue) {
-            if (trace) {
-                logInfo("Binding FailedValue to tail Var of stream " + streamObj.tail.element);
-            }
             streamObj.tail.element.bindToValue(childFailedValue, null);
             streamObj.appendUnboundTail();
             return;
@@ -239,9 +233,6 @@ final class LocalActor extends AbstractActor {
             if (more.value) {
                 streamObj.fetchNextFromPublisher();
             } else {
-                if (trace) {
-                    logInfo("Binding 'eof' to stream tail variable");
-                }
                 streamObj.tail.element.bindToValue(Eof.SINGLETON, null);
             }
             return;
@@ -252,9 +243,6 @@ final class LocalActor extends AbstractActor {
         // stream.
         CompleteTuple values = (CompleteTuple) messageRec;
         Complete responseValue = values.valueAt(0);
-        if (trace) {
-            logInfo("Binding first tuple value to stream tail variable: " + responseValue);
-        }
         streamObj.tail.element.bindToValue(responseValue, null);
         streamObj.appendRemainingResponseValues(values);
     }
@@ -281,18 +269,14 @@ final class LocalActor extends AbstractActor {
         //         (a) Create a FailedValue with an error and native cause
         //         (b) Native error should be "error#{name: _, message: _, ...}"
         waitState = null;
-        if (trace) {
-            logInfo("Computing");
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorComputeTimeSlice(this, machine);
         }
         ComputeAdvice advice = machine.compute(10_000);
         if (advice.isWait()) {
             ComputeWait computeWait = (ComputeWait) advice;
-            if (trace) {
-                String idents = machine.stack().env.collectIdents((Var) computeWait.barrier).
-                    stream().map(Ident::toString).collect(Collectors.joining(", ", "[", "]"));
-                String label = "Waiting on " + computeWait.barrier + " with identifiers " + idents;
-                String message = "Waiting on a variable\n" + machine.stack().stmt.formatWithMessage(label, 5, 1, 2);
-                logInfo(message);
+            if (DebuggerSetting.debugger() != null) {
+                DebuggerSetting.debugger().onActorComputeWait(this, computeWait, machine);
             }
             waitState = computeWait.barrier;
         } else if (advice.isPreempt()) {
@@ -303,17 +287,23 @@ final class LocalActor extends AbstractActor {
         return advice;
     }
 
-    private ComputeAdvice computeTimeSliceUsingHandler(Value value, EnvEntry handlerEntry) {
-        if (trace) {
-            logInfo("Processing request message " + value);
+    private ComputeAdvice computeMessageUsingHandler(Value message, EnvEntry handlerEntry) {
+        boolean debuggerIsActive = DebuggerSetting.debugger() != null;
+        if (debuggerIsActive) {
+            DebuggerSetting.debugger().onActorComputeMessageUsingHandler(this, message, handlerEntry);
         }
         if (machine.stack() != null) {
             throw new IllegalStateException("Previous computation is not ended");
         }
-        EnvEntry messageEntry = new EnvEntry(Ident.$NEXT, new Var(value));
+        EnvEntry messageEntry = new EnvEntry(Ident.$NEXT, new Var(message));
         Env computeEnv = Env.create(Env.emptyEnv(), handlerEntry, messageEntry);
         ApplyStmt computeStmt = new ApplyStmt(Ident.$HANDLER, Collections.singletonList(Ident.$NEXT), emptySourceSpan());
-        machine.pushStackEntry(computeStmt, computeEnv);
+        if (debuggerIsActive) {
+            DebugStmt debugStmt = new DebugStmt(DebuggerSetting.debugger(), computeStmt, computeEnv, computeStmt);
+            machine.pushStackEntry(debugStmt, Env.emptyEnv());
+        } else {
+            machine.pushStackEntry(computeStmt, computeEnv);
+        }
         return computeTimeSlice();
     }
 
@@ -330,14 +320,9 @@ final class LocalActor extends AbstractActor {
         return !mailbox.isEmpty();
     }
 
-    private void logRespondingWithValue(Complete value) {
-        logInfo("Responding to " + activeRequest.requester().address() + " target " +
-                activeRequest.requestId() + " with " + value);
-    }
-
     private LocalAddress nextChildAddress() {
         childCount++;
-        return LocalAddress.create((LocalAddress) address(), Integer.toString(childCount));
+        return LocalAddress.create(address(), Integer.toString(childCount));
     }
 
     private OnMessageResult onActRequest(Envelope envelope) {
@@ -394,8 +379,9 @@ final class LocalActor extends AbstractActor {
     }
 
     private OnMessageResult onConfigure(Envelope envelope) {
-        if (trace) {
-            logInfo("Configuring");
+        boolean debuggerIsActive = DebuggerSetting.debugger() != null;
+        if (debuggerIsActive) {
+            DebuggerSetting.debugger().onActorConfigure(this, envelope);
         }
 
         // Extract the actor configuration from the incoming Configure message
@@ -423,7 +409,12 @@ final class LocalActor extends AbstractActor {
         envEntries.add(new EnvEntry(Ident.$HANDLERS_CTOR, constructorVar));
         Env configEnv = Env.create(ROOT_ENV, envEntries);
         ApplyStmt computeStmt = new ApplyStmt(Ident.$HANDLERS_CTOR, argIdents, emptySourceSpan());
-        machine.pushStackEntry(computeStmt, configEnv);
+        if (debuggerIsActive) {
+            DebugStmt debugStmt = new DebugStmt(DebuggerSetting.debugger(), computeStmt, configEnv, computeStmt);
+            machine.pushStackEntry(debugStmt, Env.emptyEnv());
+        } else {
+            machine.pushStackEntry(computeStmt, configEnv);
+        }
         ComputeAdvice advice = computeTimeSlice();
         if (advice != ComputeEnd.SINGLETON) {
             throw new IllegalStateException("Did not compute handlers");
@@ -476,9 +467,8 @@ final class LocalActor extends AbstractActor {
             allResponses.addAll(suspendedResponses);
             for (Envelope envelope : allResponses) {
                 try {
-                    if (trace) {
-                        logInfo("Received response for target: " + envelope.requestId() +
-                                " with value: " + envelope.message());
+                    if (DebuggerSetting.debugger() != null) {
+                        DebuggerSetting.debugger().onActorResponseReceived(this, envelope, envelope.requestId());
                     }
                     bindResponseValue(envelope);
                 } catch (WaitException exc) {
@@ -497,9 +487,6 @@ final class LocalActor extends AbstractActor {
             // on other responses to complete.
             suspendedResponses = Collections.emptyList();
             selectableResponses = waitingResponses;
-            if (trace) {
-                logInfo("Resuming computation after binding response values");
-            }
             computeTimeSlice();
             return NOT_FINISHED;
         } else {
@@ -511,29 +498,28 @@ final class LocalActor extends AbstractActor {
                 return onControl(only);
             }
             if (only.isNotify()) {
-                computeTimeSliceUsingHandler((Value) only.message(), tellHandlerEntry);
+                computeMessageUsingHandler((Value) only.message(), tellHandlerEntry);
                 return NOT_FINISHED;
             }
             // We know we have a request
             activeRequest = only;
-            computeTimeSliceUsingHandler((Value) only.message(), askHandlerEntry);
+            computeMessageUsingHandler((Value) only.message(), askHandlerEntry);
             return NOT_FINISHED;
         }
     }
 
     /*
-     * An original mapping may begin as P -> (P, P') specifying that binding P synchronizes P and P'. However,
-     * if P is bound to a partial record {feature: X}, as an example, then the mapping P -> (P, P') is replaced with
-     * a new mapping of X -> (P, P') specifying that binding field value X synchronizes P with P'. This process is
-     * iterative in cases where P is bound to a compound partial record, such as {name: X, address: Y}. Two possible
-     * binding sequences in that case are P -> (P, P'), X -> (P, P'), Y -> (P, P'); and P -> (P, P'), Y -> (P, P'),
-     * X -> (P, P'). If all of P's components are bound before P itself is bound, then P is a complete value. If some
-     * but not all of P's components are bound before P itself, then the bound components are not present in the
-     * possible binding sequences.
+     * An original mapping may begin as P -> (P, P') where binding P synchronizes P and P'. However, if P is bound to
+     * a partial record {feature: X}, as an example, then the mapping P -> (P, P') is replaced with a new mapping
+     * X -> (P, P') where binding X synchronizes P with P'. This process is iterative in cases where P is bound to a
+     * compound partial record, such as {name: X, address: Y}. Two possible binding sequences in this example are
+     * P -> (P, P'), X -> (P, P'), Y -> (P, P'); and P -> (P, P'), Y -> (P, P'), X -> (P, P'). If all of P's components
+     * are bound before P itself is bound, then P is a complete value. If some but not all of P's components are bound
+     * before P itself, then the bound components are not present in the possible binding sequences.
      */
     private void onParentVarBound(Var triggerVar, Value value) {
-        if (trace) {
-            logInfo("Trigger fired on var " + triggerVar + " with value: " + value);
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorParentVarBound(this, triggerVar, value);
         }
         List<ChildVar> childVars = triggers.remove(triggerVar);
         if (childVars != null) {
@@ -543,9 +529,8 @@ final class LocalActor extends AbstractActor {
                     // Resolve parent var as a complete value
                     parentComplete = childVar.parentVar.resolveValueOrVar().checkComplete();
                 } catch (WaitVarException wx) {
-                    if (trace) {
-                        logInfo("Cannot synchronize parent var " + childVar.parentVar +
-                                " because we are waiting to bind " + wx.barrier());
+                    if (DebuggerSetting.debugger() != null) {
+                        DebuggerSetting.debugger().onActorCannotSyncWaitingToBind(this, childVar.parentVar, childVar.childVar, wx.barrier());
                     }
                     // The parentVar is not yet complete. Therefore, we need to create a new trigger to try again
                     // when the next part of parentVar is completed.
@@ -560,10 +545,9 @@ final class LocalActor extends AbstractActor {
                     }
                     return;
                 }
-                if (trace) {
-                    logInfo("Synchronizing from parent var " + childVar.parentVar +
-                            " to child var " + childVar.childVar + " at actor: " + childVar.child.address() +
-                            " with value: " + parentComplete);
+                if (DebuggerSetting.debugger() != null) {
+                    DebuggerSetting.debugger().onActorSyncParentVarToChildVar(this, childVar.parentVar,
+                        childVar.childVar, parentComplete, childVar.child);
                 }
                 childVar.child.send(Envelope.createControlNotify(new SyncVar(childVar.childVar, parentComplete)));
             }
@@ -579,8 +563,8 @@ final class LocalActor extends AbstractActor {
     }
 
     private OnMessageResult onResume() {
-        if (trace) {
-            logInfo("Resuming computation");
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorResume(this);
         }
         computeTimeSlice();
         return NOT_FINISHED;
@@ -594,12 +578,12 @@ final class LocalActor extends AbstractActor {
     }
 
     /*
-     * SyncVar synchronizes a free variable by passing a completed value from the parent to the child. Because the
-     * free child variable is unbound (not an undetermined record), we should never trigger a WaitException.
+     * SyncVar synchronizes a free variable when used to receive a completed value from the parent actor. Because the
+     * free child variable is unbound (not an undetermined record), we will never trigger a WaitException.
      */
     private OnMessageResult onSyncVar(SyncVar syncVar) {
-        if (trace) {
-            logInfo("Synchronizing var: " + syncVar.var + " with value: " + syncVar.value);
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorSyncVar(this, syncVar.var, syncVar.value);
         }
         try {
             syncVar.var.bindToValue(syncVar.value, null);
@@ -629,10 +613,12 @@ final class LocalActor extends AbstractActor {
         }
         // RESPOND TO ACTIVE REQUEST
         if (activeRequest != null) {
-            if (trace) {
-                logRespondingWithValue(failedValue);
+            Envelope response = Envelope.createResponse(failedValue, activeRequest.requestId());
+            if (DebuggerSetting.debugger() != null) {
+                DebuggerSetting.debugger().onActorRespondingWithValue(this, activeRequest.requester(),
+                    activeRequest, response);
             }
-            activeRequest.requester().send(Envelope.createResponse(failedValue, activeRequest.requestId()));
+            activeRequest.requester().send(response);
         } else {
             String errorText = "Actor halted\n" + failedValue.toDetailsString();
             logError(errorText);
@@ -648,7 +634,7 @@ final class LocalActor extends AbstractActor {
 
     private void performCallbackToAct(List<CompleteOrIdent> ys, Env env, Machine machine) {
 
-        LocalActor child = new LocalActor(nextChildAddress(), system, trace);
+        LocalActor child = new LocalActor(nextChildAddress(), system);
 
         ActStmt actStmt = (ActStmt) machine.current().stmt;
 
@@ -749,10 +735,12 @@ final class LocalActor extends AbstractActor {
             responseValue = new FailedValue(address().toString(), childFailedValue.error(),
                 machine.current(), childFailedValue, null);
         }
-        if (trace) {
-            logRespondingWithValue(responseValue);
+        Envelope response = Envelope.createResponse(responseValue, activeRequest.requestId());
+        if (DebuggerSetting.debugger() != null) {
+            DebuggerSetting.debugger().onActorRespondingWithValue(this, activeRequest.requester(),
+                activeRequest, response);
         }
-        activeRequest.requester().send(Envelope.createResponse(responseValue, activeRequest.requestId()));
+        activeRequest.requester().send(response);
     }
 
     private ActorRefObj spawnActorCfg(ActorCfg parentCfg) throws WaitException {
@@ -780,7 +768,7 @@ final class LocalActor extends AbstractActor {
         }
         CompleteClosure childHandlersCtor = new CompleteClosure(parentHandlersCtor.procDef(), childCapturedEnvMap);
         Configure configure = new Configure(new ActorCfg(parentCfg.args(), childHandlersCtor));
-        LocalActor childActor = new LocalActor(nextChildAddress(), system, trace);
+        LocalActor childActor = new LocalActor(nextChildAddress(), system);
 
         // We have a complete configuration and can now configure a concurrent actor process.
         childActor.send(Envelope.createControlNotify(configure));
@@ -788,7 +776,7 @@ final class LocalActor extends AbstractActor {
     }
 
     private ActorRefObj spawnNativeActorCfg(NativeActorCfg nativeActorCfg) {
-        ActorRef actorRef = nativeActorCfg.spawn(nextChildAddress(), system, trace);
+        ActorRef actorRef = nativeActorCfg.spawn(nextChildAddress(), system);
         return new ActorRefObj(actorRef);
     }
 
@@ -929,7 +917,7 @@ final class LocalActor extends AbstractActor {
         @Override
         public void apply(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
 
-            if (localActor.trace) {
+            if (localActor.streamTrace) {
                 localActor.logInfo("StreamIter performing an iteration");
             }
 
@@ -941,7 +929,7 @@ final class LocalActor extends AbstractActor {
 
             if (waiting) {
                 if (headValueOrVar instanceof Var var) {
-                    if (localActor.trace) {
+                    if (localActor.streamTrace) {
                         localActor.logInfo("StreamIter cannot iterate because we are already waiting, throwing a WaitVarException");
                     }
                     throw new WaitVarException(var);
@@ -952,7 +940,7 @@ final class LocalActor extends AbstractActor {
             }
 
             if (headValueOrVar instanceof Var var) {
-                if (localActor.trace) {
+                if (localActor.streamTrace) {
                     localActor.logInfo("StreamIter binding unbound stream head " + var + " to identifier " + ys.get(0));
                 }
                 ValueOrVar y = ys.get(0).resolveValueOrVar(env);
@@ -963,7 +951,7 @@ final class LocalActor extends AbstractActor {
 
             Complete headValue = (Complete) headValueOrVar;
             ValueOrVar y = ys.get(0).resolveValueOrVar(env);
-            if (localActor.trace) {
+            if (localActor.streamTrace) {
                 localActor.logInfo("StreamIter binding next value " + headValue + " to iterator variable " + y);
             }
             y.bindToValue(headValue, null);
@@ -996,7 +984,7 @@ final class LocalActor extends AbstractActor {
         private void appendRemainingResponseValues(CompleteTuple values) {
             for (int i = 1; i < values.fieldCount(); i++) {
                 Complete appendValue = values.valueAt(i);
-                if (localActor.trace) {
+                if (localActor.streamTrace) {
                     localActor.logInfo("StreamObj appending response to stream tail: " + appendValue);
                 }
                 StreamEntry newTail = new StreamEntry(appendValue);
@@ -1013,11 +1001,11 @@ final class LocalActor extends AbstractActor {
         }
 
         private void fetchNextFromPublisher() {
-            if (localActor.trace) {
+            if (localActor.streamTrace) {
                 localActor.logInfo("StreamObj sending request " + requestMessage + " to " + publisher.referent().address());
             }
             publisher.referent().send(Envelope.createRequest(requestMessage, localActor, requestId));
-            if (localActor.trace) {
+            if (localActor.streamTrace) {
                 localActor.logInfo("StreamObj request " + requestMessage + " sent to " + publisher.referent().address());
             }
         }

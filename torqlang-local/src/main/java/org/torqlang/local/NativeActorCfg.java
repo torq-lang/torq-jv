@@ -9,6 +9,6 @@ package org.torqlang.local;
 
 public interface NativeActorCfg {
 
-    ActorRef spawn(Address address, ActorSystem system, boolean trace);
+    ActorRef spawn(Address address, ActorSystem system);
 
 }

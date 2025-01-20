@@ -63,11 +63,9 @@ final class TimerPack {
         private int currentTicks;
         private int requestedTicks;
         private ScheduledFuture<?> scheduledFuture;
-        private boolean trace;
 
-        public Timer(Address address, ActorSystem system, boolean trace, Num periodNum, Str timeUnitStr) {
+        public Timer(Address address, ActorSystem system, Num periodNum, Str timeUnitStr) {
             super(address, system.createMailbox(), system.executor(), system.createLogger());
-            this.trace = trace;
             this.periodNum = periodNum;
             if (timeUnitStr.value.equalsIgnoreCase("microseconds")) {
                 timeUnit = TimeUnit.MICROSECONDS;
@@ -77,9 +75,6 @@ final class TimerPack {
                 timeUnit = TimeUnit.SECONDS;
             } else {
                 throw new IllegalArgumentException("Not 'microseconds', 'milliseconds', or 'seconds'");
-            }
-            if (trace) {
-                logInfo("Timer created");
             }
         }
 
@@ -137,9 +132,6 @@ final class TimerPack {
                 throw new IllegalArgumentException("Invalid timer callback: " + envelope);
             }
             if (activeRequest == null) {
-                if (trace) {
-                    logInfo("Timer received callback after it completed: " + envelope.requestId());
-                }
                 return OnMessageResult.NOT_FINISHED;
             }
             long now = System.currentTimeMillis();
@@ -147,9 +139,6 @@ final class TimerPack {
                 scheduledFuture.cancel(true);
                 activeRequest.requester().send(createResponse(EOF_RECORD, activeRequest.requestId()));
                 activeRequest = null;
-                if (trace) {
-                    logInfo("Timer is now complete: " + envelope.requestId());
-                }
             } else {
                 currentTicks++;
                 activeRequest.requester().send(createResponse(CompleteTuple.singleton(Int64.of(now)),
@@ -159,9 +148,6 @@ final class TimerPack {
         }
 
         private OnMessageResult onTimerRequest(Envelope envelope) {
-            if (trace) {
-                logInfo("Timer received a new request");
-            }
             if (activeRequest != null) {
                 throw new IllegalStateException("Timer is already active: " + envelope);
             }
@@ -184,8 +170,8 @@ final class TimerPack {
         }
 
         @Override
-        public final ActorRef spawn(Address address, ActorSystem system, boolean trace) {
-            return new Timer(address, system, trace, periodNum, timeUnitStr);
+        public final ActorRef spawn(Address address, ActorSystem system) {
+            return new Timer(address, system, periodNum, timeUnitStr);
         }
     }
 

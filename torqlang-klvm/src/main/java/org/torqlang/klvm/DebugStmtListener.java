@@ -7,5 +7,6 @@
 
 package org.torqlang.klvm;
 
-public interface DebugOwner {
+public interface DebugStmtListener {
+    void onDebugStmt(DebugStmt stmt, Machine machine);
 }

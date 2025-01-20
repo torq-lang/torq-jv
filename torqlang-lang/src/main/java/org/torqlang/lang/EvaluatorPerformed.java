@@ -7,25 +7,24 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Env;
-import org.torqlang.klvm.Ident;
-import org.torqlang.klvm.Kernel;
-import org.torqlang.klvm.Var;
+import org.torqlang.klvm.*;
 
 public interface EvaluatorPerformed {
+    DebugStmtListener debugStmtListener();
+
     Env env();
 
     Ident exprIdent();
 
     Kernel kernel();
 
-    long maxTime();
-
     Env rootEnv();
 
     SntcOrExpr sntcOrExpr();
 
     String source();
+
+    long timeSlice();
 
     Var varAtName(String name);
 }

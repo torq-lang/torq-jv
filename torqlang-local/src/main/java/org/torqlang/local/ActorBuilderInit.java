@@ -36,8 +36,6 @@ public interface ActorBuilderInit {
 
     ActorBuilderInit setSystem(ActorSystem system);
 
-    ActorBuilderInit setTrace(boolean trace);
-
     ActorBuilderSpawned spawn(ActorCfg actorCfg) throws Exception;
 
     ActorBuilderSpawned spawn(Rec actorRec) throws Exception;

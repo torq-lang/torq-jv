@@ -7,15 +7,16 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.klvm.DebugStmtListener;
 import org.torqlang.klvm.Env;
 import org.torqlang.klvm.Ident;
 
 public interface EvaluatorParsed {
+    DebugStmtListener debugStmtListener();
+
     Ident exprIdent();
 
     EvaluatorGenerated generate() throws Exception;
-
-    long maxTime();
 
     EvaluatorParsed parse() throws Exception;
 
@@ -26,4 +27,6 @@ public interface EvaluatorParsed {
     SntcOrExpr sntcOrExpr();
 
     String source();
+
+    long timeSlice();
 }

@@ -9,6 +9,8 @@ package org.torqlang.examples;
 
 import org.torqlang.local.ActorSystem;
 import org.torqlang.local.ConsoleLogger;
+import org.torqlang.local.DebuggerSetting;
+import org.torqlang.local.DefaultDebugger;
 import org.torqlang.server.EchoHandler;
 import org.torqlang.server.LocalServer;
 import org.torqlang.server.ServerProps;
@@ -31,6 +33,8 @@ import static org.torqlang.server.ServerProps.RESOURCES_PROP;
 public final class NorthwindServer {
 
     public static void main(String[] args) throws Exception {
+
+//        DebuggerSetting.setDebugger(new DefaultDebugger(true, ConsoleLogger.SINGLETON));
 
         ConsoleLogger.SINGLETON.info("Process ID: " + ProcessHandle.current().pid());
         ConsoleLogger.SINGLETON.info("System executor: " + ActorSystem.defaultExecutor());

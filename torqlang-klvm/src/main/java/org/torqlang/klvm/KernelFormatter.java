@@ -42,7 +42,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     private static final String $CREATE_PROC = "$create_proc";
     private static final String $CREATE_REC = "$create_rec";
     private static final String $CREATE_TUPLE = "$create_tuple";
-    private static final String $DEBUG = "$debug";
     private static final String $DIV = "$div";
     private static final String $EQ = "$eq";
     private static final String $GE = "$ge";
@@ -292,8 +291,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitDebugStmt(DebugStmt stmt, FormatterState state) throws Exception {
-        state.write($DEBUG);
-        formatApplyArgs(stmt.args, state);
+        stmt.nextStmt().accept(this, state);
         return null;
     }
 

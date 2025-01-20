@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * ======================
  * INIT
  *   properties: (none)
- *   methods:    setAddress, setArgs, setTrace, setSystem, setSource, setActorSntc, setActorCfg
+ *   methods:    setAddress, setArgs, setSystem, setSource, setActorSntc, setActorCfg
  * READY
  *   properties: source
  *   methods:    parse, rewrite, generate, construct, configure, spawn
@@ -62,7 +62,7 @@ import java.util.concurrent.TimeUnit;
  *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorCfg, actorRef
  *   methods:    (none)
  *
- * Not shown above are the properties system, address, args, and trace, which are available after INIT.
+ * Not shown above are the properties system, address, and args, which are available after INIT.
  */
 public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, ActorBuilderParsed,
     ActorBuilderRewritten, ActorBuilderGenerated, ActorBuilderConstructed, ActorBuilderConfigured, ActorBuilderSpawned
@@ -75,7 +75,6 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     private ActorImage actorImage;
     private ActorSystem system;
     private String source;
-    private boolean trace;
     private ActorExpr actorExpr;
     private ActorSntc actorSntc;
     private Ident actorIdent;
@@ -192,6 +191,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         List<Stmt> localStmts = new ArrayList<>();
         localStmts.add(new ApplyStmt(Ident.$ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
         SeqStmt seqStmt = new SeqStmt(localStmts, SourceSpan.emptySourceSpan());
+        //TODO: Wrap with DebugStmt if in debug mode
         Stack stack = new Stack(seqStmt, env, null);
         Machine.compute(stack, TIME_SLICE_10_000);
         try {
@@ -229,6 +229,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot createActorRec at state: " + state);
         }
         Env env = Env.create(LocalActor.rootEnv(), new EnvEntry(actorIdent, new Var()));
+        //TODO: Wrap with DebugStmt if in debug mode
         Stack stack = new Stack(createActorRecStmt, env, null);
         Machine.compute(stack, TIME_SLICE_10_000);
         try {
@@ -404,15 +405,6 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorBuilderInit setTrace(boolean trace) {
-        if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setTrace at state: " + state);
-        }
-        this.trace = trace;
-        return this;
-    }
-
-    @Override
     public final String source() {
         return source;
     }
@@ -450,7 +442,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         }
         checkAddress();
         checkSystem();
-        localActor = new LocalActor(address, system, trace);
+        localActor = new LocalActor(address, system);
         localActor.configure(actorCfg);
         state = State.SPAWNED;
         return this;

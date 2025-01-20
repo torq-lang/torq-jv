@@ -57,11 +57,9 @@ public class NorthwindDbPack {
     static final class NorthwindDbAdapter implements ActorRef {
 
         private final Address address;
-        private final boolean trace;
 
-        NorthwindDbAdapter(Address address, boolean trace) {
+        NorthwindDbAdapter(Address address) {
             this.address = address;
-            this.trace = trace;
         }
 
         @Override
@@ -134,8 +132,8 @@ public class NorthwindDbPack {
         }
 
         @Override
-        public final ActorRef spawn(Address address, ActorSystem system, boolean trace) {
-            return new NorthwindDbAdapter(address, trace);
+        public final ActorRef spawn(Address address, ActorSystem system) {
+            return new NorthwindDbAdapter(address);
         }
     }
 

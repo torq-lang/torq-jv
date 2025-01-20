@@ -58,7 +58,6 @@ public final class SymbolsAndKeywords {
     static final String CASE_VALUE = "case";
     static final String CATCH_VALUE = "catch";
     static final String CONTINUE_VALUE = "continue";
-    static final String DEBUG_VALUE = "debug";
     static final String DO_VALUE = "do";
     static final String ELSE_VALUE = "else";
     static final String ELSEIF_VALUE = "elseif";
@@ -98,7 +97,7 @@ public final class SymbolsAndKeywords {
         {DO_VALUE, IF_VALUE, IN_VALUE, OF_VALUE},
         {ACT_VALUE, END_VALUE, EOF_VALUE, FOR_VALUE, TRY_VALUE, VAR_VALUE},
         {CASE_VALUE, ELSE_VALUE, FUNC_VALUE, NULL_VALUE, PROC_VALUE, SELF_VALUE, SKIP_VALUE, THEN_VALUE, TRUE_VALUE, WHEN_VALUE},
-        {ACTOR_VALUE, BEGIN_VALUE, BREAK_VALUE, CATCH_VALUE, DEBUG_VALUE, FALSE_VALUE, LOCAL_VALUE, SPAWN_VALUE, THROW_VALUE, WHILE_VALUE},
+        {ACTOR_VALUE, BEGIN_VALUE, BREAK_VALUE, CATCH_VALUE, FALSE_VALUE, LOCAL_VALUE, SPAWN_VALUE, THROW_VALUE, WHILE_VALUE},
         {ELSEIF_VALUE, IMPORT_VALUE, RETURN_VALUE},
         {FINALLY_VALUE},
         {CONTINUE_VALUE}

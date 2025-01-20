@@ -605,16 +605,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitDebugSntc(DebugSntc lang, LocalTarget target) throws Exception {
-        List<CompleteOrIdent> args = new ArrayList<>();
-        for (SntcOrExpr arg : lang.args) {
-            args.add(arg.accept(this, target));
-        }
-        target.addStmt(new DebugStmt(args, lang));
-        return null;
-    }
-
-    @Override
     public final CompleteOrIdent visitDec128AsExpr(Dec128AsExpr lang, LocalTarget target) {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         if (exprIdent == null) {

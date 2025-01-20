@@ -40,8 +40,8 @@ public class TestLexerSymbols {
     @Test
     public void test03() {
         String keywords = """
-            act actor as ask begin break case catch continue debug do else elseif end eof false finally for func handle
-            if import in local null of proc return self skip spawn stream tell then throw true try var when while""";
+            act actor as ask begin break case catch continue do else elseif end eof false finally for func handle if
+            import in local null of proc return self skip spawn stream tell then throw true try var when while""";
         Lexer lexer = new Lexer(keywords);
         assertTrue(lexer.nextToken().isKeyword("act"));
         assertTrue(lexer.nextToken().isKeyword("actor"));
@@ -52,7 +52,6 @@ public class TestLexerSymbols {
         assertTrue(lexer.nextToken().isKeyword("case"));
         assertTrue(lexer.nextToken().isKeyword("catch"));
         assertTrue(lexer.nextToken().isKeyword("continue"));
-        assertTrue(lexer.nextToken().isKeyword("debug"));
         assertTrue(lexer.nextToken().isKeyword("do"));
         assertTrue(lexer.nextToken().isKeyword("else"));
         assertTrue(lexer.nextToken().isKeyword("elseif"));

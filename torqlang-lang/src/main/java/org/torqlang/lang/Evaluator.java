@@ -30,18 +30,18 @@ import java.util.List;
  *
  * INIT
  *   properties: (none)
- *   methods:    setRootEnv, setExprIdent, setMaxTime, addVar, setSource, setSntcOrExpr
+ *   methods:    setDebugStmtListener, setRootEnv, setExprIdent, setTimeSlice, addVar, setSource, setSntcOrExpr
  * READY
- *   properties: rootEnv, exprIdent, maxTime, source
+ *   properties: debugStmtListener, rootEnv, exprIdent, timeSlice, source
  *   methods:    parse, generate, perform
  * PARSED
- *   properties: rootEnv, exprIdent, maxTime, source, sntcOrExpr
+ *   properties: debugStmtListener, rootEnv, exprIdent, timeSlice, source, sntcOrExpr
  *   methods:    generate, perform
  * GENERATED
- *   properties: rootEnv, exprIdent, maxTime, source, sntcOrExpr, kernel
+ *   properties: debugStmtListener, rootEnv, exprIdent, timeSlice, source, sntcOrExpr, kernel
  *   methods:    perform
  * PERFORMED
- *   properties: rootEnv, env, exprIdent, maxTime, source, sntcOrExpr, kernel
+ *   properties: debugStmtListener, rootEnv, env, exprIdent, timeSlice, source, sntcOrExpr, kernel
  *   methods:    (none)
  */
 public final class Evaluator implements EvaluatorInit, EvaluatorReady, EvaluatorParsed,
@@ -57,11 +57,12 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     private String source;
     private SntcOrExpr sntcOrExpr;
     private Kernel kernel;
-    private long maxTime;
+    private DebugStmtListener debugStmtListener;
+    private long timeSlice;
 
     private Evaluator() {
         rootEnv = Env.emptyEnv();
-        maxTime = 10_000;
+        timeSlice = 10_000;
         envEntries = new ArrayList<>();
         state = State.INIT;
     }
@@ -86,6 +87,11 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
         }
         envEntries.add(new EnvEntry(ident, var));
         return this;
+    }
+
+    @Override
+    public final DebugStmtListener debugStmtListener() {
+        return debugStmtListener;
     }
 
     @Override
@@ -122,11 +128,6 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
-    public final long maxTime() {
-        return maxTime;
-    }
-
-    @Override
     public final EvaluatorParsed parse() throws Exception {
         if (state != State.READY) {
             throw new IllegalStateException("Cannot parse at state: " + state);
@@ -149,8 +150,12 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
             throw new IllegalStateException("Cannot perform at state: " + state);
         }
         env = Env.create(rootEnv, envEntries);
-        Stack stack = new Stack((Stmt) kernel, env, null);
-        Machine.compute(stack, maxTime);
+        Stmt stmt = (Stmt) kernel;
+        if (debugStmtListener != null) {
+            stmt = new DebugStmt(debugStmtListener, stmt, env, stmt);
+        }
+        Stack stack = new Stack(stmt, env, null);
+        Machine.compute(stack, timeSlice);
         state = State.PERFORMED;
         return this;
     }
@@ -161,20 +166,17 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
+    public final EvaluatorInit setDebugStmtListener(DebugStmtListener debugStmtListener) {
+        this.debugStmtListener = debugStmtListener;
+        return this;
+    }
+
+    @Override
     public final EvaluatorInit setExprIdent(Ident exprIdent) {
         if (state != State.INIT) {
             throw new IllegalStateException("Cannot setExprIdent at state: " + state);
         }
         this.exprIdent = exprIdent;
-        return this;
-    }
-
-    @Override
-    public final Evaluator setMaxTime(long maxTime) {
-        if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setMaxTime at state: " + state);
-        }
-        this.maxTime = maxTime;
         return this;
     }
 
@@ -208,6 +210,15 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
+    public final Evaluator setTimeSlice(long timeSlice) {
+        if (state != State.INIT) {
+            throw new IllegalStateException("Cannot setTimeSlice at state: " + state);
+        }
+        this.timeSlice = timeSlice;
+        return this;
+    }
+
+    @Override
     public final SntcOrExpr sntcOrExpr() {
         return sntcOrExpr;
     }
@@ -215,6 +226,11 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     @Override
     public final String source() {
         return source;
+    }
+
+    @Override
+    public final long timeSlice() {
+        return timeSlice;
     }
 
     @Override

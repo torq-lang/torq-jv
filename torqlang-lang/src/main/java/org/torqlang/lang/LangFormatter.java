@@ -205,14 +205,6 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitDebugSntc(DebugSntc lang, FormatterState state) throws Exception {
-        state.write("debug(");
-        visitActualArgs(lang.args, state.inline());
-        state.write(')');
-        return null;
-    }
-
-    @Override
     public final Void visitDec128AsExpr(Dec128AsExpr lang, FormatterState state) throws Exception {
         state.write(lang.dec128().formatValue());
         state.write('m');

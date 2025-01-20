@@ -97,6 +97,14 @@ public final class Machine {
         return (T) owner;
     }
 
+    final Stack popStackEntry() {
+        Stack entry = stack;
+        if (stack != null) {
+            stack = stack.next;
+        }
+        return entry;
+    }
+
     public final void pushStackEntries(StmtList stmtList, Env env) {
         for (StmtList.Entry current = stmtList.lastEntry(); current != null; current = current.prev()) {
             stack = new Stack(current.stmt(), env, stack);

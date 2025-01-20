@@ -27,7 +27,7 @@ public abstract class ErrorWithSourceSpan extends RuntimeException implements So
 
     public final String formatWithSource(int lineNrWidth, int showBefore, int showAfter) {
         return sourceSpan() != null ?
-            sourceSpan().formatWithMessage(getMessage(), lineNrWidth, showBefore, showAfter) :
+            sourceSpan().formatSource(getMessage(), lineNrWidth, showBefore, showAfter) :
             this.toString();
     }
 

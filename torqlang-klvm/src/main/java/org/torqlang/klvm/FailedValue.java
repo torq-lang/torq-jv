@@ -112,7 +112,7 @@ public final class FailedValue implements Value, Complete {
             } else {
                 inlineMessage = Objects.toString(nativeCause);
             }
-            String formatted = sourceSpan.formatWithMessage(inlineMessage, 4, 5, 5);
+            String formatted = sourceSpan.formatSource(inlineMessage, 5, 4, 5);
             sb.append(IndentLines.apply(formatted, INDENT.length() * 2));
         }
         if (nativeCause != null) {
