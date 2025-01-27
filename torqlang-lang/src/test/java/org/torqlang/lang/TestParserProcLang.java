@@ -22,7 +22,7 @@ public class TestParserProcLang {
         //                                      1
         //                            01234567890123456
         Parser p = new Parser("proc () in 0 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ProcExpr.class, sox);
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 16);
@@ -44,7 +44,7 @@ public class TestParserProcLang {
         //                                      1
         //                            012345678901234567
         Parser p = new Parser("proc (a) in 0 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ProcExpr.class, sox);
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 17);
@@ -67,7 +67,7 @@ public class TestParserProcLang {
         //                                      1         2
         //                            012345678901234567890
         Parser p = new Parser("proc (a, b) in 0 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ProcExpr.class, sox);
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 20);
@@ -87,74 +87,74 @@ public class TestParserProcLang {
     }
 
     @Test
-    public void testSntc() {
+    public void testStmt() {
         //                                      1         2
         //                            01234567890123456789012
         Parser p = new Parser("proc MyProc() in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(ProcSntc.class, sox);
-        ProcSntc procSntc = (ProcSntc) sox;
-        assertSourceSpan(procSntc, 0, 22);
-        assertEquals(Ident.create("MyProc"), procSntc.name());
-        assertSourceSpan(procSntc.body, 17, 18);
-        assertEquals(0, procSntc.formalArgs.size());
-        assertEquals(1, procSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(ProcStmt.class, sox);
+        ProcStmt procStmt = (ProcStmt) sox;
+        assertSourceSpan(procStmt, 0, 22);
+        assertEquals(Ident.create("MyProc"), procStmt.name());
+        assertSourceSpan(procStmt.body, 17, 18);
+        assertEquals(0, procStmt.formalArgs.size());
+        assertEquals(1, procStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc MyProc() in
                 0
             end""";
-        String actualFormat = procSntc.toString();
+        String actualFormat = procStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 
     @Test
-    public void testSntcWithArgs1() {
+    public void testStmtWithArgs1() {
         //                                      1         2
         //                            012345678901234567890123
         Parser p = new Parser("proc MyProc(a) in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(ProcSntc.class, sox);
-        ProcSntc procSntc = (ProcSntc) sox;
-        assertSourceSpan(procSntc, 0, 23);
-        assertEquals(Ident.create("MyProc"), procSntc.name());
-        assertSourceSpan(procSntc.body, 18, 19);
-        assertEquals(1, procSntc.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(procSntc.formalArgs.get(0)).ident);
-        assertEquals(1, procSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(ProcStmt.class, sox);
+        ProcStmt procStmt = (ProcStmt) sox;
+        assertSourceSpan(procStmt, 0, 23);
+        assertEquals(Ident.create("MyProc"), procStmt.name());
+        assertSourceSpan(procStmt.body, 18, 19);
+        assertEquals(1, procStmt.formalArgs.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(procStmt.formalArgs.get(0)).ident);
+        assertEquals(1, procStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc MyProc(a) in
                 0
             end""";
-        String actualFormat = procSntc.toString();
+        String actualFormat = procStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 
     @Test
-    public void testSntcWithArgs2() {
+    public void testStmtWithArgs2() {
         //                                      1         2
         //                            012345678901234567890123456
         Parser p = new Parser("proc MyProc(a, b) in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(ProcSntc.class, sox);
-        ProcSntc procSntc = (ProcSntc) sox;
-        assertSourceSpan(procSntc, 0, 26);
-        assertEquals(Ident.create("MyProc"), procSntc.name());
-        assertSourceSpan(procSntc.body, 21, 22);
-        assertEquals(2, procSntc.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(procSntc.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(procSntc.formalArgs.get(1)).ident);
-        assertEquals(1, procSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(ProcStmt.class, sox);
+        ProcStmt procStmt = (ProcStmt) sox;
+        assertSourceSpan(procStmt, 0, 26);
+        assertEquals(Ident.create("MyProc"), procStmt.name());
+        assertSourceSpan(procStmt.body, 21, 22);
+        assertEquals(2, procStmt.formalArgs.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(procStmt.formalArgs.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(procStmt.formalArgs.get(1)).ident);
+        assertEquals(1, procStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc MyProc(a, b) in
                 0
             end""";
-        String actualFormat = procSntc.toString();
+        String actualFormat = procStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 

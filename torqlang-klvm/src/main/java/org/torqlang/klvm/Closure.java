@@ -7,10 +7,13 @@
 
 package org.torqlang.klvm;
 
+import org.torqlang.util.SourceSpan;
+
 public interface Closure extends Proc {
 
     Env capturedEnv();
 
     ProcDef procDef();
 
+    SourceSpan sourceSpan();
 }

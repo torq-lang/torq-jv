@@ -19,7 +19,7 @@ import java.util.List;
 
 public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
-    public static final LangFormatter SINGLETON = new LangFormatter();
+    public static final LangFormatter DEFAULT = new LangFormatter();
 
     public final String format(Lang lang) {
         try (StringWriter sw = new StringWriter()) {
@@ -32,7 +32,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         }
     }
 
-    private void formatBinaryExpr(String oper, SntcOrExpr arg1, SntcOrExpr arg2, FormatterState state) throws Exception {
+    private void formatBinaryExpr(String oper, StmtOrExpr arg1, StmtOrExpr arg2, FormatterState state) throws Exception {
         arg1.accept(this, state.inline());
         state.write(FormatterState.SPACE);
         state.write(oper);
@@ -68,16 +68,16 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitActorSntc(ActorSntc lang, FormatterState state) throws Exception {
+    public final Void visitActorStmt(ActorStmt lang, FormatterState state) throws Exception {
         state.write("actor ");
         state.write(lang.name.formatValue());
         visitActorLang(lang, state);
         return null;
     }
 
-    private void visitActualArgs(List<SntcOrExpr> list, FormatterState state) throws Exception {
+    private void visitActualArgs(List<StmtOrExpr> list, FormatterState state) throws Exception {
         for (int i = 0; i < list.size(); i++) {
-            SntcOrExpr next = list.get(i);
+            StmtOrExpr next = list.get(i);
             if (i > 0) {
                 state.write(", ");
             }
@@ -101,7 +101,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitAskSntc(AskSntc lang, FormatterState state) throws Exception {
+    public final Void visitAskStmt(AskStmt lang, FormatterState state) throws Exception {
         state.write("handle ask ");
         lang.pat.accept(this, state.inline());
         if (lang.responseType != null) {
@@ -139,7 +139,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitBreakSntc(BreakSntc lang, FormatterState state) throws Exception {
+    public final Void visitBreakStmt(BreakStmt lang, FormatterState state) throws Exception {
         state.write("break");
         return null;
     }
@@ -199,7 +199,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitContinueSntc(ContinueSntc lang, FormatterState state) throws Exception {
+    public final Void visitContinueStmt(ContinueStmt lang, FormatterState state) throws Exception {
         state.write("continue");
         return null;
     }
@@ -257,7 +257,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitForSntc(ForSntc lang, FormatterState state) throws Exception {
+    public final Void visitForStmt(ForStmt lang, FormatterState state) throws Exception {
         state.write("for ");
         lang.pat.accept(this, state.inline());
         state.write(" in ");
@@ -303,7 +303,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitFuncSntc(FuncSntc lang, FormatterState state) throws Exception {
+    public final Void visitFuncStmt(FuncStmt lang, FormatterState state) throws Exception {
         state.write("func ");
         state.write(lang.name().name);
         visitFuncLang(lang, state);
@@ -380,7 +380,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitImportSntc(ImportSntc lang, FormatterState state) throws Exception {
+    public final Void visitImportStmt(ImportStmt lang, FormatterState state) throws Exception {
         Str q = lang.qualifier;
         List<ImportName> ins = lang.names;
         state.write("import ");
@@ -491,7 +491,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitProcSntc(ProcSntc lang, FormatterState state) throws Exception {
+    public final Void visitProcStmt(ProcStmt lang, FormatterState state) throws Exception {
         state.write("proc ");
         state.write(lang.name().name);
         visitProcLang(lang, state);
@@ -552,12 +552,12 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitRespondSntc(RespondSntc lang, FormatterState state) {
+    public final Void visitRespondStmt(RespondStmt lang, FormatterState state) {
         throw new NeedsImpl();
     }
 
     @Override
-    public final Void visitReturnSntc(ReturnSntc lang, FormatterState state) throws Exception {
+    public final Void visitReturnStmt(ReturnStmt lang, FormatterState state) throws Exception {
         state.write("return");
         if (lang.value != null) {
             state.write(' ');
@@ -581,12 +581,12 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         return null;
     }
 
-    private void visitSeqList(List<SntcOrExpr> list, FormatterState state) throws Exception {
+    private void visitSeqList(List<StmtOrExpr> list, FormatterState state) throws Exception {
         for (int i = 0; i < list.size(); i++) {
-            SntcOrExpr next = list.get(i);
+            StmtOrExpr next = list.get(i);
             if (i > 0) {
                 if (state.level() == FormatterState.INLINE_VALUE) {
-                    SntcOrExpr prev = list.get(i - 1);
+                    StmtOrExpr prev = list.get(i - 1);
                     if (prev instanceof GroupExpr || (next instanceof UnaryExpr unaryExpr && unaryExpr.oper == UnaryOper.NEGATE)) {
                         state.write(';');
                     }
@@ -598,7 +598,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitSetCellValueSntc(SetCellValueSntc lang, FormatterState state) throws Exception {
+    public final Void visitSetCellValueStmt(SetCellValueStmt lang, FormatterState state) throws Exception {
         lang.leftSide.accept(this, state);
         state.write(" := ");
         lang.rightSide.accept(this, state);
@@ -606,7 +606,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitSkipSntc(SkipSntc lang, FormatterState state) throws Exception {
+    public final Void visitSkipStmt(SkipStmt lang, FormatterState state) throws Exception {
         state.write("skip");
         return null;
     }
@@ -638,7 +638,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitTellSntc(TellSntc lang, FormatterState state) throws Exception {
+    public final Void visitTellStmt(TellStmt lang, FormatterState state) throws Exception {
         state.write("handle tell ");
         lang.pat.accept(this, state.inline());
         state.write(" in");
@@ -682,9 +682,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
             state.write('#');
         }
         state.write("[");
-        List<SntcOrExpr> list = lang.values();
+        List<StmtOrExpr> list = lang.values();
         for (int i = 0; i < list.size(); i++) {
-            SntcOrExpr next = list.get(i);
+            StmtOrExpr next = list.get(i);
             if (i > 0) {
                 state.write(", ");
             }
@@ -730,7 +730,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitUnifySntc(UnifySntc lang, FormatterState state) throws Exception {
+    public final Void visitUnifyStmt(UnifyStmt lang, FormatterState state) throws Exception {
         lang.leftSide.accept(this, state.inline());
         state.write(" = ");
         lang.rightSide.accept(this, state);
@@ -748,14 +748,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitVarSntc(VarSntc lang, FormatterState state) throws Exception {
+    public final Void visitVarStmt(VarStmt lang, FormatterState state) throws Exception {
         state.write("var ");
         visitVarDecls(lang.varDecls, state);
         return null;
     }
 
     @Override
-    public final Void visitWhileSntc(WhileSntc lang, FormatterState state) throws Exception {
+    public final Void visitWhileStmt(WhileStmt lang, FormatterState state) throws Exception {
         state.write("while ");
         lang.cond.accept(this, state.inline());
         state.write(" do");

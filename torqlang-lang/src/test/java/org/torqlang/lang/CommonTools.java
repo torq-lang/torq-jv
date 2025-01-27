@@ -97,14 +97,14 @@ public class CommonTools {
         return (NullAsPat) value;
     }
 
-    static SntcOrExpr asSingleExpr(Object value) {
+    static StmtOrExpr asSingleExpr(Object value) {
         if (value instanceof GroupExpr) {
             return asSingleExprFromGroupExpr(value);
         }
         return asSingleExprFromSeqLang(value);
     }
 
-    static SntcOrExpr asSingleExprFromGroupExpr(Object value) {
+    static StmtOrExpr asSingleExprFromGroupExpr(Object value) {
         assertInstanceOf(GroupExpr.class, value);
         GroupExpr groupExpr = (GroupExpr) value;
         assertInstanceOf(SeqLang.class, groupExpr.expr);
@@ -113,7 +113,7 @@ public class CommonTools {
         return seqLang.list.get(0);
     }
 
-    static SntcOrExpr asSingleExprFromSeqLang(Object value) {
+    static StmtOrExpr asSingleExprFromSeqLang(Object value) {
         assertInstanceOf(SeqLang.class, value);
         SeqLang seqLang = (SeqLang) value;
         assertEquals(1, seqLang.list.size());
@@ -136,8 +136,8 @@ public class CommonTools {
     }
 
     static void assertSourceSpan(SourceSpan sourceSpan, int begin, int end) {
-        assertEquals(begin, sourceSpan.begin());
-        assertEquals(end, sourceSpan.end());
+        assertEquals(begin, sourceSpan.sourceBegin());
+        assertEquals(end, sourceSpan.sourceEnd());
     }
 
     static <T> Boolean getBoolean(T argument, Function<T, Boolean> function) {

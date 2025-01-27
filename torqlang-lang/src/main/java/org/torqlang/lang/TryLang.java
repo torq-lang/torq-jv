@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class TryLang extends AbstractLang implements SntcOrExpr {
+public final class TryLang extends AbstractLang implements StmtOrExpr {
 
     public final SeqLang body;
     public final List<CatchClause> catchClauses;

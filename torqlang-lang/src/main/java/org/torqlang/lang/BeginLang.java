@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public class BeginLang extends AbstractLang implements SntcOrExpr {
+public class BeginLang extends AbstractLang implements StmtOrExpr {
 
     public final SeqLang body;
 

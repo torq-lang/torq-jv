@@ -90,7 +90,7 @@ public class TestAskConcurrentFeatures {
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentFeatures'#{'cfg': $actor_cfgtr}, ConcurrentFeatures)
             end""";
-        assertEquals(expected, g.createActorRecStmt().toString());
+        assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(Address.create("ConcurrentFeaturesClient"))

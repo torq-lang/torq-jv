@@ -13,13 +13,13 @@ public interface LangVisitor<T, R> {
 
     R visitActorExpr(ActorExpr lang, T state) throws Exception;
 
-    R visitActorSntc(ActorSntc lang, T state) throws Exception;
+    R visitActorStmt(ActorStmt lang, T state) throws Exception;
 
     R visitAndExpr(AndExpr lang, T state) throws Exception;
 
     R visitApplyLang(ApplyLang lang, T state) throws Exception;
 
-    R visitAskSntc(AskSntc lang, T state) throws Exception;
+    R visitAskStmt(AskStmt lang, T state) throws Exception;
 
     R visitBeginLang(BeginLang lang, T state) throws Exception;
 
@@ -27,7 +27,7 @@ public interface LangVisitor<T, R> {
 
     R visitBoolAsPat(BoolAsPat lang, T state) throws Exception;
 
-    R visitBreakSntc(BreakSntc lang, T state) throws Exception;
+    R visitBreakStmt(BreakStmt lang, T state) throws Exception;
 
     R visitCaseClause(CaseClause lang, T state) throws Exception;
 
@@ -37,7 +37,7 @@ public interface LangVisitor<T, R> {
 
     R visitCharAsExpr(CharAsExpr lang, T state) throws Exception;
 
-    R visitContinueSntc(ContinueSntc lang, T state) throws Exception;
+    R visitContinueStmt(ContinueStmt lang, T state) throws Exception;
 
     R visitDec128AsExpr(Dec128AsExpr lang, T state) throws Exception;
 
@@ -53,11 +53,11 @@ public interface LangVisitor<T, R> {
 
     R visitFltAsExpr(FltAsExpr lang, T state) throws Exception;
 
-    R visitForSntc(ForSntc lang, T state) throws Exception;
+    R visitForStmt(ForStmt lang, T state) throws Exception;
 
     R visitFuncExpr(FuncExpr lang, T state) throws Exception;
 
-    R visitFuncSntc(FuncSntc lang, T state) throws Exception;
+    R visitFuncStmt(FuncStmt lang, T state) throws Exception;
 
     R visitGroupExpr(GroupExpr lang, T state) throws Exception;
 
@@ -71,7 +71,7 @@ public interface LangVisitor<T, R> {
 
     R visitIfLang(IfLang lang, T state) throws Exception;
 
-    R visitImportSntc(ImportSntc lang, T state) throws Exception;
+    R visitImportStmt(ImportStmt lang, T state) throws Exception;
 
     R visitIndexSelectExpr(IndexSelectExpr lang, T state) throws Exception;
 
@@ -91,7 +91,7 @@ public interface LangVisitor<T, R> {
 
     R visitProcExpr(ProcExpr lang, T state) throws Exception;
 
-    R visitProcSntc(ProcSntc lang, T state) throws Exception;
+    R visitProcStmt(ProcStmt lang, T state) throws Exception;
 
     R visitProductExpr(ProductExpr lang, T state) throws Exception;
 
@@ -101,17 +101,17 @@ public interface LangVisitor<T, R> {
 
     R visitRelationalExpr(RelationalExpr lang, T state) throws Exception;
 
-    R visitRespondSntc(RespondSntc lang, T state) throws Exception;
+    R visitRespondStmt(RespondStmt lang, T state) throws Exception;
 
-    R visitReturnSntc(ReturnSntc lang, T state) throws Exception;
+    R visitReturnStmt(ReturnStmt lang, T state) throws Exception;
 
     R visitSelectAndApplyLang(SelectAndApplyLang lang, T state) throws Exception;
 
     R visitSeqLang(SeqLang lang, T state) throws Exception;
 
-    R visitSetCellValueSntc(SetCellValueSntc lang, T state) throws Exception;
+    R visitSetCellValueStmt(SetCellValueStmt lang, T state) throws Exception;
 
-    R visitSkipSntc(SkipSntc lang, T state) throws Exception;
+    R visitSkipStmt(SkipStmt lang, T state) throws Exception;
 
     R visitSpawnExpr(SpawnExpr lang, T state) throws Exception;
 
@@ -121,7 +121,7 @@ public interface LangVisitor<T, R> {
 
     R visitSumExpr(SumExpr lang, T state) throws Exception;
 
-    R visitTellSntc(TellSntc lang, T state) throws Exception;
+    R visitTellStmt(TellStmt lang, T state) throws Exception;
 
     R visitThrowLang(ThrowLang lang, T state) throws Exception;
 
@@ -135,9 +135,9 @@ public interface LangVisitor<T, R> {
 
     R visitUnaryExpr(UnaryExpr lang, T state) throws Exception;
 
-    R visitUnifySntc(UnifySntc lang, T state) throws Exception;
+    R visitUnifyStmt(UnifyStmt lang, T state) throws Exception;
 
-    R visitVarSntc(VarSntc lang, T state) throws Exception;
+    R visitVarStmt(VarStmt lang, T state) throws Exception;
 
-    R visitWhileSntc(WhileSntc lang, T state) throws Exception;
+    R visitWhileStmt(WhileStmt lang, T state) throws Exception;
 }

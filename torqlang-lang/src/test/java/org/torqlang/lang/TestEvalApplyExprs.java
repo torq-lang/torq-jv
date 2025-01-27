@@ -26,7 +26,7 @@ public class TestEvalApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2 in
                 $create_proc(proc (n, $r) in
@@ -58,7 +58,7 @@ public class TestEvalApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2 in
                 $create_proc(proc (n, $r) in
@@ -84,7 +84,7 @@ public class TestEvalApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2 in
                 $create_proc(proc (n, $r) in

@@ -25,7 +25,7 @@ public class TestEvalRecExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind('my-label'#{'01-label': 'my-01-value'}, x)";
         assertEquals(expected, e.kernel().toString());
         CompleteRec expectedRec = Rec.completeRecBuilder()
@@ -45,7 +45,7 @@ public class TestEvalRecExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind('my-label'#['my-01-value'], x)";
         assertEquals(expected, e.kernel().toString());
         CompleteTuple expectedTuple = Rec.completeTupleBuilder()
@@ -65,7 +65,7 @@ public class TestEvalRecExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind({'01-label': 'my-01-value'}, x)";
         assertEquals(expected, e.kernel().toString());
         CompleteRec expectedRec = Rec.completeRecBuilder()
@@ -84,7 +84,7 @@ public class TestEvalRecExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(['my-01-value'], x)";
         assertEquals(expected, e.kernel().toString());
         CompleteTuple expectedTuple = Rec.completeTupleBuilder()
@@ -105,7 +105,7 @@ public class TestEvalRecExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a in
                 $create_rec({'01-label': a}, x)

@@ -177,7 +177,7 @@ public final class NorthwindFiles {
                 if (!first) {
                     bw.newLine();
                 }
-                bw.write(JsonFormatter.SINGLETON.format(item));
+                bw.write(JsonFormatter.DEFAULT.format(item));
                 first = false;
             }
         }

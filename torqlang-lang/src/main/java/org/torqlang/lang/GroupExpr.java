@@ -11,9 +11,9 @@ import org.torqlang.util.SourceSpan;
 
 public final class GroupExpr extends AbstractLang implements Expr {
 
-    public final SntcOrExpr expr;
+    public final StmtOrExpr expr;
 
-    public GroupExpr(SntcOrExpr expr, SourceSpan sourceSpan) {
+    public GroupExpr(StmtOrExpr expr, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.expr = expr;
     }

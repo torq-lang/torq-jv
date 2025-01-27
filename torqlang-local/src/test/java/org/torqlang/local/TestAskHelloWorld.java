@@ -9,7 +9,7 @@ package org.torqlang.local;
 
 import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.*;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.concurrent.TimeUnit;
 
@@ -105,7 +105,7 @@ public class TestAskHelloWorld {
                 end, $actor_cfgtr)
                 $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)
             end""";
-        assertEquals(expected, g.createActorRecStmt().toString());
+        assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
         CompleteRec m = Rec.completeRecBuilder().addField(Str.of("hello"), Dec128.of(10)).build();
         Object response = RequestClient.builder()
@@ -166,7 +166,7 @@ public class TestAskHelloWorld {
                 end, $actor_cfgtr)
                 $create_rec('HelloWorld'#{'cfg': $actor_cfgtr}, HelloWorld)
             end""";
-        assertEquals(expected, g.createActorRecStmt().toString());
+        assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(Address.create("HelloWorldClient"))
@@ -192,23 +192,23 @@ public class TestAskHelloWorld {
     }
 
     @Test
-    public void testHelloWorldFromActorSntc() throws Exception {
+    public void testHelloWorldFromActorStmt() throws Exception {
         String source = """
             actor HelloWorld() in
                 handle ask 'hello' in
                     'Hello, World!'
                 end
             end""";
-        // Run a separate builder to get the ActorSntc
-        ActorSntc actorSntc = Actor.builder()
+        // Run a separate builder to get the ActorStmt
+        ActorStmt actorStmt = Actor.builder()
             .setAddress(Address.create(getClass().getName() + "Actor"))
             .setSource(source)
             .rewrite()
-            .actorSntc();
-        // Now, show we can create an actor from just an ActorSntc (no source)
+            .actorStmt();
+        // Now, show we can create an actor from just an ActorStmt (no source)
         ActorRef actorRef = Actor.builder()
             .setAddress(Address.create(getClass().getName() + "Actor"))
-            .setActorSntc(actorSntc)
+            .setActorStmt(actorStmt)
             .spawn().actorRef();
         // Send 'hello' and verify 'Hello, World!'
         Object response = RequestClient.builder()

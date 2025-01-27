@@ -29,7 +29,7 @@ public final class RecExpr extends AbstractLang implements Expr {
         this(null, fields, sourceSpan);
     }
 
-    public static Complete checkComplete(SntcOrExpr expr) {
+    public static Complete checkComplete(StmtOrExpr expr) {
         if (expr instanceof ValueAsExpr valueAsExpr) {
             return valueAsExpr.value();
         }
@@ -51,7 +51,7 @@ public final class RecExpr extends AbstractLang implements Expr {
 
     public final CompleteRec checkComplete() {
         CompleteRecBuilder b = Rec.completeRecBuilder();
-        SntcOrExpr label = label();
+        StmtOrExpr label = label();
         if (label == null) {
             b.setLabel(Rec.DEFAULT_LABEL);
         } else {

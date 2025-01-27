@@ -35,7 +35,7 @@ import java.util.Set;
  *             Log the new FailedValue details string
  *         Halt the current actor
  *     When a FailedValue is created:
- *         Capture Torqlang error value, Torqlang stack, Java stack
+ *         Capture Torq error value, Torq stack, Java stack
  *     When a response is received, and the response is a FailedValue:
  *         Bind the FailedValue to the response target, which will throw
  *         a FailedValueError when the target is touched
@@ -105,7 +105,7 @@ public final class FailedValue implements Value, Complete {
             sb.append('\n');
             sb.append(INDENT + "Source context: ");
             sb.append('\n');
-            SourceSpan sourceSpan = current.stmt;
+            SourceSpan sourceSpan = current.instr;
             String inlineMessage;
             if (error != null) {
                 inlineMessage = Objects.toString(error);

@@ -13,14 +13,14 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class CaseLang extends AbstractLang implements SntcOrExpr {
+public final class CaseLang extends AbstractLang implements StmtOrExpr {
 
-    public final SntcOrExpr arg;
+    public final StmtOrExpr arg;
     public final CaseClause caseClause;
     public final List<CaseClause> altCaseClauses;
     public final SeqLang elseSeq;
 
-    public CaseLang(SntcOrExpr arg, CaseClause caseClause, List<CaseClause> altCaseClauses,
+    public CaseLang(StmtOrExpr arg, CaseClause caseClause, List<CaseClause> altCaseClauses,
                     SeqLang elseSeq, SourceSpan sourceSpan)
     {
         super(sourceSpan);

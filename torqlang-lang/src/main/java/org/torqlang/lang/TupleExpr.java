@@ -17,9 +17,9 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 public final class TupleExpr extends AbstractLang implements Expr {
 
     private final Expr label;
-    private final List<SntcOrExpr> values;
+    private final List<StmtOrExpr> values;
 
-    public TupleExpr(Expr label, List<SntcOrExpr> values, SourceSpan sourceSpan) {
+    public TupleExpr(Expr label, List<StmtOrExpr> values, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.label = label;
         this.values = nullSafeCopyOf(values);
@@ -34,7 +34,7 @@ public final class TupleExpr extends AbstractLang implements Expr {
 
     public final CompleteTuple checkComplete() {
         CompleteTupleBuilder b = Rec.completeTupleBuilder();
-        SntcOrExpr label = label();
+        StmtOrExpr label = label();
         if (label == null) {
             b.setLabel(Rec.DEFAULT_LABEL);
         } else {
@@ -44,7 +44,7 @@ public final class TupleExpr extends AbstractLang implements Expr {
             }
             b.setLabel((Literal) l);
         }
-        for (SntcOrExpr v : values()) {
+        for (StmtOrExpr v : values()) {
             Complete cv = RecExpr.checkComplete(v);
             if (cv == null) {
                 return null;
@@ -58,7 +58,7 @@ public final class TupleExpr extends AbstractLang implements Expr {
         return label;
     }
 
-    public final List<SntcOrExpr> values() {
+    public final List<StmtOrExpr> values() {
         return values;
     }
 

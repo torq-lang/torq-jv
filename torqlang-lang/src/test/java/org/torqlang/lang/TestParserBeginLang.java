@@ -23,7 +23,7 @@ public class TestParserBeginLang {
         //                                      1
         //                            012345678901
         Parser p = new Parser("begin 1 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 11);
@@ -38,8 +38,8 @@ public class TestParserBeginLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- seq
         assertEquals(1, beginLang.body.list.size());
-        SntcOrExpr sntcOrExpr = beginLang.body.list.get(0);
-        assertSourceSpan(sntcOrExpr, 6, 7);
+        StmtOrExpr stmtOrExpr = beginLang.body.list.get(0);
+        assertSourceSpan(stmtOrExpr, 6, 7);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class TestParserBeginLang {
         //                                      1
         //                            0123456789012345
         Parser p = new Parser("begin 1 2 3 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 15);
@@ -58,7 +58,7 @@ public class TestParserBeginLang {
                 2
                 3
             end""";
-        String actualFormat = LangFormatter.SINGLETON.format(beginLang);
+        String actualFormat = LangFormatter.DEFAULT.format(beginLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -71,7 +71,7 @@ public class TestParserBeginLang {
         //                                      1
         //                            012345678901234567
         Parser p = new Parser("begin a 1 b 2 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 17);
@@ -83,10 +83,10 @@ public class TestParserBeginLang {
                 b
                 2
             end""";
-        String actualFormat = LangFormatter.SINGLETON.format(beginLang);
+        String actualFormat = LangFormatter.DEFAULT.format(beginLang);
         assertEquals(expectedFormat, actualFormat);
         assertEquals(4, beginLang.body.list.size());
-        List<SntcOrExpr> list = beginLang.body.list;
+        List<StmtOrExpr> list = beginLang.body.list;
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(a, CommonTools.asIdentAsExpr(list.get(0)).ident);
         assertSourceSpan(list.get(1), 8, 9);

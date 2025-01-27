@@ -20,7 +20,7 @@ public class TestParserAndExpr {
     public void test() {
         //                            0123456
         Parser p = new Parser("a && b");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(AndExpr.class, sox);
         AndExpr andExpr = (AndExpr) sox;
         assertSourceSpan(sox, 0, 6);

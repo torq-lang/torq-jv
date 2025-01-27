@@ -21,7 +21,7 @@ public class TestParserSpawnExpr {
     public void test() {
         //                            012345678
         Parser p = new Parser("spawn(x)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(SpawnExpr.class, sox);
         SpawnExpr spawnExpr = (SpawnExpr) sox;
         assertSourceSpan(spawnExpr, 0, 8);
@@ -34,7 +34,7 @@ public class TestParserSpawnExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "spawn(x)";
-        actualFormat = LangFormatter.SINGLETON.format(spawnExpr);
+        actualFormat = LangFormatter.DEFAULT.format(spawnExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 

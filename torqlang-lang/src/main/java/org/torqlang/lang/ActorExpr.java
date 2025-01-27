@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class ActorExpr extends ActorLang implements Expr {
 
-    public ActorExpr(List<Pat> formalArgs, List<SntcOrExpr> body, SourceSpan sourceSpan) {
+    public ActorExpr(List<Pat> formalArgs, List<StmtOrExpr> body, SourceSpan sourceSpan) {
         super(formalArgs, body, sourceSpan);
     }
 

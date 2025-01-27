@@ -33,7 +33,7 @@ public class TestEvalWhileLoop {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local c in
                 $select_apply(Cell, ['new'], 0, c)
@@ -99,7 +99,7 @@ public class TestEvalWhileLoop {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local c in
                 $select_apply(Cell, ['new'], 0, c)
@@ -175,7 +175,7 @@ public class TestEvalWhileLoop {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local i, c in
                 local $v0 in

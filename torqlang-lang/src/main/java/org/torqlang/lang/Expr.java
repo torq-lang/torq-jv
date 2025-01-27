@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface Expr extends SntcOrExpr {
+public interface Expr extends StmtOrExpr {
 }

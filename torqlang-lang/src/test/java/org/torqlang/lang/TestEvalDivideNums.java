@@ -24,7 +24,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("x"))
             .setSource("x = 15 / 5")
             .perform();
-        assertEquals("x = 15 / 5", e.sntcOrExpr().toString());
+        assertEquals("x = 15 / 5", e.stmtOrExpr().toString());
         assertEquals("$div(15, 5, x)", e.kernel().toString());
         assertEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
     }
@@ -36,7 +36,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = 15 / a")
             .perform();
-        assertEquals("x = 15 / a", e.sntcOrExpr().toString());
+        assertEquals("x = 15 / a", e.stmtOrExpr().toString());
         assertEquals("$div(15, a, x)", e.kernel().toString());
         assertEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
     }
@@ -47,7 +47,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("x"))
             .setSource("x = 15L / 5L")
             .perform();
-        assertEquals("x = 15L / 5L", e.sntcOrExpr().toString());
+        assertEquals("x = 15L / 5L", e.stmtOrExpr().toString());
         assertEquals("$div(15L, 5L, x)", e.kernel().toString());
         assertEquals(Int64.of(3), e.varAtName("x").valueOrVarSet());
         assertNotEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
@@ -60,7 +60,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = 15L / a")
             .perform();
-        assertEquals("x = 15L / a", e.sntcOrExpr().toString());
+        assertEquals("x = 15L / a", e.stmtOrExpr().toString());
         assertEquals("$div(15L, a, x)", e.kernel().toString());
         assertEquals(Int64.of(3), e.varAtName("x").valueOrVarSet());
         assertNotEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
@@ -73,7 +73,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("a"), new Var(Int32.of(15)))
             .setSource("x = a / 5")
             .perform();
-        assertEquals("x = a / 5", e.sntcOrExpr().toString());
+        assertEquals("x = a / 5", e.stmtOrExpr().toString());
         assertEquals("$div(a, 5, x)", e.kernel().toString());
         assertEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
     }
@@ -86,7 +86,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("b"), new Var(Int32.of(5)))
             .setSource("x = a / b")
             .perform();
-        assertEquals("x = a / b", e.sntcOrExpr().toString());
+        assertEquals("x = a / b", e.stmtOrExpr().toString());
         assertEquals("$div(a, b, x)", e.kernel().toString());
         assertEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
     }
@@ -99,7 +99,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("b"), new Var(Int64.of(5)))
             .setSource("x = a / b")
             .perform();
-        assertEquals("x = a / b", e.sntcOrExpr().toString());
+        assertEquals("x = a / b", e.stmtOrExpr().toString());
         assertEquals("$div(a, b, x)", e.kernel().toString());
         assertEquals(Int64.of(3), e.varAtName("x").valueOrVarSet());
         assertNotEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
@@ -112,7 +112,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("a"), new Var(Int64.of(15)))
             .setSource("x = a / 5L")
             .perform();
-        assertEquals("x = a / 5L", e.sntcOrExpr().toString());
+        assertEquals("x = a / 5L", e.stmtOrExpr().toString());
         assertEquals("$div(a, 5L, x)", e.kernel().toString());
         assertEquals(Int64.of(3), e.varAtName("x").valueOrVarSet());
         assertNotEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
@@ -126,7 +126,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("b"), new Var(Int32.of(5)))
             .setSource("x = a / b")
             .perform();
-        assertEquals("x = a / b", e.sntcOrExpr().toString());
+        assertEquals("x = a / b", e.stmtOrExpr().toString());
         assertEquals("$div(a, b, x)", e.kernel().toString());
         assertEquals(Int64.of(3), e.varAtName("x").valueOrVarSet());
         assertNotEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());
@@ -140,7 +140,7 @@ public class TestEvalDivideNums {
             .addVar(Ident.create("b"), new Var(Int64.of(5)))
             .setSource("x = a / b")
             .perform();
-        assertEquals("x = a / b", e.sntcOrExpr().toString());
+        assertEquals("x = a / b", e.stmtOrExpr().toString());
         assertEquals("$div(a, b, x)", e.kernel().toString());
         assertEquals(Int64.of(3), e.varAtName("x").valueOrVarSet());
         assertNotEquals(Int32.of(3), e.varAtName("x").valueOrVarSet());

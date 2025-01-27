@@ -148,7 +148,7 @@ final class DefaultApiDesc implements ApiDesc {
     public String toResponseBodyText(Complete response) {
         // TODO: Optimize with a kernel-to-text instead of kernel-to-native-to-text
         Object nativeResponseValue = ValueTools.toNativeValue(response);
-        return JsonFormatter.SINGLETON.format(nativeResponseValue);
+        return JsonFormatter.DEFAULT.format(nativeResponseValue);
     }
 
 }

@@ -13,11 +13,11 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class SeqLang extends AbstractLang implements SntcOrExpr {
+public final class SeqLang extends AbstractLang implements StmtOrExpr {
 
-    public final List<SntcOrExpr> list;
+    public final List<StmtOrExpr> list;
 
-    public SeqLang(List<SntcOrExpr> list, SourceSpan sourceSpan) {
+    public SeqLang(List<StmtOrExpr> list, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.list = nullSafeCopyOf(list);
     }

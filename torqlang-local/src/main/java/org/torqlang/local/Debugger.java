@@ -9,32 +9,45 @@ package org.torqlang.local;
 
 import org.torqlang.klvm.*;
 
-//TODO: Add recognizers
+import java.util.List;
+import java.util.function.Function;
 
-public interface Debugger extends DebugStmtListener {
-    void onActorAddParentVarDependency(ActorRef actorRef, Var triggerVar, Var parentVar, Var childVar, ActorRef child);
+public interface Debugger extends DebugInstrListener {
+    void addRecognizer(Function<ActorRef, Boolean> recognizer);
 
-    void onActorCannotSyncWaitingToBind(ActorRef actorRef, Var parentVar, Var childVar, Var barrier);
+    void onCreate(ActorRef caller, ActorSystem system, EnvEntry askHandlerEntry, EnvEntry tellHandlerEntry);
 
-    void onActorComputeMessageUsingHandler(ActorRef actorRef, Value message, EnvEntry handlerEntry);
+    void onFreeVarBound(ActorRef caller, Var triggerVar, Value value);
 
-    void onActorComputeTimeSlice(ActorRef actorRef, Machine machine);
+    void onMapFreeVar(ActorRef caller, Var triggerVar, Var parentVar, ActorRef child, Var childVar);
 
-    void onActorComputeWait(ActorRef actorRef, ComputeWait computeWait, Machine machine);
+    void onPreempt(ActorRef caller, Machine machine);
 
-    void onActorConfigure(ActorRef actorRef, Envelope envelope);
+    void onReceiveAct(ActorRef caller, Envelope request);
 
-    void onActorCreate(ActorRef actorRef, ActorSystem system, EnvEntry askHandlerEntry, EnvEntry tellHandlerEntry);
+    void onReceiveCaptureImage(ActorRef caller, Envelope request);
 
-    void onActorParentVarBound(ActorRef actorRef, Var triggerVar, Value value);
+    void onReceiveConfigure(ActorRef caller, Envelope request);
 
-    void onActorResponseReceived(ActorRef actorRef, Envelope response, Object target);
+    void onReceiveNotify(ActorRef caller, Envelope notify, EnvEntry handlerEntry);
 
-    void onActorRespondingWithValue(ActorRef actorRef, ActorRef requester, Envelope request, Envelope response);
+    void onReceiveRequest(ActorRef caller, Envelope request, EnvEntry handlerEntry);
 
-    void onActorResume(ActorRef actorRef);
+    void onReceiveResponse(ActorRef caller, Envelope[] next, List<Envelope> allResponses);
 
-    void onActorSyncParentVarToChildVar(ActorRef actorRef, Var parentVar, Var childVar, Complete value, ActorRef childRef);
+    void onReceiveResume(ActorRef caller, Machine machine);
 
-    void onActorSyncVar(ActorRef actorRef, Var var, Value value);
+    void onReceiveStop(ActorRef caller, Machine machine);
+
+    void onReceiveSyncFreeVar(ActorRef caller, Var var, Value value);
+
+    void onSendResponse(ActorRef caller, ActorRef requester, Envelope request, Envelope response);
+
+    void onSendSyncFreeVar(ActorRef caller, Var parentVar, Complete value, ActorRef child, Var childVar);
+
+    void onWait(ActorRef caller, ComputeWait computeWait, Machine machine);
+
+    void onWaitFreeVar(ActorRef caller, Var parentVar, Var childVar, Var barrier);
+
+    void removeRecognizer(Function<ActorRef, Boolean> recognizer);
 }

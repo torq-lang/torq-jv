@@ -32,16 +32,6 @@ public final class LexerToken implements SourceSpan {
     }
 
     @Override
-    public final int begin() {
-        return begin;
-    }
-
-    @Override
-    public final int end() {
-        return end;
-    }
-
-    @Override
     public boolean equals(Object other) {
         if (this == other) return true;
         if (other == null || getClass() != other.getClass()) return false;
@@ -186,6 +176,16 @@ public final class LexerToken implements SourceSpan {
         return source;
     }
 
+    @Override
+    public final int sourceBegin() {
+        return begin;
+    }
+
+    @Override
+    public final int sourceEnd() {
+        return end;
+    }
+
     public final String substring() {
         return source.substring(begin, end);
     }
@@ -213,12 +213,12 @@ public final class LexerToken implements SourceSpan {
     }
 
     @Override
-    public final LexerToken toSourceSpanBegin() {
+    public final LexerToken toSourceBegin() {
         return this;
     }
 
     @Override
-    public final LexerToken toSourceSpanEnd() {
+    public final LexerToken toSourceEnd() {
         return this;
     }
 

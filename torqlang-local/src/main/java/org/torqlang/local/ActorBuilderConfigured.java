@@ -9,7 +9,7 @@ package org.torqlang.local;
 
 import org.torqlang.klvm.*;
 import org.torqlang.lang.ActorExpr;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public interface ActorBuilderConfigured {
 
     Rec actorRec();
 
-    ActorSntc actorSntc();
+    ActorStmt actorStmt();
 
     Address address();
 
@@ -30,7 +30,7 @@ public interface ActorBuilderConfigured {
 
     ActorCfg config();
 
-    Stmt createActorRecStmt();
+    Instr createActorRecInstr();
 
     String source();
 

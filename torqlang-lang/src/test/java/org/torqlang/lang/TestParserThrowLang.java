@@ -21,7 +21,7 @@ public class TestParserThrowLang {
     public void test() {
         //                            01234567
         Parser p = new Parser("throw x");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ThrowLang.class, sox);
         ThrowLang throwLang = (ThrowLang) sox;
         assertSourceSpan(throwLang, 0, 7);
@@ -33,7 +33,7 @@ public class TestParserThrowLang {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "throw x";
-        actualFormat = LangFormatter.SINGLETON.format(throwLang);
+        actualFormat = LangFormatter.DEFAULT.format(throwLang);
         assertEquals(expectedFormat, actualFormat);
     }
 

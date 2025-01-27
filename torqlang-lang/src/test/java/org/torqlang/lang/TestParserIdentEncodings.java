@@ -19,7 +19,7 @@ public class TestParserIdentEncodings {
     public void test() {
 
         Parser p;
-        SntcOrExpr sox;
+        StmtOrExpr sox;
         String v;
 
         p = new Parser("`\\u0078`");

@@ -14,27 +14,27 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public abstract class ActorLang extends AbstractLang implements SntcOrExpr {
+public abstract class ActorLang extends AbstractLang implements StmtOrExpr {
 
     public final List<Pat> formalArgs;
-    public final List<SntcOrExpr> body;
+    public final List<StmtOrExpr> body;
 
-    private List<SntcOrExpr> initializer;
-    private List<AskSntc> askHandlers;
-    private List<TellSntc> tellHandlers;
+    private List<StmtOrExpr> initializer;
+    private List<AskStmt> askHandlers;
+    private List<TellStmt> tellHandlers;
 
-    public ActorLang(List<Pat> formalArgs, List<SntcOrExpr> body, SourceSpan sourceSpan) {
+    public ActorLang(List<Pat> formalArgs, List<StmtOrExpr> body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.formalArgs = nullSafeCopyOf(formalArgs);
         this.body = nullSafeCopyOf(body);
     }
 
-    public final List<? extends AskSntc> askHandlers() {
+    public final List<? extends AskStmt> askHandlers() {
         lazyLoad();
         return askHandlers;
     }
 
-    public final List<? extends SntcOrExpr> initializer() {
+    public final List<? extends StmtOrExpr> initializer() {
         lazyLoad();
         return initializer;
     }
@@ -46,10 +46,10 @@ public abstract class ActorLang extends AbstractLang implements SntcOrExpr {
         initializer = new ArrayList<>(body.size());
         askHandlers = new ArrayList<>(body.size());
         tellHandlers = new ArrayList<>(body.size());
-        for (SntcOrExpr sox : body) {
-            if (sox instanceof AskSntc askHandler) {
+        for (StmtOrExpr sox : body) {
+            if (sox instanceof AskStmt askHandler) {
                 askHandlers.add(askHandler);
-            } else if (sox instanceof TellSntc tellHandler) {
+            } else if (sox instanceof TellStmt tellHandler) {
                 tellHandlers.add(tellHandler);
             } else {
                 initializer.add(sox);
@@ -57,7 +57,7 @@ public abstract class ActorLang extends AbstractLang implements SntcOrExpr {
         }
     }
 
-    public final List<TellSntc> tellHandlers() {
+    public final List<TellStmt> tellHandlers() {
         lazyLoad();
         return tellHandlers;
     }

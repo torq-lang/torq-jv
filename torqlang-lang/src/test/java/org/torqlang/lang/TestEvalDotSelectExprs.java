@@ -26,7 +26,7 @@ public class TestEvalDotSelectExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r in
                 $bind({'f0': 0}, r)
@@ -47,7 +47,7 @@ public class TestEvalDotSelectExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r in
                 $bind({'f0': {'f1': 1}}, r)

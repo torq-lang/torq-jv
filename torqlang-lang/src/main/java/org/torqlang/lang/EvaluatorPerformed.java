@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.*;
 
 public interface EvaluatorPerformed {
-    DebugStmtListener debugStmtListener();
+    DebugInstrListener debugInstrListener();
 
     Env env();
 
@@ -20,7 +20,7 @@ public interface EvaluatorPerformed {
 
     Env rootEnv();
 
-    SntcOrExpr sntcOrExpr();
+    StmtOrExpr stmtOrExpr();
 
     String source();
 

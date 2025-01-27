@@ -33,7 +33,7 @@ public class TestEvalProcApply {
                 var add_2 = func (n) in n + 2 end
                 x = add_2(3)
             end""";
-        assertEquals(expected, e.sntcOrExpr().toString());
+        assertEquals(expected, e.stmtOrExpr().toString());
         expected = """
             local add_2 in
                 $create_proc(proc (n, $r) in
@@ -59,7 +59,7 @@ public class TestEvalProcApply {
             begin
                 x = (func (n) in n + 2 end)(3)
             end""";
-        assertEquals(expected, e.sntcOrExpr().toString());
+        assertEquals(expected, e.stmtOrExpr().toString());
         expected = """         
             local $v0 in
                 $create_proc(proc (n, $r) in
@@ -72,7 +72,7 @@ public class TestEvalProcApply {
     }
 
     @Test
-    public void testFuncSntcApply() throws Exception {
+    public void testFuncStmtApply() throws Exception {
         String source = """
             begin
                 func add_2(x) in
@@ -84,7 +84,7 @@ public class TestEvalProcApply {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2 in
                 $create_proc(proc (x, $r) in
@@ -97,7 +97,7 @@ public class TestEvalProcApply {
     }
 
     @Test
-    public void testFuncSntcApplyReturnLiteral() throws Exception {
+    public void testFuncStmtApplyReturnLiteral() throws Exception {
         String source = """
             begin
                 func do_it() in
@@ -115,7 +115,7 @@ public class TestEvalProcApply {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local do_it in
                 $create_proc(proc ($r) in
@@ -149,7 +149,7 @@ public class TestEvalProcApply {
                 var add_2 = proc (n, r) in r = n + 2 end
                 add_2(3, x)
             end""";
-        assertEquals(expected, e.sntcOrExpr().toString());
+        assertEquals(expected, e.stmtOrExpr().toString());
         expected = """
             local add_2 in
                 $create_proc(proc (n, r) in
@@ -162,7 +162,7 @@ public class TestEvalProcApply {
     }
 
     @Test
-    public void testProcSntcApply() throws Exception {
+    public void testProcStmtApply() throws Exception {
         String source = """
             begin
                 proc add_2(n, r) in
@@ -174,7 +174,7 @@ public class TestEvalProcApply {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2 in
                 $create_proc(proc (n, r) in

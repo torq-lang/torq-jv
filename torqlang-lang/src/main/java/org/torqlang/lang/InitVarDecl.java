@@ -12,9 +12,9 @@ import org.torqlang.util.SourceSpan;
 public final class InitVarDecl extends AbstractLang implements VarDecl {
 
     public final Pat varPat;
-    public final SntcOrExpr valueExpr;
+    public final StmtOrExpr valueExpr;
 
-    public InitVarDecl(Pat varPat, SntcOrExpr valueExpr, SourceSpan sourceSpan) {
+    public InitVarDecl(Pat varPat, StmtOrExpr valueExpr, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.varPat = varPat;
         this.valueExpr = valueExpr;

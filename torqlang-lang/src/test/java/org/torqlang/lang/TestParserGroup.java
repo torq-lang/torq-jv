@@ -20,14 +20,14 @@ public class TestParserGroup {
     public void test() {
         //                            0123
         Parser p = new Parser("(1)");
-        SntcOrExpr x = p.parse();
+        StmtOrExpr x = p.parse();
         assertSourceSpan(x, 0, 3);
         assertEquals(Int32.I32_1, asIntAsExpr(asSingleExpr(x)).int64());
         // Test toString format
         String expectedFormat = "(1)";
         String actualFormat = x.toString();
         assertEquals(expectedFormat, actualFormat);
-        actualFormat = LangFormatter.SINGLETON.format(x);
+        actualFormat = LangFormatter.DEFAULT.format(x);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -36,7 +36,7 @@ public class TestParserGroup {
         //                                      1         2
         //                            0123456789012345678901234
         Parser p = new Parser("begin (1); (2); (-1) end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 
@@ -69,7 +69,7 @@ public class TestParserGroup {
         //                                      1         2
         //                            0123456789012345678901234567
         Parser p = new Parser("begin (1 + 5) * (3 - 7) end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 

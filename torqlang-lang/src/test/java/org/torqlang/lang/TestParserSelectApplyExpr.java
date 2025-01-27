@@ -21,7 +21,7 @@ public class TestParserSelectApplyExpr {
     public void testApply() {
         //                            01234
         Parser p = new Parser("a(b)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 4);
@@ -35,7 +35,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a(b)";
-        actualFormat = LangFormatter.SINGLETON.format(applyLang);
+        actualFormat = LangFormatter.DEFAULT.format(applyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -43,7 +43,7 @@ public class TestParserSelectApplyExpr {
     public void testApplyApply() {
         //                            01234567
         Parser p = new Parser("a(b)(c)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 7);
@@ -66,7 +66,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a(b)(c)";
-        actualFormat = LangFormatter.SINGLETON.format(applyLang);
+        actualFormat = LangFormatter.DEFAULT.format(applyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -74,7 +74,7 @@ public class TestParserSelectApplyExpr {
     public void testApplyIndex() {
         //                            01234567
         Parser p = new Parser("a(b)[c]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 7);
@@ -94,7 +94,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a(b)[c]";
-        actualFormat = LangFormatter.SINGLETON.format(indexSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(indexSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -102,7 +102,7 @@ public class TestParserSelectApplyExpr {
     public void testDot() {
         //                            0123
         Parser p = new Parser("a.b");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(DotSelectExpr.class, sox);
         DotSelectExpr dotSelectExpr = (DotSelectExpr) sox;
         assertSourceSpan(dotSelectExpr, 0, 3);
@@ -117,7 +117,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a.b";
-        actualFormat = LangFormatter.SINGLETON.format(dotSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(dotSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -125,7 +125,7 @@ public class TestParserSelectApplyExpr {
     public void testDotApply() {
         //                            0123456
         Parser p = new Parser("a.b(c)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(SelectAndApplyLang.class, sox);
         SelectAndApplyLang selectAndApplyLang = (SelectAndApplyLang) sox;
         assertSourceSpan(selectAndApplyLang, 0, 6);
@@ -145,7 +145,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a.b(c)";
-        actualFormat = LangFormatter.SINGLETON.format(selectAndApplyLang);
+        actualFormat = LangFormatter.DEFAULT.format(selectAndApplyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -153,7 +153,7 @@ public class TestParserSelectApplyExpr {
     public void testDotDot() {
         //                            012345
         Parser p = new Parser("a.b.c");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(DotSelectExpr.class, sox);
         DotSelectExpr dotSelectExpr = (DotSelectExpr) sox;
         assertSourceSpan(dotSelectExpr, 0, 5);
@@ -173,7 +173,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a.b.c";
-        actualFormat = LangFormatter.SINGLETON.format(dotSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(dotSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -181,7 +181,7 @@ public class TestParserSelectApplyExpr {
     public void testDotIndex() {
         //                            0123456
         Parser p = new Parser("a.b[c]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 6);
@@ -201,7 +201,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a.b[c]";
-        actualFormat = LangFormatter.SINGLETON.format(indexSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(indexSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -209,7 +209,7 @@ public class TestParserSelectApplyExpr {
     public void testIndex() {
         //                            01234
         Parser p = new Parser("a[b]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 4);
@@ -224,7 +224,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a[b]";
-        actualFormat = LangFormatter.SINGLETON.format(indexSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(indexSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -232,7 +232,7 @@ public class TestParserSelectApplyExpr {
     public void testIndexApply() {
         //                            01234567
         Parser p = new Parser("a[b](c)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(SelectAndApplyLang.class, sox);
         SelectAndApplyLang selectAndApplyLang = (SelectAndApplyLang) sox;
         assertSourceSpan(selectAndApplyLang, 0, 7);
@@ -253,7 +253,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a[b](c)";
-        actualFormat = LangFormatter.SINGLETON.format(selectAndApplyLang);
+        actualFormat = LangFormatter.DEFAULT.format(selectAndApplyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -261,7 +261,7 @@ public class TestParserSelectApplyExpr {
     public void testIndexDot() {
         //                            0123456
         Parser p = new Parser("a[b].c");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(DotSelectExpr.class, sox);
         DotSelectExpr dotSelectExpr = (DotSelectExpr) sox;
         assertSourceSpan(dotSelectExpr, 0, 6);
@@ -281,7 +281,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a[b].c";
-        actualFormat = LangFormatter.SINGLETON.format(dotSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(dotSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -289,7 +289,7 @@ public class TestParserSelectApplyExpr {
     public void testIndexIndex() {
         //                            01234567
         Parser p = new Parser("a[b][c]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(IndexSelectExpr.class, sox);
         IndexSelectExpr indexSelectExpr = (IndexSelectExpr) sox;
         assertSourceSpan(indexSelectExpr, 0, 7);
@@ -309,7 +309,7 @@ public class TestParserSelectApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "a[b][c]";
-        actualFormat = LangFormatter.SINGLETON.format(indexSelectExpr);
+        actualFormat = LangFormatter.DEFAULT.format(indexSelectExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 

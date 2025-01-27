@@ -8,9 +8,9 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.IdentDef;
-import org.torqlang.klvm.LocalStmt;
-import org.torqlang.klvm.SeqStmt;
-import org.torqlang.klvm.Stmt;
+import org.torqlang.klvm.LocalInstr;
+import org.torqlang.klvm.SeqInstr;
+import org.torqlang.klvm.Instr;
 import org.torqlang.util.SourceSpan;
 
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ import java.util.List;
 
 public final class LexicalScope {
     private final List<IdentDef> identDefs = new ArrayList<>();
-    private final List<Stmt> stmts = new ArrayList<>();
-    private Stmt stmt;
+    private final List<Instr> instrs = new ArrayList<>();
+    private Instr instr;
 
     public LexicalScope() {
     }
@@ -28,28 +28,28 @@ public final class LexicalScope {
         identDefs.add(identDef);
     }
 
-    public final void addStmt(Stmt stmt) {
-        stmts.add(stmt);
+    public final void addInstr(Instr instr) {
+        instrs.add(instr);
     }
 
-    final Stmt build() {
-        if (stmt != null) {
+    final Instr build() {
+        if (instr != null) {
             throw new IllegalStateException("Already built error");
         }
-        if (stmts.isEmpty()) {
+        if (instrs.isEmpty()) {
             throw new IllegalStateException("Empty scope");
         }
         if (identDefs.isEmpty()) {
-            if (stmts.size() == 1) {
-                stmt = stmts.get(0);
+            if (instrs.size() == 1) {
+                instr = instrs.get(0);
             } else {
-                stmt = new SeqStmt(stmts, SourceSpan.adjoin(stmts));
+                instr = new SeqInstr(instrs, SourceSpan.adjoin(instrs));
             }
         } else {
-            SeqStmt body = new SeqStmt(stmts, SourceSpan.adjoin(stmts));
-            stmt = new LocalStmt(identDefs, body, SourceSpan.adjoin(stmts));
+            SeqInstr body = new SeqInstr(instrs, SourceSpan.adjoin(instrs));
+            instr = new LocalInstr(identDefs, body, SourceSpan.adjoin(instrs));
         }
-        return stmt;
+        return instr;
     }
 
 }

@@ -9,11 +9,11 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public final class ThrowLang extends AbstractLang implements SntcOrExpr {
+public final class ThrowLang extends AbstractLang implements StmtOrExpr {
 
-    public final SntcOrExpr arg;
+    public final StmtOrExpr arg;
 
-    public ThrowLang(SntcOrExpr arg, SourceSpan sourceSpan) {
+    public ThrowLang(StmtOrExpr arg, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.arg = arg;
     }

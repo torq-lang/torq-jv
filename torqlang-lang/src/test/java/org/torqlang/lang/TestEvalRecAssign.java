@@ -28,7 +28,7 @@ public class TestEvalRecAssign {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r1, r2 in
                 $bind([], r1)
@@ -56,7 +56,7 @@ public class TestEvalRecAssign {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r1, r2 in
                 $bind({'a': 1}, r1)
@@ -85,7 +85,7 @@ public class TestEvalRecAssign {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r1, r2 in
                 $bind([], r1)
@@ -114,7 +114,7 @@ public class TestEvalRecAssign {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r1, r2 in
                 $bind({'a': 1}, r1)
@@ -143,7 +143,7 @@ public class TestEvalRecAssign {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r1, r2 in
                 $bind({'b': 4, 'c': 5}, r1)
@@ -174,7 +174,7 @@ public class TestEvalRecAssign {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local r1, r2 in
                 $bind({'b': 4, 'c': 5}, r1)

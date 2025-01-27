@@ -62,9 +62,9 @@ final class LocalAddress implements Address {
         // a-z
         // A-Z
         // 0-9
-        // _ - . /
+        // _ - . / { }
         return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' ||
-            c == '_' || c == '-' || c == '.' || c == '/';
+            c == '_' || c == '-' || c == '.' || c == '/' || c == '{' || c == '}';
     }
 
     @Override

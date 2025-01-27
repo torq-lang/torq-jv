@@ -11,10 +11,10 @@ import org.torqlang.util.SourceSpan;
 
 public abstract class SelectExpr extends AbstractLang implements BuiltInApplyExpr {
 
-    public final SntcOrExpr recExpr;
-    public final SntcOrExpr featureExpr;
+    public final StmtOrExpr recExpr;
+    public final StmtOrExpr featureExpr;
 
-    public SelectExpr(SntcOrExpr recExpr, SntcOrExpr featureExpr, SourceSpan sourceSpan) {
+    public SelectExpr(StmtOrExpr recExpr, StmtOrExpr featureExpr, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.recExpr = recExpr;
         this.featureExpr = featureExpr;

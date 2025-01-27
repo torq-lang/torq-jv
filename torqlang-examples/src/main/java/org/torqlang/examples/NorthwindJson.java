@@ -91,7 +91,7 @@ public final class NorthwindJson {
         StringBuilder buf = new StringBuilder();
         boolean first = true;
         for (Map<String, Object> obj : list) {
-            String s = JsonFormatter.SINGLETON.format(obj);
+            String s = JsonFormatter.DEFAULT.format(obj);
             if (!first) {
                 buf.append("\n");
             }

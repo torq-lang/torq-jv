@@ -16,7 +16,7 @@ public class SelfRefAskError extends ErrorWithSourceSpan {
     private final SourceSpan sourceSpan;
 
     public SelfRefAskError(Stack current) {
-        this.sourceSpan = current.stmt;
+        this.sourceSpan = current.instr;
     }
 
     @Override

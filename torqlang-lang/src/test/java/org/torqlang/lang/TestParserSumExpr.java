@@ -20,7 +20,7 @@ public class TestParserSumExpr {
     public void testIntPlusInt() {
         //                            012345
         Parser p = new Parser("3 + 5");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(SumExpr.class, sox);
         SumExpr sumExpr = (SumExpr) sox;
         assertSourceSpan(sumExpr, 0, 5);
@@ -37,7 +37,7 @@ public class TestParserSumExpr {
     public void testIntPlusNegativeInt() {
         //                            0123456
         Parser p = new Parser("3 + -5");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(SumExpr.class, sox);
         SumExpr sumExpr = (SumExpr) sox;
         assertSourceSpan(sumExpr, 0, 6);

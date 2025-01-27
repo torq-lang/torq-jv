@@ -39,7 +39,7 @@ public class TestEvalCases {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local $else in
                 $create_proc(proc ($r) in // free vars: a
@@ -95,7 +95,7 @@ public class TestEvalCases {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local $else in
                 $create_proc(proc ($r) in // free vars: a
@@ -157,7 +157,7 @@ public class TestEvalCases {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local check_customer in
                 $create_proc(proc (c, $r) in
@@ -222,7 +222,7 @@ public class TestEvalCases {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local check_customer in
                 $create_proc(proc (c, $r) in
@@ -296,7 +296,7 @@ public class TestEvalCases {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local $else in
                 $create_proc(proc ($r) in // free vars: a

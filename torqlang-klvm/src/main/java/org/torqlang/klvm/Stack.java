@@ -9,13 +9,13 @@ package org.torqlang.klvm;
 
 public class Stack implements Kernel {
 
-    public final Stmt stmt;
+    public final Instr instr;
     public final Env env;
     public final Stack next;
     public final int size;
 
-    public Stack(Stmt stmt, Env env, Stack next) {
-        this.stmt = stmt;
+    public Stack(Instr instr, Env env, Stack next) {
+        this.instr = instr;
         this.env = env;
         this.next = next;
         this.size = next == null ? 1 : next.size + 1;

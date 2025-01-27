@@ -18,7 +18,7 @@ public class TestParserStrEncodings {
     public void testEscapeChars() {
 
         Parser p;
-        SntcOrExpr sox;
+        StmtOrExpr sox;
         String v;
 
         p = new Parser("'\\t\\b\\n\\r\\f'");
@@ -45,7 +45,7 @@ public class TestParserStrEncodings {
             that all men are created equal, ...""";
         assertEquals(76, expected.length()); // Prove that expected source is 3 less than given source
         Parser p = new Parser(source);
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(StrAsExpr.class, sox);
         String v = asStrAsExpr(sox).str.value;
         // The resulting string length should be 3 less because of two missing single quotes and one escape
@@ -60,7 +60,7 @@ public class TestParserStrEncodings {
     public void testUnicode() {
 
         Parser p;
-        SntcOrExpr sox;
+        StmtOrExpr sox;
         String v;
 
         p = new Parser("'\\u0078'");

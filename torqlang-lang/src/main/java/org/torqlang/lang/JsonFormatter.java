@@ -18,10 +18,7 @@ import java.util.Map;
 
 public final class JsonFormatter {
 
-    public static final JsonFormatter SINGLETON = new JsonFormatter();
-
-    private JsonFormatter() {
-    }
+    public static final JsonFormatter DEFAULT = new JsonFormatter();
 
     public final String format(Object jsonValue) {
         try (StringWriter sw = new StringWriter()) {

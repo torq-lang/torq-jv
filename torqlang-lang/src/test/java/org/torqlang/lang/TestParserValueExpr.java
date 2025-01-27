@@ -23,11 +23,11 @@ public class TestParserValueExpr {
         //                                      1         2         3         4         5
         //                            01234567890123456789012345678901234567890123456789012345678
         Parser p = new Parser("begin a 1 1L 1.0 1.0f 1m false true null eof &x 'x' end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
         assertSourceSpan(beginLang, 0, 55);
-        List<SntcOrExpr> list = beginLang.body.list;
+        List<StmtOrExpr> list = beginLang.body.list;
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
         assertSourceSpan(list.get(1), 8, 9);
@@ -77,12 +77,12 @@ public class TestParserValueExpr {
         //                            01234567890123456789012345678901234567890123
         Parser p = new Parser("begin a; -1; -1L; -1.0; -1.0f; -1m; -&x end");
 
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 
         assertSourceSpan(beginLang, 0, 43);
-        List<SntcOrExpr> list = beginLang.body.list;
+        List<StmtOrExpr> list = beginLang.body.list;
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
 

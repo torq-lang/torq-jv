@@ -20,7 +20,7 @@ public class TestParserPatExpr {
         //                                      1         2         3         4         5         6         7
         //                            012345678901234567890123456789012345678901234567890123456789012345678901234
         Parser p = new Parser("case z of [a, 1, 1L, false, true, null, eof, 'x'] then true else false end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 74);
@@ -57,7 +57,7 @@ public class TestParserPatExpr {
         //                                      1         2         3         4         5         6         7         8
         //                            01234567890123456789012345678901234567890123456789012345678901234567890123456789012345
         Parser p = new Parser("case z of 'my-label'#[a, 1, 1L, false, true, null, eof, 'x'] then true else false end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 85);

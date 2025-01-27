@@ -11,7 +11,7 @@ import org.torqlang.util.SourceSpan;
 
 public final class IndexSelectExpr extends SelectExpr {
 
-    public IndexSelectExpr(SntcOrExpr recExpr, SntcOrExpr featureExpr, SourceSpan sourceSpan) {
+    public IndexSelectExpr(StmtOrExpr recExpr, StmtOrExpr featureExpr, SourceSpan sourceSpan) {
         super(recExpr, featureExpr, sourceSpan);
     }
 

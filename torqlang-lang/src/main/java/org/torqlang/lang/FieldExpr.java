@@ -11,10 +11,10 @@ import org.torqlang.util.SourceSpan;
 
 public final class FieldExpr extends AbstractLang {
 
-    public final SntcOrExpr feature;
-    public final SntcOrExpr value;
+    public final StmtOrExpr feature;
+    public final StmtOrExpr value;
 
-    public FieldExpr(SntcOrExpr feature, SntcOrExpr value, SourceSpan sourceSpan) {
+    public FieldExpr(StmtOrExpr feature, StmtOrExpr value, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.feature = feature;
         this.value = value;

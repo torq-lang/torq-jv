@@ -30,7 +30,7 @@ public class TestEvalAccessNums {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a in
                 $select_apply(Cell, ['new'], 5, a)
@@ -53,7 +53,7 @@ public class TestEvalAccessNums {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a in
                 $select_apply(Cell, ['new'], 5, a)

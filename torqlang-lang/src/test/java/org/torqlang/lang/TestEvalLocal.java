@@ -34,7 +34,7 @@ public class TestEvalLocal {
             .setExprIdent(z)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a, b, c, d in
                 $bind(3, a)
@@ -54,7 +54,7 @@ public class TestEvalLocal {
     }
 
     @Test
-    public void testComplexSntc() throws Exception {
+    public void testComplexStmt() throws Exception {
         String source = """
             local a, b, c, d in
                 a = 3
@@ -72,7 +72,7 @@ public class TestEvalLocal {
             .addVar(z)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a, b, c, d in
                 $bind(3, a)
@@ -103,7 +103,7 @@ public class TestEvalLocal {
             .setExprIdent(z)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local x, y in
                 $bind(3, x)
@@ -115,7 +115,7 @@ public class TestEvalLocal {
     }
 
     @Test
-    public void testSntc() throws Exception {
+    public void testStmt() throws Exception {
         String source = """
             local x, y in
                 x = 3
@@ -127,7 +127,7 @@ public class TestEvalLocal {
             .addVar(z)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local x, y in
                 $bind(3, x)

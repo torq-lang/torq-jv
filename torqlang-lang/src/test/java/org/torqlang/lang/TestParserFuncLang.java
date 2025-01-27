@@ -22,7 +22,7 @@ public class TestParserFuncLang {
         //                                      1
         //                            01234567890123456
         Parser p = new Parser("func () in 0 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(FuncExpr.class, sox);
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 16);
@@ -44,7 +44,7 @@ public class TestParserFuncLang {
         //                                      1
         //                            012345678901234567
         Parser p = new Parser("func (a) in 0 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(FuncExpr.class, sox);
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 17);
@@ -67,7 +67,7 @@ public class TestParserFuncLang {
         //                                      1         2
         //                            012345678901234567890
         Parser p = new Parser("func (a, b) in 0 end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(FuncExpr.class, sox);
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 20);
@@ -87,99 +87,99 @@ public class TestParserFuncLang {
     }
 
     @Test
-    public void testSntc() {
+    public void testStmt() {
         //                                      1         2
         //                            01234567890123456789012
         Parser p = new Parser("func MyFunc() in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(FuncSntc.class, sox);
-        FuncSntc funcSntc = (FuncSntc) sox;
-        assertSourceSpan(funcSntc, 0, 22);
-        assertEquals(Ident.create("MyFunc"), funcSntc.name());
-        assertSourceSpan(funcSntc.body, 17, 18);
-        assertEquals(0, funcSntc.formalArgs.size());
-        assertEquals(1, funcSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(FuncStmt.class, sox);
+        FuncStmt funcStmt = (FuncStmt) sox;
+        assertSourceSpan(funcStmt, 0, 22);
+        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertSourceSpan(funcStmt.body, 17, 18);
+        assertEquals(0, funcStmt.formalArgs.size());
+        assertEquals(1, funcStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc() in
                 0
             end""";
-        String actualFormat = funcSntc.toString();
+        String actualFormat = funcStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 
     @Test
-    public void testSntcWithArgs1() {
+    public void testStmtWithArgs1() {
         //                                      1         2
         //                            012345678901234567890123
         Parser p = new Parser("func MyFunc(a) in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(FuncSntc.class, sox);
-        FuncSntc funcSntc = (FuncSntc) sox;
-        assertSourceSpan(funcSntc, 0, 23);
-        assertEquals(Ident.create("MyFunc"), funcSntc.name());
-        assertSourceSpan(funcSntc.body, 18, 19);
-        assertEquals(1, funcSntc.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcSntc.formalArgs.get(0)).ident);
-        assertEquals(1, funcSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(FuncStmt.class, sox);
+        FuncStmt funcStmt = (FuncStmt) sox;
+        assertSourceSpan(funcStmt, 0, 23);
+        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertSourceSpan(funcStmt.body, 18, 19);
+        assertEquals(1, funcStmt.formalArgs.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.formalArgs.get(0)).ident);
+        assertEquals(1, funcStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc(a) in
                 0
             end""";
-        String actualFormat = funcSntc.toString();
+        String actualFormat = funcStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 
     @Test
-    public void testSntcWithArgs2() {
+    public void testStmtWithArgs2() {
         //                                      1         2
         //                            012345678901234567890123456
         Parser p = new Parser("func MyFunc(a, b) in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(FuncSntc.class, sox);
-        FuncSntc funcSntc = (FuncSntc) sox;
-        assertSourceSpan(funcSntc, 0, 26);
-        assertEquals(Ident.create("MyFunc"), funcSntc.name());
-        assertSourceSpan(funcSntc.body, 21, 22);
-        assertEquals(2, funcSntc.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcSntc.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(funcSntc.formalArgs.get(1)).ident);
-        assertEquals(1, funcSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(FuncStmt.class, sox);
+        FuncStmt funcStmt = (FuncStmt) sox;
+        assertSourceSpan(funcStmt, 0, 26);
+        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertSourceSpan(funcStmt.body, 21, 22);
+        assertEquals(2, funcStmt.formalArgs.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.formalArgs.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.formalArgs.get(1)).ident);
+        assertEquals(1, funcStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc(a, b) in
                 0
             end""";
-        String actualFormat = funcSntc.toString();
+        String actualFormat = funcStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 
     @Test
-    public void testSntcWithArgs2WithReturnAnno() {
+    public void testStmtWithArgs2WithReturnAnno() {
         //                                      1         2         3
         //                            012345678901234567890123456789012345
         Parser p = new Parser("func MyFunc(a, b) -> Int32 in 0 end");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(FuncSntc.class, sox);
-        FuncSntc funcSntc = (FuncSntc) sox;
-        assertSourceSpan(funcSntc, 0, 35);
-        assertEquals(Ident.create("MyFunc"), funcSntc.name());
-        assertSourceSpan(funcSntc.body, 30, 31);
-        assertEquals(2, funcSntc.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcSntc.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(funcSntc.formalArgs.get(1)).ident);
-        assertEquals(1, funcSntc.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcSntc.body.list.get(0)).int64());
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(FuncStmt.class, sox);
+        FuncStmt funcStmt = (FuncStmt) sox;
+        assertSourceSpan(funcStmt, 0, 35);
+        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertSourceSpan(funcStmt.body, 30, 31);
+        assertEquals(2, funcStmt.formalArgs.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.formalArgs.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.formalArgs.get(1)).ident);
+        assertEquals(1, funcStmt.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc(a, b) -> Int32 in
                 0
             end""";
-        String actualFormat = funcSntc.toString();
+        String actualFormat = funcStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 

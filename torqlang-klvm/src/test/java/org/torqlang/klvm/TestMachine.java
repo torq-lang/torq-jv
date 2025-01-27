@@ -17,14 +17,14 @@ public class TestMachine {
     @Test
     public void testTimeSlicing() {
 
-        // 1 stmt and 1 time slice
+        // 1 instr and 1 time slice
         Env emptyEnv = Env.emptyEnv();
-        Stmt skip = new SkipStmt(SourceSpan.emptySourceSpan());
+        Instr skip = new SkipInstr(SourceSpan.emptySourceSpan());
         Stack stack = new Stack(skip, emptyEnv, null);
-        Machine machine = new Machine(stack);
+        Machine machine = new Machine(this, stack);
         ComputeAdvice advice = machine.compute(1);
         assertEquals(ComputeEnd.SINGLETON, advice);
-        assertNull(machine.stack()); // Popping 1 stmt should leave a null stack
+        assertNull(machine.stack()); // Popping 1 instr should leave a null stack
         assertEquals(1, machine.computeCount());
         // Try to compute a program that is ended
         advice = machine.compute(1);
@@ -32,11 +32,11 @@ public class TestMachine {
         // Total computed should NOT change from previous 1
         assertEquals(1, machine.computeCount());
 
-        // 1 stmt and 0 time slice
+        // 1 instr and 0 time slice
         emptyEnv = Env.emptyEnv();
-        skip = new SkipStmt(SourceSpan.emptySourceSpan());
+        skip = new SkipInstr(SourceSpan.emptySourceSpan());
         stack = new Stack(skip, emptyEnv, null);
-        machine = new Machine(stack);
+        machine = new Machine(this, stack);
         advice = machine.compute(0);
         assertEquals(ComputePreempt.SINGLETON, advice);
         assertNotNull(machine.stack());
@@ -45,15 +45,15 @@ public class TestMachine {
         assertEquals(0, machine.computeCount());
         advice = machine.compute(1);
         assertEquals(ComputeEnd.SINGLETON, advice);
-        assertNull(machine.stack()); // Popping 1 stmt should leave a null stack
+        assertNull(machine.stack()); // Popping 1 instr should leave a null stack
         assertEquals(1, machine.computeCount());
 
-        // 3 stmts and 2 time slice
+        // 3 instrs and 2 time slice
         emptyEnv = Env.emptyEnv();
         stack = new Stack(skip, emptyEnv, null);
         stack = new Stack(skip, emptyEnv, stack);
         stack = new Stack(skip, emptyEnv, stack);
-        machine = new Machine(stack);
+        machine = new Machine(this, stack);
         advice = machine.compute(2);
         assertEquals(ComputePreempt.SINGLETON, advice);
         assertNotNull(machine.stack());

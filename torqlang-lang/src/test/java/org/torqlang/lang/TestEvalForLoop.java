@@ -34,7 +34,7 @@ public class TestEvalForLoop {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local counter in
                 $select_apply(Cell, ['new'], 0, counter)
@@ -87,7 +87,7 @@ public class TestEvalForLoop {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local counter in
                 $select_apply(Cell, ['new'], 0, counter)
@@ -158,7 +158,7 @@ public class TestEvalForLoop {
             .addVar(Ident.create("z"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local c in
                 $select_apply(Cell, ['new'], 0, c)

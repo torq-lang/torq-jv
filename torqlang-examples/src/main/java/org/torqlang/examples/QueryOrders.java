@@ -91,7 +91,7 @@ public class QueryOrders extends AbstractExample {
         // time a request is received. Spawning an actor using an image is fast.
         ApiRoute route = router.findRoute(new ApiPath("/orders"));
         ActorRef actorRef = Actor.spawn(Address.create(getClass().getName() + "Actor"),
-            (ActorImage) route.receiver.value());
+            (ActorImage) route.target.value());
 
         // Test the orders API handler by sending it a request
         Map<?, ?> requestMap = Map.of(

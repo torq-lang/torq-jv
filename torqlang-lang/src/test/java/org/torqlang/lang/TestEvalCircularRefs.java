@@ -28,7 +28,7 @@ public class TestEvalCircularRefs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local employee in
                 $create_rec({'name': 'Bob', 'manager': x}, employee)
@@ -52,7 +52,7 @@ public class TestEvalCircularRefs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a, b in
                 $create_rec({'next': b}, a)
@@ -80,7 +80,7 @@ public class TestEvalCircularRefs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a, b in
                 $create_tuple([x], a)

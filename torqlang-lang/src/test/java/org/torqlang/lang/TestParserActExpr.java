@@ -19,7 +19,7 @@ public class TestParserActExpr {
     public void test() {
         //                            0123456789
         Parser p = new Parser("act a end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ActExpr.class, sox);
         ActExpr actExpr = (ActExpr) sox;
         assertSourceSpan(actExpr, 0, 9);
@@ -42,7 +42,7 @@ public class TestParserActExpr {
         //                                      1
         //                            01234567890123
         Parser p = new Parser("act a b c end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ActExpr.class, sox);
         ActExpr actExpr = (ActExpr) sox;
         assertSourceSpan(actExpr, 0, 13);

@@ -34,7 +34,8 @@ public final class NorthwindServer {
 
     public static void main(String[] args) throws Exception {
 
-//        DebuggerSetting.setDebugger(new DefaultDebugger(true, ConsoleLogger.SINGLETON));
+//        DebuggerSetting.set(new DefaultDebugger());
+//        DebuggerSetting.get().addRecognizer((actorRef -> actorRef.address().path().equals("customers")));
 
         ConsoleLogger.SINGLETON.info("Process ID: " + ProcessHandle.current().pid());
         ConsoleLogger.SINGLETON.info("System executor: " + ActorSystem.defaultExecutor());

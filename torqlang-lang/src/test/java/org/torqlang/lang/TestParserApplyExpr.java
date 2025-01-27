@@ -21,7 +21,7 @@ public class TestParserApplyExpr {
     public void test() {
         //                            0123
         Parser p = new Parser("x()");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 3);
@@ -34,7 +34,7 @@ public class TestParserApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "x()";
-        actualFormat = LangFormatter.SINGLETON.format(applyLang);
+        actualFormat = LangFormatter.DEFAULT.format(applyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -42,7 +42,7 @@ public class TestParserApplyExpr {
     public void testArgs1() {
         //                            01234
         Parser p = new Parser("x(a)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 4);
@@ -57,7 +57,7 @@ public class TestParserApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "x(a)";
-        actualFormat = LangFormatter.SINGLETON.format(applyLang);
+        actualFormat = LangFormatter.DEFAULT.format(applyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -65,7 +65,7 @@ public class TestParserApplyExpr {
     public void testArgs2() {
         //                            01234567
         Parser p = new Parser("x(a, 3)");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ApplyLang.class, sox);
         ApplyLang applyLang = (ApplyLang) sox;
         assertSourceSpan(applyLang, 0, 7);
@@ -82,7 +82,7 @@ public class TestParserApplyExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "x(a, 3)";
-        actualFormat = LangFormatter.SINGLETON.format(applyLang);
+        actualFormat = LangFormatter.DEFAULT.format(applyLang);
         assertEquals(expectedFormat, actualFormat);
     }
 

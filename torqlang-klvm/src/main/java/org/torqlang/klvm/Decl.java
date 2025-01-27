@@ -13,5 +13,5 @@ package org.torqlang.klvm;
  * record definition to memory for subsequent computation. Converting a declaration to a value causes declarations and
  * identifiers to be associated with closures, values and memory variables (memory locations).
  */
-public interface Decl extends DeclOrStmt {
+public interface Decl extends DeclOrInstr {
 }

@@ -19,7 +19,7 @@ import java.util.List;
  * =================
  *             (begin)          INIT
  * INIT        setSource        READY
- * INIT        setSntcOrExpr    PARSED
+ * INIT        setStmtOrExpr    PARSED
  * READY       parse            PARSED
  * PARSED      generate         GENERATED
  * GENERATED   perform          PERFORMED
@@ -30,18 +30,18 @@ import java.util.List;
  *
  * INIT
  *   properties: (none)
- *   methods:    setDebugStmtListener, setRootEnv, setExprIdent, setTimeSlice, addVar, setSource, setSntcOrExpr
+ *   methods:    setDebugInstrListener, setRootEnv, setExprIdent, setTimeSlice, addVar, setSource, setStmtOrExpr
  * READY
- *   properties: debugStmtListener, rootEnv, exprIdent, timeSlice, source
+ *   properties: debugInstrListener, rootEnv, exprIdent, timeSlice, source
  *   methods:    parse, generate, perform
  * PARSED
- *   properties: debugStmtListener, rootEnv, exprIdent, timeSlice, source, sntcOrExpr
+ *   properties: debugInstrListener, rootEnv, exprIdent, timeSlice, source, stmtOrExpr
  *   methods:    generate, perform
  * GENERATED
- *   properties: debugStmtListener, rootEnv, exprIdent, timeSlice, source, sntcOrExpr, kernel
+ *   properties: debugInstrListener, rootEnv, exprIdent, timeSlice, source, stmtOrExpr, kernel
  *   methods:    perform
  * PERFORMED
- *   properties: debugStmtListener, rootEnv, env, exprIdent, timeSlice, source, sntcOrExpr, kernel
+ *   properties: debugInstrListener, rootEnv, env, exprIdent, timeSlice, source, stmtOrExpr, kernel
  *   methods:    (none)
  */
 public final class Evaluator implements EvaluatorInit, EvaluatorReady, EvaluatorParsed,
@@ -55,9 +55,9 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     private Env rootEnv;
     private Ident exprIdent;
     private String source;
-    private SntcOrExpr sntcOrExpr;
+    private StmtOrExpr stmtOrExpr;
     private Kernel kernel;
-    private DebugStmtListener debugStmtListener;
+    private DebugInstrListener debugInstrListener;
     private long timeSlice;
 
     private Evaluator() {
@@ -90,8 +90,8 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
-    public final DebugStmtListener debugStmtListener() {
-        return debugStmtListener;
+    public final DebugInstrListener debugInstrListener() {
+        return debugInstrListener;
     }
 
     @Override
@@ -114,9 +114,9 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
         }
         Generator g = new Generator();
         if (exprIdent != null) {
-            kernel = g.acceptExpr(sntcOrExpr, exprIdent);
+            kernel = g.acceptExpr(stmtOrExpr, exprIdent);
         } else {
-            kernel = g.acceptSntc(sntcOrExpr);
+            kernel = g.acceptStmt(stmtOrExpr);
         }
         state = State.GENERATED;
         return this;
@@ -133,7 +133,7 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
             throw new IllegalStateException("Cannot parse at state: " + state);
         }
         Parser p = new Parser(source);
-        sntcOrExpr = p.parse();
+        stmtOrExpr = p.parse();
         state = State.PARSED;
         return this;
     }
@@ -150,12 +150,12 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
             throw new IllegalStateException("Cannot perform at state: " + state);
         }
         env = Env.create(rootEnv, envEntries);
-        Stmt stmt = (Stmt) kernel;
-        if (debugStmtListener != null) {
-            stmt = new DebugStmt(debugStmtListener, stmt, env, stmt);
+        Instr instr = (Instr) kernel;
+        if (debugInstrListener != null) {
+            instr = new DebugInstr(debugInstrListener, instr, env, instr);
         }
-        Stack stack = new Stack(stmt, env, null);
-        Machine.compute(stack, timeSlice);
+        Stack stack = new Stack(instr, env, null);
+        Machine.compute(this, stack, timeSlice);
         state = State.PERFORMED;
         return this;
     }
@@ -166,8 +166,8 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
-    public final EvaluatorInit setDebugStmtListener(DebugStmtListener debugStmtListener) {
-        this.debugStmtListener = debugStmtListener;
+    public final EvaluatorInit setDebugInstrListener(DebugInstrListener debugInstrListener) {
+        this.debugInstrListener = debugInstrListener;
         return this;
     }
 
@@ -190,11 +190,11 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
-    public final EvaluatorReady setSntcOrExpr(SntcOrExpr sntcOrExpr) {
+    public final EvaluatorReady setStmtOrExpr(StmtOrExpr stmtOrExpr) {
         if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setSntcOrExpr at state: " + state);
+            throw new IllegalStateException("Cannot setStmtOrExpr at state: " + state);
         }
-        this.sntcOrExpr = sntcOrExpr;
+        this.stmtOrExpr = stmtOrExpr;
         state = State.READY;
         return this;
     }
@@ -219,8 +219,8 @@ public final class Evaluator implements EvaluatorInit, EvaluatorReady, Evaluator
     }
 
     @Override
-    public final SntcOrExpr sntcOrExpr() {
-        return sntcOrExpr;
+    public final StmtOrExpr stmtOrExpr() {
+        return stmtOrExpr;
     }
 
     @Override

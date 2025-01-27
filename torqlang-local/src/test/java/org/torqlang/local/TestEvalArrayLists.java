@@ -31,7 +31,7 @@ public class TestEvalArrayLists {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             $select_apply(ArrayList, ['new'], x)
             $select_apply(x, ['add'], 3)
@@ -62,7 +62,7 @@ public class TestEvalArrayLists {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             $select_apply(ArrayList, ['new'], x)
             $select_apply(x, ['add'], 3)
@@ -90,7 +90,7 @@ public class TestEvalArrayLists {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a, b in
                 $bind([3, 2, 1], a)

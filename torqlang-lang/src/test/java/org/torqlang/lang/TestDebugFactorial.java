@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestDebugFactorial implements DebugStmtListener {
+public class TestDebugFactorial implements DebugInstrListener {
 
     private final Ident a = Ident.create("a");
     private final Ident x = Ident.create("x");
@@ -49,10 +49,10 @@ public class TestDebugFactorial implements DebugStmtListener {
         EvaluatorPerformed e = Evaluator.builder()
             .addVar(Ident.create("a"), new Var(Dec128.of("2")))
             .addVar(Ident.create("x"))
-            .setDebugStmtListener(this)
+            .setDebugInstrListener(this)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local fact in
                 $create_proc(proc (x, $r) in
@@ -81,161 +81,159 @@ public class TestDebugFactorial implements DebugStmtListener {
     }
 
     @Override
-    public void onDebugStmt(DebugStmt stmt, Machine machine) {
+    public void onNextInstr(Instr nextInstr, Env nextEnv, Machine machine) {
         int nextIndex = i.getAndIncrement();
-        Env nextEnv = stmt.nextEnv();
-        Stmt nextStmt = stmt.nextStmt();
         if (nextIndex == 0) {
             // Test incoming Env
             assertEquals(Dec128.of(2), nextEnv.get(a).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get(x).valueOrVarSet());
-            assertInstanceOf(LocalStmt.class, nextStmt);
-            // Test incoming Stmt
-            LocalStmt localStmt = (LocalStmt) nextStmt;
-            assertEquals(1, localStmt.xs.size());
-            assertEquals(fact, localStmt.xs.get(0).ident);
+            assertInstanceOf(LocalInstr.class, nextInstr);
+            // Test incoming Instr
+            LocalInstr localInstr = (LocalInstr) nextInstr;
+            assertEquals(1, localInstr.xs.size());
+            assertEquals(fact, localInstr.xs.get(0).ident);
         } else if (nextIndex == 1) {
             // Test incoming Env
             assertEquals(Dec128.of(2), nextEnv.get(a).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get(x).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get(fact).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(CreateProcStmt.class, nextStmt);
-            CreateProcStmt createProcStmt = (CreateProcStmt) nextStmt;
-            assertEquals(fact, createProcStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(CreateProcInstr.class, nextInstr);
+            CreateProcInstr createProcInstr = (CreateProcInstr) nextInstr;
+            assertEquals(fact, createProcInstr.x);
         } else if (nextIndex == 2) {
             // Test incoming Env
             assertInstanceOf(Closure.class, nextEnv.get(fact).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(ApplyStmt.class, nextStmt);
-            ApplyStmt applyStmt = (ApplyStmt) nextStmt;
-            assertEquals(fact, applyStmt.x);
-            assertEquals(List.of(a, x), applyStmt.ys);
+            // Test incoming Instr
+            assertInstanceOf(ApplyInstr.class, nextInstr);
+            ApplyInstr applyInstr = (ApplyInstr) nextInstr;
+            assertEquals(fact, applyInstr.x);
+            assertEquals(List.of(a, x), applyInstr.ys);
         } else if (nextIndex == 3) {
             // Test incoming Env
             assertEquals(Dec128.of(2), nextEnv.get(x).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(LocalStmt.class, nextStmt);
-            LocalStmt localStmt = (LocalStmt) nextStmt;
-            assertEquals(fact_cps, localStmt.xs.get(0).ident);
+            // Test incoming Instr
+            assertInstanceOf(LocalInstr.class, nextInstr);
+            LocalInstr localInstr = (LocalInstr) nextInstr;
+            assertEquals(fact_cps, localInstr.xs.get(0).ident);
         } else if (nextIndex == 4) {
             // Test incoming Env
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get(fact_cps).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(CreateProcStmt.class, nextStmt);
-            CreateProcStmt createProcStmt = (CreateProcStmt) nextStmt;
-            assertEquals(fact_cps, createProcStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(CreateProcInstr.class, nextInstr);
+            CreateProcInstr createProcInstr = (CreateProcInstr) nextInstr;
+            assertEquals(fact_cps, createProcInstr.x);
         } else if (nextIndex == 5) {
             // Test incoming Env
             assertInstanceOf(Closure.class, nextEnv.get(fact_cps).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(ApplyStmt.class, nextStmt);
-            ApplyStmt applyStmt = (ApplyStmt) nextStmt;
-            assertEquals(fact_cps, applyStmt.x);
-            assertEquals(List.of(x, Dec128.of(1), $r), applyStmt.ys);
+            // Test incoming Instr
+            assertInstanceOf(ApplyInstr.class, nextInstr);
+            ApplyInstr applyInstr = (ApplyInstr) nextInstr;
+            assertEquals(fact_cps, applyInstr.x);
+            assertEquals(List.of(x, Dec128.of(1), $r), applyInstr.ys);
         } else if (nextIndex == 6) {
             // Test incoming Env
             assertEquals(Dec128.of(2), nextEnv.get(n).valueOrVarSet());
             assertEquals(Dec128.of(1), nextEnv.get(k).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(LocalStmt.class, nextStmt);
-            LocalStmt localStmt = (LocalStmt) nextStmt;
-            assertEquals(1, localStmt.xs.size());
-            assertEquals($v0, localStmt.xs.get(0).ident);
+            // Test incoming Instr
+            assertInstanceOf(LocalInstr.class, nextInstr);
+            LocalInstr localInstr = (LocalInstr) nextInstr;
+            assertEquals(1, localInstr.xs.size());
+            assertEquals($v0, localInstr.xs.get(0).ident);
         } else if (nextIndex == 7) {
             // Test incoming Env
             assertEquals(Dec128.of(2), nextEnv.get(n).valueOrVarSet());
             assertEquals(Dec128.of(1), nextEnv.get(k).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(LessThanStmt.class, nextStmt);
-            LessThanStmt lessThanStmt = (LessThanStmt) nextStmt;
-            assertEquals(n, lessThanStmt.a);
-            assertEquals(Dec128.of(2), lessThanStmt.b);
-            assertEquals($v0, lessThanStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(LessThanInstr.class, nextInstr);
+            LessThanInstr lessThanInstr = (LessThanInstr) nextInstr;
+            assertEquals(n, lessThanInstr.a);
+            assertEquals(Dec128.of(2), lessThanInstr.b);
+            assertEquals($v0, lessThanInstr.x);
         } else if (nextIndex == 8) {
             // Test incoming Env
             assertEquals(Bool.FALSE, nextEnv.get($v0).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(IfElseStmt.class, nextStmt);
-            IfElseStmt ifElseStmt = (IfElseStmt) nextStmt;
-            assertEquals($v0, ifElseStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(IfElseInstr.class, nextInstr);
+            IfElseInstr ifElseInstr = (IfElseInstr) nextInstr;
+            assertEquals($v0, ifElseInstr.x);
         } else if (nextIndex == 9) {
-            // Test incoming Stmt
-            assertInstanceOf(LocalStmt.class, nextStmt);
-            LocalStmt localStmt = (LocalStmt) nextStmt;
-            assertEquals(2, localStmt.xs.size());
-            assertEquals($v1, localStmt.xs.get(0).ident);
-            assertEquals($v2, localStmt.xs.get(1).ident);
+            // Test incoming Instr
+            assertInstanceOf(LocalInstr.class, nextInstr);
+            LocalInstr localInstr = (LocalInstr) nextInstr;
+            assertEquals(2, localInstr.xs.size());
+            assertEquals($v1, localInstr.xs.get(0).ident);
+            assertEquals($v2, localInstr.xs.get(1).ident);
         } else if (nextIndex == 10) {
             // Test incoming Env
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($v1).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($v2).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(SubtractStmt.class, nextStmt);
-            SubtractStmt subtractStmt = (SubtractStmt) nextStmt;
-            assertEquals(n, subtractStmt.a);
-            assertEquals(Dec128.of(1), subtractStmt.b);
-            assertEquals($v1, subtractStmt.x); // $v2 gets bound here
+            // Test incoming Instr
+            assertInstanceOf(SubtractInstr.class, nextInstr);
+            SubtractInstr subtractInstr = (SubtractInstr) nextInstr;
+            assertEquals(n, subtractInstr.a);
+            assertEquals(Dec128.of(1), subtractInstr.b);
+            assertEquals($v1, subtractInstr.x); // $v2 gets bound here
         } else if (nextIndex == 11) {
             // Test incoming Env
             assertEquals(Dec128.of(1), nextEnv.get($v1).valueOrVarSet()); // $sub result is here
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($v2).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(MultiplyStmt.class, nextStmt);
-            MultiplyStmt multiplyStmt = (MultiplyStmt) nextStmt;
-            assertEquals(n, multiplyStmt.a);
-            assertEquals(k, multiplyStmt.b);
-            assertEquals($v2, multiplyStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(MultiplyInstr.class, nextInstr);
+            MultiplyInstr multiplyInstr = (MultiplyInstr) nextInstr;
+            assertEquals(n, multiplyInstr.a);
+            assertEquals(k, multiplyInstr.b);
+            assertEquals($v2, multiplyInstr.x);
         } else if (nextIndex == 12) {
             // Test incoming Env
             assertEquals(Dec128.of(1), nextEnv.get($v1).valueOrVarSet());
             assertEquals(Dec128.of(2), nextEnv.get($v2).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(ApplyStmt.class, nextStmt);
-            ApplyStmt applyStmt = (ApplyStmt) nextStmt;
-            assertEquals(fact_cps, applyStmt.x);
-            assertEquals(List.of($v1, $v2, $r), applyStmt.ys);
+            // Test incoming Instr
+            assertInstanceOf(ApplyInstr.class, nextInstr);
+            ApplyInstr applyInstr = (ApplyInstr) nextInstr;
+            assertEquals(fact_cps, applyInstr.x);
+            assertEquals(List.of($v1, $v2, $r), applyInstr.ys);
         } else if (nextIndex == 13) {
             // Test incoming Env
             assertEquals(Dec128.of(1), nextEnv.get(n).valueOrVarSet());
             assertEquals(Dec128.of(2), nextEnv.get(k).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(LocalStmt.class, nextStmt);
-            LocalStmt localStmt = (LocalStmt) nextStmt;
-            assertEquals(1, localStmt.xs.size());
-            assertEquals($v0, localStmt.xs.get(0).ident);
+            // Test incoming Instr
+            assertInstanceOf(LocalInstr.class, nextInstr);
+            LocalInstr localInstr = (LocalInstr) nextInstr;
+            assertEquals(1, localInstr.xs.size());
+            assertEquals($v0, localInstr.xs.get(0).ident);
         } else if (nextIndex == 14) {
             // Test incoming Env
             assertEquals(Dec128.of(1), nextEnv.get(n).valueOrVarSet());
             assertEquals(Dec128.of(2), nextEnv.get(k).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(LessThanStmt.class, nextStmt);
-            LessThanStmt lessThanStmt = (LessThanStmt) nextStmt;
-            assertEquals(n, lessThanStmt.a);
-            assertEquals(Dec128.of(2), lessThanStmt.b);
-            assertEquals($v0, lessThanStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(LessThanInstr.class, nextInstr);
+            LessThanInstr lessThanInstr = (LessThanInstr) nextInstr;
+            assertEquals(n, lessThanInstr.a);
+            assertEquals(Dec128.of(2), lessThanInstr.b);
+            assertEquals($v0, lessThanInstr.x);
         } else if (nextIndex == 15) {
             // Test incoming Env
             assertEquals(Bool.TRUE, nextEnv.get($v0).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(IfElseStmt.class, nextStmt);
-            IfElseStmt ifElseStmt = (IfElseStmt) nextStmt;
-            assertEquals($v0, ifElseStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(IfElseInstr.class, nextInstr);
+            IfElseInstr ifElseInstr = (IfElseInstr) nextInstr;
+            assertEquals($v0, ifElseInstr.x);
         } else if (nextIndex == 16) {
             // Test incoming Env
             assertEquals(Dec128.of(2), nextEnv.get(k).valueOrVarSet());
             assertSame(VarSet.EMPTY_VAR_SET, nextEnv.get($r).valueOrVarSet());
-            // Test incoming Stmt
-            assertInstanceOf(BindIdentToIdentStmt.class, nextStmt);
-            BindIdentToIdentStmt bindIdentStmt = (BindIdentToIdentStmt) nextStmt;
-            assertEquals(k, bindIdentStmt.a);
-            assertEquals($r, bindIdentStmt.x);
+            // Test incoming Instr
+            assertInstanceOf(BindIdentToIdentInstr.class, nextInstr);
+            BindIdentToIdentInstr bindIdentInstr = (BindIdentToIdentInstr) nextInstr;
+            assertEquals(k, bindIdentInstr.a);
+            assertEquals($r, bindIdentInstr.x);
         } else {
             throw new IllegalStateException("Invalid index: " + nextIndex);
         }

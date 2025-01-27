@@ -20,7 +20,7 @@ public class TestParserUnaryExpr {
     public void test() {
         //                            012
         Parser p = new Parser("@a");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertSourceSpan(sox, 0, 2);
         UnaryExpr unaryExpr = asUnaryExpr(sox);
         assertEquals(UnaryOper.ACCESS, unaryExpr.oper);
@@ -28,7 +28,7 @@ public class TestParserUnaryExpr {
         IdentAsExpr identAsExpr = asIdentAsExpr(unaryExpr.arg);
         assertEquals(Ident.create("a"), identAsExpr.ident);
         assertEquals("@a", sox.toString());
-        assertEquals("@a", LangFormatter.SINGLETON.format(sox));
+        assertEquals("@a", LangFormatter.DEFAULT.format(sox));
 
         //                     012
         p = new Parser("-a");
@@ -40,7 +40,7 @@ public class TestParserUnaryExpr {
         identAsExpr = asIdentAsExpr(unaryExpr.arg);
         assertEquals(Ident.create("a"), identAsExpr.ident);
         assertEquals("-a", sox.toString());
-        assertEquals("-a", LangFormatter.SINGLETON.format(sox));
+        assertEquals("-a", LangFormatter.DEFAULT.format(sox));
 
         //                     012
         p = new Parser("!a");
@@ -52,7 +52,7 @@ public class TestParserUnaryExpr {
         identAsExpr = asIdentAsExpr(unaryExpr.arg);
         assertEquals(Ident.create("a"), identAsExpr.ident);
         assertEquals("!a", sox.toString());
-        assertEquals("!a", LangFormatter.SINGLETON.format(sox));
+        assertEquals("!a", LangFormatter.DEFAULT.format(sox));
     }
 
 }

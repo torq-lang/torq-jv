@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class IfLang extends AbstractLang implements SntcOrExpr {
+public final class IfLang extends AbstractLang implements StmtOrExpr {
 
     public final IfClause ifClause;
     public final List<IfClause> altIfClauses;

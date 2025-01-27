@@ -21,13 +21,13 @@ public class TestParserLocalLang {
         //                                      1         2
         //                            012345678901234567890123
         Parser p = new Parser("local x::Int32 in x end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(LocalLang.class, sox);
-        LocalLang varSntc = (LocalLang) sox;
-        assertSourceSpan(varSntc, 0, 23);
-        assertEquals(1, varSntc.varDecls.size());
-        assertInstanceOf(IdentVarDecl.class, varSntc.varDecls.get(0));
-        IdentVarDecl identVarDecl = (IdentVarDecl) varSntc.varDecls.get(0);
+        LocalLang varStmt = (LocalLang) sox;
+        assertSourceSpan(varStmt, 0, 23);
+        assertEquals(1, varStmt.varDecls.size());
+        assertInstanceOf(IdentVarDecl.class, varStmt.varDecls.get(0));
+        IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
         assertSourceSpan(identVarDecl, 6, 14);
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
@@ -39,7 +39,7 @@ public class TestParserLocalLang {
             local x::Int32 in
                 x
             end""";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -48,22 +48,22 @@ public class TestParserLocalLang {
         //                                      1         2         3
         //                            0123456789012345678901234567890
         Parser p = new Parser("local x::Int32, y = 1 in x end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(LocalLang.class, sox);
-        LocalLang varSntc = (LocalLang) sox;
-        assertSourceSpan(varSntc, 0, 30);
-        assertEquals(2, varSntc.varDecls.size());
-        assertInstanceOf(IdentVarDecl.class, varSntc.varDecls.get(0));
-        IdentVarDecl identVarDecl = (IdentVarDecl) varSntc.varDecls.get(0);
+        LocalLang varStmt = (LocalLang) sox;
+        assertSourceSpan(varStmt, 0, 30);
+        assertEquals(2, varStmt.varDecls.size());
+        assertInstanceOf(IdentVarDecl.class, varStmt.varDecls.get(0));
+        IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
         assertSourceSpan(identVarDecl, 6, 14);
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
         assertFalse(identVarDecl.identAsPat.escaped);
         assertEquals(Ident.create("Int32"), identVarDecl.identAsPat.typeAnno.ident);
         assertSourceSpan(identVarDecl.identAsPat.typeAnno, 9, 14);
-        assertInstanceOf(InitVarDecl.class, varSntc.varDecls.get(1));
-        assertInstanceOf(InitVarDecl.class, varSntc.varDecls.get(1));
-        InitVarDecl initVarDecl = (InitVarDecl) varSntc.varDecls.get(1);
+        assertInstanceOf(InitVarDecl.class, varStmt.varDecls.get(1));
+        assertInstanceOf(InitVarDecl.class, varStmt.varDecls.get(1));
+        InitVarDecl initVarDecl = (InitVarDecl) varStmt.varDecls.get(1);
         assertSourceSpan(initVarDecl, 16, 21);
         assertEquals(Ident.create("y"), asIdentAsPat(initVarDecl.varPat).ident);
         assertSourceSpan(initVarDecl.varPat, 16, 17);
@@ -74,7 +74,7 @@ public class TestParserLocalLang {
             local x::Int32, y = 1 in
                 x
             end""";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
     }
 

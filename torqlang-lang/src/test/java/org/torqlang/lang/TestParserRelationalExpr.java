@@ -19,7 +19,7 @@ public class TestParserRelationalExpr {
     public void test() {
         //                            012345
         Parser p = new Parser("3 < 5");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(RelationalExpr.class, sox);
         RelationalExpr relExpr = (RelationalExpr) sox;
         CommonTools.assertSourceSpan(relExpr, 0, 5);

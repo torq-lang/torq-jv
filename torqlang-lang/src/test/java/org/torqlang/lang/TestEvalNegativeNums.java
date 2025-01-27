@@ -23,7 +23,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = 1")
             .perform();
-        assertEquals("x = 1", e.sntcOrExpr().toString());
+        assertEquals("x = 1", e.stmtOrExpr().toString());
         assertEquals("$bind(1, x)", e.kernel().toString());
         assertEquals(Int32.I32_1, e.varAtName("x").valueOrVarSet());
 
@@ -31,7 +31,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = -1")
             .perform();
-        assertEquals("x = -1", e.sntcOrExpr().toString());
+        assertEquals("x = -1", e.stmtOrExpr().toString());
         assertEquals("$negate(1, x)", e.kernel().toString());
         assertEquals(Int32.of(-1), e.varAtName("x").valueOrVarSet());
 
@@ -39,7 +39,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = --1")
             .perform();
-        assertEquals("x = --1", e.sntcOrExpr().toString());
+        assertEquals("x = --1", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 $negate(1, $v0)
@@ -52,7 +52,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = ---1")
             .perform();
-        assertEquals("x = ---1", e.sntcOrExpr().toString());
+        assertEquals("x = ---1", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
                 local $v1 in
@@ -69,7 +69,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = a")
             .perform();
-        assertEquals("x = a", e.sntcOrExpr().toString());
+        assertEquals("x = a", e.stmtOrExpr().toString());
         assertEquals("$bind(a, x)", e.kernel().toString());
         assertEquals(Int32.of(5), e.varAtName("x").valueOrVarSet());
 
@@ -78,7 +78,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = -a")
             .perform();
-        assertEquals("x = -a", e.sntcOrExpr().toString());
+        assertEquals("x = -a", e.stmtOrExpr().toString());
         assertEquals("$negate(a, x)", e.kernel().toString());
         assertEquals(Int32.of(-5), e.varAtName("x").valueOrVarSet());
 
@@ -87,7 +87,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = --a")
             .perform();
-        assertEquals("x = --a", e.sntcOrExpr().toString());
+        assertEquals("x = --a", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
                 $negate(a, $v0)
@@ -101,7 +101,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = ---a")
             .perform();
-        assertEquals("x = ---a", e.sntcOrExpr().toString());
+        assertEquals("x = ---a", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
                 local $v1 in
@@ -120,7 +120,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = 1L")
             .perform();
-        assertEquals("x = 1L", e.sntcOrExpr().toString());
+        assertEquals("x = 1L", e.stmtOrExpr().toString());
         assertEquals("$bind(1L, x)", e.kernel().toString());
         assertEquals(Int64.I64_1, e.varAtName("x").valueOrVarSet());
 
@@ -128,7 +128,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = -1L")
             .perform();
-        assertEquals("x = -1L", e.sntcOrExpr().toString());
+        assertEquals("x = -1L", e.stmtOrExpr().toString());
         assertEquals("$negate(1L, x)", e.kernel().toString());
         assertEquals(Int64.of(-1), e.varAtName("x").valueOrVarSet());
 
@@ -136,7 +136,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = --1L")
             .perform();
-        assertEquals("x = --1L", e.sntcOrExpr().toString());
+        assertEquals("x = --1L", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 $negate(1L, $v0)
@@ -149,7 +149,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("x"))
             .setSource("x = ---1L")
             .perform();
-        assertEquals("x = ---1L", e.sntcOrExpr().toString());
+        assertEquals("x = ---1L", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
                 local $v1 in
@@ -166,7 +166,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = a")
             .perform();
-        assertEquals("x = a", e.sntcOrExpr().toString());
+        assertEquals("x = a", e.stmtOrExpr().toString());
         assertEquals("$bind(a, x)", e.kernel().toString());
         assertEquals(Int64.of(5), e.varAtName("x").valueOrVarSet());
 
@@ -175,7 +175,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = -a")
             .perform();
-        assertEquals("x = -a", e.sntcOrExpr().toString());
+        assertEquals("x = -a", e.stmtOrExpr().toString());
         assertEquals("$negate(a, x)", e.kernel().toString());
         assertEquals(Int64.of(-5), e.varAtName("x").valueOrVarSet());
 
@@ -184,7 +184,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = --a")
             .perform();
-        assertEquals("x = --a", e.sntcOrExpr().toString());
+        assertEquals("x = --a", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
                 $negate(a, $v0)
@@ -198,7 +198,7 @@ public class TestEvalNegativeNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = ---a")
             .perform();
-        assertEquals("x = ---a", e.sntcOrExpr().toString());
+        assertEquals("x = ---a", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
                 local $v1 in

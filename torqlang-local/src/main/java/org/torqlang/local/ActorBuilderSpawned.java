@@ -9,7 +9,7 @@ package org.torqlang.local;
 
 import org.torqlang.klvm.*;
 import org.torqlang.lang.ActorExpr;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.List;
 
@@ -26,13 +26,13 @@ public interface ActorBuilderSpawned {
 
     ActorRef actorRef();
 
-    ActorSntc actorSntc();
+    ActorStmt actorStmt();
 
     Address address();
 
     List<? extends CompleteOrIdent> args();
 
-    Stmt createActorRecStmt();
+    Instr createActorRecInstr();
 
     String source();
 }

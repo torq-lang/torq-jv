@@ -8,12 +8,12 @@
 package org.torqlang.local;
 
 import org.torqlang.klvm.CompleteOrIdent;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.List;
 
 public interface ActorBuilderParsed {
-    ActorSntc actorSntc();
+    ActorStmt actorStmt();
 
     Address address();
 

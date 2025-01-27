@@ -50,18 +50,6 @@ public final class IntAsPat extends AbstractLang implements FeatureAsPat {
         return intText != null ? intText.charAt(0) == '-' : int64.longValue() < 0;
     }
 
-    public final IntAsPat negate(SourceSpan adjoinSourceSpan) {
-        if (intText != null) {
-            if (intText.charAt(0) == '-') {
-                return new IntAsPat(intText.substring(1), adjoinSourceSpan.adjoin(this));
-            } else {
-                return new IntAsPat("-" + intText, adjoinSourceSpan.adjoin(this));
-            }
-        } else {
-            return new IntAsPat(int64.negate(), adjoinSourceSpan.adjoin(this));
-        }
-    }
-
     @Override
     public final Int64 value() {
         return int64();

@@ -10,6 +10,7 @@ package org.torqlang.local;
 import org.torqlang.klvm.Stack;
 import org.torqlang.klvm.*;
 import org.torqlang.util.NeedsImpl;
+import org.torqlang.util.SourceSpan;
 
 import java.util.*;
 
@@ -70,8 +71,8 @@ final class LocalActor extends AbstractActor {
         this.system = system;
         this.askHandlerEntry = askHandlerEntry;
         this.tellHandlerEntry = tellHandlerEntry;
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorCreate(this, system, askHandlerEntry, tellHandlerEntry);
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onCreate(this, system, askHandlerEntry, tellHandlerEntry);
         }
     }
 
@@ -180,19 +181,6 @@ final class LocalActor extends AbstractActor {
         return new LocalActor(address, image);
     }
 
-    private void addParentVarDependency(Var triggerVar, Var parentVar, Var childVar, LocalActor child) {
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorAddParentVarDependency(this, triggerVar, parentVar, childVar, child);
-        }
-        List<ChildVar> childVars = triggers.get(triggerVar);
-        if (childVars == null) {
-            childVars = new ArrayList<>();
-            triggers.put(triggerVar, childVars);
-            triggerVar.setBindCallback(this::onParentVarBound);
-        }
-        childVars.add(new ChildVar(parentVar, childVar, child));
-    }
-
     private void bindResponseValue(Envelope envelope) throws WaitException {
 
         // If the response is a typical request-response value, simply bind it.
@@ -255,10 +243,10 @@ final class LocalActor extends AbstractActor {
         //         (a) An indirect throw can originate when:
         //             1. A native Java program throws a NativeThrow
         //                 (a) The resulting NativeThrowError contains an 'error' value
-        //                 (b) A 'throw error' statement is pushed and run
+        //                 (b) A 'throw error' instruction is pushed and run
         //                 (c) The halt will contain an error and the native throw error
         //             2. Compute catches a generic Throwable
-        //                 (a) The throwable is rerun as a 'throw error#{name: _, ...}' statement
+        //                 (a) The throwable is rerun as a 'throw error#{name: _, ...}' instruction
         //                 (b) The halt will contain a NativeError
         //         (b) The halt contains the uncaught throw and local stack
         // If we are in the middle of an active request (activeRequest != null), we
@@ -267,19 +255,19 @@ final class LocalActor extends AbstractActor {
         //         (a) Create a new FailedValue with the given FailedValue as its cause
         //     2. If compute threw an exception that was not caught
         //         (a) Create a FailedValue with an error and native cause
-        //         (b) Native error should be "error#{name: _, message: _, ...}"
+        //         (b) Native error should be "'error'#{'name': _, 'message': _, ...}"
         waitState = null;
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorComputeTimeSlice(this, machine);
-        }
         ComputeAdvice advice = machine.compute(10_000);
         if (advice.isWait()) {
             ComputeWait computeWait = (ComputeWait) advice;
-            if (DebuggerSetting.debugger() != null) {
-                DebuggerSetting.debugger().onActorComputeWait(this, computeWait, machine);
+            if (DebuggerSetting.get() != null) {
+                DebuggerSetting.get().onWait(this, computeWait, machine);
             }
             waitState = computeWait.barrier;
         } else if (advice.isPreempt()) {
+            if (DebuggerSetting.get() != null) {
+                DebuggerSetting.get().onPreempt(this, machine);
+            }
             send(Resume.SINGLETON);
         } else if (advice.isHalt()) {
             throw new MachineHaltError((ComputeHalt) advice);
@@ -287,28 +275,30 @@ final class LocalActor extends AbstractActor {
         return advice;
     }
 
-    private ComputeAdvice computeMessageUsingHandler(Value message, EnvEntry handlerEntry) {
-        boolean debuggerIsActive = DebuggerSetting.debugger() != null;
-        if (debuggerIsActive) {
-            DebuggerSetting.debugger().onActorComputeMessageUsingHandler(this, message, handlerEntry);
-        }
+    private ComputeAdvice computeTimeSlice(Value message, EnvEntry handlerEntry) {
         if (machine.stack() != null) {
-            throw new IllegalStateException("Previous computation is not ended");
+            throw new IllegalStateException("Previous computation is not finished");
         }
         EnvEntry messageEntry = new EnvEntry(Ident.$NEXT, new Var(message));
         Env computeEnv = Env.create(Env.emptyEnv(), handlerEntry, messageEntry);
-        ApplyStmt computeStmt = new ApplyStmt(Ident.$HANDLER, Collections.singletonList(Ident.$NEXT), emptySourceSpan());
-        if (debuggerIsActive) {
-            DebugStmt debugStmt = new DebugStmt(DebuggerSetting.debugger(), computeStmt, computeEnv, computeStmt);
-            machine.pushStackEntry(debugStmt, Env.emptyEnv());
+        SourceSpan sourceSpan = getHandlerSourceSpan(handlerEntry);
+        ApplyInstr computeInstr = new ApplyInstr(Ident.$HANDLER, Collections.singletonList(Ident.$NEXT), sourceSpan);
+        if (DebuggerSetting.get() != null) {
+            DebugInstr debugInstr = new DebugInstr(DebuggerSetting.get(), computeInstr, computeEnv, computeInstr);
+            machine.pushStackEntry(debugInstr, Env.emptyEnv());
         } else {
-            machine.pushStackEntry(computeStmt, computeEnv);
+            machine.pushStackEntry(computeInstr, computeEnv);
         }
         return computeTimeSlice();
     }
 
     final void configure(ActorCfg actorCfg) {
         send(Envelope.createControlNotify(new Configure(actorCfg)));
+    }
+
+    private SourceSpan getHandlerSourceSpan(EnvEntry handlerEntry) {
+        Closure handlerClosure = (Closure) handlerEntry.var.valueOrVarSet();
+        return handlerClosure.sourceSpan();
     }
 
     @Override
@@ -320,12 +310,28 @@ final class LocalActor extends AbstractActor {
         return !mailbox.isEmpty();
     }
 
+    private void mapFreeVar(Var triggerVar, Var parentVar, Var childVar, LocalActor child) {
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onMapFreeVar(this, triggerVar, parentVar, child, childVar);
+        }
+        List<ChildVar> childVars = triggers.get(triggerVar);
+        if (childVars == null) {
+            childVars = new ArrayList<>();
+            triggers.put(triggerVar, childVars);
+            triggerVar.setBindCallback(this::onFreeVarBound);
+        }
+        childVars.add(new ChildVar(parentVar, childVar, child));
+    }
+
     private LocalAddress nextChildAddress() {
         childCount++;
         return LocalAddress.create(address(), Integer.toString(childCount));
     }
 
-    private OnMessageResult onActRequest(Envelope envelope) {
+    private OnMessageResult onAct(Envelope envelope) {
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onReceiveAct(this, envelope);
+        }
         activeRequest = envelope;
         Act act = (Act) envelope.message();
         Env actEnv = Env.create(ROOT_ENV, act.input);
@@ -335,7 +341,11 @@ final class LocalActor extends AbstractActor {
         return NOT_FINISHED;
     }
 
-    private OnMessageResult onCaptureImageRequest(Envelope envelope) {
+    private OnMessageResult onCaptureImage(Envelope envelope) {
+
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onReceiveCaptureImage(this, envelope);
+        }
 
         activeRequest = envelope;
 
@@ -379,9 +389,9 @@ final class LocalActor extends AbstractActor {
     }
 
     private OnMessageResult onConfigure(Envelope envelope) {
-        boolean debuggerIsActive = DebuggerSetting.debugger() != null;
+        boolean debuggerIsActive = DebuggerSetting.get() != null;
         if (debuggerIsActive) {
-            DebuggerSetting.debugger().onActorConfigure(this, envelope);
+            DebuggerSetting.get().onReceiveConfigure(this, envelope);
         }
 
         // Extract the actor configuration from the incoming Configure message
@@ -408,12 +418,12 @@ final class LocalActor extends AbstractActor {
         Var constructorVar = new Var(actorCfg.handlersCtor());
         envEntries.add(new EnvEntry(Ident.$HANDLERS_CTOR, constructorVar));
         Env configEnv = Env.create(ROOT_ENV, envEntries);
-        ApplyStmt computeStmt = new ApplyStmt(Ident.$HANDLERS_CTOR, argIdents, emptySourceSpan());
+        ApplyInstr computeInstr = new ApplyInstr(Ident.$HANDLERS_CTOR, argIdents, emptySourceSpan());
         if (debuggerIsActive) {
-            DebugStmt debugStmt = new DebugStmt(DebuggerSetting.debugger(), computeStmt, configEnv, computeStmt);
-            machine.pushStackEntry(debugStmt, Env.emptyEnv());
+            DebugInstr debugInstr = new DebugInstr(DebuggerSetting.get(), computeInstr, configEnv, computeInstr);
+            machine.pushStackEntry(debugInstr, Env.emptyEnv());
         } else {
-            machine.pushStackEntry(computeStmt, configEnv);
+            machine.pushStackEntry(computeInstr, configEnv);
         }
         ComputeAdvice advice = computeTimeSlice();
         if (advice != ComputeEnd.SINGLETON) {
@@ -423,9 +433,11 @@ final class LocalActor extends AbstractActor {
             throw new IllegalStateException("Handlers is not a Tuple");
         }
 
-        // Save the `ask` handlers and `tell` handlers separately
-        askHandlerEntry = new EnvEntry(Ident.$HANDLER, new Var((Value) handlers.valueAt(0)));
-        tellHandlerEntry = new EnvEntry(Ident.$HANDLER, new Var((Value) handlers.valueAt(1)));
+        // Save the `ask` handler and `tell` handler separately
+        Closure askClosure = (Closure) handlers.valueAt(0);
+        askHandlerEntry = new EnvEntry(Ident.$HANDLER, new Var(askClosure));
+        Closure tellClosure = (Closure) handlers.valueAt(1);
+        tellHandlerEntry = new EnvEntry(Ident.$HANDLER, new Var(tellClosure));
 
         return NOT_FINISHED;
     }
@@ -437,22 +449,69 @@ final class LocalActor extends AbstractActor {
         if (envelope.isResponse()) {
             throw new IllegalArgumentException("Invalid control response");
         }
-        if (envelope.message() instanceof SyncVar syncVar) {
-            return onSyncVar(syncVar);
+        if (envelope.message() instanceof SyncFreeVar syncFreeVar) {
+            return onSyncFreeVar(syncFreeVar);
         }
         if (envelope.message() instanceof Act) {
-            return onActRequest(envelope);
+            return onAct(envelope);
         }
         if (envelope.message() instanceof Configure) {
             return onConfigure(envelope);
         }
         if (envelope.message() instanceof CaptureImage) {
-            return onCaptureImageRequest(envelope);
+            return onCaptureImage(envelope);
         }
         if (envelope.message() == Stop.SINGLETON) {
             return onStop(envelope);
         }
         throw new IllegalArgumentException("Invalid control message: " + envelope);
+    }
+
+    /*
+     * An original mapping may begin as P -> (P, P') where binding P synchronizes P and P'. However, if P is bound to
+     * a partial record {feature: X}, as an example, then the mapping P -> (P, P') is replaced with a new mapping
+     * X -> (P, P') where binding X synchronizes P with P'. This process is iterative in cases where P is bound to a
+     * compound partial record, such as {name: X, address: Y}. Two possible binding sequences in this example are
+     * P -> (P, P'), X -> (P, P'), Y -> (P, P'); and P -> (P, P'), Y -> (P, P'), X -> (P, P'). If all or some of P's
+     * components are bound before P itself is bound, then the binding sequence may be zero or one binding,
+     * respectively.
+     */
+    private void onFreeVarBound(Var triggerVar, Value value) {
+        boolean isDebuggerActive = DebuggerSetting.get() != null;
+        if (isDebuggerActive) {
+            DebuggerSetting.get().onFreeVarBound(this, triggerVar, value);
+        }
+        List<ChildVar> childVars = triggers.remove(triggerVar);
+        if (childVars != null) {
+            for (ChildVar childVar : childVars) {
+                Complete parentComplete;
+                try {
+                    // Resolve parent var as a complete value
+                    parentComplete = childVar.parentVar.resolveValueOrVar().checkComplete();
+                } catch (WaitVarException wx) {
+                    if (isDebuggerActive) {
+                        DebuggerSetting.get().onWaitFreeVar(this, childVar.parentVar, childVar.childVar, wx.barrier());
+                    }
+                    // The parentVar is not yet complete. Therefore, we need to create a new trigger to try again
+                    // when the next part of parentVar is completed.
+                    Var nextTriggerVar = wx.barrier();
+                    List<ChildVar> nextChildVars = triggers.get(nextTriggerVar);
+                    if (nextChildVars == null) {
+                        nextChildVars = childVars;
+                        triggers.put(nextTriggerVar, nextChildVars);
+                        nextTriggerVar.setBindCallback(this::onFreeVarBound);
+                    } else {
+                        nextChildVars.addAll(childVars);
+                    }
+                    return;
+                }
+                if (isDebuggerActive) {
+                    DebuggerSetting.get().onSendSyncFreeVar(this, childVar.parentVar,
+                        parentComplete, childVar.child, childVar.childVar);
+                }
+                childVar.child.send(Envelope.createControlNotify(new SyncFreeVar(childVar.childVar, parentComplete)));
+            }
+        }
     }
 
     @Override
@@ -465,11 +524,11 @@ final class LocalActor extends AbstractActor {
             Collections.addAll(allResponses, next);
             allResponses.addAll(selectableResponses);
             allResponses.addAll(suspendedResponses);
+            if (DebuggerSetting.get() != null) {
+                DebuggerSetting.get().onReceiveResponse(this, next, allResponses);
+            }
             for (Envelope envelope : allResponses) {
                 try {
-                    if (DebuggerSetting.debugger() != null) {
-                        DebuggerSetting.debugger().onActorResponseReceived(this, envelope, envelope.requestId());
-                    }
                     bindResponseValue(envelope);
                 } catch (WaitException exc) {
                     waitingResponses.add(envelope);
@@ -488,7 +547,6 @@ final class LocalActor extends AbstractActor {
             suspendedResponses = Collections.emptyList();
             selectableResponses = waitingResponses;
             computeTimeSlice();
-            return NOT_FINISHED;
         } else {
             if (next.length != 1) {
                 throw new IllegalArgumentException("Not a single envelope");
@@ -498,60 +556,20 @@ final class LocalActor extends AbstractActor {
                 return onControl(only);
             }
             if (only.isNotify()) {
-                computeMessageUsingHandler((Value) only.message(), tellHandlerEntry);
+                if (DebuggerSetting.get() != null) {
+                    DebuggerSetting.get().onReceiveNotify(this, only, tellHandlerEntry);
+                }
+                computeTimeSlice((Value) only.message(), tellHandlerEntry);
                 return NOT_FINISHED;
             }
             // We know we have a request
             activeRequest = only;
-            computeMessageUsingHandler((Value) only.message(), askHandlerEntry);
-            return NOT_FINISHED;
-        }
-    }
-
-    /*
-     * An original mapping may begin as P -> (P, P') where binding P synchronizes P and P'. However, if P is bound to
-     * a partial record {feature: X}, as an example, then the mapping P -> (P, P') is replaced with a new mapping
-     * X -> (P, P') where binding X synchronizes P with P'. This process is iterative in cases where P is bound to a
-     * compound partial record, such as {name: X, address: Y}. Two possible binding sequences in this example are
-     * P -> (P, P'), X -> (P, P'), Y -> (P, P'); and P -> (P, P'), Y -> (P, P'), X -> (P, P'). If all of P's components
-     * are bound before P itself is bound, then P is a complete value. If some but not all of P's components are bound
-     * before P itself, then the bound components are not present in the possible binding sequences.
-     */
-    private void onParentVarBound(Var triggerVar, Value value) {
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorParentVarBound(this, triggerVar, value);
-        }
-        List<ChildVar> childVars = triggers.remove(triggerVar);
-        if (childVars != null) {
-            for (ChildVar childVar : childVars) {
-                Complete parentComplete;
-                try {
-                    // Resolve parent var as a complete value
-                    parentComplete = childVar.parentVar.resolveValueOrVar().checkComplete();
-                } catch (WaitVarException wx) {
-                    if (DebuggerSetting.debugger() != null) {
-                        DebuggerSetting.debugger().onActorCannotSyncWaitingToBind(this, childVar.parentVar, childVar.childVar, wx.barrier());
-                    }
-                    // The parentVar is not yet complete. Therefore, we need to create a new trigger to try again
-                    // when the next part of parentVar is completed.
-                    Var nextTriggerVar = wx.barrier();
-                    List<ChildVar> nextChildVars = triggers.get(nextTriggerVar);
-                    if (nextChildVars == null) {
-                        nextChildVars = childVars;
-                        triggers.put(nextTriggerVar, nextChildVars);
-                        nextTriggerVar.setBindCallback(this::onParentVarBound);
-                    } else {
-                        nextChildVars.addAll(childVars);
-                    }
-                    return;
-                }
-                if (DebuggerSetting.debugger() != null) {
-                    DebuggerSetting.debugger().onActorSyncParentVarToChildVar(this, childVar.parentVar,
-                        childVar.childVar, parentComplete, childVar.child);
-                }
-                childVar.child.send(Envelope.createControlNotify(new SyncVar(childVar.childVar, parentComplete)));
+            if (DebuggerSetting.get() != null) {
+                DebuggerSetting.get().onReceiveRequest(this, only, askHandlerEntry);
             }
+            computeTimeSlice((Value) only.message(), askHandlerEntry);
         }
+        return NOT_FINISHED;
     }
 
     protected final void onReceivedAfterFailed(Envelope envelope) {
@@ -563,14 +581,17 @@ final class LocalActor extends AbstractActor {
     }
 
     private OnMessageResult onResume() {
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorResume(this);
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onReceiveResume(this, machine);
         }
         computeTimeSlice();
         return NOT_FINISHED;
     }
 
     private OnMessageResult onStop(Envelope envelope) {
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onReceiveStop(this, machine);
+        }
         if (envelope.requester() != null) {
             envelope.requester().send(Envelope.createControlResponse(Stop.SINGLETON, envelope.requestId()));
         }
@@ -578,17 +599,19 @@ final class LocalActor extends AbstractActor {
     }
 
     /*
-     * SyncVar synchronizes a free variable when used to receive a completed value from the parent actor. Because the
-     * free child variable is unbound (not an undetermined record), we will never trigger a WaitException.
+     * SyncFreeVar is used to synchronizes free variables mapped from a parent actor to a child actor. Free variables
+     * are mapped when an `act ... end` expression is lifted from a parent actor and passed to a child actor to be
+     * executed. When a free variable becomes bound in the parent actor, it sends a `SyncFreeVar` message to the child
+     * so it can continue and complete its execution.
      */
-    private OnMessageResult onSyncVar(SyncVar syncVar) {
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorSyncVar(this, syncVar.var, syncVar.value);
+    private OnMessageResult onSyncFreeVar(SyncFreeVar syncFreeVar) {
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onReceiveSyncFreeVar(this, syncFreeVar.var, syncFreeVar.value);
         }
         try {
-            syncVar.var.bindToValue(syncVar.value, null);
+            syncFreeVar.var.bindToValue(syncFreeVar.value, null);
         } catch (WaitException exc) {
-            throw new IllegalStateException("Received WaitException binding a SyncVar message");
+            throw new IllegalStateException("Received WaitException binding a SyncFreeVar message");
         }
         computeTimeSlice();
         return NOT_FINISHED;
@@ -614,8 +637,8 @@ final class LocalActor extends AbstractActor {
         // RESPOND TO ACTIVE REQUEST
         if (activeRequest != null) {
             Envelope response = Envelope.createResponse(failedValue, activeRequest.requestId());
-            if (DebuggerSetting.debugger() != null) {
-                DebuggerSetting.debugger().onActorRespondingWithValue(this, activeRequest.requester(),
+            if (DebuggerSetting.get() != null) {
+                DebuggerSetting.get().onSendResponse(this, activeRequest.requester(),
                     activeRequest, response);
             }
             activeRequest.requester().send(response);
@@ -636,14 +659,23 @@ final class LocalActor extends AbstractActor {
 
         LocalActor child = new LocalActor(nextChildAddress(), system);
 
-        ActStmt actStmt = (ActStmt) machine.current().stmt;
+        Instr current = machine.current().instr;
+        ActInstr actInstr;
+        if (current instanceof DebugInstr debugInstr) {
+            actInstr = (ActInstr) debugInstr.nextInstr();
+        } else {
+            actInstr = (ActInstr) machine.current().instr;
+        }
 
         HashSet<Ident> lexicallyFree = new HashSet<>();
-        actStmt.captureLexicallyFree(new HashSet<>(), lexicallyFree);
+        actInstr.captureLexicallyFree(new HashSet<>(), lexicallyFree);
+
+        // Map free unbound parent variables to new child variables. When mapped variables are bound in the parent,
+        // a SyncFreeVar message will be sent to the child.
 
         List<EnvEntry> childInput = new ArrayList<>();
         for (Ident freeIdent : lexicallyFree) {
-            if (ROOT_ENV.contains(freeIdent) || freeIdent.equals(actStmt.target)) {
+            if (ROOT_ENV.contains(freeIdent) || freeIdent.equals(actInstr.target)) {
                 continue;
             }
             Var parentVar = env.get(freeIdent);
@@ -651,24 +683,26 @@ final class LocalActor extends AbstractActor {
             Var childVar;
             if (valueOrVar instanceof Var) {
                 childVar = new Var();
-                addParentVarDependency(parentVar, parentVar, childVar, child);
+                mapFreeVar(parentVar, parentVar, childVar, child);
             } else {
                 try {
                     childVar = new Var(valueOrVar.checkComplete());
                 } catch (WaitVarException wx) {
                     childVar = new Var();
-                    addParentVarDependency(wx.barrier(), parentVar, childVar, child);
+                    mapFreeVar(wx.barrier(), parentVar, childVar, child);
                 }
             }
             childInput.add(new EnvEntry(freeIdent, childVar));
         }
 
-        ArrayList<Stmt> stmtList = new ArrayList<>(2);
-        stmtList.add(actStmt.stmt);
-        stmtList.add(new ApplyStmt(Ident.$RESPOND, List.of(actStmt.target), actStmt.sourceSpan.toSourceSpanEnd()));
-        SeqStmt seq = new SeqStmt(stmtList, actStmt.sourceSpan);
-        ValueOrVar responseTarget = actStmt.target.resolveValueOrVar(env);
-        Act act = new Act(seq, actStmt.target, childInput);
+        // Lift the act instruction from the parent and spawn it using a child actor
+
+        ArrayList<Instr> instrList = new ArrayList<>(2);
+        instrList.add(actInstr.instr);
+        instrList.add(new ApplyInstr(Ident.$RESPOND, List.of(actInstr.target), actInstr.sourceSpan.toSourceEnd()));
+        SeqInstr seq = new SeqInstr(instrList, actInstr.sourceSpan);
+        ValueOrVar responseTarget = actInstr.target.resolveValueOrVar(env);
+        Act act = new Act(seq, actInstr.target, childInput);
         child.send(Envelope.createControlRequest(act, LocalActor.this, new ValueOrVarRef(responseTarget)));
     }
 
@@ -736,8 +770,8 @@ final class LocalActor extends AbstractActor {
                 machine.current(), childFailedValue, null);
         }
         Envelope response = Envelope.createResponse(responseValue, activeRequest.requestId());
-        if (DebuggerSetting.debugger() != null) {
-            DebuggerSetting.debugger().onActorRespondingWithValue(this, activeRequest.requester(),
+        if (DebuggerSetting.get() != null) {
+            DebuggerSetting.get().onSendResponse(this, activeRequest.requester(),
                 activeRequest, response);
         }
         activeRequest.requester().send(response);
@@ -785,18 +819,20 @@ final class LocalActor extends AbstractActor {
         return getClass().getSimpleName() + "(" + address() + ")";
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static final class Act {
-        private final SeqStmt seq;
+        private final SeqInstr seq;
         private final Ident target;
         private final List<EnvEntry> input;
 
-        private Act(SeqStmt seq, Ident target, List<EnvEntry> input) {
+        private Act(SeqInstr seq, Ident target, List<EnvEntry> input) {
             this.seq = seq;
             this.target = target;
             this.input = nullSafeCopyOf(input);
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static final class ChildVar {
         private final Var parentVar;
         private final Var childVar;
@@ -809,6 +845,7 @@ final class LocalActor extends AbstractActor {
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static final class Configure {
         private final ActorCfg actorCfg;
 
@@ -1021,6 +1058,10 @@ final class LocalActor extends AbstractActor {
         }
     }
 
+    /*
+     * This wrapper exists so a stream object can be exchanged across actor boundaries as a request ID without risk it
+     * will be modified beyond its owner.
+     */
     private static final class StreamObjRef extends OpaqueValue implements RequestId {
         private final StreamObj streamObj;
 
@@ -1029,11 +1070,12 @@ final class LocalActor extends AbstractActor {
         }
     }
 
-    private static final class SyncVar {
+    @SuppressWarnings("ClassCanBeRecord")
+    private static final class SyncFreeVar {
         private final Var var;
         private final Complete value;
 
-        private SyncVar(Var var, Complete value) {
+        private SyncFreeVar(Var var, Complete value) {
             this.var = var;
             this.value = value;
         }

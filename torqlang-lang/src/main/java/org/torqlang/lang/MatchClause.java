@@ -12,10 +12,10 @@ import org.torqlang.util.SourceSpan;
 public abstract class MatchClause extends AbstractLang {
 
     public final Pat pat;
-    public final SntcOrExpr guard;
+    public final StmtOrExpr guard;
     public final SeqLang body;
 
-    public MatchClause(Pat pat, SntcOrExpr guard, SeqLang body, SourceSpan sourceSpan) {
+    public MatchClause(Pat pat, StmtOrExpr guard, SeqLang body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.pat = pat;
         this.guard = guard;

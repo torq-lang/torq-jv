@@ -29,7 +29,7 @@ public class TestEvalTokens {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$select_apply(Token, ['new'], x)";
         assertEquals(expected, e.kernel().toString());
         assertInstanceOf(Token.class, e.varAtName("x").valueOrVarSet());

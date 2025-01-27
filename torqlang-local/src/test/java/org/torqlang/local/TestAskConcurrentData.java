@@ -79,7 +79,7 @@ public class TestAskConcurrentData {
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
             end""";
-        assertEquals(expected, g.createActorRecStmt().toString());
+        assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(Address.create("ConcurrentDataClient"))
@@ -173,7 +173,7 @@ public class TestAskConcurrentData {
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
             end""";
-        assertEquals(expected, g.createActorRecStmt().toString());
+        assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(Address.create("ConcurrentDataClient"))
@@ -308,7 +308,7 @@ public class TestAskConcurrentData {
                 end, $actor_cfgtr)
                 $create_rec('ConcurrentMathTuple'#{'cfg': $actor_cfgtr}, ConcurrentMathTuple)
             end""";
-        assertEquals(expected, g.createActorRecStmt().toString());
+        assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
         Object response = RequestClient.builder()
             .setAddress(Address.create("ConcurrentDataClient"))

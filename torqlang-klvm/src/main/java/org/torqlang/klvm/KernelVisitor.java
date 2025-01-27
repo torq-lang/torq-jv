@@ -9,53 +9,53 @@ package org.torqlang.klvm;
 
 public interface KernelVisitor<T, R> {
 
-    R visitActStmt(ActStmt kernel, T state) throws Exception;
+    R visitActInstr(ActInstr kernel, T state) throws Exception;
 
     R visitActorCfg(ActorCfg kernel, T state) throws Exception;
 
     R visitActorCfgtr(ActorCfgtr kernel, T state) throws Exception;
 
-    R visitAddStmt(AddStmt kernel, T state) throws Exception;
+    R visitAddInstr(AddInstr kernel, T state) throws Exception;
 
-    R visitApplyStmt(ApplyStmt kernel, T state) throws Exception;
+    R visitApplyInstr(ApplyInstr kernel, T state) throws Exception;
 
-    R visitBindCompleteToCompleteStmt(BindCompleteToCompleteStmt kernel, T state) throws Exception;
+    R visitBindCompleteToCompleteInstr(BindCompleteToCompleteInstr kernel, T state) throws Exception;
 
-    R visitBindCompleteToIdentStmt(BindCompleteToIdentStmt kernel, T state) throws Exception;
+    R visitBindCompleteToIdentInstr(BindCompleteToIdentInstr kernel, T state) throws Exception;
 
-    R visitBindCompleteToValueOrVarStmt(BindCompleteToValueOrVarStmt kernel, T state) throws Exception;
+    R visitBindCompleteToValueOrVarInstr(BindCompleteToValueOrVarInstr kernel, T state) throws Exception;
 
-    R visitBindIdentToIdentStmt(BindIdentToIdentStmt kernel, T state) throws Exception;
+    R visitBindIdentToIdentInstr(BindIdentToIdentInstr kernel, T state) throws Exception;
 
     R visitBool(Bool kernel, T state) throws Exception;
 
-    R visitCaseElseStmt(CaseElseStmt kernel, T state) throws Exception;
+    R visitCaseElseInstr(CaseElseInstr kernel, T state) throws Exception;
 
-    R visitCaseStmt(CaseStmt kernel, T state) throws Exception;
+    R visitCaseInstr(CaseInstr kernel, T state) throws Exception;
 
-    R visitCatchStmt(CatchStmt kernel, T state) throws Exception;
+    R visitCatchInstr(CatchInstr kernel, T state) throws Exception;
 
     R visitChar(Char kernel, T state) throws Exception;
 
     R visitClosure(Closure kernel, T state) throws Exception;
 
-    R visitCreateActorCfgtrStmt(CreateActorCfgtrStmt kernel, T state) throws Exception;
+    R visitCreateActorCfgtrInstr(CreateActorCfgtrInstr kernel, T state) throws Exception;
 
-    R visitCreateProcStmt(CreateProcStmt kernel, T state) throws Exception;
+    R visitCreateProcInstr(CreateProcInstr kernel, T state) throws Exception;
 
-    R visitCreateRecStmt(CreateRecStmt kernel, T state) throws Exception;
+    R visitCreateRecInstr(CreateRecInstr kernel, T state) throws Exception;
 
-    R visitCreateTupleStmt(CreateTupleStmt kernel, T state) throws Exception;
+    R visitCreateTupleInstr(CreateTupleInstr kernel, T state) throws Exception;
 
-    R visitDebugStmt(DebugStmt kernel, T state) throws Exception;
+    R visitDebugInstr(DebugInstr kernel, T state) throws Exception;
 
     R visitDec128(Dec128 kernel, T state) throws Exception;
 
-    R visitDisentailsStmt(DisentailsStmt kernel, T state) throws Exception;
+    R visitDisentailsInstr(DisentailsInstr kernel, T state) throws Exception;
 
-    R visitDivideStmt(DivideStmt kernel, T state) throws Exception;
+    R visitDivideInstr(DivideInstr kernel, T state) throws Exception;
 
-    R visitEntailsStmt(EntailsStmt kernel, T state) throws Exception;
+    R visitEntailsInstr(EntailsInstr kernel, T state) throws Exception;
 
     R visitEnv(Env kernel, T state) throws Exception;
 
@@ -71,11 +71,11 @@ public interface KernelVisitor<T, R> {
 
     R visitFlt64(Flt64 kernel, T state) throws Exception;
 
-    R visitGetCellValueStmt(GetCellValueStmt kernel, T state) throws Exception;
+    R visitGetCellValueInstr(GetCellValueInstr kernel, T state) throws Exception;
 
-    R visitGreaterThanOrEqualToStmt(GreaterThanOrEqualToStmt kernel, T state) throws Exception;
+    R visitGreaterThanOrEqualToInstr(GreaterThanOrEqualToInstr kernel, T state) throws Exception;
 
-    R visitGreaterThanStmt(GreaterThanStmt kernel, T state) throws Exception;
+    R visitGreaterThanInstr(GreaterThanInstr kernel, T state) throws Exception;
 
     R visitIdent(Ident kernel, T state) throws Exception;
 
@@ -83,31 +83,31 @@ public interface KernelVisitor<T, R> {
 
     R visitIdentPtn(IdentPtn kernel, T state) throws Exception;
 
-    R visitIfElseStmt(IfElseStmt kernel, T state) throws Exception;
+    R visitIfElseInstr(IfElseInstr kernel, T state) throws Exception;
 
-    R visitIfStmt(IfStmt kernel, T state) throws Exception;
+    R visitIfInstr(IfInstr kernel, T state) throws Exception;
 
     R visitInt32(Int32 kernel, T state) throws Exception;
 
     R visitInt64(Int64 kernel, T state) throws Exception;
 
-    R visitJumpCatchStmt(JumpCatchStmt kernel, T state) throws Exception;
+    R visitJumpCatchInstr(JumpCatchInstr kernel, T state) throws Exception;
 
-    R visitJumpThrowStmt(JumpThrowStmt kernel, T state) throws Exception;
+    R visitJumpThrowInstr(JumpThrowInstr kernel, T state) throws Exception;
 
-    R visitLessThanOrEqualToStmt(LessThanOrEqualToStmt kernel, T state) throws Exception;
+    R visitLessThanOrEqualToInstr(LessThanOrEqualToInstr kernel, T state) throws Exception;
 
-    R visitLessThanStmt(LessThanStmt kernel, T state) throws Exception;
+    R visitLessThanInstr(LessThanInstr kernel, T state) throws Exception;
 
-    R visitLocalStmt(LocalStmt kernel, T state) throws Exception;
+    R visitLocalInstr(LocalInstr kernel, T state) throws Exception;
 
-    R visitModuloStmt(ModuloStmt kernel, T state) throws Exception;
+    R visitModuloInstr(ModuloInstr kernel, T state) throws Exception;
 
-    R visitMultiplyStmt(MultiplyStmt kernel, T state) throws Exception;
+    R visitMultiplyInstr(MultiplyInstr kernel, T state) throws Exception;
 
-    R visitNegateStmt(NegateStmt kernel, T state) throws Exception;
+    R visitNegateInstr(NegateInstr kernel, T state) throws Exception;
 
-    R visitNotStmt(NotStmt kernel, T state) throws Exception;
+    R visitNotInstr(NotInstr kernel, T state) throws Exception;
 
     R visitNull(Null kernel, T state) throws Exception;
 
@@ -131,27 +131,27 @@ public interface KernelVisitor<T, R> {
 
     R visitResolvedRecPtn(ResolvedRecPtn kernel, T state) throws Exception;
 
-    R visitSelectAndApplyStmt(SelectAndApplyStmt kernel, T state) throws Exception;
+    R visitSelectAndApplyInstr(SelectAndApplyInstr kernel, T state) throws Exception;
 
-    R visitSelectStmt(SelectStmt kernel, T state) throws Exception;
+    R visitSelectInstr(SelectInstr kernel, T state) throws Exception;
 
-    R visitSeqStmt(SeqStmt kernel, T state) throws Exception;
+    R visitSeqInstr(SeqInstr kernel, T state) throws Exception;
 
-    R visitSetCellValueStmt(SetCellValueStmt kernel, T state) throws Exception;
+    R visitSetCellValueInstr(SetCellValueInstr kernel, T state) throws Exception;
 
-    R visitSkipStmt(SkipStmt kernel, T state) throws Exception;
+    R visitSkipInstr(SkipInstr kernel, T state) throws Exception;
 
     R visitStack(Stack kernel, T state) throws Exception;
 
     R visitStr(Str kernel, T state) throws Exception;
 
-    R visitSubtractStmt(SubtractStmt kernel, T state) throws Exception;
+    R visitSubtractInstr(SubtractInstr kernel, T state) throws Exception;
 
-    R visitThrowStmt(ThrowStmt kernel, T state) throws Exception;
+    R visitThrowInstr(ThrowInstr kernel, T state) throws Exception;
 
     R visitToken(Token kernel, T state) throws Exception;
 
-    R visitTryStmt(TryStmt kernel, T state) throws Exception;
+    R visitTryInstr(TryInstr kernel, T state) throws Exception;
 
     R visitTupleDef(TupleDef kernel, T state) throws Exception;
 

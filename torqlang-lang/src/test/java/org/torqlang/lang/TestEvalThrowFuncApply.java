@@ -34,7 +34,7 @@ public class TestEvalThrowFuncApply {
                 end
                 throw create_error('test')
             end""";
-        assertEquals(expected, g.sntcOrExpr().toString());
+        assertEquals(expected, g.stmtOrExpr().toString());
         expected = """
             local create_error in
                 $create_proc(proc (m, $r) in

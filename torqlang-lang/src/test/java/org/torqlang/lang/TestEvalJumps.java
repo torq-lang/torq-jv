@@ -38,7 +38,7 @@ public class TestEvalJumps {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local is_odd in
                 $create_proc(proc (x, $r) in
@@ -92,7 +92,7 @@ public class TestEvalJumps {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_1_if_odd in
                 $create_proc(proc (x, $r) in
@@ -138,7 +138,7 @@ public class TestEvalJumps {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local echo in
                 $create_proc(proc (x, $r) in

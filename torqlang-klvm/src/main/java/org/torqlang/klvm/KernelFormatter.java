@@ -14,27 +14,27 @@ import java.io.StringWriter;
 import java.util.*;
 
 /*
- * Format kernel values as kernel "source" (we do not have a formal grammar for the kernel language at this time).
+ * Format kernel values as kernel "source" (we do not have a formal grammar for the kernel language).
  *
- * Statements are functions of Stack, Environment, and Memory. Statements that contain record and procedure
+ * Instructions are functions of Stack, Environment, and Memory. Instructions that contain record and procedure
  * expressions actually contain definitions, such as RecDef and ProcDef, that drive the creation of values inside
  * memory. The KernelFormatter class is designed to handle the particulars of formatting values, such as circular
  * references.
  *
  * We can format kernel values from different roots:
- *     Compiled statements
- *         Includes statements, identifiers, definitions, and complete values
+ *     Compiled instructions
+ *         Includes instructions, identifiers, definitions, and complete values
  *     Kernel memory values
- *         Includes values created by computed statements, such as closures created by CreateProcStmt and
- *         records created by CreateRecStmt
+ *         Includes values created by computed instructions, such as closures created by CreateProcInstr and
+ *         records created by CreateRecInstr
  *     Machine state
  *         Includes the stack and environment
  *         Includes kernel memory variables (see above)
- *         Includes compiled statements (see above)
+ *         Includes compiled instructions (see above)
  */
 public final class KernelFormatter implements KernelVisitor<FormatterState, Void> {
 
-    public static final KernelFormatter SINGLETON = new KernelFormatter();
+    public static final KernelFormatter DEFAULT = new KernelFormatter();
 
     private static final String $ADD = "$add";
     private static final String $BIND = "$bind";
@@ -61,10 +61,28 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     private static final String $SELECT = "$select";
     private static final String $SELECT_APPLY = "$select_apply";
 
+    private final int maxLevel;
+
+    public KernelFormatter() {
+        this(Integer.MAX_VALUE);
+    }
+
+    public KernelFormatter(int maxLevel) {
+        this.maxLevel = maxLevel;
+    }
+
+    private void accept(Kernel kernel, FormatterState state) throws Exception {
+        if (state.level() != FormatterState.INLINE_VALUE && state.level() > maxLevel) {
+            state.write("<<omitted>>");
+        } else {
+            kernel.accept(this, state);
+        }
+    }
+
     public final String format(Kernel kernel) {
         try (StringWriter sw = new StringWriter()) {
             FormatterState state = new FormatterState(sw);
-            kernel.accept(this, state);
+            accept(kernel, state);
             state.flush();
             return sw.toString();
         } catch (Exception e) {
@@ -80,37 +98,37 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 state.write(FormatterState.SPACE);
             }
             CompleteOrIdent y = args.get(i);
-            y.accept(this, state.inline());
+            accept(y, state.inline());
         }
         state.write(')');
     }
 
-    private void formatBinaryStmt(String oper, CompleteOrIdent a, CompleteOrIdent b, Ident x, FormatterState state) throws Exception {
+    private void formatBinaryInstr(String oper, CompleteOrIdent a, CompleteOrIdent b, Ident x, FormatterState state) throws Exception {
         state.write(oper);
         state.write('(');
-        a.accept(this, state.inline());
+        accept(a, state.inline());
         state.write(", ");
-        b.accept(this, state.inline());
+        accept(b, state.inline());
         state.write(", ");
-        x.accept(this, state.inline());
+        accept(x, state.inline());
         state.write(')');
     }
 
-    private void formatBindStmt(Kernel a, Kernel x, FormatterState state) throws Exception {
+    private void formatBindInstr(Kernel a, Kernel x, FormatterState state) throws Exception {
         state.write($BIND);
         state.write('(');
-        a.accept(this, state.inline());
+        accept(a, state.inline());
         state.write(", ");
-        x.accept(this, state.inline());
+        accept(x, state.inline());
         state.write(')');
     }
 
     @Override
-    public final Void visitActStmt(ActStmt stmt, FormatterState state) throws Exception {
+    public final Void visitActInstr(ActInstr instr, FormatterState state) throws Exception {
         state.write("$act");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.stmt.accept(this, nextLevelState);
+        accept(instr.instr, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
@@ -129,10 +147,10 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
             state.write("// arg[");
             state.write(Integer.toString(i));
             state.write("]: ");
-            arg.accept(this, state.inline());
+            accept(arg, state.inline());
             state.writeNewLineAndIndent();
         }
-        value.handlersCtor().accept(this, state);
+        accept(value.handlersCtor(), state);
         return null;
     }
 
@@ -142,39 +160,39 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitAddStmt(AddStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($ADD, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitAddInstr(AddInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($ADD, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitApplyStmt(ApplyStmt stmt, FormatterState state) throws Exception {
-        stmt.x.accept(this, state.inline());
-        formatApplyArgs(stmt.ys, state);
+    public final Void visitApplyInstr(ApplyInstr instr, FormatterState state) throws Exception {
+        accept(instr.x, state.inline());
+        formatApplyArgs(instr.ys, state);
         return null;
     }
 
     @Override
-    public final Void visitBindCompleteToCompleteStmt(BindCompleteToCompleteStmt stmt, FormatterState state) throws Exception {
-        formatBindStmt(stmt.a, stmt.x, state);
+    public final Void visitBindCompleteToCompleteInstr(BindCompleteToCompleteInstr instr, FormatterState state) throws Exception {
+        formatBindInstr(instr.a, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitBindCompleteToIdentStmt(BindCompleteToIdentStmt stmt, FormatterState state) throws Exception {
-        formatBindStmt(stmt.a, stmt.x, state);
+    public final Void visitBindCompleteToIdentInstr(BindCompleteToIdentInstr instr, FormatterState state) throws Exception {
+        formatBindInstr(instr.a, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitBindCompleteToValueOrVarStmt(BindCompleteToValueOrVarStmt stmt, FormatterState state) throws Exception {
-        formatBindStmt(stmt.a, stmt.x, state);
+    public final Void visitBindCompleteToValueOrVarInstr(BindCompleteToValueOrVarInstr instr, FormatterState state) throws Exception {
+        formatBindInstr(instr.a, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitBindIdentToIdentStmt(BindIdentToIdentStmt stmt, FormatterState state) throws Exception {
-        formatBindStmt(stmt.a, stmt.x, state);
+    public final Void visitBindIdentToIdentInstr(BindIdentToIdentInstr instr, FormatterState state) throws Exception {
+        formatBindInstr(instr.a, instr.x, state);
         return null;
     }
 
@@ -185,45 +203,45 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitCaseElseStmt(CaseElseStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCaseElseInstr(CaseElseInstr instr, FormatterState state) throws Exception {
         state.write("case ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(" of ");
-        stmt.valueOrPtn.accept(this, state.inline());
+        accept(instr.valueOrPtn, state.inline());
         state.write(" then");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.consequent.accept(this, nextLevelState);
+        accept(instr.consequent, nextLevelState);
         state.writeAfterNewLineAndIdent("else");
         nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.alternate.accept(this, nextLevelState);
+        accept(instr.alternate, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
 
     @Override
-    public final Void visitCaseStmt(CaseStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCaseInstr(CaseInstr instr, FormatterState state) throws Exception {
         state.write("case ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(" of ");
-        stmt.valueOrPtn.accept(this, state.inline());
+        accept(instr.valueOrPtn, state.inline());
         state.write(" then");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.consequent.accept(this, nextLevelState);
+        accept(instr.consequent, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
 
     @Override
-    public final Void visitCatchStmt(CatchStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCatchInstr(CatchInstr instr, FormatterState state) throws Exception {
         state.write("catch ");
-        stmt.arg.accept(this, state.inline());
+        accept(instr.arg, state.inline());
         state.write(" in");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.caseStmt.accept(this, nextLevelState);
+        accept(instr.caseInstr, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
@@ -246,52 +264,52 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitCreateActorCfgtrStmt(CreateActorCfgtrStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCreateActorCfgtrInstr(CreateActorCfgtrInstr instr, FormatterState state) throws Exception {
         state.write($CREATE_ACTOR_CFGTR);
         state.write('(');
-        visitProcDef(stmt.procDef, state);
+        visitProcDef(instr.procDef, state);
         state.write(", ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitCreateProcStmt(CreateProcStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCreateProcInstr(CreateProcInstr instr, FormatterState state) throws Exception {
         state.write($CREATE_PROC);
         state.write('(');
-        visitProcDef(stmt.procDef, state);
+        visitProcDef(instr.procDef, state);
         state.write(", ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitCreateRecStmt(CreateRecStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCreateRecInstr(CreateRecInstr instr, FormatterState state) throws Exception {
         state.write($CREATE_REC);
         state.write('(');
-        stmt.recDef.accept(this, state.inline());
+        accept(instr.recDef, state.inline());
         state.write(", ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitCreateTupleStmt(CreateTupleStmt stmt, FormatterState state) throws Exception {
+    public final Void visitCreateTupleInstr(CreateTupleInstr instr, FormatterState state) throws Exception {
         state.write($CREATE_TUPLE);
         state.write('(');
-        stmt.tupleDef.accept(this, state.inline());
+        accept(instr.tupleDef, state.inline());
         state.write(", ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitDebugStmt(DebugStmt stmt, FormatterState state) throws Exception {
-        stmt.nextStmt().accept(this, state);
+    public final Void visitDebugInstr(DebugInstr instr, FormatterState state) throws Exception {
+        accept(instr.nextInstr(), state);
         return null;
     }
 
@@ -303,20 +321,20 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitDisentailsStmt(DisentailsStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($NE, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitDisentailsInstr(DisentailsInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($NE, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitDivideStmt(DivideStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($DIV, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitDivideInstr(DivideInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($DIV, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitEntailsStmt(EntailsStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($EQ, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitEntailsInstr(EntailsInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($EQ, instr.a, instr.b, instr.x, state);
         return null;
     }
 
@@ -348,7 +366,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (kernel.error() == null) {
             state.write("null");
         } else {
-            kernel.error().accept(this, state.inline());
+            accept(kernel.error(), state.inline());
         }
         state.write(')');
         return null;
@@ -356,17 +374,17 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public Void visitFieldDef(FieldDef kernel, FormatterState state) throws Exception {
-        kernel.feature.accept(this, state.inline());
+        accept(kernel.feature, state.inline());
         state.write(": ");
-        kernel.value.accept(this, state.inline());
+        accept(kernel.value, state.inline());
         return null;
     }
 
     @Override
     public Void visitFieldPtn(FieldPtn kernel, FormatterState state) throws Exception {
-        kernel.feature.accept(this, state.inline());
+        accept(kernel.feature, state.inline());
         state.write(": ");
-        kernel.value.accept(this, state.inline());
+        accept(kernel.value, state.inline());
         return null;
     }
 
@@ -384,25 +402,25 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitGetCellValueStmt(GetCellValueStmt stmt, FormatterState state) throws Exception {
+    public final Void visitGetCellValueInstr(GetCellValueInstr instr, FormatterState state) throws Exception {
         state.write($GET);
         state.write('(');
-        stmt.cell.accept(this, state.inline());
+        accept(instr.cell, state.inline());
         state.write(", ");
-        stmt.target.accept(this, state.inline());
+        accept(instr.target, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitGreaterThanOrEqualToStmt(GreaterThanOrEqualToStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($GE, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitGreaterThanOrEqualToInstr(GreaterThanOrEqualToInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($GE, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitGreaterThanStmt(GreaterThanStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($GT, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitGreaterThanInstr(GreaterThanInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($GT, instr.a, instr.b, instr.x, state);
         return null;
     }
 
@@ -418,10 +436,10 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitIdentDef(IdentDef kernel, FormatterState state) throws Exception {
-        kernel.ident.accept(this, state.inline());
+        accept(kernel.ident, state.inline());
         if (kernel.value != null) {
             state.write(" = ");
-            kernel.value.accept(this, state.inline());
+            accept(kernel.value, state.inline());
         }
         return null;
     }
@@ -431,34 +449,34 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (kernel.escaped) {
             state.write('~');
         }
-        kernel.ident.accept(this, state.inline());
+        accept(kernel.ident, state.inline());
         return null;
     }
 
     @Override
-    public final Void visitIfElseStmt(IfElseStmt stmt, FormatterState state) throws Exception {
+    public final Void visitIfElseInstr(IfElseInstr instr, FormatterState state) throws Exception {
         state.write("if ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(" then");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.consequent.accept(this, nextLevelState);
+        accept(instr.consequent, nextLevelState);
         state.writeAfterNewLineAndIdent("else");
         nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.alternate.accept(this, nextLevelState);
+        accept(instr.alternate, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
 
     @Override
-    public final Void visitIfStmt(IfStmt stmt, FormatterState state) throws Exception {
+    public final Void visitIfInstr(IfInstr instr, FormatterState state) throws Exception {
         state.write("if ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(" then");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.consequent.accept(this, nextLevelState);
+        accept(instr.consequent, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
@@ -477,7 +495,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public Void visitJumpCatchStmt(JumpCatchStmt kernel, FormatterState state) throws Exception {
+    public Void visitJumpCatchInstr(JumpCatchInstr kernel, FormatterState state) throws Exception {
         state.write($JUMP_CATCH);
         state.write('(');
         state.write("" + kernel.id);
@@ -486,7 +504,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public Void visitJumpThrowStmt(JumpThrowStmt kernel, FormatterState state) throws Exception {
+    public Void visitJumpThrowInstr(JumpThrowInstr kernel, FormatterState state) throws Exception {
         state.write($JUMP_THROW);
         state.write('(');
         state.write("" + kernel.id);
@@ -495,69 +513,69 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitLessThanOrEqualToStmt(LessThanOrEqualToStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($LE, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitLessThanOrEqualToInstr(LessThanOrEqualToInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($LE, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitLessThanStmt(LessThanStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($LT, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitLessThanInstr(LessThanInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($LT, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitLocalStmt(LocalStmt stmt, FormatterState state) throws Exception {
+    public final Void visitLocalInstr(LocalInstr instr, FormatterState state) throws Exception {
         state.write("local ");
-        for (int i = 0; i < stmt.xs.size(); i++) {
+        for (int i = 0; i < instr.xs.size(); i++) {
             if (i > 0) {
                 state.write(',');
                 state.write(FormatterState.SPACE);
             }
-            IdentDef id = stmt.xs.get(i);
-            id.ident.accept(this, state.inline());
+            IdentDef id = instr.xs.get(i);
+            accept(id.ident, state.inline());
             if (id.value != null) {
                 state.write(" = ");
-                id.value.accept(this, state.inline());
+                accept(id.value, state.inline());
             }
         }
         state.write(" in");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.body.accept(this, nextLevelState);
+        accept(instr.body, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
 
     @Override
-    public final Void visitModuloStmt(ModuloStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($MOD, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitModuloInstr(ModuloInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($MOD, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitMultiplyStmt(MultiplyStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($MULT, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitMultiplyInstr(MultiplyInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($MULT, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitNegateStmt(NegateStmt stmt, FormatterState state) throws Exception {
+    public final Void visitNegateInstr(NegateInstr instr, FormatterState state) throws Exception {
         state.write($NEGATE);
         state.write('(');
-        stmt.a.accept(this, state.inline());
+        accept(instr.a, state.inline());
         state.write(", ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitNotStmt(NotStmt stmt, FormatterState state) throws Exception {
+    public final Void visitNotInstr(NotInstr instr, FormatterState state) throws Exception {
         state.write($NOT);
-        stmt.a.accept(this, state.inline());
+        accept(instr.a, state.inline());
         state.write(", ");
-        stmt.x.accept(this, state.inline());
+        accept(instr.x, state.inline());
         state.write(')');
         return null;
     }
@@ -594,7 +612,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 state.write(',');
                 state.write(FormatterState.SPACE);
             }
-            kernel.xs.get(i).accept(this, state.inline());
+            accept(kernel.xs.get(i), state.inline());
         }
         state.write(") in");
         List<Ident> freeIdents = new ArrayList<>(kernel.freeIdents);
@@ -605,14 +623,14 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         }
         while (freeIdentsIter.hasNext()) {
             Ident ident = freeIdentsIter.next();
-            ident.accept(this, state.inline());
+            accept(ident, state.inline());
             if (freeIdentsIter.hasNext()) {
                 state.write(", ");
             }
         }
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        kernel.stmt.accept(this, nextLevelState);
+        accept(kernel.instr, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
         return null;
     }
@@ -635,7 +653,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (kernel.label() == Null.SINGLETON) {
             state.write('{');
         } else {
-            kernel.label().accept(this, state.inline());
+            accept(kernel.label(), state.inline());
             state.write("#{");
         }
         Collection<Var> undeterminedVars = kernel.sweepUndeterminedVars();
@@ -648,7 +666,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 if (i > 0) {
                     state.write(", ");
                 }
-                kernel.featureAt(i).accept(this, state.inline());
+                accept(kernel.featureAt(i), state.inline());
                 state.write(": ");
                 visitRecValue(kernel.valueAt(i).resolveValueOrVar(), memos, state);
             }
@@ -661,7 +679,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (kernel.label.equals(Rec.DEFAULT_LABEL)) {
             state.write('{');
         } else {
-            kernel.label.accept(this, state.inline());
+            accept(kernel.label, state.inline());
             state.write("#{");
         }
         for (int i = 0; i < kernel.fieldCount(); i++) {
@@ -669,7 +687,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 state.write(", ");
             }
             FieldDef fd = kernel.fieldDefAtIndex(i);
-            fd.accept(this, state.inline());
+            accept(fd, state.inline());
         }
         state.write('}');
         return null;
@@ -680,7 +698,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (kernel.label().equals(Rec.DEFAULT_LABEL)) {
             state.write('{');
         } else {
-            kernel.label().accept(this, state.inline());
+            accept(kernel.label(), state.inline());
             state.write("#{");
         }
         for (int i = 0; i < kernel.fieldCount(); i++) {
@@ -688,7 +706,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 state.write(", ");
             }
             FieldPtn fp = kernel.fields().get(i);
-            fp.accept(this, state.inline());
+            accept(fp, state.inline());
             if (i + 1 == kernel.fieldCount() && kernel.partialArity()) {
                 state.write(", ...");
             }
@@ -709,34 +727,34 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 }
             }
         } else {
-            value.accept(this, state.inline());
+            accept(value, state.inline());
         }
     }
 
     @Override
     public Void visitResolvedFieldPtn(ResolvedFieldPtn kernel, FormatterState state) throws Exception {
-        kernel.feature.accept(this, state.inline());
+        accept(kernel.feature, state.inline());
         state.write(": ");
-        kernel.value.accept(this, state.inline());
+        accept(kernel.value, state.inline());
         return null;
     }
 
     @Override
     public final Void visitResolvedIdentPtn(ResolvedIdentPtn kernel, FormatterState state) throws Exception {
-        kernel.ident.accept(this, state.inline());
+        accept(kernel.ident, state.inline());
         return null;
     }
 
     @Override
     public final Void visitResolvedRecPtn(ResolvedRecPtn kernel, FormatterState state) throws Exception {
-        kernel.label.accept(this, state.inline());
+        accept(kernel.label, state.inline());
         state.write("#{");
         for (int i = 0; i < kernel.fieldCount(); i++) {
             if (i > 0) {
                 state.write(", ");
             }
             ResolvedFieldPtn fp = kernel.fields.get(i);
-            fp.accept(this, state.inline());
+            accept(fp, state.inline());
             if (i + 1 == kernel.fieldCount() && kernel.partialArity) {
                 state.write(", ...");
             }
@@ -746,28 +764,28 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitSelectAndApplyStmt(SelectAndApplyStmt stmt, FormatterState state) throws Exception {
+    public final Void visitSelectAndApplyInstr(SelectAndApplyInstr instr, FormatterState state) throws Exception {
         state.write($SELECT_APPLY);
         state.write('(');
-        stmt.rec.accept(this, state.inline());
+        accept(instr.rec, state.inline());
         state.write(", [");
-        for (int i = 0; i < stmt.path.size(); i++) {
+        for (int i = 0; i < instr.path.size(); i++) {
             if (i > 0) {
                 state.write(", ");
             }
-            FeatureOrIdent f = stmt.path.get(i);
-            f.accept(this, state.inline());
+            FeatureOrIdent f = instr.path.get(i);
+            accept(f, state.inline());
         }
         state.write(']');
-        if (!stmt.args.isEmpty()) {
+        if (!instr.args.isEmpty()) {
             state.write(", ");
-            for (int i = 0; i < stmt.args.size(); i++) {
+            for (int i = 0; i < instr.args.size(); i++) {
                 if (i > 0) {
                     state.write(',');
                     state.write(FormatterState.SPACE);
                 }
-                CompleteOrIdent y = stmt.args.get(i);
-                y.accept(this, state.inline());
+                CompleteOrIdent y = instr.args.get(i);
+                accept(y, state.inline());
             }
         }
         state.write(')');
@@ -775,42 +793,42 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitSelectStmt(SelectStmt stmt, FormatterState state) throws Exception {
+    public final Void visitSelectInstr(SelectInstr instr, FormatterState state) throws Exception {
         state.write($SELECT);
         state.write('(');
-        stmt.rec.accept(this, state.inline());
+        accept(instr.rec, state.inline());
         state.write(", ");
-        stmt.feature.accept(this, state.inline());
+        accept(instr.feature, state.inline());
         state.write(", ");
-        stmt.target.accept(this, state.inline());
+        accept(instr.target, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitSeqStmt(SeqStmt stmt, FormatterState state) throws Exception {
-        for (StmtList.Entry current = stmt.seq.firstEntry(); current != null; current = current.next()) {
+    public final Void visitSeqInstr(SeqInstr instr, FormatterState state) throws Exception {
+        for (InstrList.Entry current = instr.seq.firstEntry(); current != null; current = current.next()) {
             if (current.prev() != null) {
                 state.writeNewLineAndIndent();
             }
-            current.stmt().accept(this, state);
+            accept(current.instr(), state);
         }
         return null;
     }
 
     @Override
-    public final Void visitSetCellValueStmt(SetCellValueStmt stmt, FormatterState state) throws Exception {
+    public final Void visitSetCellValueInstr(SetCellValueInstr instr, FormatterState state) throws Exception {
         state.write($SET);
         state.write('(');
-        stmt.cell.accept(this, state.inline());
+        accept(instr.cell, state.inline());
         state.write(", ");
-        stmt.value.accept(this, state.inline());
+        accept(instr.value, state.inline());
         state.write(')');
         return null;
     }
 
     @Override
-    public final Void visitSkipStmt(SkipStmt stmt, FormatterState state) throws Exception {
+    public final Void visitSkipInstr(SkipInstr instr, FormatterState state) throws Exception {
         state.write("skip");
         return null;
     }
@@ -818,7 +836,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     @Override
     public Void visitStack(Stack kernel, FormatterState state) throws Exception {
         for (Stack s = kernel; s != null; s = s.next) {
-            state.write(Kernel.toSystemString(s.stmt));
+            state.write(Kernel.toSystemString(s.instr));
             if (s.next != null) {
                 state.writeNewLineAndIndent();
             }
@@ -833,15 +851,15 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitSubtractStmt(SubtractStmt stmt, FormatterState state) throws Exception {
-        formatBinaryStmt($SUB, stmt.a, stmt.b, stmt.x, state);
+    public final Void visitSubtractInstr(SubtractInstr instr, FormatterState state) throws Exception {
+        formatBinaryInstr($SUB, instr.a, instr.b, instr.x, state);
         return null;
     }
 
     @Override
-    public final Void visitThrowStmt(ThrowStmt stmt, FormatterState state) throws Exception {
+    public final Void visitThrowInstr(ThrowInstr instr, FormatterState state) throws Exception {
         state.write("throw ");
-        stmt.error.accept(this, state.inline());
+        accept(instr.error, state.inline());
         return null;
     }
 
@@ -852,20 +870,20 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitTryStmt(TryStmt stmt, FormatterState state) throws Exception {
+    public final Void visitTryInstr(TryInstr instr, FormatterState state) throws Exception {
         // try
         //     ....
         //     ....
         state.write("try");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
-        stmt.body.accept(this, nextLevelState);
+        accept(instr.body, nextLevelState);
         // catch <ident>
         //     ....
         //     ....
         // end
         state.writeNewLineAndIndent();
-        stmt.catchStmt.accept(this, state);
+        accept(instr.catchInstr, state);
         return null;
     }
 
@@ -877,7 +895,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (tuple.label() == Null.SINGLETON) {
             state.write('[');
         } else {
-            tuple.label().accept(this, state.inline());
+            accept(tuple.label(), state.inline());
             state.write("#[");
         }
         // Force the record to resolve available values
@@ -896,7 +914,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         if (kernel.label.equals(Rec.DEFAULT_LABEL)) {
             state.write('[');
         } else {
-            kernel.label.accept(this, state.inline());
+            accept(kernel.label, state.inline());
             state.write("#[");
         }
         for (int i = 0; i < kernel.valueCount(); i++) {
@@ -904,7 +922,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
                 state.write(", ");
             }
             ValueDef vd = kernel.valueDefAtIndex(i);
-            vd.value.accept(this, state.inline());
+            accept(vd.value, state.inline());
         }
         state.write(']');
         return null;

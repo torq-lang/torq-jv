@@ -7,17 +7,15 @@
 
 package org.torqlang.local;
 
-// TODO: Rename to DebuggerSetting
-
 public final class DebuggerSetting {
 
     private static Debugger debugger;
 
-    public static Debugger debugger() {
+    public static Debugger get() {
         return debugger;
     }
 
-    public static void setDebugger(Debugger debugger) {
+    public static void set(Debugger debugger) {
         if (DebuggerSetting.debugger != null) {
             throw new IllegalStateException("debugger already set");
         }

@@ -10,7 +10,7 @@ package org.torqlang.local;
 import org.torqlang.klvm.CompleteOrIdent;
 import org.torqlang.klvm.Ident;
 import org.torqlang.lang.ActorExpr;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface ActorBuilderRewritten {
 
     Ident actorIdent();
 
-    ActorSntc actorSntc();
+    ActorStmt actorStmt();
 
     Address address();
 

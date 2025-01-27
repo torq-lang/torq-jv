@@ -22,7 +22,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = (1 + 2) * 3")
             .perform();
-        assertEquals("x = (1 + 2) * 3", e.sntcOrExpr().toString());
+        assertEquals("x = (1 + 2) * 3", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 $add(1, 2, $v0)
@@ -38,7 +38,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = 2 * (3 + 4) * 5")
             .perform();
-        assertEquals("x = 2 * (3 + 4) * 5", e.sntcOrExpr().toString());
+        assertEquals("x = 2 * (3 + 4) * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 local $v1 in
@@ -57,7 +57,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = 2 * (3 + -4) * 5")
             .perform();
-        assertEquals("x = 2 * (3 + -4) * 5", e.sntcOrExpr().toString());
+        assertEquals("x = 2 * (3 + -4) * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 local $v1 in
@@ -79,7 +79,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = -9 > 2 * (3 + -4) * 5")
             .perform();
-        assertEquals("x = -9 > 2 * (3 + -4) * 5", e.sntcOrExpr().toString());
+        assertEquals("x = -9 > 2 * (3 + -4) * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0, $v1 in
                 $negate(9, $v0)
@@ -105,7 +105,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = -11 > 2 * (3 + -4) * 5")
             .perform();
-        assertEquals("x = -11 > 2 * (3 + -4) * 5", e.sntcOrExpr().toString());
+        assertEquals("x = -11 > 2 * (3 + -4) * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0, $v1 in
                 $negate(11, $v0)
@@ -131,7 +131,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = 2 * (--3 + ---4) * 5")
             .perform();
-        assertEquals("x = 2 * (--3 + ---4) * 5", e.sntcOrExpr().toString());
+        assertEquals("x = 2 * (--3 + ---4) * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 local $v1 in
@@ -163,7 +163,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource("x = -11 > 2 * (--3 + ---4) * 5")
             .perform();
-        assertEquals("x = -11 > 2 * (--3 + ---4) * 5", e.sntcOrExpr().toString());
+        assertEquals("x = -11 > 2 * (--3 + ---4) * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0, $v1 in
                 $negate(11, $v0)
@@ -204,7 +204,7 @@ public class TestEvalGroups {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a = 5 in
                 $add(a, 3, x)
@@ -222,7 +222,7 @@ public class TestEvalGroups {
         String expected = """
             (var a = 5
             x = a + 3)""";
-        assertEquals(expected, e.sntcOrExpr().toString());
+        assertEquals(expected, e.stmtOrExpr().toString());
         expected = """
             local a = 5 in
                 $add(a, 3, x)

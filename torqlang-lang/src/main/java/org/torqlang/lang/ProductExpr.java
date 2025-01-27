@@ -11,11 +11,11 @@ import org.torqlang.util.SourceSpan;
 
 public final class ProductExpr extends AbstractLang implements BuiltInApplyExpr {
 
-    public final SntcOrExpr arg1;
+    public final StmtOrExpr arg1;
     public final ProductOper oper;
-    public final SntcOrExpr arg2;
+    public final StmtOrExpr arg2;
 
-    public ProductExpr(SntcOrExpr arg1, ProductOper oper, SntcOrExpr arg2, SourceSpan sourceSpan) {
+    public ProductExpr(StmtOrExpr arg1, ProductOper oper, StmtOrExpr arg2, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.arg1 = arg1;
         this.oper = oper;

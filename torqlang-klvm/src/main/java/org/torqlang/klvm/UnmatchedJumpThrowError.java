@@ -9,11 +9,11 @@ package org.torqlang.klvm;
 
 public final class UnmatchedJumpThrowError extends MachineError {
 
-    public final JumpThrowStmt jumpThrowStmt;
+    public final JumpThrowInstr jumpThrowInstr;
 
-    public UnmatchedJumpThrowError(JumpThrowStmt jumpThrowStmt) {
-        super("Unmatched throw error");
-        this.jumpThrowStmt = jumpThrowStmt;
+    public UnmatchedJumpThrowError(JumpThrowInstr jumpThrowInstr) {
+        super("Unmatched jump throw error");
+        this.jumpThrowInstr = jumpThrowInstr;
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public abstract class FuncLang extends AbstractLang implements SntcOrExpr {
+public abstract class FuncLang extends AbstractLang implements StmtOrExpr {
 
     public final List<Pat> formalArgs;
     public final TypeAnno returnType;

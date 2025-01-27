@@ -262,8 +262,8 @@ public class TestLexer {
         LexerToken token2 = new LexerToken(STR_TOKEN, "[true, [0, 1], false]", 7, 13);
         assertTrue(token2.substringEquals("[0, 1]"));
         assertEquals("[true, [0, 1], false]", token2.source());
-        assertEquals(7, token2.begin());
-        assertEquals(13, token2.end());
+        assertEquals(7, token2.sourceBegin());
+        assertEquals(13, token2.sourceEnd());
         assertEquals('[', token2.substringCharAt(0));
         assertEquals('0', token2.substringCharAt(1));
         assertEquals(',', token2.substringCharAt(2));

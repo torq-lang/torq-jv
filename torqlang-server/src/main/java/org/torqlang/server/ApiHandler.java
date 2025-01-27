@@ -17,8 +17,8 @@ import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 import org.torqlang.klvm.*;
 import org.torqlang.local.*;
-import org.torqlang.server.ApiReceiver.ApiReceiverImage;
-import org.torqlang.server.ApiReceiver.ApiReceiverRef;
+import org.torqlang.server.ApiTarget.ApiTargetImage;
+import org.torqlang.server.ApiTarget.ApiTargetRef;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -79,10 +79,10 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
     {
         try {
             ActorRef actorRef;
-            if (route.receiver instanceof ApiReceiverImage targetActorImage) {
-                actorRef = Actor.spawn(Address.create("api-handler"), targetActorImage.value());
+            if (route.target instanceof ApiTargetImage targetImage) {
+                actorRef = Actor.spawn(targetImage.address, targetImage.value());
             } else {
-                actorRef = ((ApiReceiverRef) route.receiver).actorRef;
+                actorRef = ((ApiTargetRef) route.target).actorRef;
             }
             CompleteRec requestRec = route.desc.toRequestRec(method, pathTuple, headersRec, queryRec,
                 contextRec, requestText);

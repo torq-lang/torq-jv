@@ -9,11 +9,11 @@ package org.torqlang.klvm;
 
 public final class NotBoolError extends MachineError {
     public final Value arg;
-    public final Stmt stmt;
+    public final Instr instr;
 
-    public NotBoolError(Value arg, Stmt stmt) {
+    public NotBoolError(Value arg, Instr instr) {
         super("Not a Bool");
         this.arg = arg;
-        this.stmt = stmt;
+        this.instr = instr;
     }
 }

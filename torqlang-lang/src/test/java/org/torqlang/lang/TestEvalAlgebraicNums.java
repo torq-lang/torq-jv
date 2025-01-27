@@ -23,7 +23,7 @@ public class TestEvalAlgebraicNums {
             .addVar(Ident.create("x"))
             .setSource("x = 2 + 3 * 5")
             .perform();
-        assertEquals("x = 2 + 3 * 5", e.sntcOrExpr().toString());
+        assertEquals("x = 2 + 3 * 5", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 $mult(3, 5, $v0)
@@ -44,7 +44,7 @@ public class TestEvalAlgebraicNums {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a = 2, b = 3, c = 5 in
                 local $v0 in
@@ -70,7 +70,7 @@ public class TestEvalAlgebraicNums {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a, b, c in
                 $bind(2, a)
@@ -92,7 +92,7 @@ public class TestEvalAlgebraicNums {
             .addVar(Ident.create("x"))
             .setSource("x = 'Hello, ' + a + '! is ' + a")
             .perform();
-        assertEquals("x = 'Hello, ' + a + '! is ' + a", e.sntcOrExpr().toString());
+        assertEquals("x = 'Hello, ' + a + '! is ' + a", e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 local $v1 in

@@ -7,7 +7,6 @@
 
 package org.torqlang.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,12 +26,6 @@ public interface SourceSpan {
         return EmptySourceSpan.EMPTY_SOURCE_SPAN;
     }
 
-    private static String lineNrStr(int lineNr, int width) {
-        StringBuilder sb = new StringBuilder(width);
-        StringTools.appendWithPadLeft(String.valueOf(lineNr), '0', width, sb);
-        return sb.toString();
-    }
-
     private static boolean showLine(int i, int lineIndex, int showBefore, int showAfter) {
         return i == lineIndex ||
             (i < lineIndex && (lineIndex - i) <= showBefore) ||
@@ -43,7 +36,7 @@ public interface SourceSpan {
         int lineNr = baseLineNr;
         int charNr = baseCharNr;
         int i = 0;
-        while (i < sourceSpan.source().length() && i < sourceSpan.begin()) {
+        while (i < sourceSpan.source().length() && i < sourceSpan.sourceBegin()) {
             char c = sourceSpan.source().charAt(i);
             if (c == '\n') {
                 lineNr++;
@@ -56,47 +49,15 @@ public interface SourceSpan {
         return new LineAndChar(lineNr, charNr);
     }
 
-    private static List<String> toSourceLines(String source, int baseLineNr, int lineNrWidth) {
-        int lineNr = baseLineNr;
-        List<String> answer = new ArrayList<>();
-        StringBuilder sourceLine = null;
-        for (int i = 0; i < source.length(); i++) {
-            char c = source.charAt(i);
-            if (c == '\n') {
-                String lineNrStr = lineNrStr(lineNr, lineNrWidth);
-                if (sourceLine == null) {
-                    answer.add(lineNrStr);
-                } else {
-                    answer.add(lineNrStr + " " + sourceLine);
-                    sourceLine = null;
-                }
-                lineNr++;
-            } else {
-                if (sourceLine == null) {
-                    sourceLine = new StringBuilder();
-                }
-                sourceLine.append(c);
-            }
-        }
-        if (sourceLine != null) {
-            answer.add(lineNrStr(lineNr, lineNrWidth) + " " + sourceLine);
-        }
-        return answer;
-    }
-
     default SourceSpan adjoin(SourceSpan other) {
         return new AdjoinedSourceSpan(this, other);
     }
-
-    int begin();
-
-    int end();
 
     default String formatSource(String message, int lineNrWidth, int showBefore, int showAfter) {
         LineAndChar location = toLineAndChar(this, 0, 0);
         StringBuilder answerBuf = new StringBuilder();
         int lineIndex = location.lineNr;
-        List<String> sourceLines = SourceSpan.toSourceLines(source(), 1, lineNrWidth);
+        List<String> sourceLines = StringTools.toSourceLines(source(), 1, lineNrWidth);
         boolean lineAppended = false;
         for (int i = 0; i < sourceLines.size(); i++) {
             String line = sourceLines.get(i);
@@ -127,8 +88,12 @@ public interface SourceSpan {
 
     String source();
 
-    SourceSpan toSourceSpanBegin();
+    int sourceBegin();
 
-    SourceSpan toSourceSpanEnd();
+    int sourceEnd();
+
+    SourceSpan toSourceBegin();
+
+    SourceSpan toSourceEnd();
 
 }

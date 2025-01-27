@@ -25,15 +25,8 @@ public final class Machine {
         this.computeCount = computeCount;
     }
 
-    public Machine(Stack stack) {
-        this(null, stack, 0);
-    }
-
-    public Machine(Stack stack, long computeCount) {
-        this(null, stack, computeCount);
-    }
-
-    public static void compute(Machine machine, long timeSlice) {
+    public static void compute(Object owner, Stack stack, long timeSlice) {
+        Machine machine = new Machine(owner, stack);
         ComputeAdvice advice = machine.compute(timeSlice);
         while (advice == ComputePreempt.SINGLETON) {
             advice = machine.compute(timeSlice);
@@ -46,10 +39,6 @@ public final class Machine {
         }
     }
 
-    public static void compute(Stack stack, long timeSlice) {
-        compute(new Machine(stack), timeSlice);
-    }
-
     public final ComputeAdvice compute(long timeSlice) {
         if (stack == null) {
             return ComputeEnd.SINGLETON;
@@ -60,20 +49,20 @@ public final class Machine {
             current = stack;
             stack = stack.next;
             try {
-                current.stmt.compute(current.env, this);
+                current.instr.compute(current.env, this);
             } catch (WaitException wx) {
                 stack = current;
                 current = null;
                 return new ComputeWait(wx.barrier());
             } catch (NativeThrow nt) {
-                ThrowStmt ts = new ThrowStmt(nt.error, nt, current.stmt);
-                stack = new Stack(ts, current.env, current);
+                ThrowInstr ti = new ThrowInstr(nt.error, nt, current.instr);
+                stack = new Stack(ti, current.env, current);
             } catch (MachineError error) {
                 return error.asComputeHalt(current);
             } catch (Throwable throwable) {
                 Complete ne = new NativeError(throwable);
-                ThrowStmt ts = new ThrowStmt(ne, throwable, current.stmt);
-                stack = new Stack(ts, current.env, current);
+                ThrowInstr ti = new ThrowInstr(ne, throwable, current.instr);
+                stack = new Stack(ti, current.env, current);
             }
             if (stack == null) {
                 // INVARIANT: Even though we completed the computation, the field 'current' must hold the last
@@ -105,41 +94,41 @@ public final class Machine {
         return entry;
     }
 
-    public final void pushStackEntries(StmtList stmtList, Env env) {
-        for (StmtList.Entry current = stmtList.lastEntry(); current != null; current = current.prev()) {
-            stack = new Stack(current.stmt(), env, stack);
+    public final void pushStackEntries(InstrList instrList, Env env) {
+        for (InstrList.Entry current = instrList.lastEntry(); current != null; current = current.prev()) {
+            stack = new Stack(current.instr(), env, stack);
         }
     }
 
-    public final void pushStackEntry(Stmt stmt, Env env) {
-        stack = new Stack(stmt, env, stack);
+    public final void pushStackEntry(Instr instr, Env env) {
+        stack = new Stack(instr, env, stack);
     }
 
     public final Stack stack() {
         return stack;
     }
 
-    final void unwindToJumpCatchStmt(JumpThrowStmt jumpThrowStmt) {
-        int jumpThrowId = jumpThrowStmt.id;
+    final void unwindToJumpCatchInstr(JumpThrowInstr jumpThrowInstr) {
+        int jumpThrowId = jumpThrowInstr.id;
         while (stack != null) {
-            if (stack.stmt instanceof JumpCatchStmt jumpCatchStmt && jumpCatchStmt.id == jumpThrowId) {
+            if (stack.instr instanceof JumpCatchInstr jumpCatchInstr && jumpCatchInstr.id == jumpThrowId) {
                 break;
             }
             stack = stack.next;
         }
         if (stack == null) {
             // If this condition occurs, we generated an invalid program containing unmatched jump-throw/jump-catch
-            // statements. The field 'current' will hold the instruction that issued the unmatched jump-throw.
-            throw new UnmatchedJumpThrowError(jumpThrowStmt);
+            // instructions. The field 'current' will hold the instruction that issued the unmatched jump-throw.
+            throw new UnmatchedJumpThrowError(jumpThrowInstr);
         }
     }
 
-    final void unwindToNextCatchStmt(Complete error, Throwable nativeCause) {
+    final void unwindToNextCatchInstr(Complete error, Throwable nativeCause) {
         while (stack != null) {
-            if (stack.stmt instanceof CatchStmt catchStmt) {
+            if (stack.instr instanceof CatchInstr catchInstr) {
                 Env catchEnv = Env.createPrivatelyForKlvm(stack.env,
-                    new EnvEntry[]{new EnvEntry(catchStmt.arg, new Var(error))});
-                stack = new Stack(catchStmt.caseStmt, catchEnv, stack.next);
+                    new EnvEntry[]{new EnvEntry(catchInstr.arg, new Var(error))});
+                stack = new Stack(catchInstr.caseInstr, catchEnv, stack.next);
                 break;
             }
             stack = stack.next;

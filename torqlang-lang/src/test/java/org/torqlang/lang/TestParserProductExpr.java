@@ -19,7 +19,7 @@ public class TestParserProductExpr {
     public void testIntTimesInt() {
         //                            012345
         Parser p = new Parser("3 * 5");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ProductExpr.class, sox);
         ProductExpr productExpr = (ProductExpr) sox;
         assertSourceSpan(productExpr, 0, 5);
@@ -36,7 +36,7 @@ public class TestParserProductExpr {
     public void testIntTimesNegativeInt() {
         //                            0123456
         Parser p = new Parser("3 * -5");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(ProductExpr.class, sox);
         ProductExpr productExpr = (ProductExpr) sox;
         assertSourceSpan(productExpr, 0, 6);

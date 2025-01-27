@@ -20,7 +20,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("x"))
             .setSource("x = 7 > 5")
             .perform();
-        assertEquals("x = 7 > 5", e.sntcOrExpr().toString());
+        assertEquals("x = 7 > 5", e.stmtOrExpr().toString());
         assertEquals("$gt(7, 5, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -28,7 +28,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("x"))
             .setSource("x = 5 > 5")
             .perform();
-        assertEquals("x = 5 > 5", e.sntcOrExpr().toString());
+        assertEquals("x = 5 > 5", e.stmtOrExpr().toString());
         assertEquals("$gt(5, 5, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -40,7 +40,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = 7 > a")
             .perform();
-        assertEquals("x = 7 > a", e.sntcOrExpr().toString());
+        assertEquals("x = 7 > a", e.stmtOrExpr().toString());
         assertEquals("$gt(7, a, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -49,7 +49,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = 5 > a")
             .perform();
-        assertEquals("x = 5 > a", e.sntcOrExpr().toString());
+        assertEquals("x = 5 > a", e.stmtOrExpr().toString());
         assertEquals("$gt(5, a, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -60,7 +60,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("x"))
             .setSource("x = 7L > 5L")
             .perform();
-        assertEquals("x = 7L > 5L", e.sntcOrExpr().toString());
+        assertEquals("x = 7L > 5L", e.stmtOrExpr().toString());
         assertEquals("$gt(7L, 5L, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -68,7 +68,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("x"))
             .setSource("x = 5L > 5L")
             .perform();
-        assertEquals("x = 5L > 5L", e.sntcOrExpr().toString());
+        assertEquals("x = 5L > 5L", e.stmtOrExpr().toString());
         assertEquals("$gt(5L, 5L, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -80,7 +80,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = 7L > a")
             .perform();
-        assertEquals("x = 7L > a", e.sntcOrExpr().toString());
+        assertEquals("x = 7L > a", e.stmtOrExpr().toString());
         assertEquals("$gt(7L, a, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -89,7 +89,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int64.I64_5))
             .setSource("x = 5L > a")
             .perform();
-        assertEquals("x = 5L > a", e.sntcOrExpr().toString());
+        assertEquals("x = 5L > a", e.stmtOrExpr().toString());
         assertEquals("$gt(5L, a, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -101,7 +101,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_7))
             .setSource("x = a > 5")
             .perform();
-        assertEquals("x = a > 5", e.sntcOrExpr().toString());
+        assertEquals("x = a > 5", e.stmtOrExpr().toString());
         assertEquals("$gt(a, 5, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -110,7 +110,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int32.I32_5))
             .setSource("x = a > 5")
             .perform();
-        assertEquals("x = a > 5", e.sntcOrExpr().toString());
+        assertEquals("x = a > 5", e.stmtOrExpr().toString());
         assertEquals("$gt(a, 5, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -123,7 +123,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int32.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -133,7 +133,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int32.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -146,7 +146,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int64.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -156,7 +156,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int64.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -168,7 +168,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int64.of(7)))
             .setSource("x = a > 5L")
             .perform();
-        assertEquals("x = a > 5L", e.sntcOrExpr().toString());
+        assertEquals("x = a > 5L", e.stmtOrExpr().toString());
         assertEquals("$gt(a, 5L, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -177,7 +177,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("a"), new Var(Int64.of(5)))
             .setSource("x = a > 5L")
             .perform();
-        assertEquals("x = a > 5L", e.sntcOrExpr().toString());
+        assertEquals("x = a > 5L", e.stmtOrExpr().toString());
         assertEquals("$gt(a, 5L, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -190,7 +190,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int32.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -200,7 +200,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int32.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
@@ -213,7 +213,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int64.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
 
@@ -223,7 +223,7 @@ public class TestEvalGreaterThanNums {
             .addVar(Ident.create("b"), new Var(Int64.of(5)))
             .setSource("x = a > b")
             .perform();
-        assertEquals("x = a > b", e.sntcOrExpr().toString());
+        assertEquals("x = a > b", e.stmtOrExpr().toString());
         assertEquals("$gt(a, b, x)", e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }

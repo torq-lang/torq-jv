@@ -28,7 +28,7 @@ public class KernelProcs {
         CompleteOrIdent y = ys.get(0);
         ValueOrVar yRes = y.resolveValueOrVar(env);
         if (yRes instanceof Var yVar) {
-            throw new NotBoundError(yVar, machine.current().stmt);
+            throw new NotBoundError(yVar, machine.current().instr);
         }
     }
 

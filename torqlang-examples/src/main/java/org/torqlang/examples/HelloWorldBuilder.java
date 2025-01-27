@@ -63,7 +63,7 @@ public final class HelloWorldBuilder extends AbstractExample {
         ActorBuilderGenerated generated = ready.generate();
         if (TRACE) {
             System.out.println("========== GENERATED 1 ==========");
-            System.out.println(generated.createActorRecStmt());
+            System.out.println(generated.createActorRecInstr());
         }
         ActorBuilderConstructed constructed = generated.construct();
         if (TRACE) {
@@ -96,7 +96,7 @@ public final class HelloWorldBuilder extends AbstractExample {
         generated = ready.generate();
         if (TRACE) {
             System.out.println("========== GENERATED 2 ==========");
-            System.out.println(generated.createActorRecStmt());
+            System.out.println(generated.createActorRecInstr());
         }
         constructed = generated.construct();
         if (TRACE) {

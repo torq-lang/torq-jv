@@ -15,27 +15,27 @@ public final class EmptySourceSpan implements SourceSpan {
     }
 
     @Override
-    public final int begin() {
-        return 0;
-    }
-
-    @Override
-    public final int end() {
-        return 0;
-    }
-
-    @Override
     public final String source() {
         return "";
     }
 
     @Override
-    public final SourceSpan toSourceSpanBegin() {
+    public final int sourceBegin() {
+        return 0;
+    }
+
+    @Override
+    public final int sourceEnd() {
+        return 0;
+    }
+
+    @Override
+    public final SourceSpan toSourceBegin() {
         return this;
     }
 
     @Override
-    public final SourceSpan toSourceSpanEnd() {
+    public final SourceSpan toSourceEnd() {
         return this;
     }
 

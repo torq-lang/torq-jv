@@ -7,6 +7,8 @@
 
 package org.torqlang.klvm;
 
+import org.torqlang.util.SourceSpan;
+
 import java.util.List;
 
 public abstract class AbstractClosure implements Closure {
@@ -39,7 +41,7 @@ public abstract class AbstractClosure implements Closure {
         } else {
             bodyEnv = capturedEnv;
         }
-        machine.pushStackEntry(procDef.stmt, bodyEnv);
+        machine.pushStackEntry(procDef.instr, bodyEnv);
     }
 
     @Override
@@ -60,6 +62,11 @@ public abstract class AbstractClosure implements Closure {
     final void restore(ProcDef procDef, Env capturedEnv) {
         this.procDef = procDef;
         this.capturedEnv = capturedEnv;
+    }
+
+    @Override
+    public final SourceSpan sourceSpan() {
+        return procDef.sourceSpan;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class TestParserCaseLang {
         //                                      1         2
         //                            01234567890123456789012345
         Parser p = new Parser("case 0 of 0 then true end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 25);
@@ -38,7 +38,7 @@ public class TestParserCaseLang {
         assertSourceSpan(caseLang.caseClause.pat, 10, 11);
         // Test part -- caseClause body
         assertEquals(1, caseLang.caseClause.body.list.size());
-        SntcOrExpr bodyExpr = caseLang.caseClause.body.list.get(0);
+        StmtOrExpr bodyExpr = caseLang.caseClause.body.list.get(0);
         assertInstanceOf(BoolAsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 17, 21);
         // Test part -- altCaseClauses
@@ -52,7 +52,7 @@ public class TestParserCaseLang {
         //                                      1         2         3         4         5
         //                            0123456789012345678901234567890123456789012345678901
         Parser p = new Parser("case 0 of 0 then true of 1 then false else null end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 51);
@@ -75,7 +75,7 @@ public class TestParserCaseLang {
         assertSourceSpan(caseLang.caseClause.pat, 10, 11);
         // Test part -- caseClause body
         assertEquals(1, caseLang.caseClause.body.list.size());
-        SntcOrExpr bodyExpr = caseLang.caseClause.body.list.get(0);
+        StmtOrExpr bodyExpr = caseLang.caseClause.body.list.get(0);
         assertInstanceOf(BoolAsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 17, 21);
         // Test part -- altCaseClauses
@@ -87,7 +87,7 @@ public class TestParserCaseLang {
         // Test part -- elseSeq
         assertNotNull(caseLang.elseSeq);
         assertEquals(1, caseLang.elseSeq.list.size());
-        SntcOrExpr elseExpr = caseLang.elseSeq.list.get(0);
+        StmtOrExpr elseExpr = caseLang.elseSeq.list.get(0);
         assertInstanceOf(NullAsExpr.class, elseExpr);
         assertSourceSpan(elseExpr, 43, 47);
 
@@ -98,7 +98,7 @@ public class TestParserCaseLang {
         //                                      1         2         3
         //                            0123456789012345678901234567890123456
         Parser p = new Parser("case 0 of 0 then true else false end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 36);
@@ -119,7 +119,7 @@ public class TestParserCaseLang {
         assertSourceSpan(caseLang.caseClause.pat, 10, 11);
         // Test part -- caseClause body
         assertEquals(1, caseLang.caseClause.body.list.size());
-        SntcOrExpr bodyExpr = caseLang.caseClause.body.list.get(0);
+        StmtOrExpr bodyExpr = caseLang.caseClause.body.list.get(0);
         assertInstanceOf(BoolAsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 17, 21);
         // Test part -- altCaseClauses
@@ -127,7 +127,7 @@ public class TestParserCaseLang {
         // Test part -- elseSeq
         assertNotNull(caseLang.elseSeq);
         assertEquals(1, caseLang.elseSeq.list.size());
-        SntcOrExpr elseExpr = caseLang.elseSeq.list.get(0);
+        StmtOrExpr elseExpr = caseLang.elseSeq.list.get(0);
         assertInstanceOf(BoolAsExpr.class, elseExpr);
         assertSourceSpan(elseExpr, 27, 32);
     }
@@ -137,7 +137,7 @@ public class TestParserCaseLang {
         //                                      1         2         3         4         5
         //                            012345678901234567890123456789012345678901234567890123
         Parser p = new Parser("case 0 of 0 then a b c of 1 then d e f else g h i end");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(CaseLang.class, sox);
         CaseLang caseLang = (CaseLang) sox;
         assertSourceSpan(caseLang, 0, 53);
@@ -156,7 +156,7 @@ public class TestParserCaseLang {
                     h
                     i
             end""";
-        String actualFormat = LangFormatter.SINGLETON.format(caseLang);
+        String actualFormat = LangFormatter.DEFAULT.format(caseLang);
         assertEquals(expectedFormat, actualFormat);
     }
 

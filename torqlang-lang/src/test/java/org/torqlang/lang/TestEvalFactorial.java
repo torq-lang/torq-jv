@@ -37,7 +37,7 @@ public class TestEvalFactorial {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local fact in
                 $create_proc(proc (x, $r) in
@@ -86,7 +86,7 @@ public class TestEvalFactorial {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local fact in
                 $create_proc(proc (x, $r) in

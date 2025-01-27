@@ -12,9 +12,9 @@ import org.torqlang.util.SourceSpan;
 public final class UnaryExpr extends AbstractLang implements BuiltInApplyExpr {
 
     public final UnaryOper oper;
-    public final SntcOrExpr arg;
+    public final StmtOrExpr arg;
 
-    public UnaryExpr(UnaryOper oper, SntcOrExpr arg, SourceSpan sourceSpan) {
+    public UnaryExpr(UnaryOper oper, StmtOrExpr arg, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.oper = oper;
         this.arg = arg;

@@ -11,10 +11,10 @@ import org.torqlang.util.SourceSpan;
 
 public final class OrExpr extends AbstractLang implements BuiltInApplyExpr {
 
-    public final SntcOrExpr arg1;
-    public final SntcOrExpr arg2;
+    public final StmtOrExpr arg1;
+    public final StmtOrExpr arg2;
 
-    public OrExpr(SntcOrExpr arg1, SntcOrExpr arg2, SourceSpan sourceSpan) {
+    public OrExpr(StmtOrExpr arg1, StmtOrExpr arg2, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.arg1 = arg1;
         this.arg2 = arg2;

@@ -26,7 +26,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(true, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
@@ -44,7 +44,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(&c, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Char.of('c'), e.varAtName("x").valueOrVarSet());
@@ -62,7 +62,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(eof, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Eof.SINGLETON, e.varAtName("x").valueOrVarSet());
@@ -80,7 +80,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(1.0f, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Flt32.of(1.0f), e.varAtName("x").valueOrVarSet());
@@ -98,7 +98,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(1.0, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Flt64.of(1.0), e.varAtName("x").valueOrVarSet());
@@ -116,7 +116,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(1, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Int32.I32_1, e.varAtName("x").valueOrVarSet());
@@ -134,7 +134,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(1L, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Int64.I64_1, e.varAtName("x").valueOrVarSet());
@@ -152,7 +152,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind(null, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Null.SINGLETON, e.varAtName("x").valueOrVarSet());
@@ -170,7 +170,7 @@ public class TestEvalLiteralExprs {
             .setExprIdent(x)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = "$bind('my-value', x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Str.of("my-value"), e.varAtName("x").valueOrVarSet());

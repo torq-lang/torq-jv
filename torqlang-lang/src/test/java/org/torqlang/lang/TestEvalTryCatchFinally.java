@@ -32,7 +32,7 @@ public class TestEvalTryCatchFinally {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local $finally in
                 $create_proc(proc () in // free vars: b
@@ -79,7 +79,7 @@ public class TestEvalTryCatchFinally {
             .addVar(Ident.create("x"))
             .setSource(source)
             .generate();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local $finally in
                 $create_proc(proc () in // free vars: b

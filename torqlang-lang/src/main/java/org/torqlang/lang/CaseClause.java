@@ -11,7 +11,7 @@ import org.torqlang.util.SourceSpan;
 
 public final class CaseClause extends MatchClause {
 
-    public CaseClause(Pat pat, SntcOrExpr guard, SeqLang body, SourceSpan sourceSpan) {
+    public CaseClause(Pat pat, StmtOrExpr guard, SeqLang body, SourceSpan sourceSpan) {
         super(pat, guard, body, sourceSpan);
     }
 

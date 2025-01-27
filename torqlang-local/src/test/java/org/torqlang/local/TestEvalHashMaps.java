@@ -32,7 +32,7 @@ public class TestEvalHashMaps {
             .addVar(Ident.create("y"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             $select_apply(HashMap, ['new'], x)
             local $v0 in
@@ -64,7 +64,7 @@ public class TestEvalHashMaps {
             .addVar(Ident.create("b"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             $create_rec({'next': b}, a)
             $create_rec({'next': a}, b)
@@ -109,7 +109,7 @@ public class TestEvalHashMaps {
             .addVar(Ident.create("z"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local hm, value_iter in
                 $select_apply(HashMap, ['new'], hm)

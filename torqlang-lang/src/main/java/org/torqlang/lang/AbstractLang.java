@@ -21,16 +21,6 @@ public abstract class AbstractLang implements Lang {
     }
 
     @Override
-    public final int begin() {
-        return sourceSpan.begin();
-    }
-
-    @Override
-    public final int end() {
-        return sourceSpan.end();
-    }
-
-    @Override
     public final TypeOrTypeVar infrType() {
         return infrType;
     }
@@ -46,18 +36,28 @@ public abstract class AbstractLang implements Lang {
     }
 
     @Override
-    public final SourceSpan toSourceSpanBegin() {
-        return sourceSpan.toSourceSpanBegin();
+    public final int sourceBegin() {
+        return sourceSpan.sourceBegin();
     }
 
     @Override
-    public final SourceSpan toSourceSpanEnd() {
-        return sourceSpan.toSourceSpanEnd();
+    public final int sourceEnd() {
+        return sourceSpan.sourceEnd();
+    }
+
+    @Override
+    public final SourceSpan toSourceBegin() {
+        return sourceSpan.toSourceBegin();
+    }
+
+    @Override
+    public final SourceSpan toSourceEnd() {
+        return sourceSpan.toSourceEnd();
     }
 
     @Override
     public final String toString() {
-        return LangFormatter.SINGLETON.format(this);
+        return LangFormatter.DEFAULT.format(this);
     }
 
 }

@@ -129,7 +129,7 @@ final class CompiledPat {
             IdentPtn valueIdentPtn = new IdentPtn(valueIdent);
             // Adding the child before visiting its fields ensures a pre-order construction of nested patterns.
             // Also, compiled patterns will never create an escaped child identifier, therefore ChildPtn contains
-            // an Ident and not IdentPtn. The Ident is subsequently used as an operand in nested case statements.
+            // an Ident and not IdentPtn. The Ident is subsequently used as an operand in nested case instructions.
             CompiledPat.ChildPtn childPtn = new CompiledPat.ChildPtn(valueIdent);
             children.add(childPtn);
             childPtn.setRecPtn(compileRecPat(recPat));

@@ -7,7 +7,7 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.DebugStmtListener;
+import org.torqlang.klvm.DebugInstrListener;
 import org.torqlang.klvm.Env;
 import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Var;
@@ -17,13 +17,13 @@ public interface EvaluatorInit {
 
     EvaluatorInit addVar(Ident ident, Var var);
 
-    EvaluatorInit setDebugStmtListener(DebugStmtListener listener);
+    EvaluatorInit setDebugInstrListener(DebugInstrListener listener);
 
     EvaluatorInit setExprIdent(Ident exprIdent);
 
     EvaluatorInit setRootEnv(Env rootEnv);
 
-    EvaluatorReady setSntcOrExpr(SntcOrExpr sntcOrExpr);
+    EvaluatorReady setStmtOrExpr(StmtOrExpr stmtOrExpr);
 
     EvaluatorReady setSource(String source);
 

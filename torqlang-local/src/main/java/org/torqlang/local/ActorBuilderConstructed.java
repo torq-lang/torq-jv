@@ -10,9 +10,9 @@ package org.torqlang.local;
 import org.torqlang.klvm.CompleteOrIdent;
 import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Rec;
-import org.torqlang.klvm.Stmt;
+import org.torqlang.klvm.Instr;
 import org.torqlang.lang.ActorExpr;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface ActorBuilderConstructed {
 
     Rec actorRec();
 
-    ActorSntc actorSntc();
+    ActorStmt actorStmt();
 
     Address address();
 
@@ -33,7 +33,7 @@ public interface ActorBuilderConstructed {
 
     ActorBuilderConfigured configure(List<? extends CompleteOrIdent> args) throws Exception;
 
-    Stmt createActorRecStmt();
+    Instr createActorRecInstr();
 
     ActorBuilderConstructed setArgs(List<? extends CompleteOrIdent> args);
 

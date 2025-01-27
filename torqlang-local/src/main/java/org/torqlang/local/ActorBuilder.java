@@ -9,7 +9,7 @@ package org.torqlang.local;
 
 import org.torqlang.klvm.*;
 import org.torqlang.lang.ActorExpr;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 import org.torqlang.lang.Generator;
 import org.torqlang.lang.Parser;
 import org.torqlang.util.ListTools;
@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
  * =================
  *             (begin)          INIT
  * INIT        setSource        READY
- * INIT        setActorSntc     PARSED
+ * INIT        setActorStmt     PARSED
  * READY       parse            PARSED
  * PARSED      rewrite          REWRITTEN      rewrite   --> actorExpr
- * REWRITTEN   generate         GENERATED      generate  --> createActorRecStmt
+ * REWRITTEN   generate         GENERATED      generate  --> createActorRecInstr
  * GENERATED   construct        CONSTRUCTED    construct --> actorRec
  * CONSTRUCTED configure        CONFIGURED     configure --> actorCfg
  * CONFIGURED  spawn            SPAWNED
@@ -39,27 +39,27 @@ import java.util.concurrent.TimeUnit;
  * ======================
  * INIT
  *   properties: (none)
- *   methods:    setAddress, setArgs, setSystem, setSource, setActorSntc, setActorCfg
+ *   methods:    setAddress, setArgs, setSystem, setSource, setActorStmt, setActorCfg
  * READY
  *   properties: source
  *   methods:    parse, rewrite, generate, construct, configure, spawn
  * PARSED
- *   properties: source, actorSntc
+ *   properties: source, actorStmt
  *   methods:    rewrite, generate, construct, configure, spawn
  * REWRITTEN
- *   properties: source, actorSntc, actorIdent, actorExpr
+ *   properties: source, actorStmt, actorIdent, actorExpr
  *   methods:    generate, construct, configure, spawn
  * GENERATED
- *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt
+ *   properties: source, actorStmt, actorIdent, actorExpr, createActorRecInstr
  *   methods:    construct, configure, spawn
  * CONSTRUCTED
- *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec
+ *   properties: source, actorStmt, actorIdent, actorExpr, createActorRecInstr, actorRec
  *   methods:    configure, spawn
  * CONFIGURED
- *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorCfg
+ *   properties: source, actorStmt, actorIdent, actorExpr, createActorRecInstr, actorRec, actorCfg
  *   methods:    spawn
  * SPAWNED
- *   properties: source, actorSntc, actorIdent, actorExpr, createActorRecStmt, actorRec, actorCfg, actorRef
+ *   properties: source, actorStmt, actorIdent, actorExpr, createActorRecInstr, actorRec, actorCfg, actorRef
  *   methods:    (none)
  *
  * Not shown above are the properties system, address, and args, which are available after INIT.
@@ -76,9 +76,9 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     private ActorSystem system;
     private String source;
     private ActorExpr actorExpr;
-    private ActorSntc actorSntc;
+    private ActorStmt actorStmt;
     private Ident actorIdent;
-    private Stmt createActorRecStmt;
+    private Instr createActorRecInstr;
     private Rec actorRec;
     private List<? extends CompleteOrIdent> args = List.of();
     private ActorCfg actorCfg;
@@ -142,8 +142,8 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorSntc actorSntc() {
-        return actorSntc;
+    public final ActorStmt actorStmt() {
+        return actorStmt;
     }
 
     @Override
@@ -168,6 +168,17 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         }
     }
 
+    private void computeInstr(Instr instr, Env env) {
+        Stack stack;
+        if (DebuggerSetting.get() != null) {
+            DebugInstr debugInstr = new DebugInstr(DebuggerSetting.get(), instr, env, instr);
+            stack = new Stack(debugInstr, Env.emptyEnv(), null);
+        } else {
+            stack = new Stack(instr, env, null);
+        }
+        Machine.compute(this, stack, TIME_SLICE_10_000);
+    }
+
     @Override
     public final ActorCfg config() {
         return actorCfg;
@@ -188,12 +199,10 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             )
         );
         List<CompleteOrIdent> argsWithTarget = ListTools.append(CompleteOrIdent.class, args, Ident.$R);
-        List<Stmt> localStmts = new ArrayList<>();
-        localStmts.add(new ApplyStmt(Ident.$ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
-        SeqStmt seqStmt = new SeqStmt(localStmts, SourceSpan.emptySourceSpan());
-        //TODO: Wrap with DebugStmt if in debug mode
-        Stack stack = new Stack(seqStmt, env, null);
-        Machine.compute(stack, TIME_SLICE_10_000);
+        List<Instr> localInstrs = new ArrayList<>();
+        localInstrs.add(new ApplyInstr(Ident.$ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
+        SeqInstr seqInstr = new SeqInstr(localInstrs, SourceSpan.emptySourceSpan());
+        computeInstr(seqInstr, env);
         try {
             actorCfg = (ActorCfg) env.get(Ident.$R).resolveValue();
         } catch (Exception exc) {
@@ -229,9 +238,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot createActorRec at state: " + state);
         }
         Env env = Env.create(LocalActor.rootEnv(), new EnvEntry(actorIdent, new Var()));
-        //TODO: Wrap with DebugStmt if in debug mode
-        Stack stack = new Stack(createActorRecStmt, env, null);
-        Machine.compute(stack, TIME_SLICE_10_000);
+        computeInstr(createActorRecInstr, env);
         try {
             actorRec = (Rec) env.get(actorIdent).resolveValue();
         } catch (Exception exc) {
@@ -248,8 +255,8 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final Stmt createActorRecStmt() {
-        return createActorRecStmt;
+    public final Instr createActorRecInstr() {
+        return createActorRecInstr;
     }
 
     @Override
@@ -259,7 +266,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot generate at state: " + state);
         }
         Generator g = new Generator();
-        createActorRecStmt = g.acceptExpr(actorExpr, actorIdent);
+        createActorRecInstr = g.acceptExpr(actorExpr, actorIdent);
         state = State.GENERATED;
         return this;
     }
@@ -270,7 +277,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot parse at state: " + state);
         }
         Parser p = new Parser(source);
-        actorSntc = (ActorSntc) p.parse();
+        actorStmt = (ActorStmt) p.parse();
         state = State.PARSED;
         return this;
     }
@@ -328,8 +335,8 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
         if (state != State.PARSED) {
             throw new IllegalStateException("Cannot rewrite at state: " + state);
         }
-        actorIdent = actorSntc.name;
-        actorExpr = new ActorExpr(actorSntc.formalArgs, actorSntc.body, actorSntc);
+        actorIdent = actorStmt.name;
+        actorExpr = new ActorExpr(actorStmt.formalArgs, actorStmt.body, actorStmt);
         state = State.REWRITTEN;
         return this;
     }
@@ -337,7 +344,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     @Override
     public final ActorBuilderConfigured setActorCfg(ActorCfg actorCfg) {
         if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setActorSntc at state: " + state);
+            throw new IllegalStateException("Cannot setActorCfg at state: " + state);
         }
         this.actorCfg = actorCfg;
         state = State.CONFIGURED;
@@ -355,11 +362,11 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     }
 
     @Override
-    public final ActorBuilderParsed setActorSntc(ActorSntc actorSntc) {
+    public final ActorBuilderParsed setActorStmt(ActorStmt actorStmt) {
         if (state != State.INIT) {
-            throw new IllegalStateException("Cannot setActorSntc at state: " + state);
+            throw new IllegalStateException("Cannot setActorStmt at state: " + state);
         }
-        this.actorSntc = actorSntc;
+        this.actorStmt = actorStmt;
         state = State.PARSED;
         return this;
     }

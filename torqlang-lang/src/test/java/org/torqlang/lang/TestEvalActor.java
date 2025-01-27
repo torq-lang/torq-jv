@@ -44,7 +44,7 @@ public class TestEvalActor {
             .addVar(configCtorIdent)
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local HelloFactorial, $actor_cfgtr in
                 $create_actor_cfgtr(proc ($r) in // free vars: $respond

@@ -18,17 +18,17 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 public final class ProcDef implements Decl {
 
     public final List<Ident> xs;
-    public final Stmt stmt;
+    public final Instr instr;
     public final SourceSpan sourceSpan;
     public final Set<Ident> freeIdents;
 
-    public ProcDef(List<Ident> xs, Stmt stmt, SourceSpan sourceSpan) {
+    public ProcDef(List<Ident> xs, Instr instr, SourceSpan sourceSpan) {
         this.xs = nullSafeCopyOf(xs);
-        this.stmt = stmt;
+        this.instr = instr;
         this.sourceSpan = sourceSpan;
         HashSet<Ident> kb = new HashSet<>(this.xs);
         HashSet<Ident> lf = new HashSet<>();
-        stmt.captureLexicallyFree(kb, lf);
+        instr.captureLexicallyFree(kb, lf);
         freeIdents = Set.copyOf(lf);
     }
 

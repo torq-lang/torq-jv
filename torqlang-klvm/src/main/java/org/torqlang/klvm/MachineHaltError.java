@@ -35,7 +35,7 @@ public final class MachineHaltError extends ErrorWithSourceSpan {
 
     @Override
     public final SourceSpan sourceSpan() {
-        return current().stmt;
+        return current().instr;
     }
 
     public final FailedValue touchedFailedValue() {

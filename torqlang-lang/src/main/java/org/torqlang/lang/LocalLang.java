@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public class LocalLang extends AbstractLang implements SntcOrExpr {
+public class LocalLang extends AbstractLang implements StmtOrExpr {
 
     public final List<VarDecl> varDecls;
     public final SeqLang body;

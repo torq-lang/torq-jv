@@ -10,7 +10,7 @@ package org.torqlang.local;
 import org.torqlang.klvm.ActorCfg;
 import org.torqlang.klvm.CompleteOrIdent;
 import org.torqlang.klvm.Rec;
-import org.torqlang.lang.ActorSntc;
+import org.torqlang.lang.ActorStmt;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public interface ActorBuilderInit {
 
     ActorBuilderConstructed setActorRec(Rec actorRec);
 
-    ActorBuilderParsed setActorSntc(ActorSntc actorSntc);
+    ActorBuilderParsed setActorStmt(ActorStmt actorStmt);
 
     ActorBuilderInit setAddress(Address address);
 

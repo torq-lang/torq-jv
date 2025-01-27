@@ -14,26 +14,16 @@ public final class AdjoinedSourceSpan implements SourceSpan {
     public int hash = -1;
 
     public AdjoinedSourceSpan(SourceSpan span1, SourceSpan span2) {
-        if (span1.begin() < span2.begin()) {
+        if (span1.sourceBegin() < span2.sourceBegin()) {
             beginSpan = span1;
         } else {
             beginSpan = span2;
         }
-        if (span1.end() > span2.end()) {
+        if (span1.sourceEnd() > span2.sourceEnd()) {
             endSpan = span1;
         } else {
             endSpan = span2;
         }
-    }
-
-    @Override
-    public final int begin() {
-        return beginSpan.begin();
-    }
-
-    @Override
-    public final int end() {
-        return endSpan.end();
     }
 
     @Override
@@ -42,13 +32,23 @@ public final class AdjoinedSourceSpan implements SourceSpan {
     }
 
     @Override
-    public final SourceSpan toSourceSpanBegin() {
-        return beginSpan.toSourceSpanBegin();
+    public final int sourceBegin() {
+        return beginSpan.sourceBegin();
     }
 
     @Override
-    public final SourceSpan toSourceSpanEnd() {
-        return endSpan.toSourceSpanEnd();
+    public final int sourceEnd() {
+        return endSpan.sourceEnd();
+    }
+
+    @Override
+    public final SourceSpan toSourceBegin() {
+        return beginSpan.toSourceBegin();
+    }
+
+    @Override
+    public final SourceSpan toSourceEnd() {
+        return endSpan.toSourceEnd();
     }
 
 }

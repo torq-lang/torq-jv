@@ -11,10 +11,10 @@ import org.torqlang.util.SourceSpan;
 
 public final class IfClause extends AbstractLang {
 
-    public final SntcOrExpr condition;
+    public final StmtOrExpr condition;
     public final SeqLang body;
 
-    public IfClause(SntcOrExpr condition, SeqLang body, SourceSpan sourceSpan) {
+    public IfClause(StmtOrExpr condition, SeqLang body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.condition = condition;
         this.body = body;

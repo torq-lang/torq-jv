@@ -9,11 +9,11 @@ package org.torqlang.klvm;
 
 public final class NotBoundError extends MachineError {
     public final Var arg;
-    public final Stmt stmt;
+    public final Instr instr;
 
-    public NotBoundError(Var arg, Stmt stmt) {
+    public NotBoundError(Var arg, Instr instr) {
         super("Not bound error");
         this.arg = arg;
-        this.stmt = stmt;
+        this.instr = instr;
     }
 }

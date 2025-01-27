@@ -21,12 +21,12 @@ public class TestParserRecPat {
         //                                      1
         //                            01234567890
         Parser p = new Parser("var {} = x");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(VarSntc.class, sox);
-        VarSntc varSntc = (VarSntc) sox;
-        assertSourceSpan(varSntc, 0, 10);
-        assertEquals(1, varSntc.varDecls.size());
-        InitVarDecl decl = CommonTools.asInitVarDecl(varSntc.varDecls.get(0));
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(VarStmt.class, sox);
+        VarStmt varStmt = (VarStmt) sox;
+        assertSourceSpan(varStmt, 0, 10);
+        assertEquals(1, varStmt.varDecls.size());
+        InitVarDecl decl = CommonTools.asInitVarDecl(varStmt.varDecls.get(0));
         assertSourceSpan(decl, 4, 10);
         assertInstanceOf(RecPat.class, decl.varPat);
         RecPat recPat = (RecPat) decl.varPat;
@@ -34,11 +34,11 @@ public class TestParserRecPat {
         assertSourceSpan(recPat, 4, 6);
         // Test toString format
         String expectedFormat = "var {} = x";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "var {} = x";
-        actualFormat = LangFormatter.SINGLETON.format(varSntc);
+        actualFormat = LangFormatter.DEFAULT.format(varStmt);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -47,12 +47,12 @@ public class TestParserRecPat {
         //                                      1
         //                            012345678901
         Parser p = new Parser("var {a} = x");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(VarSntc.class, sox);
-        VarSntc varSntc = (VarSntc) sox;
-        assertSourceSpan(varSntc, 0, 11);
-        assertEquals(1, varSntc.varDecls.size());
-        InitVarDecl decl = CommonTools.asInitVarDecl(varSntc.varDecls.get(0));
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(VarStmt.class, sox);
+        VarStmt varStmt = (VarStmt) sox;
+        assertSourceSpan(varStmt, 0, 11);
+        assertEquals(1, varStmt.varDecls.size());
+        InitVarDecl decl = CommonTools.asInitVarDecl(varStmt.varDecls.get(0));
         assertSourceSpan(decl, 4, 11);
         assertInstanceOf(RecPat.class, decl.varPat);
         RecPat recPat = (RecPat) decl.varPat;
@@ -67,11 +67,11 @@ public class TestParserRecPat {
         assertEquals(Ident.create("a"), asIdentAsPat(fieldPat.value).ident);
         // Test toString format
         String expectedFormat = "var {0: a} = x";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "var {0: a} = x";
-        actualFormat = LangFormatter.SINGLETON.format(varSntc);
+        actualFormat = LangFormatter.DEFAULT.format(varStmt);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -80,12 +80,12 @@ public class TestParserRecPat {
         //                                      1
         //                            01234567890123456
         Parser p = new Parser("var {a, ...} = x");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(VarSntc.class, sox);
-        VarSntc varSntc = (VarSntc) sox;
-        assertSourceSpan(varSntc, 0, 16);
-        assertEquals(1, varSntc.varDecls.size());
-        InitVarDecl decl = CommonTools.asInitVarDecl(varSntc.varDecls.get(0));
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(VarStmt.class, sox);
+        VarStmt varStmt = (VarStmt) sox;
+        assertSourceSpan(varStmt, 0, 16);
+        assertEquals(1, varStmt.varDecls.size());
+        InitVarDecl decl = CommonTools.asInitVarDecl(varStmt.varDecls.get(0));
         assertSourceSpan(decl, 4, 16);
         assertInstanceOf(RecPat.class, decl.varPat);
         RecPat recPat = (RecPat) decl.varPat;
@@ -100,11 +100,11 @@ public class TestParserRecPat {
         assertEquals(Ident.create("a"), asIdentAsPat(fieldPat.value).ident);
         // Test toString format
         String expectedFormat = "var {0: a, ...} = x";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "var {0: a, ...} = x";
-        actualFormat = LangFormatter.SINGLETON.format(varSntc);
+        actualFormat = LangFormatter.DEFAULT.format(varStmt);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -113,12 +113,12 @@ public class TestParserRecPat {
         //                                      1
         //                            012345678901234
         Parser p = new Parser("var {a, b} = x");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(VarSntc.class, sox);
-        VarSntc varSntc = (VarSntc) sox;
-        assertSourceSpan(varSntc, 0, 14);
-        assertEquals(1, varSntc.varDecls.size());
-        InitVarDecl decl = CommonTools.asInitVarDecl(varSntc.varDecls.get(0));
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(VarStmt.class, sox);
+        VarStmt varStmt = (VarStmt) sox;
+        assertSourceSpan(varStmt, 0, 14);
+        assertEquals(1, varStmt.varDecls.size());
+        InitVarDecl decl = CommonTools.asInitVarDecl(varStmt.varDecls.get(0));
         assertSourceSpan(decl, 4, 14);
         assertInstanceOf(RecPat.class, decl.varPat);
         RecPat recPat = (RecPat) decl.varPat;
@@ -136,11 +136,11 @@ public class TestParserRecPat {
         assertEquals(Ident.create("b"), asIdentAsPat(fieldPat.value).ident);
         // Test toString format
         String expectedFormat = "var {0: a, 1: b} = x";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "var {0: a, 1: b} = x";
-        actualFormat = LangFormatter.SINGLETON.format(varSntc);
+        actualFormat = LangFormatter.DEFAULT.format(varStmt);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -149,12 +149,12 @@ public class TestParserRecPat {
         //                                      1         2
         //                            012345678901234567890
         Parser p = new Parser("var {a, ~b, ...} = x");
-        SntcOrExpr sox = p.parse();
-        assertInstanceOf(VarSntc.class, sox);
-        VarSntc varSntc = (VarSntc) sox;
-        assertSourceSpan(varSntc, 0, 20);
-        assertEquals(1, varSntc.varDecls.size());
-        InitVarDecl decl = CommonTools.asInitVarDecl(varSntc.varDecls.get(0));
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(VarStmt.class, sox);
+        VarStmt varStmt = (VarStmt) sox;
+        assertSourceSpan(varStmt, 0, 20);
+        assertEquals(1, varStmt.varDecls.size());
+        InitVarDecl decl = CommonTools.asInitVarDecl(varStmt.varDecls.get(0));
         assertSourceSpan(decl, 4, 20);
         assertInstanceOf(RecPat.class, decl.varPat);
         RecPat recPat = (RecPat) decl.varPat;
@@ -175,11 +175,11 @@ public class TestParserRecPat {
         assertNull(bPat.typeAnno);
         // Test toString format
         String expectedFormat = "var {0: a, 1: ~b, ...} = x";
-        String actualFormat = varSntc.toString();
+        String actualFormat = varStmt.toString();
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "var {0: a, 1: ~b, ...} = x";
-        actualFormat = LangFormatter.SINGLETON.format(varSntc);
+        actualFormat = LangFormatter.DEFAULT.format(varStmt);
         assertEquals(expectedFormat, actualFormat);
     }
 

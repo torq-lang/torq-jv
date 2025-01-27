@@ -33,7 +33,7 @@ public final class Parser {
         return p.parse();
     }
 
-    private static SourceSpan sourceSpanForSeq(List<? extends SntcOrExpr> seq) {
+    private static SourceSpan sourceSpanForSeq(List<? extends StmtOrExpr> seq) {
         return seq.get(0).adjoin(last(seq));
     }
 
@@ -99,8 +99,8 @@ public final class Parser {
 
     private boolean includesLineBreakBetween(SourceSpan first, LexerToken second) {
         String source = first.source();
-        int start = first.end() - 1;
-        int stop = Math.min(second.begin(), source.length());
+        int start = first.sourceEnd() - 1;
+        int stop = Math.min(second.sourceBegin(), source.length());
         for (int i = start; i < stop; i++) {
             if (source.charAt(i) == '\n') {
                 return true;
@@ -131,17 +131,17 @@ public final class Parser {
         return currentToken;
     }
 
-    public final SntcOrExpr parse() {
+    public final StmtOrExpr parse() {
         nextToken();
-        SntcOrExpr answer = parseSntcOrExpr();
+        StmtOrExpr answer = parseStmtOrExpr();
         if (!currentToken.isEof()) {
             throw new ParserError(UNEXPECTED_TOKEN, currentToken);
         }
         return answer;
     }
 
-    private SntcOrExpr parseAccess() {
-        SntcOrExpr construct = parseConstruct();
+    private StmtOrExpr parseAccess() {
+        StmtOrExpr construct = parseConstruct();
         if (construct != null) {
             return construct;
         }
@@ -150,7 +150,7 @@ public final class Parser {
             return null;
         }
         nextToken(); // accept '@' token
-        SntcOrExpr right = parseAccess();
+        StmtOrExpr right = parseAccess();
         if (right == null) {
             throw new ParserError(EXPR_EXPECTED, currentToken);
         }
@@ -185,7 +185,7 @@ public final class Parser {
         nextToken(); // accept ')' token
         assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
         nextToken(); // accept 'in' token
-        List<SntcOrExpr> body = new ArrayList<>();
+        List<StmtOrExpr> body = new ArrayList<>();
         while (true) {
             if (currentToken.isWeakKeyword(HANDLE_VALUE)) {
                 LexerToken handleToken = currentToken;
@@ -198,7 +198,7 @@ public final class Parser {
                     throw new ParserError(ASK_OR_TELL_EXPECTED, currentToken);
                 }
             } else {
-                SntcOrExpr next = parseSntcOrExpr();
+                StmtOrExpr next = parseStmtOrExpr();
                 if (next != null) {
                     body.add(next);
                 } else {
@@ -208,18 +208,18 @@ public final class Parser {
         }
         LexerToken endToken = acceptEndToken();
         if (name != null) {
-            return new ActorSntc(name, formalArgs, body, actorToken.adjoin(endToken));
+            return new ActorStmt(name, formalArgs, body, actorToken.adjoin(endToken));
         } else {
             return new ActorExpr(formalArgs, body, actorToken.adjoin(endToken));
         }
     }
 
-    private SntcOrExpr parseAnd() {
-        SntcOrExpr answer = parseRelational();
+    private StmtOrExpr parseAnd() {
+        StmtOrExpr answer = parseRelational();
         LexerToken operToken = currentToken;
         while (operToken.isTwoCharSymbol(AND_OPER)) {
             nextToken(); // accept '&&' token
-            SntcOrExpr right = parseRelational();
+            StmtOrExpr right = parseRelational();
             if (right == null) {
                 throw new ParserError(EXPR_EXPECTED, currentToken);
             }
@@ -229,9 +229,9 @@ public final class Parser {
         return answer;
     }
 
-    private List<SntcOrExpr> parseArgList() {
-        List<SntcOrExpr> args = new ArrayList<>();
-        SntcOrExpr arg = parseSntcOrExpr();
+    private List<StmtOrExpr> parseArgList() {
+        List<StmtOrExpr> args = new ArrayList<>();
+        StmtOrExpr arg = parseStmtOrExpr();
         while (arg != null) {
             args.add(arg);
             LexerToken current = currentToken;
@@ -239,12 +239,12 @@ public final class Parser {
                 break;
             }
             nextToken(); // accept ',' token
-            arg = parseSntcOrExpr();
+            arg = parseStmtOrExpr();
         }
         return args;
     }
 
-    private AskSntc parseAsk(LexerToken handleToken) {
+    private AskStmt parseAsk(LexerToken handleToken) {
         LexerToken current = nextToken(); // accept 'ask' token
         Pat pat = parsePat();
         if (pat == null) {
@@ -255,29 +255,29 @@ public final class Parser {
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
-        return new AskSntc(pat, body, responseType, handleToken.adjoin(endToken));
+        return new AskStmt(pat, body, responseType, handleToken.adjoin(endToken));
     }
 
-    private SntcOrExpr parseAssign() {
-        SntcOrExpr left = parseOr();
+    private StmtOrExpr parseAssign() {
+        StmtOrExpr left = parseOr();
         LexerToken operToken = currentToken;
         if (operToken.isOneCharSymbol()) {
             if (operToken.firstChar() == UNIFY_OPER_CHAR) {
                 nextToken(); // accept '=' token
-                SntcOrExpr right = parseOr();
+                StmtOrExpr right = parseOr();
                 if (right == null) {
                     throw new ParserError(EXPR_EXPECTED, currentToken);
                 }
-                return new UnifySntc(left, right, left.adjoin(right));
+                return new UnifyStmt(left, right, left.adjoin(right));
             }
         } else if (operToken.isTwoCharSymbol()) {
             if (operToken.substringEquals(ASSIGN_CELL_VALUE_OPER)) {
                 nextToken(); // accept ':=' token
-                SntcOrExpr right = parseOr();
+                StmtOrExpr right = parseOr();
                 if (right == null) {
                     throw new ParserError(EXPR_EXPECTED, currentToken);
                 }
-                return new SetCellValueSntc(left, right, left.adjoin(right));
+                return new SetCellValueStmt(left, right, left.adjoin(right));
             }
         }
         return left;
@@ -294,7 +294,7 @@ public final class Parser {
     private CaseLang parseCase() {
         LexerToken caseToken = currentToken;
         LexerToken current = nextToken(); // accept 'case' token
-        SntcOrExpr arg = parseSntcOrExpr();
+        StmtOrExpr arg = parseStmtOrExpr();
         if (arg == null) {
             throw new ParserError(EXPR_EXPECTED, current);
         }
@@ -323,11 +323,11 @@ public final class Parser {
         if (pat == null) {
             throw new ParserError(PATTERN_EXPECTED, current);
         }
-        SntcOrExpr guard = null;
+        StmtOrExpr guard = null;
         current = currentToken;
         if (current.isKeyword(WHEN_VALUE)) {
             nextToken(); // accept 'when'
-            guard = parseSntcOrExpr();
+            guard = parseStmtOrExpr();
         }
         assertCurrentAtKeyword(THEN_EXPECTED, THEN_VALUE);
         nextToken(); // accept THEN
@@ -335,7 +335,7 @@ public final class Parser {
         return new CaseClause(pat, guard, body, ofToken.adjoin(body));
     }
 
-    private SntcOrExpr parseConstruct() {
+    private StmtOrExpr parseConstruct() {
         Expr valueOrIdentAsExpr = parseValueOrIdentAsExpr();
         if (valueOrIdentAsExpr != null) {
             return valueOrIdentAsExpr;
@@ -354,7 +354,7 @@ public final class Parser {
             if (current.substringEquals(VAR_VALUE)) {
                 nextToken(); // accept 'var' token
                 List<VarDecl> varDecls = parseVarDecls();
-                return new VarSntc(varDecls, current.adjoin(last(varDecls)));
+                return new VarStmt(varDecls, current.adjoin(last(varDecls)));
             }
             if (current.substringEquals(IF_VALUE)) {
                 return parseIf();
@@ -404,30 +404,30 @@ public final class Parser {
             }
             if (current.substringEquals(BREAK_VALUE)) {
                 nextToken(); // accept 'break' token
-                return new BreakSntc(current);
+                return new BreakStmt(current);
             }
             if (current.substringEquals(CONTINUE_VALUE)) {
                 nextToken(); // accept 'continue' token
-                return new ContinueSntc(current);
+                return new ContinueStmt(current);
             }
             if (current.substringEquals(RETURN_VALUE)) {
                 return parseReturn();
             }
             if (current.substringEquals(SKIP_VALUE)) {
                 nextToken(); // accept 'skip' token
-                return new SkipSntc(current);
+                return new SkipStmt(current);
             }
         }
         return null;
     }
 
     private FieldExpr parseFieldExpr() {
-        SntcOrExpr featureExpr = parseSntcOrExpr();
+        StmtOrExpr featureExpr = parseStmtOrExpr();
         if (featureExpr == null) {
             return null;
         }
         LexerToken current = nextToken(); // accept ':'
-        SntcOrExpr valueExpr = parseSntcOrExpr();
+        StmtOrExpr valueExpr = parseStmtOrExpr();
         if (valueExpr == null) {
             throw new ParserError(INVALID_VALUE_EXPR, current);
         }
@@ -454,13 +454,13 @@ public final class Parser {
             }
         } else {
             int nextFeature = nextImpliedFeature.getAndAdd(1);
-            featurePat = new IntAsPat(Int32.of(nextFeature), featureOrValuePat.toSourceSpanBegin());
+            featurePat = new IntAsPat(Int32.of(nextFeature), featureOrValuePat.toSourceBegin());
             valuePat = featureOrValuePat;
         }
         return new FieldPat(featurePat, valuePat, featurePat.adjoin(valuePat));
     }
 
-    private ForSntc parseFor() {
+    private ForStmt parseFor() {
         LexerToken forToken = currentToken;
         LexerToken current = nextToken(); // accept 'for' token
         Pat pat = parsePat();
@@ -469,7 +469,7 @@ public final class Parser {
         }
         assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
         nextToken(); // accept 'in' token
-        SntcOrExpr iter = parseSntcOrExpr();
+        StmtOrExpr iter = parseStmtOrExpr();
         current = currentToken;
         if (iter == null) {
             throw new ParserError(EXPR_EXPECTED, current);
@@ -480,7 +480,7 @@ public final class Parser {
         nextToken(); // accept 'do' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
-        return new ForSntc(pat, iter, body, forToken.adjoin(endToken));
+        return new ForStmt(pat, iter, body, forToken.adjoin(endToken));
     }
 
     private FuncLang parseFunc() {
@@ -507,13 +507,13 @@ public final class Parser {
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
         if (name != null) {
-            return new FuncSntc(name, formalArgs, returnType, body, funcToken.adjoin(endToken));
+            return new FuncStmt(name, formalArgs, returnType, body, funcToken.adjoin(endToken));
         } else {
             return new FuncExpr(formalArgs, returnType, body, funcToken.adjoin(endToken));
         }
     }
 
-    private SntcOrExpr parseGroup() {
+    private StmtOrExpr parseGroup() {
         LexerToken groupBegin = currentToken;
         nextToken(); // accept '(' token
         SeqLang seq = parseSeq();
@@ -546,7 +546,7 @@ public final class Parser {
     private IfClause parseIfClause() {
         LexerToken ifOrElseIfToken = currentToken;
         LexerToken current = nextToken(); // accept 'if' or 'elseif' token
-        SntcOrExpr condition = parseSntcOrExpr();
+        StmtOrExpr condition = parseStmtOrExpr();
         if (condition == null) {
             throw new ParserError(EXPR_EXPECTED, current);
         }
@@ -556,7 +556,7 @@ public final class Parser {
         return new IfClause(condition, body, ifOrElseIfToken.adjoin(body));
     }
 
-    private ImportSntc parseImport() {
+    private ImportStmt parseImport() {
         LexerToken importToken = currentToken;
         LexerToken current = nextToken(); // accept 'import' token
         if (!current.isIdent()) {
@@ -611,7 +611,7 @@ public final class Parser {
             names.add(new ImportName(Str.of(previous.substring())));
         }
         // Current token is now one past the import expression
-        return new ImportSntc(Str.of(qualifier.toString()), names, importToken.adjoin(current));
+        return new ImportStmt(Str.of(qualifier.toString()), names, importToken.adjoin(current));
     }
 
     private LocalLang parseLocal() {
@@ -625,12 +625,12 @@ public final class Parser {
         return new LocalLang(varDecls, body, localToken.adjoin(endToken));
     }
 
-    private SntcOrExpr parseOr() {
-        SntcOrExpr answer = parseAnd();
+    private StmtOrExpr parseOr() {
+        StmtOrExpr answer = parseAnd();
         LexerToken operToken = currentToken;
         while (operToken.isTwoCharSymbol(OR_OPER)) {
             nextToken(); // accept '||' token
-            SntcOrExpr right = parseAnd();
+            StmtOrExpr right = parseAnd();
             if (right == null) {
                 throw new ParserError(EXPR_EXPECTED, currentToken);
             }
@@ -666,7 +666,7 @@ public final class Parser {
         }
         if (current.isStr()) {
             LexerToken next = nextToken(); // accept Str token
-            String substring = unquoteString(current.source(), current.begin(), current.end());
+            String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
             StrAsPat strAsPat = new StrAsPat(Str.of(substring), current);
             if (next.isOneCharSymbol(HASH_TAG_CHAR)) {
                 return parseRecOrTuplePat(strAsPat);
@@ -770,19 +770,19 @@ public final class Parser {
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
         if (name != null) {
-            return new ProcSntc(name, formalArgs, body, procToken.adjoin(endToken));
+            return new ProcStmt(name, formalArgs, body, procToken.adjoin(endToken));
         } else {
             return new ProcExpr(formalArgs, body, procToken.adjoin(endToken));
         }
     }
 
-    private SntcOrExpr parseProduct() {
-        SntcOrExpr answer = parseUnary();
+    private StmtOrExpr parseProduct() {
+        StmtOrExpr answer = parseUnary();
         LexerToken operToken = currentToken;
         ProductOper productOper = productOperFor(operToken);
         while (productOper != null) {
             nextToken(); // accept '*', '/' or '%' token
-            SntcOrExpr right = parseUnary();
+            StmtOrExpr right = parseUnary();
             if (right == null) {
                 throw new ParserError(EXPR_EXPECTED, currentToken);
             }
@@ -876,13 +876,13 @@ public final class Parser {
         return new RecPat(label, fieldPats, partialArity, recSpan);
     }
 
-    private SntcOrExpr parseRelational() {
-        SntcOrExpr answer = parseSum();
+    private StmtOrExpr parseRelational() {
+        StmtOrExpr answer = parseSum();
         LexerToken operToken = currentToken;
         RelationalOper relationalOper = relationalOperFor(operToken);
         while (relationalOper != null) {
             nextToken(); // accept '==', '!=', '<', '<=', '>' or '>=' token
-            SntcOrExpr right = parseSum();
+            StmtOrExpr right = parseSum();
             if (right == null) {
                 throw new ParserError(EXPR_EXPECTED, currentToken);
             }
@@ -893,14 +893,14 @@ public final class Parser {
         return answer;
     }
 
-    private ReturnSntc parseReturn() {
+    private ReturnStmt parseReturn() {
         LexerToken returnToken = currentToken;
         nextToken(); // accept 'return' token
-        SntcOrExpr expr = parseSntcOrExpr();
+        StmtOrExpr expr = parseStmtOrExpr();
         if (expr == null) {
-            return new ReturnSntc(null, returnToken);
+            return new ReturnStmt(null, returnToken);
         }
-        return new ReturnSntc(expr, returnToken.adjoin(expr));
+        return new ReturnStmt(expr, returnToken.adjoin(expr));
     }
 
     private TypeAnno parseReturnTypeAnno() {
@@ -926,23 +926,23 @@ public final class Parser {
      * least the opening symbol must appear on the same line as the operand. For example, 'aVariable(arg)[feat]' cannot
      * be broken such that the '(' or '[' appear first on the next line.
      */
-    private SntcOrExpr parseSelectOrApply() {
-        SntcOrExpr answer = parseAccess();
+    private StmtOrExpr parseSelectOrApply() {
+        StmtOrExpr answer = parseAccess();
         if (answer == null) {
             return null;
         }
         LexerToken operToken = currentToken;
-        SelectOrApply selectOrApply = selectOrApplyFor(answer.toSourceSpanEnd(), operToken);
+        SelectOrApply selectOrApply = selectOrApplyFor(answer.toSourceEnd(), operToken);
         while (selectOrApply != null) {
             nextToken(); // accept '.', '[', or '(' token
             if (selectOrApply == SelectOrApply.DOT) {
-                SntcOrExpr right = parseAccess();
+                StmtOrExpr right = parseAccess();
                 if (right == null) {
                     throw new ParserError(SELECTOR_EXPECTED, currentToken);
                 }
                 answer = new DotSelectExpr(answer, right, answer.adjoin(right));
             } else if (selectOrApply == SelectOrApply.INDEX) {
-                SntcOrExpr featureExpr = parseSntcOrExpr();
+                StmtOrExpr featureExpr = parseStmtOrExpr();
                 if (featureExpr == null) {
                     throw new ParserError(EXPR_EXPECTED, currentToken);
                 }
@@ -953,7 +953,7 @@ public final class Parser {
                 nextToken(); // accept ']' token
                 answer = new IndexSelectExpr(answer, featureExpr, answer.adjoin(current));
             } else {
-                List<SntcOrExpr> args = parseArgList();
+                List<StmtOrExpr> args = parseArgList();
                 LexerToken current = currentToken;
                 if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
                     throw new ParserError(R_PAREN_EXPECTED, current);
@@ -966,21 +966,21 @@ public final class Parser {
                 }
             }
             operToken = currentToken;
-            selectOrApply = selectOrApplyFor(answer.toSourceSpanEnd(), operToken);
+            selectOrApply = selectOrApplyFor(answer.toSourceEnd(), operToken);
         }
         return answer;
     }
 
     /*
-     * Parse a sequence of sentences and/or expressions until we reach a terminating token. Some examples of
+     * Parse a sequence of statements and/or expressions until we reach a terminating token. Some examples of
      * terminating tokens are END_OF_FILE, END, ELSE, and ELSEIF.
      */
     private SeqLang parseSeq() {
-        List<SntcOrExpr> list = new ArrayList<>();
-        SntcOrExpr next = parseSntcOrExpr();
+        List<StmtOrExpr> list = new ArrayList<>();
+        StmtOrExpr next = parseStmtOrExpr();
         while (next != null) {
             list.add(next);
-            next = parseSntcOrExpr();
+            next = parseStmtOrExpr();
         }
         if (list.isEmpty()) {
             // If list is empty, no tokens were accepted
@@ -990,8 +990,8 @@ public final class Parser {
         return new SeqLang(list, sourceSpanForSeq(list));
     }
 
-    private SntcOrExpr parseSntcOrExpr() {
-        SntcOrExpr assign = parseAssign();
+    private StmtOrExpr parseStmtOrExpr() {
+        StmtOrExpr assign = parseAssign();
         while (currentToken.isOneCharSymbol(SEMICOLON_CHAR)) {
             nextToken();
         }
@@ -1005,7 +1005,7 @@ public final class Parser {
             throw new ParserError(L_PAREN_EXPECTED, current);
         }
         nextToken(); // accept '(' token
-        List<SntcOrExpr> args = parseArgList();
+        List<StmtOrExpr> args = parseArgList();
         current = currentToken;
         if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
             throw new ParserError(R_PAREN_EXPECTED, current);
@@ -1014,13 +1014,13 @@ public final class Parser {
         return new SpawnExpr(args, spawnToken.adjoin(current));
     }
 
-    private SntcOrExpr parseSum() {
-        SntcOrExpr answer = parseProduct();
+    private StmtOrExpr parseSum() {
+        StmtOrExpr answer = parseProduct();
         LexerToken operToken = currentToken;
         SumOper sumOper = sumOperFor(operToken);
         while (sumOper != null) {
             nextToken(); // accept '+' or '-' token
-            SntcOrExpr right = parseProduct();
+            StmtOrExpr right = parseProduct();
             if (right == null) {
                 throw new ParserError(EXPR_EXPECTED, currentToken);
             }
@@ -1031,7 +1031,7 @@ public final class Parser {
         return answer;
     }
 
-    private TellSntc parseTell(LexerToken handleToken) {
+    private TellStmt parseTell(LexerToken handleToken) {
         LexerToken current = nextToken(); // accept 'tell' token
         Pat pat = parsePat();
         if (pat == null) {
@@ -1041,13 +1041,13 @@ public final class Parser {
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
-        return new TellSntc(pat, body, handleToken.adjoin(endToken));
+        return new TellStmt(pat, body, handleToken.adjoin(endToken));
     }
 
     private ThrowLang parseThrow() {
         LexerToken throwToken = currentToken;
         nextToken(); // accept 'throw' token
-        SntcOrExpr expr = parseSntcOrExpr();
+        StmtOrExpr expr = parseStmtOrExpr();
         if (expr == null) {
             throw new ParserError(EXPR_EXPECTED, currentToken);
         }
@@ -1073,23 +1073,23 @@ public final class Parser {
             catchClauses.add(new CatchClause(pat, catchSeq, catchToken.adjoin(catchSeq)));
             current = currentToken;
         }
-        SeqLang finallySntc = null;
+        SeqLang finallyStmt = null;
         if (current.isKeyword(FINALLY_VALUE)) {
             nextToken(); // accept 'finally' token
-            finallySntc = parseSeq();
+            finallyStmt = parseSeq();
         }
         LexerToken endToken = acceptEndToken();
-        if (catchClauses.isEmpty() && finallySntc == null) {
+        if (catchClauses.isEmpty() && finallyStmt == null) {
             throw new ParserError(CATCH_OR_FINALLY_EXPECTED, endToken);
         }
-        return new TryLang(seq, catchClauses, finallySntc, tryToken.adjoin(endToken));
+        return new TryLang(seq, catchClauses, finallyStmt, tryToken.adjoin(endToken));
     }
 
     private TupleExpr parseTupleExpr(Expr label) {
         // tupleValue: '[' (expr (',' expr)*)? ']';
         LexerToken tupleToken = currentToken;
         nextToken(); // accept '[' token
-        List<SntcOrExpr> valueExprs = parseArgList();
+        List<StmtOrExpr> valueExprs = parseArgList();
         LexerToken current = currentToken;
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
             throw new ParserError(R_BRACKET_EXPECTED, current);
@@ -1130,8 +1130,8 @@ public final class Parser {
         return new TuplePat(label, valuePats, partialArity, tupleSpan);
     }
 
-    private SntcOrExpr parseUnary() {
-        SntcOrExpr selectOrApply = parseSelectOrApply();
+    private StmtOrExpr parseUnary() {
+        StmtOrExpr selectOrApply = parseSelectOrApply();
         if (selectOrApply != null) {
             return selectOrApply;
         }
@@ -1141,7 +1141,7 @@ public final class Parser {
             return null;
         }
         nextToken(); // accept '-' or '!' token
-        SntcOrExpr right = parseUnary();
+        StmtOrExpr right = parseUnary();
         if (right == null) {
             throw new ParserError(EXPR_EXPECTED, currentToken);
         }
@@ -1161,7 +1161,7 @@ public final class Parser {
         }
         if (current.isStr()) {
             LexerToken next = nextToken(); // accept STR token
-            String substring = unquoteString(current.source(), current.begin(), current.end());
+            String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
             StrAsExpr strAsExpr = new StrAsExpr(Str.of(substring), current);
             if (next.isOneCharSymbol(HASH_TAG_CHAR)) {
                 return parseRecOrTupleExpr(strAsExpr);
@@ -1276,7 +1276,7 @@ public final class Parser {
         current = currentToken;
         if (current.isOneCharSymbol(UNIFY_OPER_CHAR)) {
             nextToken(); // accept '=' token
-            SntcOrExpr expr = parseSntcOrExpr();
+            StmtOrExpr expr = parseStmtOrExpr();
             if (expr == null) {
                 throw new ParserError(EXPR_EXPECTED, current);
             }
@@ -1303,10 +1303,10 @@ public final class Parser {
         return varDecls;
     }
 
-    private WhileSntc parseWhile() {
+    private WhileStmt parseWhile() {
         LexerToken whileToken = currentToken;
         nextToken(); // accept 'while' token
-        SntcOrExpr cond = parseSntcOrExpr();
+        StmtOrExpr cond = parseStmtOrExpr();
         LexerToken current = currentToken;
         if (cond == null) {
             throw new ParserError(EXPR_EXPECTED, current);
@@ -1317,7 +1317,7 @@ public final class Parser {
         nextToken(); // accept 'do' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
-        return new WhileSntc(cond, body, whileToken.adjoin(endToken));
+        return new WhileStmt(cond, body, whileToken.adjoin(endToken));
     }
 
     private ProductOper productOperFor(LexerToken operToken) {
@@ -1405,8 +1405,8 @@ public final class Parser {
         if (token.firstChar() != '`') {
             return Ident.create(token.substring());
         }
-        int begin = token.begin() + 1;
-        int end = token.end() - 1;
+        int begin = token.sourceBegin() + 1;
+        int end = token.sourceEnd() - 1;
         String source = token.source();
         StringBuilder sb = new StringBuilder((end - begin) * 2);
         int i = begin;

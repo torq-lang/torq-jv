@@ -20,7 +20,7 @@ public class TestParserOrExpr {
     public void test() {
         //                            0123456
         Parser p = new Parser("a || b");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(OrExpr.class, sox);
         OrExpr orExpr = (OrExpr) sox;
         assertSourceSpan(sox, 0, 6);

@@ -15,9 +15,9 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class SpawnExpr extends AbstractLang implements BuiltInApplyExpr {
 
-    public final List<SntcOrExpr> args;
+    public final List<StmtOrExpr> args;
 
-    public SpawnExpr(List<SntcOrExpr> args, SourceSpan sourceSpan) {
+    public SpawnExpr(List<StmtOrExpr> args, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.args = nullSafeCopyOf(args);
     }

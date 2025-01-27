@@ -19,7 +19,7 @@ public class TestParserRecExpr {
     public void testEmpty() {
         //                            012
         Parser p = new Parser("{}");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 2);
@@ -31,7 +31,7 @@ public class TestParserRecExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "{}";
-        actualFormat = LangFormatter.SINGLETON.format(recExpr);
+        actualFormat = LangFormatter.DEFAULT.format(recExpr);
         assertEquals(expectedFormat, actualFormat);
         // Test complete
         CompleteRec completeRec = recExpr.checkComplete();
@@ -46,7 +46,7 @@ public class TestParserRecExpr {
         //                                      1
         //                            01234567890123
         Parser p = new Parser("{'0-feat': 0}");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 13);
@@ -63,7 +63,7 @@ public class TestParserRecExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "{'0-feat': 0}";
-        actualFormat = LangFormatter.SINGLETON.format(recExpr);
+        actualFormat = LangFormatter.DEFAULT.format(recExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -73,7 +73,7 @@ public class TestParserRecExpr {
         //                                      1         2
         //                            0123456789012345678901234
         Parser p = new Parser("'my-label'#{'0-feat': 0}");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 24);
@@ -90,7 +90,7 @@ public class TestParserRecExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "'my-label'#{'0-feat': 0}";
-        actualFormat = LangFormatter.SINGLETON.format(recExpr);
+        actualFormat = LangFormatter.DEFAULT.format(recExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -101,7 +101,7 @@ public class TestParserRecExpr {
         //                                      1         2
         //                            012345678901234567890123456
         Parser p = new Parser("{'0-feat': 0, '1-feat': 1}");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(RecExpr.class, sox);
         RecExpr recExpr = (RecExpr) sox;
         assertSourceSpan(recExpr, 0, 26);
@@ -122,7 +122,7 @@ public class TestParserRecExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "{'0-feat': 0, '1-feat': 1}";
-        actualFormat = LangFormatter.SINGLETON.format(recExpr);
+        actualFormat = LangFormatter.DEFAULT.format(recExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -131,7 +131,7 @@ public class TestParserRecExpr {
 
         // ValueAsExpr
         Parser p = new Parser("0");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         IntAsExpr intAsExpr = CommonTools.asIntAsExpr(sox);
         Complete complete = RecExpr.checkComplete(intAsExpr);
         assertInstanceOf(Int32.class, complete);

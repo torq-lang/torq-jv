@@ -28,7 +28,7 @@ public class TestEvalOrExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             if false then
                 $bind(true, x)
@@ -50,7 +50,7 @@ public class TestEvalOrExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             if false then
                 $bind(true, x)
@@ -72,7 +72,7 @@ public class TestEvalOrExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             if true then
                 $bind(true, x)
@@ -94,7 +94,7 @@ public class TestEvalOrExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             if true then
                 $bind(true, x)
@@ -119,7 +119,7 @@ public class TestEvalOrExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local $v0 in
                 $lt(a, 5, $v0)

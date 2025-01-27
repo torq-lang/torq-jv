@@ -13,12 +13,12 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class SelectAndApplyLang extends AbstractLang implements SntcOrExpr {
+public final class SelectAndApplyLang extends AbstractLang implements StmtOrExpr {
 
     public final SelectExpr selectExpr;
-    public final List<SntcOrExpr> args;
+    public final List<StmtOrExpr> args;
 
-    public SelectAndApplyLang(SelectExpr selectExpr, List<SntcOrExpr> args, SourceSpan sourceSpan) {
+    public SelectAndApplyLang(SelectExpr selectExpr, List<StmtOrExpr> args, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.selectExpr = selectExpr;
         this.args = nullSafeCopyOf(args);

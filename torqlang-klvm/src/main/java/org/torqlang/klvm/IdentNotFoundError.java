@@ -12,11 +12,11 @@ public final class IdentNotFoundError extends MachineError {
     public static final String IDENT_NOT_FOUND = "Ident not found";
 
     public final Ident ident;
-    public final Stmt stmt;
+    public final Instr instr;
 
-    public IdentNotFoundError(Ident ident, Stmt stmt) {
+    public IdentNotFoundError(Ident ident, Instr instr) {
         super(IDENT_NOT_FOUND + ": " + ident);
         this.ident = ident;
-        this.stmt = stmt;
+        this.instr = instr;
     }
 }

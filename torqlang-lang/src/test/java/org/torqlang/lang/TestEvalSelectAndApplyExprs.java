@@ -27,7 +27,7 @@ public class TestEvalSelectAndApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2, bundle in
                 $create_proc(proc (n, $r) in
@@ -55,7 +55,7 @@ public class TestEvalSelectAndApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2, root in
                 $create_proc(proc (n, $r) in
@@ -86,7 +86,7 @@ public class TestEvalSelectAndApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2, root in
                 $create_proc(proc (n, $r) in
@@ -119,7 +119,7 @@ public class TestEvalSelectAndApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local add_2, add_3, bundle in
                 $create_proc(proc (n, $r) in
@@ -148,7 +148,7 @@ public class TestEvalSelectAndApplyExprs {
             .addVar(Ident.create("x"))
             .setSource(source)
             .generate();
-        assertEquals(source, g.sntcOrExpr().toString());
+        assertEquals(source, g.stmtOrExpr().toString());
         String expected = """
             local r in
                 local $v0 in

@@ -15,11 +15,11 @@ public class TestEmptySourceSpan {
 
     @Test
     public void test() {
-        assertEquals(0, SourceSpan.emptySourceSpan().begin());
-        assertEquals(0, SourceSpan.emptySourceSpan().end());
+        assertEquals(0, SourceSpan.emptySourceSpan().sourceBegin());
+        assertEquals(0, SourceSpan.emptySourceSpan().sourceEnd());
         assertEquals("", SourceSpan.emptySourceSpan().source());
-        assertEquals(SourceSpan.emptySourceSpan(), SourceSpan.emptySourceSpan().toSourceSpanBegin());
-        assertEquals(SourceSpan.emptySourceSpan(), SourceSpan.emptySourceSpan().toSourceSpanEnd());
+        assertEquals(SourceSpan.emptySourceSpan(), SourceSpan.emptySourceSpan().toSourceBegin());
+        assertEquals(SourceSpan.emptySourceSpan(), SourceSpan.emptySourceSpan().toSourceEnd());
     }
 
 }

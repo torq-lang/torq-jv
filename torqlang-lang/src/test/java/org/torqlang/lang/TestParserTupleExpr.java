@@ -22,7 +22,7 @@ public class TestParserTupleExpr {
     public void testEmpty() {
         //                            012
         Parser p = new Parser("[]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 2);
@@ -34,7 +34,7 @@ public class TestParserTupleExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "[]";
-        actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
+        actualFormat = LangFormatter.DEFAULT.format(tupleExpr);
         assertEquals(expectedFormat, actualFormat);
         // Test complete
         CompleteRec completeRec = tupleExpr.checkComplete();
@@ -47,14 +47,14 @@ public class TestParserTupleExpr {
     public void testValues1() {
         //                            0123
         Parser p = new Parser("[0]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 3);
         assertNull(tupleExpr.label());
         // Test features
         assertEquals(1, tupleExpr.values().size());
-        SntcOrExpr valueExpr = tupleExpr.values().get(0);
+        StmtOrExpr valueExpr = tupleExpr.values().get(0);
         assertSourceSpan(valueExpr, 1, 2);
         assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
         // Test toString format
@@ -63,7 +63,7 @@ public class TestParserTupleExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "[0]";
-        actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
+        actualFormat = LangFormatter.DEFAULT.format(tupleExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -72,14 +72,14 @@ public class TestParserTupleExpr {
         //                                      1
         //                            012345678901234
         Parser p = new Parser("'my-label'#[0]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 14);
         assertEquals(Str.of("my-label"), asStrAsExpr(tupleExpr.label()).str);
         // Test features
         assertEquals(1, tupleExpr.values().size());
-        SntcOrExpr valueExpr = tupleExpr.values().get(0);
+        StmtOrExpr valueExpr = tupleExpr.values().get(0);
         assertSourceSpan(valueExpr, 12, 13);
         assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
         // Test toString format
@@ -88,7 +88,7 @@ public class TestParserTupleExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "'my-label'#[0]";
-        actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
+        actualFormat = LangFormatter.DEFAULT.format(tupleExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 
@@ -96,14 +96,14 @@ public class TestParserTupleExpr {
     public void testValues2() {
         //                            0123456
         Parser p = new Parser("[0, 1]");
-        SntcOrExpr sox = p.parse();
+        StmtOrExpr sox = p.parse();
         assertInstanceOf(TupleExpr.class, sox);
         TupleExpr tupleExpr = (TupleExpr) sox;
         assertSourceSpan(tupleExpr, 0, 6);
         assertNull(tupleExpr.label());
         // Test features
         assertEquals(2, tupleExpr.values().size());
-        SntcOrExpr valueExpr = tupleExpr.values().get(0);
+        StmtOrExpr valueExpr = tupleExpr.values().get(0);
         assertSourceSpan(valueExpr, 1, 2);
         assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
         valueExpr = tupleExpr.values().get(1);
@@ -115,7 +115,7 @@ public class TestParserTupleExpr {
         assertEquals(expectedFormat, actualFormat);
         // Test indented format
         expectedFormat = "[0, 1]";
-        actualFormat = LangFormatter.SINGLETON.format(tupleExpr);
+        actualFormat = LangFormatter.DEFAULT.format(tupleExpr);
         assertEquals(expectedFormat, actualFormat);
     }
 

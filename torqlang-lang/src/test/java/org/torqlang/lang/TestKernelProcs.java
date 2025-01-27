@@ -30,7 +30,7 @@ public class TestKernelProcs {
             .addVar(Ident.create("y"))
             .setSource(source)
             .generate();
-        assertEquals(source, g.sntcOrExpr().toString());
+        assertEquals(source, g.stmtOrExpr().toString());
         String expected = """
             assert_bound(x)
             $bind('success', y)""";
@@ -54,7 +54,7 @@ public class TestKernelProcs {
             .addVar(Ident.create("y"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             $bind(1, x)
             assert_bound(x)
@@ -80,7 +80,7 @@ public class TestKernelProcs {
             .addVar(Ident.create("z"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             $bind({'0-zero': 'zero'}, x)
             is_det(x, y)
@@ -109,7 +109,7 @@ public class TestKernelProcs {
             .addVar(Ident.create("z"))
             .setSource(source)
             .perform();
-        assertEquals(source, e.sntcOrExpr().toString());
+        assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a in
                 $create_rec({a: 'zero'}, x)

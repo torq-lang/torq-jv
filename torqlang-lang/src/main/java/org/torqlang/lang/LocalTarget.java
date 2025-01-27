@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.IdentDef;
-import org.torqlang.klvm.Stmt;
+import org.torqlang.klvm.Instr;
 
 /*
  * When entering a new method (function or procedure) body:
@@ -50,18 +50,18 @@ public final class LocalTarget {
             new SharedFlag(NOT_ALLOWED)), new LexicalScope());
     }
 
-    public static LocalTarget createSntcTargetForFinally() {
-        return new LocalTarget(LocalTargetType.SNTC, null, new JumpFlags(NOT_ALLOWED, NOT_ALLOWED,
+    public static LocalTarget createStmtTargetForFinally() {
+        return new LocalTarget(LocalTargetType.STMT, null, new JumpFlags(NOT_ALLOWED, NOT_ALLOWED,
             new SharedFlag(NOT_ALLOWED)), new LexicalScope());
     }
 
-    public static LocalTarget createSntcTargetForProcBody() {
-        return new LocalTarget(LocalTargetType.SNTC, null, new JumpFlags(NOT_ALLOWED, NOT_ALLOWED,
+    public static LocalTarget createStmtTargetForProcBody() {
+        return new LocalTarget(LocalTargetType.STMT, null, new JumpFlags(NOT_ALLOWED, NOT_ALLOWED,
             new SharedFlag(ALLOWED)), new LexicalScope());
     }
 
-    public static LocalTarget createSntcTargetForRoot() {
-        return new LocalTarget(LocalTargetType.SNTC, null, new JumpFlags(NOT_ALLOWED, NOT_ALLOWED,
+    public static LocalTarget createStmtTargetForRoot() {
+        return new LocalTarget(LocalTargetType.STMT, null, new JumpFlags(NOT_ALLOWED, NOT_ALLOWED,
             new SharedFlag(NOT_ALLOWED)), new LexicalScope());
     }
 
@@ -73,8 +73,8 @@ public final class LocalTarget {
         scope.addIdentDef(identDef);
     }
 
-    public final void addStmt(Stmt stmt) {
-        scope.addStmt(stmt);
+    public final void addInstr(Instr instr) {
+        scope.addInstr(instr);
     }
 
     public final LocalTarget asAskTargetWithNewScope(Ident exprIdent) {
@@ -86,33 +86,15 @@ public final class LocalTarget {
     }
 
     /*
-     * expr | null-ident | same-flags | new-scope
-     *
      * This method is used by binary and unary expressions to create intermediate results that bind to new synthetic
      * identifiers. Subsequently, the intermediate identifiers are used as arguments in binary or unary expressions.
-     *   - visitAndExpr
-     *   - visitOrExpr
-     *   - visitProductExpr
-     *   - visitRelationalExpr
-     *   - visitSumExpr
-     *   - visitUnaryExpr
      */
     public LocalTarget asExprTargetWithNewScope() {
         return new LocalTarget(LocalTargetType.EXPR, null, jumpFlags, new LexicalScope());
     }
 
     /*
-     * expr | ident | same-flags | new-scope
-     *
-     * This method is used by Lang statements that may be an Expr or Sntc:
-     *   - buildCaseStmtRecursively: used when CaseLang is actually a CaseExpr
-     *   - visitAndExpr: used to build right-side of `&&` expression
-     *   - visitIfLangRecursively: used when IfLang is actually an IfExpr
-     *   - visitLocalLang: used when LocalLang is actually a LocalExpr
-     *   - visitMatchClauseRecursively: used when match case is an Expr
-     *   - visitOrExpr: used to build right-side of `||` expression
-     *   - visitTryLang: used when TryLang is actually a TryExpr
-     *   - visitWhileSntc: used to produce an intermediate guard boolean
+     * This method is used by Lang statements that may be an Expr or Stmt:
      */
     public final LocalTarget asExprTargetWithNewScope(Ident exprIdent) {
         if (exprIdent == null) {
@@ -126,13 +108,7 @@ public final class LocalTarget {
     }
 
     /*
-     * expr | pass-ident | same-flags | same-scope
-     *
-     *  This method is used by sentences to bind intermediate expressions to special identifiers:
-     *   - visitForSntc: used to generate and bind an iterator at $Iter
-     *   - visitInitVarDecl: used to generate initialization for a newly declared identifier
-     *   - visitReturnSntc: used to generate and bind a return value at $r
-     *   - visitUnifySntc: used to generate and bind a right-side expression to left-side identifier
+     * This method is used by statements to bind intermediate expressions to special identifiers:
      */
     public final LocalTarget asExprTargetWithSameScope(Ident exprIdent) {
         if (exprIdent == null) {
@@ -142,49 +118,32 @@ public final class LocalTarget {
     }
 
     /*
-     * sntc | null-ident | (ALLOWED, ALLOWED, same) | new-scope
-     *
-     * This method is used by sentences to structure loop bodies with jump flags:
-     *   - visitForSntc: used to allow `break` and `continue` sentences
-     *   - visitWhileSntc: used to allow `break` and `continue` sentences
+     * This method is used by statements to structure loop bodies with jump flags:
      */
-    public final LocalTarget asSntcTargetForLoopBodyWithNewScope() {
-        return new LocalTarget(LocalTargetType.SNTC, null,
+    public final LocalTarget asStmtTargetForLoopBodyWithNewScope() {
+        return new LocalTarget(LocalTargetType.STMT, null,
             new JumpFlags(ALLOWED, ALLOWED, jumpFlags.returnFlag), new LexicalScope());
     }
 
     /*
-     * sntc | null-ident | same-flags | new-scope
-     *
-     * This method is used by sentences to create new lexical scopes:
-     *   - buildCaseStmtRecursively: used when CaseLang is actually a CaseSntc
-     *   - visitForSntc
-     *   - buildIfLangRecursively: used when IfLang is actually an IfSntc
-     *   - visitLocalLang: used when LocalLang is actually a LocalSntc
-     *   - visitMatchClauseRecursively: used when match case is a Sntc
-     *   - visitSelectAndApplyLang: used to create intermediate results along "select path"
-     *   - visitSetCellValueSntc
-     *   - visitTryLang: used when TryLang is actually a TrySntc
-     *   - visitWhileSntc
+     * This method is used by statements to create new lexical scopes:
      */
-    public final LocalTarget asSntcTargetWithNewScope() {
-        return new LocalTarget(LocalTargetType.SNTC, null, jumpFlags, new LexicalScope());
+    public final LocalTarget asStmtTargetWithNewScope() {
+        return new LocalTarget(LocalTargetType.STMT, null, jumpFlags, new LexicalScope());
     }
 
     /*
-     * sntc | null-ident | same-flags | same-scope
-     *
      * This method is used by `visitBodyList` while visiting all but the last entry of the list.
      */
-    public final LocalTarget asSntcTargetWithSameScope() {
-        return new LocalTarget(LocalTargetType.SNTC, null, jumpFlags, scope);
+    public final LocalTarget asStmtTargetWithSameScope() {
+        return new LocalTarget(LocalTargetType.STMT, null, jumpFlags, scope);
     }
 
     public final int breakFlag() {
         return jumpFlags.breakFlag;
     }
 
-    public final Stmt build() {
+    public final Instr build() {
         return scope.build();
     }
 
@@ -220,8 +179,8 @@ public final class LocalTarget {
         return jumpFlags.returnFlag.value == USED;
     }
 
-    public final boolean isSntcTarget() {
-        return type == LocalTargetType.SNTC;
+    public final boolean isStmtTarget() {
+        return type == LocalTargetType.STMT;
     }
 
     public final Ident offeredIdent() {
@@ -250,7 +209,7 @@ public final class LocalTarget {
 
     private static enum LocalTargetType {
         EXPR,
-        SNTC
+        STMT
     }
 
     /*
