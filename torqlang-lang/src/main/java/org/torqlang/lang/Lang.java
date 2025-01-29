@@ -13,8 +13,4 @@ public interface Lang extends SourceSpan {
 
     <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception;
 
-    TypeOrTypeVar infrType();
-
-    void setInfrType(TypeOrTypeVar infrType);
-
 }
