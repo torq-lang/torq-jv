@@ -7,13 +7,12 @@
 
 package org.torqlang.lang;
 
+public final class IllegalIdentError extends LangError {
 
-public final class ContinueNotAllowedError extends LangError {
+    public static final String ILLEGAL_IDENTIFIER = "Illegal identifier";
 
-    public static final String CONTINUE_NOT_ALLOWED = "Continue not allowed";
-
-    public ContinueNotAllowedError(Lang lang) {
-        super(CONTINUE_NOT_ALLOWED, lang);
+    public IllegalIdentError(Lang lang) {
+        super(ILLEGAL_IDENTIFIER, lang);
     }
 
 }

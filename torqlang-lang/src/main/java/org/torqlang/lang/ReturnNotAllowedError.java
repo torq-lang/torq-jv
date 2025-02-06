@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 
-public final class ReturnNotAllowedError extends GeneratorError {
+public final class ReturnNotAllowedError extends LangError {
 
     public static final String RETURN_NOT_ALLOWED = "Return not allowed";
 

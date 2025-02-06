@@ -12,10 +12,16 @@ import org.torqlang.util.SourceSpan;
 public abstract class AbstractLang implements Lang {
 
     private final SourceSpan sourceSpan;
+    private TypeScope typeScope;
 
     public AbstractLang(SourceSpan sourceSpan) {
         // infrType begins as a Java null
         this.sourceSpan = sourceSpan;
+    }
+
+    @Override
+    public final void setTypeScope(TypeScope typeScope) {
+        this.typeScope = typeScope;
     }
 
     @Override
@@ -46,6 +52,11 @@ public abstract class AbstractLang implements Lang {
     @Override
     public final String toString() {
         return LangFormatter.DEFAULT.format(this);
+    }
+
+    @Override
+    public final TypeScope typeScope() {
+        return typeScope;
     }
 
 }

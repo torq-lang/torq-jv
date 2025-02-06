@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 
-public final class NotExprError extends GeneratorError {
+public final class NotExprError extends LangError {
 
     public static final String NOT_AN_EXPRESSION = "Not an expression";
 

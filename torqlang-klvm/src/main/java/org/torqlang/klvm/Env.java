@@ -71,7 +71,7 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
     }
 
     /*
-     * Create a root environment with the given bindings, but if the bindings are empty, return an empty environment.
+     * Create an environment with the given bindings, but if the bindings are empty, return an empty environment.
      */
     static Env create(Map<Ident, Var> bindings) {
         return bindings.isEmpty() ? ArrayEnv.EMPTY_ENV : new ArrayEnv(null, bindings);
@@ -109,7 +109,7 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
     }
 
     /*
-     * Return the empty environment (a private singleton).
+     * Return the outermost, empty environment (a private singleton).
      */
     static Env emptyEnv() {
         return ArrayEnv.EMPTY_ENV;
@@ -127,8 +127,14 @@ public interface Env extends Kernel, Iterable<EnvEntry> {
 
     Var get(Ident ident);
 
+    /*
+     * A parent environment is an outer environment.
+     */
     Env parentEnv();
 
+    /*
+     * Return the outermost, empty environment (a private singleton).
+     */
     Env rootEnv();
 
     /*

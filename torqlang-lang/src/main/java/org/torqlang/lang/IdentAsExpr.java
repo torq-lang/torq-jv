@@ -25,5 +25,4 @@ public final class IdentAsExpr extends AbstractLang implements LabelExpr {
     {
         return visitor.visitIdentAsExpr(this, state);
     }
-
 }

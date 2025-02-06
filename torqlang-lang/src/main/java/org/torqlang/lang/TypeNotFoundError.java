@@ -7,13 +7,12 @@
 
 package org.torqlang.lang;
 
+public final class TypeNotFoundError extends LangError {
 
-public final class ContinueNotAllowedError extends LangError {
+    public static final String TYPE_NOT_FOUND = "Type not found";
 
-    public static final String CONTINUE_NOT_ALLOWED = "Continue not allowed";
-
-    public ContinueNotAllowedError(Lang lang) {
-        super(CONTINUE_NOT_ALLOWED, lang);
+    public TypeNotFoundError(Lang lang) {
+        super(TYPE_NOT_FOUND, lang);
     }
 
 }

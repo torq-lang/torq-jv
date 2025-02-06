@@ -7,13 +7,12 @@
 
 package org.torqlang.lang;
 
+public final class NotDefinedError extends LangError {
 
-public final class ContinueNotAllowedError extends LangError {
+    public static final String NOT_DEFINED = "Not defined";
 
-    public static final String CONTINUE_NOT_ALLOWED = "Continue not allowed";
-
-    public ContinueNotAllowedError(Lang lang) {
-        super(CONTINUE_NOT_ALLOWED, lang);
+    public NotDefinedError(Lang lang) {
+        super(NOT_DEFINED, lang);
     }
 
 }
