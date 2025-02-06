@@ -7,13 +7,6 @@
 
 package org.torqlang.lang;
 
-
-public final class ContinueNotAllowedError extends LangError {
-
-    public static final String CONTINUE_NOT_ALLOWED = "Continue not allowed";
-
-    public ContinueNotAllowedError(Lang lang) {
-        super(CONTINUE_NOT_ALLOWED, lang);
-    }
-
+public class TestEvalBegin {
+    // TODO: Create a test case with a nested begin-end that shadows an outer var name
 }

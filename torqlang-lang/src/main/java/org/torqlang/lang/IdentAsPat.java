@@ -33,5 +33,4 @@ public final class IdentAsPat extends AbstractLang implements LabelPat {
     {
         return visitor.visitIdentAsPat(this, state);
     }
-
 }

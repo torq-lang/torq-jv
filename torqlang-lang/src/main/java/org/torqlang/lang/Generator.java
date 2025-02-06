@@ -807,9 +807,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitInitVarDecl(InitVarDecl lang, LocalTarget target) throws Exception {
+        // TODO: Allow patterns on the LHS when the Validator with strong type checking is available
         // Currently, we only allow identifiers on the left side of an initialization. Allowing a pattern on the left
-        // side would be syntactic sugar for a limited case instruction. Instead, using a full-featured case instruction
-        // allows the programmer to explicitly handle mismatches.
+        // side would be syntactic sugar for a limited case instruction. For now, using a full-featured case
+        // instruction allows the programmer to explicitly handle mismatches. With type checking, we can ensure
+        // that the RHS will deconstruct into the LHS.
         IdentAsPat identAsPat = assertIdentAsPatNotEscaped(lang.varPat);
         // Optimize simple value assignments
         if (lang.valueExpr instanceof ValueAsExpr valueAsExpr) {

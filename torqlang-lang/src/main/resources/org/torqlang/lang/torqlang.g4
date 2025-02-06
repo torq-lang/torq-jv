@@ -11,6 +11,7 @@ program: stmt_or_expr EOF;
 
 stmt_or_expr: meta? assign ';'*;
 
+// TODO: Make 'meta' a weak keyword
 meta: 'meta' '#' (meta_rec | meta_tuple);
 
 meta_rec: '{' meta_field (',' meta_field)* '}';
@@ -53,8 +54,8 @@ construct: keyword | ident | value;
 
 keyword: act | actor | begin | 'break' | case | 'continue' |
          for | func | group | if | import_ | local | proc |
-         throw | return | 'self' | 'skip' | spawn | try | var |
-         while;
+         throw | return | 'self' | 'skip' | spawn | try |
+         type_decl | var | while;
 
 act: 'act' stmt_or_expr+ 'end';
 
@@ -117,9 +118,11 @@ arg_list: stmt_or_expr (',' stmt_or_expr)*;
 
 pat_list: pat (',' pat)*;
 
-pat: rec_pat | tuple_pat |
-     (label_pat ('#' (rec_pat | tuple_pat))?) |
-     INT_LITERAL | (ident var_type_anno?);
+pat: (rec_pat |
+     tuple_pat |
+     label_pat ('#' (rec_pat | tuple_pat))? |
+     INT_LITERAL |
+     ident) var_type_anno?;
 
 label_pat: ('~' ident) | bool | STR_LITERAL | 'eof' | 'null';
 
@@ -140,16 +143,33 @@ label_value: ident | bool | STR_LITERAL | 'eof' | 'null';
 
 rec_value: '{' (field_value (',' field_value)*)? '}';
 
-tuple_value: '[' (value (',' pat)*)? ']';
+tuple_value: '[' (value (',' value)*)? ']';
 
 field_value: (feat_value ':')? stmt_or_expr;
 
 feat_value: ident | bool | INT_LITERAL | STR_LITERAL |
             'eof' | 'null';
 
-var_type_anno: '::' ident;
+var_type_anno: '::' union_type;
 
-return_type_anno: '->' ident;
+return_type_anno: '->' union_type;
+
+type_decl: 'type' ident '=' union_type;
+
+union_type: '(' type ('|' type)* ')' | type ('|' type)*;
+
+// TODO: Make 'class' a weak keyword
+type: rec_type | tuple_type |
+      'class' '#' (rec_type | tuple_type) |
+      ident ('#' (rec_type | tuple_type))?;
+
+rec_type: '{' (field_type (',' field_type)*)? '}';
+
+tuple_type: '[' (type (',' type)*)? ']';
+
+field_type: (feat_type ':')? type;
+
+feat_type: bool | INT_LITERAL | STR_LITERAL | 'eof' | 'null';
 
 bool: 'true' | 'false';
 

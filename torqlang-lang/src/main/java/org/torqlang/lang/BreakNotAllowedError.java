@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 
-public final class BreakNotAllowedError extends GeneratorError {
+public final class BreakNotAllowedError extends LangError {
 
     public static final String BREAK_NOT_ALLOWED = "Break not allowed";
 

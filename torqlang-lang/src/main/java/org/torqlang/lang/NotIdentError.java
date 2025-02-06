@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 
-public final class NotIdentError extends GeneratorError {
+public final class NotIdentError extends LangError {
 
     public static final String NOT_AN_IDENT = "Not an identifier";
 
