@@ -13,21 +13,9 @@ public abstract class AbstractLang implements Lang {
 
     private final SourceSpan sourceSpan;
 
-    private TypeOrTypeVar infrType;
-
     public AbstractLang(SourceSpan sourceSpan) {
         // infrType begins as a Java null
         this.sourceSpan = sourceSpan;
-    }
-
-    @Override
-    public final TypeOrTypeVar infrType() {
-        return infrType;
-    }
-
-    @Override
-    public final void setInfrType(TypeOrTypeVar infrType) {
-        this.infrType = infrType;
     }
 
     @Override
