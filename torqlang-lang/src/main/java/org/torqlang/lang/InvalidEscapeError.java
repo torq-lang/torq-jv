@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 
-public final class InvalidEscapeError extends GeneratorError {
+public final class InvalidEscapeError extends LangError {
 
     public static final String INVALID_ESCAPE_ERROR = "Invalid escape error";
 

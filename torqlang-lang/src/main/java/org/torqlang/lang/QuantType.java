@@ -7,10 +7,7 @@
 
 package org.torqlang.lang;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public interface QuantType extends PolyType {
     static QuantType create(List<VarType> quantifiers, MonoType monoType) {
@@ -20,6 +17,8 @@ public interface QuantType extends PolyType {
     MonoType monoType();
 
     List<VarType> quantifiers();
+
+    QuantType subst(TypeSubst subst);
 }
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -59,13 +58,28 @@ final class QuantTypeImpl implements QuantType {
     }
 
     @Override
-    public MonoType monoType() {
+    public final MonoType instantiate(SuffixFactory suffixFactory) {
+        Map<VarType, MonoType> mappings = new HashMap<>();
+        for (VarType quantType : quantifiers) {
+            mappings.put(quantType, suffixFactory.nextBetaVar());
+        }
+        TypeSubst subst = TypeSubst.create(mappings);
+        return monoType.subst(subst);
+    }
+
+    @Override
+    public final MonoType monoType() {
         return monoType;
     }
 
     @Override
-    public List<VarType> quantifiers() {
+    public final List<VarType> quantifiers() {
         return quantifiers;
+    }
+
+    @Override
+    public final QuantType subst(TypeSubst subst) {
+        return new QuantTypeImpl(quantifiers, monoType.subst(subst));
     }
 
     @Override

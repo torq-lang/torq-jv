@@ -16,14 +16,15 @@ public interface ScalarType extends AppType {
 
     ScalarType BOOL = new ScalarTypeImpl("Bool");
     ScalarType INT32 = new ScalarTypeImpl("Int32");
+    ScalarType INT64 = new ScalarTypeImpl("Int64");
+    ScalarType STR = new ScalarTypeImpl("Str");
+    ScalarType VOID = new ScalarTypeImpl("Void");
 
     static ScalarType create(String name) {
         return new ScalarTypeImpl(name);
     }
 
-    List<? extends MonoType> params();
-
-    AppType subst(TypeSubst subst);
+    ScalarType subst(TypeSubst subst);
 }
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -76,17 +77,22 @@ final class ScalarTypeImpl implements ScalarType {
         return Objects.hashCode(name);
     }
 
+    @Override
+    public final ScalarType instantiate(SuffixFactory suffixFactory) {
+        return this;
+    }
+
     public final String name() {
         return name;
     }
 
     @Override
-    public final List<? extends MonoType> params() {
+    public final List<MonoType> params() {
         return Collections.emptyList();
     }
 
     @Override
-    public final AppType subst(TypeSubst subst) {
+    public final ScalarType subst(TypeSubst subst) {
         return this;
     }
 

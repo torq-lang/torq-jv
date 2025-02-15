@@ -7,7 +7,7 @@
 
 package org.torqlang.lang;
 
-import java.util.*;
+import java.util.List;
 
 /*
  * An applied type constructor. Also known as an instantiated type.
@@ -15,17 +15,12 @@ import java.util.*;
 public interface AppType extends MonoType {
 
     /*
-     * The name of the type constructor, such as 'Int' or 'Func'.
+     * The name of the type constructor, such as 'Int32' or 'Func'.
      */
     String name();
 
     /*
      * The type parameters that instantiated this type.
      */
-    List<? extends MonoType> params();
-
-    /*
-     * Substitute exiting type variables with the give type substitutions.
-     */
-    AppType subst(TypeSubst subst);
+    List<MonoType> params();
 }

@@ -12,11 +12,11 @@ package org.torqlang.lang;
  */
 public final class TypeScope {
 
-    private final TypeCntxt typeCntxt;
+    private final TypeEnv typeEnv;
     private final MonoType monoType;
 
-    TypeScope(TypeCntxt typeCntxt, MonoType monoType) {
-        this.typeCntxt = typeCntxt;
+    TypeScope(TypeEnv typeEnv, MonoType monoType) {
+        this.typeEnv = typeEnv;
         this.monoType = monoType;
     }
 
@@ -24,7 +24,7 @@ public final class TypeScope {
         return monoType;
     }
 
-    public final TypeCntxt cntxt() {
-        return typeCntxt;
+    public final TypeEnv typeEnv() {
+        return typeEnv;
     }
 }

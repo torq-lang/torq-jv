@@ -69,6 +69,11 @@ final class VarTypeImpl implements VarType {
         return Objects.hashCode(name);
     }
 
+    @Override
+    public final MonoType instantiate(SuffixFactory suffixFactory) {
+        return this;
+    }
+
     public final String name() {
         return name;
     }

@@ -13,9 +13,11 @@ public interface FuncType extends AppType {
     static FuncType create(List<MonoType> params) {
         return new FuncTypeImpl(params);
     }
+
     FuncType subst(TypeSubst subst);
 }
 
+@SuppressWarnings("ClassCanBeRecord")
 final class FuncTypeImpl implements FuncType {
 
     private final List<MonoType> params;
@@ -77,12 +79,17 @@ final class FuncTypeImpl implements FuncType {
         return Objects.hashCode(params);
     }
 
+    @Override
+    public final FuncType instantiate(SuffixFactory suffixFactory) {
+        return this;
+    }
+
     public final String name() {
         return "Func";
     }
 
     @Override
-    public final List<? extends MonoType> params() {
+    public final List<MonoType> params() {
         return params;
     }
 

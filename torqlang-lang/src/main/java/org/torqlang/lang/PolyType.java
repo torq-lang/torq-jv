@@ -62,4 +62,8 @@ public interface PolyType {
     void captureFreeVars(Set<VarType> freeVars);
 
     Set<VarType> freeVars();
+
+    MonoType instantiate(SuffixFactory suffixFactory);
+
+    PolyType subst(TypeSubst subst);
 }

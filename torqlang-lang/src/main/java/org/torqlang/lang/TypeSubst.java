@@ -13,8 +13,12 @@ import java.util.Map;
 import java.util.Objects;
 
 /*
+ * Type Substitutions
+ *
  * Hindley-Milner type inference algorithms use substitutions from type variables to monotypes. The substitutions are
  * applied on types.
+ *
+ * Instances of this class are immutable.
  */
 public final class TypeSubst {
     private static final TypeSubst EMPTY_SUBST = new TypeSubst();
@@ -95,8 +99,17 @@ public final class TypeSubst {
                 return subst;
             }
         } else {
-            throw new IllegalArgumentException("Failed to unify, different type functions");
+            throw new TypeUnificationError(a, b);
         }
+    }
+
+    public final MonoType apply(MonoType monoType) {
+        return monoType.subst(this);
+    }
+
+    public final TypeEnv apply(TypeEnv typeEnv) {
+        typeEnv.subst(this);
+        return typeEnv;
     }
 
     @Override
@@ -118,5 +131,9 @@ public final class TypeSubst {
 
     public final void put(VarType varType, MonoType monoType) {
         mappings.put(varType, monoType);
+    }
+
+    public final int size() {
+        return mappings.size();
     }
 }
