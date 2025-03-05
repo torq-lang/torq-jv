@@ -40,7 +40,7 @@ public class NorthwindDbPack {
         NORTHWIND_DB_SYSTEM, 4, 0);
 
     private static CompleteRec createNorthwindDbActor() {
-        return CompleteRec.singleton(Actor.CFG, NORTHWIND_DB_CFGTR);
+        return CompleteRec.singleton(Actor.NEW, NORTHWIND_DB_CFGTR);
     }
 
     private static void northwindDbCfgtr(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {

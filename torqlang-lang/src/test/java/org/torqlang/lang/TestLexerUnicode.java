@@ -22,62 +22,62 @@ public class TestLexerUnicode {
     public void test01() {
         Lexer lexer;
 
-        lexer = new Lexer("&\\uffff");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\uffff'");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer(".&\\uffff");
+        lexer = new Lexer(".&'\\uffff'");
         assertTrue(lexer.nextToken().isOneCharSymbol('.'));
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\uffff.");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\uffff'.");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isOneCharSymbol('.'));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\u0000&\\uffff");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\u0000")));
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\u0000'&'\\uffff'");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\u0000'")));
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\u0000.&\\uffff");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\u0000")));
+        lexer = new Lexer("&'\\u0000'.&'\\uffff'");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\u0000'")));
         assertTrue(lexer.nextToken().isOneCharSymbol('.'));
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\uffffff");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\uffff'ff");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isIdent("ff"));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\uffff.ff");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\uffff'.ff");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isOneCharSymbol('.'));
         assertTrue(lexer.nextToken().isIdent("ff"));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("/**/&\\uffffff");
+        lexer = new Lexer("/**/&'\\uffff'ff");
         assertTrue(getBoolean(lexer.nextToken(false), (x) -> x.isComment() && x.substring().equals("/**/")));
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isIdent("ff"));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\uffff/**/ff");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\uffff'/**/ff");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(getBoolean(lexer.nextToken(false), (x) -> x.isComment() && x.substring().equals("/**/")));
         assertTrue(lexer.nextToken().isIdent("ff"));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\uffffff/**/");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\uffff")));
+        lexer = new Lexer("&'\\uffff'ff/**/");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\uffff'")));
         assertTrue(lexer.nextToken().isIdent("ff"));
         assertTrue(getBoolean(lexer.nextToken(false), (x) -> x.isComment() && x.substring().equals("/**/")));
         assertTrue(lexer.nextToken().isEof());
 
-        lexer = new Lexer("&\\u00000");
-        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&\\u0000")));
+        lexer = new Lexer("&'\\u0000'0");
+        assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isChar() && x.substring().equals("&'\\u0000'")));
         assertTrue(getBoolean(lexer.nextToken(), (x) -> x.isInt() && x.substring().equals("0")));
         assertTrue(lexer.nextToken().isEof());
     }

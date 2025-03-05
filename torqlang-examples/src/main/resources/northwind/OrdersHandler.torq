@@ -33,7 +33,7 @@ actor OrdersHandler() in
     import examples.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
-        var northwind_db = spawn(NorthwindDb.cfg())
+        var northwind_db = spawn(new NorthwindDb())
         case path
             of ['orders'] then
                 var orders_ext = ArrayList.new()

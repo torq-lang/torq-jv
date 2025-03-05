@@ -23,8 +23,8 @@ public final class OrderDao extends AbstractExample {
     public static final String SOURCE = """
         actor OrderDao() in
             import system[ArrayList, HashMap, LocalDate, Rec, ValueIter]
-            var orders = HashMap.new()
-            var order_lines = HashMap.new()
+            var orders = new HashMap()
+            var order_lines = new HashMap()
             orders.put('ORDER-001', {
                 'id': 'ORDER-001',
                 'customerId': 'CUST-001',
@@ -70,8 +70,8 @@ public final class OrderDao extends AbstractExample {
                     throw 'error'#{'name': 'org.torqlang.examples.NotFoundError',
                                    'message': 'Order not found', 'order-id': id}
                 end
-                var selected_lines = ArrayList.new()
-                for line in ValueIter.new(order_lines) do
+                var selected_lines = new ArrayList()
+                for line in new ValueIter(order_lines) do
                     if line.orderId == id then
                         selected_lines.add(line)
                     end

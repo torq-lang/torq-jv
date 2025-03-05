@@ -15,7 +15,7 @@ import org.torqlang.lang.Generator;
 
 public final class Actor {
 
-    public static final Str CFG = Generator.CFG;
+    public static final Str NEW = Generator.NEW;
 
     public static ActorBuilderInit builder() {
         return new ActorBuilder();

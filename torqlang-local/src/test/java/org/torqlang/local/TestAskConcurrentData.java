@@ -77,7 +77,7 @@ public class TestAskConcurrentData {
                         $create_tuple('handlers'#[$v0, $v6], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
+                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -98,7 +98,7 @@ public class TestAskConcurrentData {
             actor ConcurrentData() in
                 import system.ArrayList
                 handle ask 'perform' in
-                    var list = ArrayList.new()
+                    var list = new ArrayList()
                     list.add({'customer': act 'Alice and Bob' end, 'order': act '20 pounds of Sugar' end})
                     list.add({'customer': act 'Charles and Debbie' end, 'order': act '50 pounds of Flour' end})
                     list.to_tuple()
@@ -171,7 +171,7 @@ public class TestAskConcurrentData {
                         $create_tuple('handlers'#[$v0, $v10], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
+                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -205,9 +205,9 @@ public class TestAskConcurrentData {
                         n
                     end
                 end
-                var n1 = spawn(Number.cfg(1)),
-                    n2 = spawn(Number.cfg(2)),
-                    n3 = spawn(Number.cfg(3))
+                var n1 = spawn(new Number(1)),
+                    n2 = spawn(new Number(2)),
+                    n3 = spawn(new Number(3))
                 handle ask 'construct' in
                     [n1.ask('get'), n2.ask('get'), n3.ask('get')]
                 end
@@ -255,17 +255,17 @@ public class TestAskConcurrentData {
                                 $create_tuple('handlers'#[$v0, $v4], $r)
                             end
                         end, $actor_cfgtr)
-                        $create_rec('Number'#{'cfg': $actor_cfgtr}, Number)
+                        $create_rec('Number'#{'new': $actor_cfgtr}, Number)
                         local $v7 in
-                            $select_apply(Number, ['cfg'], 1, $v7)
+                            $select_apply(Number, ['new'], 1, $v7)
                             $spawn($v7, n1)
                         end
                         local $v8 in
-                            $select_apply(Number, ['cfg'], 2, $v8)
+                            $select_apply(Number, ['new'], 2, $v8)
                             $spawn($v8, n2)
                         end
                         local $v9 in
-                            $select_apply(Number, ['cfg'], 3, $v9)
+                            $select_apply(Number, ['new'], 3, $v9)
                             $spawn($v9, n3)
                         end
                         $create_proc(proc ($m) in // free vars: $respond, n1, n2, n3
@@ -306,7 +306,7 @@ public class TestAskConcurrentData {
                         $create_tuple('handlers'#[$v10, $v17], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('ConcurrentMathTuple'#{'cfg': $actor_cfgtr}, ConcurrentMathTuple)
+                $create_rec('ConcurrentMathTuple'#{'new': $actor_cfgtr}, ConcurrentMathTuple)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

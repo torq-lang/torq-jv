@@ -122,7 +122,7 @@ public class TestAskCaptureImage {
         String source = """
             actor HelloConcurrentFactorials() in
                 import system.Cell
-                var two = Cell.new(2m)
+                var two = new Cell(2m)
                 func fact(x) in
                     func fact_cps(n, k) in
                         if n < two then

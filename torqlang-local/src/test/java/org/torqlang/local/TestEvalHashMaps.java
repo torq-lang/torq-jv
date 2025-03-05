@@ -22,7 +22,7 @@ public class TestEvalHashMaps {
     public void test() throws Exception {
         String source = """
             begin
-                x = HashMap.new()
+                x = new HashMap()
                 x.put(['one', 'two'], 'My key is a record!')
                 y = ['one', 'two']
             end""";
@@ -54,7 +54,7 @@ public class TestEvalHashMaps {
             begin
                 a = {'next': b}
                 b = {'next': a}
-                x = HashMap.new()
+                x = new HashMap()
                 x.put(a, 'My key is circular!')
             end""";
         EvaluatorPerformed e = Evaluator.builder()
@@ -93,10 +93,10 @@ public class TestEvalHashMaps {
     public void testValueIter() throws Exception {
         String source = """
             begin
-                var hm = HashMap.new()
+                var hm = new HashMap()
                 hm.put('0-key', 'Zero')
                 hm.put('1-key', 'One')
-                var value_iter = ValueIter.new(hm)
+                var value_iter = new ValueIter(hm)
                 x = value_iter()
                 y = value_iter()
                 z = value_iter()

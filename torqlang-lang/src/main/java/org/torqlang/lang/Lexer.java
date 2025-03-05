@@ -119,7 +119,7 @@ public final class Lexer {
     }
 
     /*
-     * Precondition: charPos references the character following the character escape sequence "&\"
+     * Precondition: charPos references the character following the escape sequence "&'\"
      * Postcondition: charPos references the first character past the full escape sequence
      */
     private void parseEscSeq() {
@@ -133,7 +133,7 @@ public final class Lexer {
         charPos++;
         if (escapedChar == 'u') {
             // We need a start position in case of an error
-            int start = charPos - 2;
+            int start = charPos - 3;
             for (int i = 0; i < 4; i++) {
                 if (charPos == source.length()) {
                     LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
@@ -457,22 +457,43 @@ public final class Lexer {
             charPos += 2;
             return new LexerToken(LexerTokenType.TWO_CHAR_TOKEN, source, start, charPos);
         }
-        if (isOneCharSymbolAt(charPos)) {
-            charPos += 1;
-            return new LexerToken(LexerTokenType.ONE_CHAR_TOKEN, source, start, charPos);
-        }
+        // In addition to being a standalone symbol, the single '&' character is used to escape character literals.
+        // We must check its use as an escape character before processing single character symbols.
         if (c == '&') {
             charPos += 1; // accept '&'
+            if (charPos == source.length()) {
+                return new LexerToken(LexerTokenType.ONE_CHAR_TOKEN, source, start, charPos);
+            }
+            char nextChar = source.charAt(charPos);
+            if (nextChar != '\'') {
+                return parseKeywordOrIdent();
+            }
+            charPos += 1; // accept single quote
             if (charPos == source.length()) {
                 LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
                 throw new LexerError(invalidToken, INVALID_CHARACTER_LITERAL);
             }
-            char c2 = source.charAt(charPos);
-            charPos += 1;  // accept character (either escape or actual character)
-            if (c2 == '\\') {
+            char charOrEsc = source.charAt(charPos);
+            charPos += 1;  // accept character (either the first escape or the actual character)
+            if (charOrEsc == '\\') {
                 parseEscSeq();
             }
+            if (charPos == source.length()) {
+                LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
+                throw new LexerError(invalidToken, CHAR_IS_MISSING_CLOSING_QUOTE);
+            }
+            char closingCharQuote = source.charAt(charPos);
+            if (closingCharQuote != '\'') {
+                LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
+                throw new LexerError(invalidToken, CHAR_IS_MISSING_CLOSING_QUOTE);
+            }
+            charPos += 1;  // accept single quote
             return new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
+        }
+        // Parse single character symbols other than the '&' symbol
+        if (isOneCharSymbolAt(charPos)) {
+            charPos += 1;
+            return new LexerToken(LexerTokenType.ONE_CHAR_TOKEN, source, start, charPos);
         }
         return parseKeywordOrIdent();
     }

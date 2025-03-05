@@ -36,7 +36,7 @@ public class TestEvalActor {
                         'Hello, ' + num + '! is ' + fact(num)
                     end
                 end
-                hello_factorial_cfg = HelloFactorial.cfg()
+                hello_factorial_cfg = new HelloFactorial()
             end""";
         Ident configCtorIdent = Ident.create("hello_factorial_cfg");
         EvaluatorPerformed e = Evaluator.builder()
@@ -108,8 +108,8 @@ public class TestEvalActor {
                         $create_tuple('handlers'#[$v3, $v10], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)
-                $select_apply(HelloFactorial, ['cfg'], hello_factorial_cfg)
+                $create_rec('HelloFactorial'#{'new': $actor_cfgtr}, HelloFactorial)
+                $select_apply(HelloFactorial, ['new'], hello_factorial_cfg)
             end""";
         assertEquals(expected, e.kernel().toString());
         assertInstanceOf(ActorCfg.class, e.varAtName(configCtorIdent.name).valueOrVarSet());

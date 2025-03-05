@@ -87,7 +87,7 @@ public class TestAskCompleteClosure {
                         $create_tuple('handlers'#[$v0, $v7], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
+                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -111,7 +111,7 @@ public class TestAskCompleteClosure {
         String source = """
             actor ConcurrentData() in
                 import system.Cell
-                var next_value = Cell.new(0)
+                var next_value = new Cell(0)
                 func next() in
                     var answer = @next_value
                     next_value := @next_value + 1
@@ -192,7 +192,7 @@ public class TestAskCompleteClosure {
                         $create_tuple('handlers'#[$v2, $v9], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'cfg': $actor_cfgtr}, ConcurrentData)
+                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

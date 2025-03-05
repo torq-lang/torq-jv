@@ -83,6 +83,7 @@ final class ScalarTypeImpl implements ScalarType {
         return this;
     }
 
+    @Override
     public final String name() {
         return name;
     }

@@ -21,7 +21,7 @@ public final class HelloWorldBuilder extends AbstractExample {
     public static final String SOURCE_1 = """
         actor HelloWorld(init_name) in
             import system.Cell
-            var my_name = Cell.new(init_name)
+            var my_name = new Cell(init_name)
             handle tell {'name': name} in
                 my_name := name
             end
@@ -34,7 +34,7 @@ public final class HelloWorldBuilder extends AbstractExample {
         actor PerformHelloWorld() in
             actor HelloWorld(init_name) in
                 import system.Cell
-                var my_name = Cell.new(init_name)
+                var my_name = new Cell(init_name)
                 handle tell {'name': name} in
                     my_name := name
                 end
@@ -43,7 +43,7 @@ public final class HelloWorldBuilder extends AbstractExample {
                 end
             end
             handle ask 'perform' in
-                var hello_world = spawn(HelloWorld.cfg('Bob'))
+                var hello_world = spawn(new HelloWorld('Bob'))
                 var hello_bob = hello_world.ask('hello')
                 hello_world.tell({'name': 'Bobby'})
                 var hello_bobby = hello_world.ask('hello')

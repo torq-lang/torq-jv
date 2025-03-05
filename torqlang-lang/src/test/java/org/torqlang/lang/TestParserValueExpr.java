@@ -21,12 +21,12 @@ public class TestParserValueExpr {
     @Test
     public void test() {
         //                                      1         2         3         4         5
-        //                            01234567890123456789012345678901234567890123456789012345678
-        Parser p = new Parser("begin a 1 1L 1.0 1.0f 1m false true null eof &x 'x' end");
+        //                            0123456789012345678901234567890123456789012345678901234567
+        Parser p = new Parser("begin a 1 1L 1.0 1.0f 1m false true null eof &'x' 'x' end");
         StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
-        assertSourceSpan(beginLang, 0, 55);
+        assertSourceSpan(beginLang, 0, 57);
         List<StmtOrExpr> list = beginLang.body.list;
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
@@ -48,9 +48,9 @@ public class TestParserValueExpr {
         assertEquals(Null.SINGLETON, asNullAsExpr(list.get(8)).value());
         assertSourceSpan(list.get(9), 41, 44);
         assertEquals(Eof.SINGLETON, asEofAsExpr(list.get(9)).value());
-        assertSourceSpan(list.get(10), 45, 47);
+        assertSourceSpan(list.get(10), 45, 49);
         assertEquals(Char.of('x'), asCharAsExpr(list.get(10)).value());
-        assertSourceSpan(list.get(11), 48, 51);
+        assertSourceSpan(list.get(11), 50, 53);
         assertEquals(Str.of("x"), asStrAsExpr(list.get(11)).value());
         String expectedFormat = """
             begin
@@ -64,7 +64,7 @@ public class TestParserValueExpr {
                 true
                 null
                 eof
-                &x
+                &'x'
                 'x'
             end""";
         String actualFormat = beginLang.toString();
@@ -74,14 +74,14 @@ public class TestParserValueExpr {
     @Test
     public void testWithNegatives() {
         //                                      1         2         3         4
-        //                            01234567890123456789012345678901234567890123
-        Parser p = new Parser("begin a; -1; -1L; -1.0; -1.0f; -1m; -&x end");
+        //                            0123456789012345678901234567890123456789012345
+        Parser p = new Parser("begin a; -1; -1L; -1.0; -1.0f; -1m; -&'x' end");
 
         StmtOrExpr sox = p.parse();
         assertInstanceOf(BeginLang.class, sox);
         BeginLang beginLang = (BeginLang) sox;
 
-        assertSourceSpan(beginLang, 0, 43);
+        assertSourceSpan(beginLang, 0, 45);
         List<StmtOrExpr> list = beginLang.body.list;
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
@@ -111,6 +111,11 @@ public class TestParserValueExpr {
         assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
         assertEquals(Dec128.of("1"), asDec128AsExpr(unaryExpr.arg).dec128());
 
+        assertSourceSpan(list.get(6), 36, 41);
+        unaryExpr = asUnaryExpr(list.get(6));
+        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
+        assertEquals(Char.of('x'), asCharAsExpr(unaryExpr.arg).charNum());
+
         String expectedFormat = """
             begin
                 a
@@ -119,7 +124,7 @@ public class TestParserValueExpr {
                 -1.0
                 -1.0f
                 -1m
-                -&x
+                -&'x'
             end""";
         String actualFormat = beginLang.toString();
         assertEquals(expectedFormat, actualFormat);

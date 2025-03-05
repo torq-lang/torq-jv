@@ -26,7 +26,7 @@ public class QueryOrders extends AbstractExample {
             var orders = ${1}
             handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
                 func matches_query(order) in
-                    for field in FieldIter.new(query) do
+                    for field in new FieldIter(query) do
                         if order[field.0] != field.1 then
                             return false
                         end
@@ -35,8 +35,8 @@ public class QueryOrders extends AbstractExample {
                 end
                 case path
                     of ['orders'] then
-                        var array_list = ArrayList.new()
-                        for order in ValueIter.new(orders) do
+                        var array_list = new ArrayList()
+                        for order in new ValueIter(orders) do
                             if matches_query(order) then
                                 array_list.add(order);
                             end

@@ -18,7 +18,7 @@ public final class GlobalCounter extends AbstractExample {
     public static final String GLOBAL_COUNTER = """
         actor Counter() in
             import system.Cell
-            var c = Cell.new(0)
+            var c = new Cell(0)
             handle ask 'get' in
                 @c
             end

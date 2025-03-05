@@ -17,6 +17,10 @@ public interface VarType extends MonoType {
         return new VarTypeImpl(name);
     }
 
+    /*
+     * The name of the variable, such as 'α', 'β', or 'γ'.
+     */
+    @Override
     String name();
 }
 

@@ -22,7 +22,7 @@ public class TestEvalTokens {
     public void test() throws Exception {
         String source = """
             begin
-                x = Token.new()
+                x = new Token()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
             .addVar(TokenPack.TOKEN_IDENT, new Var(TokenPack.TOKEN_CLS))

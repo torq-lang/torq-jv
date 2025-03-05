@@ -20,11 +20,11 @@ public final class MergeIntStreams extends AbstractExample {
             import system[ArrayList, Cell, Stream, ValueIter]
             import examples.IntPublisher
             handle ask 'merge' in
-                var odd_iter = ValueIter.new(Stream.new(spawn(IntPublisher.cfg(1, 10, 2)), 'request'#{'count': 3})),
-                    even_iter = ValueIter.new(Stream.new(spawn(IntPublisher.cfg(2, 10, 2)), 'request'#{'count': 2}))
-                var answer = ArrayList.new()
-                var odd_next = Cell.new(odd_iter()),
-                    even_next = Cell.new(even_iter())
+                var odd_iter = new ValueIter(new Stream(spawn(new IntPublisher(1, 10, 2)), 'request'#{'count': 3})),
+                    even_iter = new ValueIter(new Stream(spawn(new IntPublisher(2, 10, 2)), 'request'#{'count': 2}))
+                var answer = new ArrayList()
+                var odd_next = new Cell(odd_iter()),
+                    even_next = new Cell(even_iter())
                 while @odd_next != eof && @even_next != eof do
                     if (@odd_next < @even_next) then
                         answer.add(@odd_next)

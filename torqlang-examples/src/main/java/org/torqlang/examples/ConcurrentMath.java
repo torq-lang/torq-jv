@@ -24,9 +24,9 @@ public final class ConcurrentMath extends AbstractExample {
                     n
                 end
             end
-            var n1 = spawn(Number.cfg(1)),
-                n2 = spawn(Number.cfg(2)),
-                n3 = spawn(Number.cfg(3))
+            var n1 = spawn(new Number(1)),
+                n2 = spawn(new Number(2)),
+                n3 = spawn(new Number(3))
             handle ask 'calculate' in
                 n1.ask('get') + n2.ask('get') * n3.ask('get')
             end

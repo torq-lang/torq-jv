@@ -21,8 +21,8 @@ public class TestEvalForLoop {
 
         String source = """
             begin
-                var counter = Cell.new(0)
-                for i in RangeIter.new(0, a) do
+                var counter = new Cell(0)
+                for i in new RangeIter(0, a) do
                     counter := @counter + 1
                 end
                 x = @counter
@@ -71,8 +71,8 @@ public class TestEvalForLoop {
 
         String source = """
             begin
-                var counter = Cell.new(0)
-                for i in RangeIter.new(0, a) do
+                var counter = new Cell(0)
+                for i in new RangeIter(0, a) do
                     counter := @counter + 1
                     if i == 2 then
                         break
@@ -135,8 +135,8 @@ public class TestEvalForLoop {
          */
         String source = """
             begin
-                var c = Cell.new(0)
-                for i in RangeIter.new(0, k) do
+                var c = new Cell(0)
+                for i in new RangeIter(0, k) do
                     c := @c + 1
                     if i == 1 then
                         c := @c + 10

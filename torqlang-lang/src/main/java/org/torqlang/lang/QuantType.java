@@ -73,6 +73,11 @@ final class QuantTypeImpl implements QuantType {
     }
 
     @Override
+    public final String name() {
+        return monoType.name();
+    }
+
+    @Override
     public final List<VarType> quantifiers() {
         return quantifiers;
     }

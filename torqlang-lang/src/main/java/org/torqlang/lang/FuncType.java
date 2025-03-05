@@ -85,6 +85,7 @@ final class FuncTypeImpl implements FuncType {
         return this;
     }
 
+    @Override
     public final String name() {
         return "Func";
     }

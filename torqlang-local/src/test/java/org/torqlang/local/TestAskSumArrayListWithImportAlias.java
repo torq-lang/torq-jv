@@ -22,10 +22,10 @@ public class TestAskSumArrayListWithImportAlias {
         String source = """
             actor SumArrayList() in
                 import system[ArrayList as JavaArrayList, Cell, ValueIter]
-                var one_thru_five = JavaArrayList.new([1, 2, 3, 4, 5])
+                var one_thru_five = new JavaArrayList([1, 2, 3, 4, 5])
                 handle ask 'perform' in
-                    var sum = Cell.new(0)
-                    for i in ValueIter.new(one_thru_five) do
+                    var sum = new Cell(0)
+                    for i in new ValueIter(one_thru_five) do
                         sum := @sum + i
                     end
                     @sum
@@ -98,7 +98,7 @@ public class TestAskSumArrayListWithImportAlias {
                         $create_tuple('handlers'#[$v1, $v8], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('SumArrayList'#{'cfg': $actor_cfgtr}, SumArrayList)
+                $create_rec('SumArrayList'#{'new': $actor_cfgtr}, SumArrayList)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

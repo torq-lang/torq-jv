@@ -21,7 +21,7 @@ public class TestEvalAccessNums {
     public void testInt32() throws Exception {
         String source = """
             begin
-                var a = Cell.new(5)
+                var a = new Cell(5)
                 x = @a
             end""";
         EvaluatorPerformed e = Evaluator.builder()
@@ -44,7 +44,7 @@ public class TestEvalAccessNums {
     public void testInt32WithAdd() throws Exception {
         String source = """
             begin
-                var a = Cell.new(5)
+                var a = new Cell(5)
                 x = @a + 3
             end""";
         EvaluatorPerformed e = Evaluator.builder()

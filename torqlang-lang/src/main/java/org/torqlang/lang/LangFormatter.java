@@ -193,8 +193,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitCharAsExpr(CharAsExpr lang, FormatterState state) throws Exception {
-        state.write('&');
+        state.write("&'");
         state.write(lang.charNum().formatValue());
+        state.write('\'');
         return null;
     }
 

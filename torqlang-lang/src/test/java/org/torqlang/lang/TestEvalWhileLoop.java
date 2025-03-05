@@ -21,7 +21,7 @@ public class TestEvalWhileLoop {
 
         String source = """
             begin
-                var c = Cell.new(0)
+                var c = new Cell(0)
                 while @c < a do
                     c := @c + 1
                 end
@@ -84,7 +84,7 @@ public class TestEvalWhileLoop {
 
         String source = """
             begin
-                var c = Cell.new(0)
+                var c = new Cell(0)
                 while true do
                     if @c >= a then
                         break
@@ -152,8 +152,8 @@ public class TestEvalWhileLoop {
 
         String source = """
             begin
-                var i = Cell.new(-1)
-                var c = Cell.new(0)
+                var i = new Cell(-1)
+                var c = new Cell(0)
                 while true do
                     i := @i + 1
                     c := @c + 1

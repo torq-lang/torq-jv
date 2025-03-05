@@ -11,10 +11,6 @@ import org.torqlang.util.SourceSpan;
 
 import java.util.NoSuchElementException;
 
-/**
- * Tokens that contain numeric values or quoted literals are marked as invalid when their content is invalid.
- * Other tokens, such as character symbols, are never marked as invalid.
- */
 public final class LexerToken implements SourceSpan {
 
     private final LexerTokenType type;

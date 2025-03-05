@@ -23,13 +23,13 @@ public final class IntPublisher extends AbstractExample {
         actor IntPublisher(first, last, incr) in
             import system[ArrayList, Cell]
             import system.Procs.respond
-            var next_int = Cell.new(first)
+            var next_int = new Cell(first)
             handle ask 'request'#{'count': n} in
                 func calculate_to() in
                     var to = @next_int + (n - 1) * incr
                     if to < last then to else last end
                 end
-                var response = ArrayList.new()
+                var response = new ArrayList()
                 var to = calculate_to()
                 while @next_int <= to do
                     response.add(@next_int)

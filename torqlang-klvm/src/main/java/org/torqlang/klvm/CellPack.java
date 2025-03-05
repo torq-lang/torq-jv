@@ -55,9 +55,6 @@ public final class CellPack {
 
         private ValueOrVar valueOrVar;
 
-        private CellObj() {
-        }
-
         CellObj(ValueOrVar valueOrVar) {
             this.valueOrVar = valueOrVar;
         }
