@@ -13,6 +13,7 @@ public final class SymbolsAndKeywords {
 
     static final char ACCESS_CELL_VALUE_OPER_CHAR = '@';
     static final char ADD_OPER_CHAR = '+';
+    static final char AND_OPER_CHAR = '&';
     static final char BACKTICK_QUOTE_CHAR = '`';
     static final char COLON_CHAR = ':';
     static final char COMMA_CHAR = ',';
@@ -29,6 +30,7 @@ public final class SymbolsAndKeywords {
     static final char MODULO_OPER_CHAR = '%';
     static final char MULTIPLY_OPER_CHAR = '*';
     static final char NOT_OPER_CHAR = '!';
+    static final char OR_OPER_CHAR = '|';
     static final char R_BRACE_CHAR = '}';
     static final char R_BRACKET_CHAR = ']';
     static final char R_PAREN_CHAR = ')';
@@ -69,9 +71,14 @@ public final class SymbolsAndKeywords {
     static final String FUNC_VALUE = "func";
     static final String HANDLE_VALUE = "handle";
     static final String IF_VALUE = "if";
+    static final String IMPLEMENTS_VALUE = "implements";
     static final String IMPORT_VALUE = "import";
     static final String IN_VALUE = "in";
     static final String LOCAL_VALUE = "local";
+    static final String META_VALUE = "meta";
+    static final String NATIVE_VALUE = "native";
+    static final String PACKAGE_VALUE = "package";
+    static final String PROTOCOL_VALUE = "protocol";
     static final String NULL_VALUE = "null";
     static final String OF_VALUE = "of";
     static final String PROC_VALUE = "proc";
@@ -85,6 +92,7 @@ public final class SymbolsAndKeywords {
     static final String THROW_VALUE = "throw";
     static final String TRUE_VALUE = "true";
     static final String TRY_VALUE = "try";
+    static final String TYPE_VALUE = "type";
     static final String VAR_VALUE = "var";
     static final String WHEN_VALUE = "when";
     static final String WHILE_VALUE = "while";
@@ -96,22 +104,22 @@ public final class SymbolsAndKeywords {
         {},
         {DO_VALUE, IF_VALUE, IN_VALUE, OF_VALUE},
         {ACT_VALUE, END_VALUE, EOF_VALUE, FOR_VALUE, TRY_VALUE, VAR_VALUE},
-        {CASE_VALUE, ELSE_VALUE, FUNC_VALUE, NULL_VALUE, PROC_VALUE, SELF_VALUE, SKIP_VALUE, THEN_VALUE, TRUE_VALUE, WHEN_VALUE},
+        {CASE_VALUE, ELSE_VALUE, FUNC_VALUE, NULL_VALUE, PROC_VALUE, SELF_VALUE, SKIP_VALUE, THEN_VALUE, TRUE_VALUE, TYPE_VALUE, WHEN_VALUE},
         {ACTOR_VALUE, BEGIN_VALUE, BREAK_VALUE, CATCH_VALUE, FALSE_VALUE, LOCAL_VALUE, SPAWN_VALUE, THROW_VALUE, WHILE_VALUE},
         {ELSEIF_VALUE, IMPORT_VALUE, RETURN_VALUE},
-        {FINALLY_VALUE},
-        {CONTINUE_VALUE}
+        {FINALLY_VALUE, PACKAGE_VALUE},
+        {CONTINUE_VALUE, PROTOCOL_VALUE}
     };
 
     private static final char[] ONE_CHAR_SYMBOLS_SORTED;
 
     static {
         char[] symbols = new char[]{
-            ACCESS_CELL_VALUE_OPER_CHAR, ADD_OPER_CHAR, BACKTICK_QUOTE_CHAR, COLON_CHAR, COMMA_CHAR, DIVIDE_OPER_CHAR,
-            DOUBLE_QUOTE_CHAR, DOT_OPER_CHAR, GREATER_THAN_OPER_CHAR, HASH_TAG_CHAR, IDENT_ESC_CHAR, L_BRACE_CHAR,
-            L_BRACKET_CHAR, L_PAREN_CHAR, LESS_THAN_OPER_CHAR, MODULO_OPER_CHAR, MULTIPLY_OPER_CHAR, NOT_OPER_CHAR,
-            R_BRACE_CHAR, R_BRACKET_CHAR, R_PAREN_CHAR, SEMICOLON_CHAR, SINGLE_QUOTE_CHAR, SUBTRACT_OPER_CHAR,
-            UNIFY_OPER_CHAR
+            ACCESS_CELL_VALUE_OPER_CHAR, ADD_OPER_CHAR, AND_OPER_CHAR, BACKTICK_QUOTE_CHAR, COLON_CHAR, COMMA_CHAR,
+            DIVIDE_OPER_CHAR, DOUBLE_QUOTE_CHAR, DOT_OPER_CHAR, GREATER_THAN_OPER_CHAR, HASH_TAG_CHAR, IDENT_ESC_CHAR,
+            L_BRACE_CHAR, L_BRACKET_CHAR, L_PAREN_CHAR, LESS_THAN_OPER_CHAR, MODULO_OPER_CHAR, MULTIPLY_OPER_CHAR,
+            NOT_OPER_CHAR, OR_OPER_CHAR, R_BRACE_CHAR, R_BRACKET_CHAR, R_PAREN_CHAR, SEMICOLON_CHAR, SINGLE_QUOTE_CHAR,
+            SUBTRACT_OPER_CHAR, UNIFY_OPER_CHAR
         };
         Arrays.sort(symbols);
         ONE_CHAR_SYMBOLS_SORTED = symbols;
@@ -191,10 +199,13 @@ public final class SymbolsAndKeywords {
     }
 
     public static boolean isWeakKeyword(String source, int begin, int end) {
-        return substringEquals(source, begin, end, HANDLE_VALUE) ||
-            substringEquals(source, begin, end, ASK_VALUE) ||
-            substringEquals(source, begin, end, STREAM_VALUE) ||
+        return substringEquals(source, begin, end, ASK_VALUE) ||
             substringEquals(source, begin, end, TELL_VALUE) ||
+            substringEquals(source, begin, end, HANDLE_VALUE) ||
+            substringEquals(source, begin, end, IMPLEMENTS_VALUE) ||
+            substringEquals(source, begin, end, STREAM_VALUE) ||
+            substringEquals(source, begin, end, META_VALUE) ||
+            substringEquals(source, begin, end, NATIVE_VALUE) ||
             substringEquals(source, begin, end, AS_VALUE);
     }
 

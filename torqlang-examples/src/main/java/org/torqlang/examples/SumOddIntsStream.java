@@ -22,10 +22,10 @@ public final class SumOddIntsStream extends AbstractExample {
             import system[Cell, Stream, ValueIter]
             import examples.IntPublisher
             handle ask 'sum'#{'first': first, 'last': last} in
-                var sum = Cell.new(0)
-                var int_publisher = spawn(IntPublisher.cfg(first, last, 1))
-                var int_stream = Stream.new(int_publisher, 'request'#{'count': 3})
-                for i in ValueIter.new(int_stream) do
+                var sum = new Cell(0)
+                var int_publisher = spawn(new IntPublisher(first, last, 1))
+                var int_stream = new Stream(int_publisher, 'request'#{'count': 3})
+                for i in new ValueIter(int_stream) do
                     if i % 2 != 0 then sum := @sum + i end
                 end
                 @sum

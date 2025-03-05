@@ -65,5 +65,7 @@ public interface PolyType {
 
     MonoType instantiate(SuffixFactory suffixFactory);
 
+    String name();
+
     PolyType subst(TypeSubst subst);
 }

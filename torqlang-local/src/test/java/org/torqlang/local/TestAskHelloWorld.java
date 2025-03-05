@@ -103,7 +103,7 @@ public class TestAskHelloWorld {
                         $create_tuple('handlers'#[$v3, $v10], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('HelloFactorial'#{'cfg': $actor_cfgtr}, HelloFactorial)
+                $create_rec('HelloFactorial'#{'new': $actor_cfgtr}, HelloFactorial)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -164,7 +164,7 @@ public class TestAskHelloWorld {
                         $create_tuple('handlers'#[$v0, $v4], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('HelloWorld'#{'cfg': $actor_cfgtr}, HelloWorld)
+                $create_rec('HelloWorld'#{'new': $actor_cfgtr}, HelloWorld)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

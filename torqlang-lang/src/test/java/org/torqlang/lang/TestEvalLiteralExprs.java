@@ -36,7 +36,7 @@ public class TestEvalLiteralExprs {
     public void testChar() throws Exception {
         String source = """
             begin
-                &c
+                &'c'
             end""";
         Ident x = Ident.create("x");
         EvaluatorPerformed e = Evaluator.builder()

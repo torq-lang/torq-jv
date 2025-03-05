@@ -21,7 +21,7 @@ public final class ConcurrentMathWithIncr extends AbstractExample {
         actor ConcurrentMath() in
             import system.Cell
             actor Number(n) in
-                var value = Cell.new(n)
+                var value = new Cell(n)
                 handle ask 'get' in
                     @value
                 end
@@ -29,9 +29,9 @@ public final class ConcurrentMathWithIncr extends AbstractExample {
                     value := @value + 1
                 end
             end
-            var n1 = spawn(Number.cfg(0)),
-                n2 = spawn(Number.cfg(0)),
-                n3 = spawn(Number.cfg(0))
+            var n1 = spawn(new Number(0)),
+                n2 = spawn(new Number(0)),
+                n3 = spawn(new Number(0))
             handle ask 'calculate' in
                 n1.tell('incr')
                 n2.tell('incr'); n2.tell('incr')

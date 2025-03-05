@@ -17,6 +17,7 @@ public interface AppType extends MonoType {
     /*
      * The name of the type constructor, such as 'Int32' or 'Func'.
      */
+    @Override
     String name();
 
     /*

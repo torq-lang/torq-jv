@@ -170,7 +170,7 @@ public final class Parser {
         Ident name = null;
         LexerToken current = nextToken();
         if (current.isIdent()) {
-            name = Ident.create(current.substring());
+            name = tokenToIdent(current);
             current = nextToken(); // accept IDENT
         }
         if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
@@ -488,7 +488,7 @@ public final class Parser {
         Ident name = null;
         LexerToken current = nextToken(); // accept 'func' token
         if (current.isIdent()) {
-            name = Ident.create(current.substring());
+            name = tokenToIdent(current);
             current = nextToken(); // accept IDENT
         }
         if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
@@ -752,7 +752,7 @@ public final class Parser {
         Ident name = null;
         LexerToken current = nextToken(); // accept 'proc' token
         if (current.isIdent()) {
-            name = Ident.create(current.substring());
+            name = tokenToIdent(current);
             current = nextToken(); // accept IDENT
         }
         if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
@@ -1227,17 +1227,17 @@ public final class Parser {
             }
         }
         if (current.isChar()) {
-            // TODO: Try to move this code to a new Char.decode() method, like we did
-            //       for Int32, Int64, and Dec128
             nextToken(); // accept character token
-            char firstCharValue = current.substringCharAt(1); // first char past '&'
-            if (current.length() == 2) {
+            char firstCharValue = current.substringCharAt(2); // first char past "&'"
+            if (current.length() == 4) {
+                // &'a'
                 return new CharAsExpr(Char.of(firstCharValue), current);
             }
             if (firstCharValue != '\\') {
                 throw new ParserError(INVALID_CHARACTER_LITERAL, current);
             }
-            if (current.length() == 3) {
+            if (current.length() == 5) {
+                // &'\n'
                 char secondCharValue = current.substringCharAt(2);
                 if (secondCharValue == 't') {
                     return new CharAsExpr(Char.of('\t'), current);
@@ -1255,10 +1255,13 @@ public final class Parser {
                     return new CharAsExpr(Char.of('\f'), current);
                 }
             }
-            if (current.length() == 7) {
+            if (current.length() == 9) {
+                // &'\u0000'
                 char secondCharValue = current.substringCharAt(2);
                 if (secondCharValue == 'u') {
-                    char charValue = (char) Integer.parseInt(current.substring().substring(3), 16);
+                    String fullTorqChar = current.substring();
+                    String unicodeDigits = fullTorqChar.substring(4, fullTorqChar.length() - 1);
+                    char charValue = (char) Integer.parseInt(unicodeDigits, 16);
                     return new CharAsExpr(Char.of(charValue), current);
                 }
             }

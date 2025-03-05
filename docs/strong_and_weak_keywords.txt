@@ -1,7 +1,7 @@
+STRONG
+======
 act
 actor
-as (weak)
-ask (weak)
 begin
 break
 case
@@ -16,21 +16,19 @@ false
 finally
 for
 func
-handle (weak)
 if
 import
 in
 local
-namespace
 null
 of
+package
+protocol
 proc
 return
 self
 skip
 spawn
-stream (weak)
-tell (weak)
 then
 throw
 true
@@ -39,3 +37,14 @@ type
 var
 when
 while
+
+WEAK
+====
+as
+ask
+handle
+implements
+meta
+native
+stream
+tell

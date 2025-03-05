@@ -24,10 +24,10 @@ public class TestAskIterateTimerTicks {
             actor IterateTimerTicks() in
                 import system[Cell, Stream, Timer, ValueIter]
                 handle ask 'iterate' in
-                    var tick_count = Cell.new(0)
-                    var timer_stream = Stream.new(spawn(Timer.cfg(1, 'microseconds')),
+                    var tick_count = new Cell(0)
+                    var timer_stream = new Stream(spawn(new Timer(1, 'microseconds')),
                         'request'#{'ticks': 5})
-                    for tick in ValueIter.new(timer_stream) do
+                    for tick in new ValueIter(timer_stream) do
                         tick_count := @tick_count + 1
                     end
                     @tick_count
@@ -58,7 +58,7 @@ public class TestAskIterateTimerTicks {
                                         $select_apply(Cell, ['new'], 0, tick_count)
                                         local $v4, $v6 in
                                             local $v5 in
-                                                $select_apply(Timer, ['cfg'], 1, 'microseconds', $v5)
+                                                $select_apply(Timer, ['new'], 1, 'microseconds', $v5)
                                                 $spawn($v5, $v4)
                                             end
                                             $bind('request'#{'ticks': 5}, $v6)
@@ -104,7 +104,7 @@ public class TestAskIterateTimerTicks {
                         $create_tuple('handlers'#[$v0, $v10], $r)
                     end
                 end, $actor_cfgtr)
-                $create_rec('IterateTimerTicks'#{'cfg': $actor_cfgtr}, IterateTimerTicks)
+                $create_rec('IterateTimerTicks'#{'new': $actor_cfgtr}, IterateTimerTicks)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

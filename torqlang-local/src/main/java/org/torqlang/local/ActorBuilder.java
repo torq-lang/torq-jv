@@ -191,7 +191,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot spawn at state: " + state);
         }
         // The actor record will contain values (not vars). Therefore, we can access the ActorCfgtr directly.
-        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(Actor.CFG);
+        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(Actor.NEW);
         Env env = Env.create(LocalActor.rootEnv(),
             List.of(
                 new EnvEntry(Ident.$ACTOR_CFGTR, new Var(actorCfgtr)),

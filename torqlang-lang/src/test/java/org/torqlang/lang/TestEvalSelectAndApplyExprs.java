@@ -142,7 +142,7 @@ public class TestEvalSelectAndApplyExprs {
     public void testApplyWithSelectAndApplyArg2() throws Exception {
         String source = """
             begin
-                var r = SomeObj.method(some_proc(SomeActor.cfg(1, 'two')))
+                var r = SomeObj.method(some_proc(new SomeActor(1, 'two')))
             end""";
         EvaluatorGenerated g = Evaluator.builder()
             .addVar(Ident.create("x"))
@@ -153,7 +153,7 @@ public class TestEvalSelectAndApplyExprs {
             local r in
                 local $v0 in
                     local $v1 in
-                        $select_apply(SomeActor, ['cfg'], 1, 'two', $v1)
+                        $select_apply(SomeActor, ['new'], 1, 'two', $v1)
                         some_proc($v1, $v0)
                     end
                     $select_apply(SomeObj, ['method'], $v0, r)

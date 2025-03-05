@@ -21,7 +21,7 @@ public class TestEvalArrayLists {
     public void testAdd() throws Exception {
         String source = """
             begin
-                x = ArrayList.new()
+                x = new ArrayList()
                 x.add(3)
                 x.add(2)
                 x.add(1)
@@ -50,7 +50,7 @@ public class TestEvalArrayLists {
     public void testClear() throws Exception {
         String source = """
             begin
-                x = ArrayList.new()
+                x = new ArrayList()
                 x.add(3)
                 x.add(2)
                 x.add(1)
@@ -82,7 +82,7 @@ public class TestEvalArrayLists {
         String source = """
             begin
                 var a = [3, 2, 1]
-                var b = ArrayList.new(a)
+                var b = new ArrayList(a)
                 x = b.to_tuple()
             end""";
         EvaluatorPerformed e = Evaluator.builder()

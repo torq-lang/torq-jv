@@ -61,9 +61,9 @@ import static org.torqlang.lang.TypeEnv.SUBTRACT_IDENT;
  *         Γ ⊢ x : τ
  *
  *     [fn]
- *         Γ + x : τ1 ⊢ e : τ1
- *         -------------------
- *         Γ ⊢ λx.e : τ1 -> τ2
+ *          Γ + x : τ1 ⊢ e : τ2
+ *         ---------------------
+ *         Γ ⊢ λx . e : τ1 -> τ2
  *
  *     [app]
  *         Γ ⊢ e1 : τ1 -> τ2   Γ ⊢ e2 : τ1
@@ -76,9 +76,57 @@ import static org.torqlang.lang.TypeEnv.SUBTRACT_IDENT;
  *                 Γ ⊢ let x = e1 in e2 : τ2
  *
  *     [fix]
- *         Γ + f τ ⊢ λx.e : τ
- *         ------------------
- *         Γ ⊢ fix f λx.e : τ
+ *         Γ + f : τ ⊢ λx . e : τ
+ *         ----------------------
+ *          Γ ⊢ fix f λx . e : τ
+ *
+ *     - - - - - - - - - - - - - - - - HM plus System F  - - - - - - - - - - - - - - -
+ *
+ *     [typeabs]
+ *         Γ + α type ⊢ M : σ
+ *         -------------------
+ *         Γ ⊢ Λα . M : ∀α . σ
+ *
+ *     [typeapp]
+ *          Γ  ⊢ M : ∀α . σ
+ *         -----------------
+ *         Γ ⊢ M τ : σ [τ/α]
+ *
+ *     Where σ, τ are types, α is a type variable, and "α type" in the context
+ *     indicates that α is bound.
+ *
+ *     - - - - - - - - - - - - - - - - - - System F  - - - - - - - - - - - - - - - - -
+ *
+ *     Types
+ *         A, B ::= α | A -> B | ∀α . B
+ *
+ *     Terms
+ *         t, u ::= x | λx : A . t | t u | Λα . t | t A
+ *
+ *     [var]
+ *         x : A ∈ Γ
+ *         ---------
+ *         Γ ⊢ x : A
+ *
+ *     [fn]
+ *            Γ + x : A ⊢ t : B
+ *         -----------------------
+ *         Γ ⊢ λx : A . t : A -> B
+ *
+ *     [app]
+ *         Γ ⊢ t : A -> B   Γ ⊢ u : A
+ *         --------------------------
+ *                Γ ⊢ t u : B
+ *
+ *     [typeabs]
+ *              Γ + t : B
+ *         -------------------    (α is not free in Γ)
+ *         Γ ⊢ Λα . t : ∀α . B
+ *
+ *     [typeapp]
+ *           Γ ⊢ t : ∀α . B
+ *         -------------------
+ *         Γ ⊢ t A : B{α := A}
  *
  *     - - - - - - - additions to original Hindley-Milner type proofs - - - - - - -
  *
@@ -251,47 +299,6 @@ import static org.torqlang.lang.TypeEnv.SUBTRACT_IDENT;
  */
 public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
-    /*
-        From the book:
-
-        ## Scalar, composite, and method types
-
-        - Value
-            - Comp
-                - Obj
-                - Rec
-                    - Tuple
-                    - Array
-            - Lit
-                - Bool
-                - Eof
-                - Null
-                - Str
-                - Token
-            - Num
-                - Dec128
-                - Flt64
-                    - Flt32
-                - Int64
-                    - Int32
-                        - Char
-            - Meth
-                - Func
-                - Proc
-
-        ## Actor, label (literal) and feature types
-
-        - Value
-            - Comp
-                - Obj
-                    - ActorCfg
-            - Feat
-                - Int32
-                - Lit
-            - Meth
-                - Func
-                    - ActorCfgtr
-     */
     private static final Set<Ident> ILLEGAL_IDENTS = Set.of(
         Ident.create("ActorCfg"),
         Ident.create("ActorCfgtr"),
@@ -617,9 +624,9 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     /*
      * [fix]
-     *     Γ + f τ ⊢ λx.e : τ
-     *     ------------------
-     *     Γ ⊢ fix f λx.e : τ
+     *     Γ + f : τ ⊢ λx.e : τ
+     *     --------------------
+     *      Γ ⊢ fix f λx.e : τ
      *
      * [fix]
      *     M(Γ, FIX f λx.e, ρ) =
