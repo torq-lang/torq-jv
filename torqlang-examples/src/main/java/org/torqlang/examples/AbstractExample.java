@@ -8,9 +8,10 @@
 package org.torqlang.examples;
 
 import org.torqlang.klvm.FailedValue;
-import org.torqlang.util.ErrorWithSourceSpan;
 
 import java.util.Objects;
+
+import static org.torqlang.util.ErrorWithSourceSpan.printWithSourceAndRethrow;
 
 public abstract class AbstractExample {
 
@@ -34,20 +35,13 @@ public abstract class AbstractExample {
         }
     }
 
-    public static void showErrorAndRethrow(Exception exc) throws Exception {
-        if (exc instanceof ErrorWithSourceSpan errorWithSourceSpan) {
-            System.err.println(errorWithSourceSpan.formatWithSource(5, 5, 5));
-        }
-        throw exc;
-    }
-
     public abstract void perform() throws Exception;
 
     public final void performWithErrorCheck() throws Exception {
         try {
             perform();
         } catch (Exception exc) {
-            showErrorAndRethrow(exc);
+            printWithSourceAndRethrow(exc, 5, 5, 5);
         }
     }
 

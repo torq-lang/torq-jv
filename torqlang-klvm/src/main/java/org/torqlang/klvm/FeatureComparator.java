@@ -18,6 +18,8 @@ import java.util.Comparator;
  */
 public final class FeatureComparator implements Comparator<Feature> {
 
+    // TODO: Only Int32 features are valid integers
+    //       If we sort Int32 features after other features, we more closely mimic XML
     public static final FeatureComparator SINGLETON = new FeatureComparator();
 
     private FeatureComparator() {

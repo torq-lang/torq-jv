@@ -17,7 +17,7 @@ public final class MergeIntStreams extends AbstractExample {
 
     public static final String SOURCE = """
         actor MergeIntStreams() in
-            import system[ArrayList, Cell, Stream, ValueIter]
+            import system.{ArrayList, Cell, Stream, ValueIter}
             import examples.IntPublisher
             handle ask 'merge' in
                 var odd_iter = new ValueIter(new Stream(spawn(new IntPublisher(1, 10, 2)), 'request'#{'count': 3})),

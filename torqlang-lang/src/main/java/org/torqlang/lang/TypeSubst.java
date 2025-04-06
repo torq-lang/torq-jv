@@ -23,26 +23,26 @@ import java.util.Objects;
 public final class TypeSubst {
     private static final TypeSubst EMPTY_SUBST = new TypeSubst();
 
-    private final Map<VarType, MonoType> mappings;
+    private final Map<VarInfr, MonoInfr> mappings;
 
     private TypeSubst() {
         this(Collections.emptyMap());
     }
 
-    private TypeSubst(Map<VarType, MonoType> mappings) {
+    private TypeSubst(Map<VarInfr, MonoInfr> mappings) {
         this.mappings = mappings;
     }
 
     public static TypeSubst combine(TypeSubst S1, TypeSubst S2) {
-        Map<VarType, MonoType> combinedMapping = new HashMap<>();
-        for (VarType key : S1.mappings.keySet()) {
+        Map<VarInfr, MonoInfr> combinedMapping = new HashMap<>();
+        for (VarInfr key : S1.mappings.keySet()) {
             combinedMapping.put(key, key);
         }
-        for (VarType key : S2.mappings.keySet()) {
+        for (VarInfr key : S2.mappings.keySet()) {
             combinedMapping.put(key, key);
         }
-        for (VarType key : combinedMapping.keySet()) {
-            MonoType s2Type = S2.get(key);
+        for (VarInfr key : combinedMapping.keySet()) {
+            MonoInfr s2Type = S2.get(key);
             if (s2Type == null) {
                 combinedMapping.put(key, S1.get(key));
             } else {
@@ -52,11 +52,11 @@ public final class TypeSubst {
         return new TypeSubst(combinedMapping);
     }
 
-    public static TypeSubst create(Map<VarType, MonoType> mappings) {
+    public static TypeSubst create(Map<VarInfr, MonoInfr> mappings) {
         return new TypeSubst(Map.copyOf(mappings));
     }
 
-    public static TypeSubst create(VarType a, MonoType b) {
+    public static TypeSubst create(VarInfr a, MonoInfr b) {
         return new TypeSubst(Map.of(a, b));
     }
 
@@ -68,8 +68,8 @@ public final class TypeSubst {
      * S = unify(a, b)
      * S(a) = S(b)
      */
-    public static TypeSubst unify(MonoType a, MonoType b) {
-        if (a instanceof VarType aVar) {
+    public static TypeSubst unify(MonoInfr a, MonoInfr b) {
+        if (a instanceof VarInfr aVar) {
             if (a.equals(b)) {
                 return EMPTY_SUBST;
             } else if (b.contains(a)) {
@@ -78,11 +78,11 @@ public final class TypeSubst {
                 return TypeSubst.create(aVar, b);
             }
         }
-        if (b instanceof VarType) {
+        if (b instanceof VarInfr) {
             return unify(b, a);
         }
-        AppType aAppType = (AppType) a;
-        AppType bAppType = (AppType) b;
+        AppInfr aAppType = (AppInfr) a;
+        AppInfr bAppType = (AppInfr) b;
         if (aAppType.getClass() == bAppType.getClass() &&
             aAppType.name().equals(bAppType.name()) &&
             aAppType.params().size() == bAppType.params().size())
@@ -92,8 +92,8 @@ public final class TypeSubst {
             } else {
                 TypeSubst subst = EMPTY_SUBST;
                 for (int i = 0; i < aAppType.params().size(); i++) {
-                    MonoType aParam = aAppType.params().get(i);
-                    MonoType bParam = bAppType.params().get(i);
+                    MonoInfr aParam = aAppType.params().get(i);
+                    MonoInfr bParam = bAppType.params().get(i);
                     subst = combine(subst, unify(aParam.subst(subst), bParam.subst(subst)));
                 }
                 return subst;
@@ -103,7 +103,7 @@ public final class TypeSubst {
         }
     }
 
-    public final MonoType apply(MonoType monoType) {
+    public final MonoInfr apply(MonoInfr monoType) {
         return monoType.subst(this);
     }
 
@@ -124,7 +124,7 @@ public final class TypeSubst {
         return Objects.equals(mappings, typeSubst.mappings);
     }
 
-    public final MonoType get(VarType varType) {
+    public final MonoInfr get(VarInfr varType) {
         return mappings.get(varType);
     }
 
@@ -133,7 +133,7 @@ public final class TypeSubst {
         return Objects.hashCode(mappings);
     }
 
-    public final void put(VarType varType, MonoType monoType) {
+    public final void put(VarInfr varType, MonoInfr monoType) {
         mappings.put(varType, monoType);
     }
 

@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface ObjType extends CompType {
+public interface ObjInfr extends CompInfr {
 }

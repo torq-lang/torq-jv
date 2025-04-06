@@ -27,19 +27,19 @@ public interface TypeEnv {
         return TypeEnvImpl.create(parent);
     }
 
-    static TypeEnv create(Map<Ident, PolyType> mappings) {
+    static TypeEnv create(Map<Ident, PolyInfr> mappings) {
         return TypeEnvImpl.create(mappings);
     }
 
-    static TypeEnv create(Map<Ident, PolyType> mappings, TypeEnv parent) {
+    static TypeEnv create(Map<Ident, PolyInfr> mappings, TypeEnv parent) {
         return TypeEnvImpl.create(mappings, parent);
     }
 
-    static String toString(Map<Ident, PolyType> mappings) {
+    static String toString(Map<Ident, PolyInfr> mappings) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         boolean first = true;
-        for (Map.Entry<Ident, PolyType> assign : mappings.entrySet()) {
+        for (Map.Entry<Ident, PolyInfr> assign : mappings.entrySet()) {
             if (!first) {
                 sb.append(", ");
             }
@@ -52,19 +52,19 @@ public interface TypeEnv {
         return sb.toString();
     }
 
-    void captureFreeVars(Set<VarType> freeVars);
+    void captureFreeVars(Set<VarInfr> freeVars);
 
-    Set<VarType> freeVars();
+    Set<VarInfr> freeVars();
 
-    PolyType generalize(PolyType polyType);
+    PolyInfr generalize(PolyInfr polyType);
 
-    PolyType get(Ident ident);
+    PolyInfr get(Ident ident);
 
     TypeEnv parent();
 
-    void put(Ident ident, PolyType polyType);
+    void put(Ident ident, PolyInfr polyType);
 
-    PolyType shallowGet(Ident ident);
+    PolyInfr shallowGet(Ident ident);
 
     int shallowSize();
 
@@ -77,51 +77,51 @@ final class BuiltinTypeEnvImpl implements TypeEnv {
 
     static final BuiltinTypeEnvImpl SINGLETON = new BuiltinTypeEnvImpl();
 
-    private final Map<Ident, PolyType> mappings;
+    private final Map<Ident, PolyInfr> mappings;
     private final TypeEnv parent;
 
     private BuiltinTypeEnvImpl() {
         // CAUTION: There can be no free variables in builtin types.
         this.mappings = Map.of(
-            Ident.create("Bool"), ScalarType.BOOL,
-            Ident.create("Int32"), ScalarType.INT32,
-            Ident.create("Int64"), ScalarType.INT64,
-            Ident.create("Str"), ScalarType.STR,
-            Ident.create("Void"), ScalarType.VOID,
-            ADD_IDENT, QuantType.create(
-                List.of(VarType.create("α")),
-                FuncType.create(List.of(VarType.create("α"), VarType.create("α"), VarType.create("α")))
+            Ident.create("Bool"), ScalarInfr.BOOL,
+            Ident.create("Int32"), ScalarInfr.INT32,
+            Ident.create("Int64"), ScalarInfr.INT64,
+            Ident.create("Str"), ScalarInfr.STR,
+            Ident.create("Void"), ScalarInfr.VOID,
+            ADD_IDENT, QuantInfr.create(
+                List.of(VarInfr.create("α")),
+                FuncInfr.create(List.of(VarInfr.create("α"), VarInfr.create("α"), VarInfr.create("α")))
             ),
-            SUBTRACT_IDENT, QuantType.create(
-                List.of(VarType.create("α")),
-                FuncType.create(List.of(VarType.create("α"), VarType.create("α"), VarType.create("α")))
+            SUBTRACT_IDENT, QuantInfr.create(
+                List.of(VarInfr.create("α")),
+                FuncInfr.create(List.of(VarInfr.create("α"), VarInfr.create("α"), VarInfr.create("α")))
             )
         );
         this.parent = null;
     }
 
     @Override
-    public void captureFreeVars(Set<VarType> freeVars) {
+    public void captureFreeVars(Set<VarInfr> freeVars) {
     }
 
     @Override
-    public final PolyType get(Ident ident) {
+    public final PolyInfr get(Ident ident) {
         return mappings.get(ident);
     }
 
     @Override
-    public Set<VarType> freeVars() {
+    public Set<VarInfr> freeVars() {
         return Set.of();
     }
 
     @Override
-    public final PolyType generalize(PolyType polyType) {
-        Set<VarType> polyFree = new HashSet<>(polyType.freeVars());
+    public final PolyInfr generalize(PolyInfr polyType) {
+        Set<VarInfr> polyFree = new HashSet<>(polyType.freeVars());
         return polyType.addQuantifiers(polyFree);
     }
 
     @Override
-    public final PolyType shallowGet(Ident ident) {
+    public final PolyInfr shallowGet(Ident ident) {
         return mappings.get(ident);
     }
 
@@ -141,7 +141,7 @@ final class BuiltinTypeEnvImpl implements TypeEnv {
     }
 
     @Override
-    public final void put(Ident ident, PolyType polyType) {
+    public final void put(Ident ident, PolyInfr polyType) {
         // This will never happen because BuiltinTypeEnvImpl must never be an inner scope.
         // In other words, BuiltinTypeEnvImpl is always the parent of another scope.
         throw new UnsupportedOperationException();
@@ -160,10 +160,10 @@ final class BuiltinTypeEnvImpl implements TypeEnv {
 
 final class TypeEnvImpl implements TypeEnv {
 
-    private final Map<Ident, PolyType> mappings;
+    private final Map<Ident, PolyInfr> mappings;
     private final TypeEnv parent;
 
-    private TypeEnvImpl(Map<Ident, PolyType> mappings, TypeEnv parent) {
+    private TypeEnvImpl(Map<Ident, PolyInfr> mappings, TypeEnv parent) {
         this.mappings = mappings;
         this.parent = parent != null ? parent : BuiltinTypeEnvImpl.SINGLETON;
     }
@@ -176,25 +176,25 @@ final class TypeEnvImpl implements TypeEnv {
         return new TypeEnvImpl(new HashMap<>(), parent);
     }
 
-    static TypeEnvImpl create(Map<Ident, PolyType> mappings) {
+    static TypeEnvImpl create(Map<Ident, PolyInfr> mappings) {
         return new TypeEnvImpl(new HashMap<>(mappings), null);
     }
 
-    static TypeEnvImpl create(Map<Ident, PolyType> mappings, TypeEnv parent) {
+    static TypeEnvImpl create(Map<Ident, PolyInfr> mappings, TypeEnv parent) {
         return new TypeEnvImpl(new HashMap<>(mappings), parent);
     }
 
     @Override
-    public void captureFreeVars(Set<VarType> freeVars) {
-        for (PolyType pt : mappings.values()) {
+    public void captureFreeVars(Set<VarInfr> freeVars) {
+        for (PolyInfr pt : mappings.values()) {
             pt.captureFreeVars(freeVars);
         }
         parent.captureFreeVars(freeVars);
     }
 
     @Override
-    public final PolyType get(Ident ident) {
-        PolyType answer = mappings.get(ident);
+    public final PolyInfr get(Ident ident) {
+        PolyInfr answer = mappings.get(ident);
         if (answer == null) {
             answer = parent.get(ident);
         }
@@ -202,15 +202,15 @@ final class TypeEnvImpl implements TypeEnv {
     }
 
     @Override
-    public Set<VarType> freeVars() {
-        Set<VarType> fvs = new HashSet<>();
+    public Set<VarInfr> freeVars() {
+        Set<VarInfr> fvs = new HashSet<>();
         captureFreeVars(fvs);
         return fvs;
     }
 
     @Override
-    public final PolyType generalize(PolyType polyType) {
-        Set<VarType> polyFree = new HashSet<>(polyType.freeVars());
+    public final PolyInfr generalize(PolyInfr polyType) {
+        Set<VarInfr> polyFree = new HashSet<>(polyType.freeVars());
         polyFree.removeAll(freeVars());
         return polyType.addQuantifiers(polyFree);
     }
@@ -221,8 +221,8 @@ final class TypeEnvImpl implements TypeEnv {
     }
 
     @Override
-    public final void put(Ident ident, PolyType polyType) {
-        PolyType existing = mappings.putIfAbsent(ident, polyType);
+    public final void put(Ident ident, PolyInfr polyType) {
+        PolyInfr existing = mappings.putIfAbsent(ident, polyType);
         if (existing != null) {
             // TODO: This is AlreadyDefinedInScope
             throw new IllegalArgumentException("Duplicate identifier " + ident);
@@ -230,7 +230,7 @@ final class TypeEnvImpl implements TypeEnv {
     }
 
     @Override
-    public final PolyType shallowGet(Ident ident) {
+    public final PolyInfr shallowGet(Ident ident) {
         return mappings.get(ident);
     }
 

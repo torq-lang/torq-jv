@@ -21,7 +21,7 @@ public class TestAskSumArrayList {
     public void test() throws Exception {
         String source = """
             actor SumArrayList() in
-                import system[ArrayList, Cell, ValueIter]
+                import system.{ArrayList, Cell, ValueIter}
                 var one_thru_five = new ArrayList[Int32]([1, 2, 3, 4, 5])
                 handle ask 'perform' in
                     var sum = new Cell(0)

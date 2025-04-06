@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface ArrayType extends StructType {
+public interface ProtocolInfr extends AppInfr {
 }

@@ -32,7 +32,7 @@ final class TimerPack {
     public static final CompleteRec TIMER_ACTOR = createTimerActor();
 
     private static CompleteRec createTimerActor() {
-        return CompleteRec.singleton(Actor.CFG, TIMER_CFGTR);
+        return CompleteRec.singleton(Actor.NEW, TIMER_CFGTR);
     }
 
     private static void timerCfgtr(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {

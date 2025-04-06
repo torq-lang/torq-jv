@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface ProtocolType extends AppType {
+public interface RecInfr extends StructInfr {
 }

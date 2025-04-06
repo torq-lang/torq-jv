@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public interface VarType extends MonoType {
-    static VarType create(String name) {
-        return new VarTypeImpl(name);
+public interface VarInfr extends MonoInfr {
+    static VarInfr create(String name) {
+        return new VarInfrImpl(name);
     }
 
     /*
@@ -25,29 +25,29 @@ public interface VarType extends MonoType {
 }
 
 @SuppressWarnings("ClassCanBeRecord")
-final class VarTypeImpl implements VarType {
+final class VarInfrImpl implements VarInfr {
     private final String name;
 
-    public VarTypeImpl(String name) {
+    public VarInfrImpl(String name) {
         this.name = name;
     }
 
     @Override
-    public final PolyType addQuantifiers(Set<VarType> freeVars) {
+    public final PolyInfr addQuantifiers(Set<VarInfr> freeVars) {
         if (freeVars.isEmpty()) {
             return this;
         } else {
-            return QuantType.create(List.copyOf(freeVars), this);
+            return QuantInfr.create(List.copyOf(freeVars), this);
         }
     }
 
     @Override
-    public final void captureFreeVars(Set<VarType> freeVars) {
+    public final void captureFreeVars(Set<VarInfr> freeVars) {
         freeVars.add(this);
     }
 
     @Override
-    public final boolean contains(MonoType other) {
+    public final boolean contains(MonoInfr other) {
         return this.equals(other);
     }
 
@@ -59,13 +59,13 @@ final class VarTypeImpl implements VarType {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        VarTypeImpl that = (VarTypeImpl) other;
+        VarInfrImpl that = (VarInfrImpl) other;
         return Objects.equals(name, that.name);
     }
 
     @Override
-    public final Set<VarType> freeVars() {
-        Set<VarType> freeVars = new HashSet<>();
+    public final Set<VarInfr> freeVars() {
+        Set<VarInfr> freeVars = new HashSet<>();
         freeVars.add(this);
         return freeVars;
     }
@@ -76,7 +76,7 @@ final class VarTypeImpl implements VarType {
     }
 
     @Override
-    public final MonoType instantiate(SuffixFactory suffixFactory) {
+    public final MonoInfr instantiate(SuffixFactory suffixFactory) {
         return this;
     }
 
@@ -86,8 +86,8 @@ final class VarTypeImpl implements VarType {
     }
 
     @Override
-    public final MonoType subst(TypeSubst subst) {
-        MonoType s = subst.get(this);
+    public final MonoInfr subst(TypeSubst subst) {
+        MonoInfr s = subst.get(this);
         return s != null ? s : this;
     }
 

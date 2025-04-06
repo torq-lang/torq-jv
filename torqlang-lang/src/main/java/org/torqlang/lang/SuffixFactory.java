@@ -12,12 +12,12 @@ public final class SuffixFactory {
     private int nextAlphaSuffix = 1;
     private int nextBetaSuffix = 1;
 
-    public final VarType nextAlphaVar() {
-        return VarType.create(PolyType.LOWER_ALPHA + (nextAlphaSuffix++));
+    public final VarInfr nextAlphaVar() {
+        return VarInfr.create(PolyInfr.LOWER_ALPHA + (nextAlphaSuffix++));
     }
 
-    public final VarType nextBetaVar() {
-        return VarType.create(PolyType.LOWER_BETA + (nextBetaSuffix++));
+    public final VarInfr nextBetaVar() {
+        return VarInfr.create(PolyInfr.LOWER_BETA + (nextBetaSuffix++));
     }
 
 }

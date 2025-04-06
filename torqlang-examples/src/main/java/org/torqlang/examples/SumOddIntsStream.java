@@ -19,7 +19,7 @@ public final class SumOddIntsStream extends AbstractExample {
 
     public static final String SOURCE = """
         actor SumOddIntsStream() in
-            import system[Cell, Stream, ValueIter]
+            import system.{Cell, Stream, ValueIter}
             import examples.IntPublisher
             handle ask 'sum'#{'first': first, 'last': last} in
                 var sum = new Cell(0)

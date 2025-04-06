@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 public final class TypeConflictError extends LangError {
 
-    public TypeConflictError(Lang lang, MonoType expected, MonoType provided) {
+    public TypeConflictError(Lang lang, MonoInfr expected, MonoInfr provided) {
         super("Expected " + expected + " but found " + provided, lang);
     }
 

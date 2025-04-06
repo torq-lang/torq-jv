@@ -64,7 +64,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     public static final int CONTINUE_ID = 2;
     public static final int RETURN_ID = 3;
 
-    public static final Str CFG = Str.of("cfg");
+    public static final Str NEW = Str.of("new");
     public static final Str ERROR = Str.of("error");
     public static final Str NAME = Str.of("name");
     public static final Str MESSAGE = Str.of("message");
@@ -243,7 +243,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(new CreateActorCfgtrInstr(Ident.$ACTOR_CFGTR, actorCfgtrDef, lang));
 
         // Build the actor record
-        FieldDef configDef = new FieldDef(CFG, Ident.$ACTOR_CFGTR, endOfActorSpan);
+        FieldDef configDef = new FieldDef(NEW, Ident.$ACTOR_CFGTR, endOfActorSpan);
         RecDef actorRecDef = new RecDef(Str.of(exprIdent.name), List.of(configDef), endOfActorSpan);
         childTarget.addInstr(new CreateRecInstr(exprIdent, actorRecDef, endOfActorSpan));
 
@@ -918,6 +918,23 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitNewExpr(NewExpr lang, LocalTarget target) throws Exception {
+        ApplyType typeApply = lang.typeApply;
+        Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
+        LocalTarget childTarget = target.asExprTargetWithNewScope();
+        CompleteOrIdent cls = typeApply.name.accept(this, childTarget);
+        List<FeatureOrIdent> path = List.of(Str.of("new"));
+        List<CompleteOrIdent> ys = new ArrayList<>();
+        for (StmtOrExpr arg : lang.args) {
+            ys.add(arg.accept(this, childTarget));
+        }
+        ys.add(exprIdent);
+        childTarget.addInstr(new SelectAndApplyInstr(cls, path, ys, lang));
+        target.addInstr(childTarget.build());
+        return exprIdent;
+    }
+
+    @Override
     public final CompleteOrIdent visitNullAsExpr(NullAsExpr lang, LocalTarget target) {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         if (exprIdent == null) {
@@ -1317,6 +1334,16 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitTypeAnno(TypeAnno lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitTypeApplyExpr(ApplyType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitTypeStmt(TypeStmt lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 

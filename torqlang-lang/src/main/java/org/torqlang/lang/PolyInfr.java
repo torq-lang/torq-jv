@@ -26,7 +26,7 @@ import java.util.Set;
  *  σ = τ                           [monotype]
  *    | ∀α. σ                       [quantifier]
  */
-public interface PolyType {
+public interface PolyInfr {
 
     /*
      TODO: The following contains some additional subtypes of AppType:
@@ -57,15 +57,15 @@ public interface PolyType {
     String LOWER_SIGMA = "σ";
     String LOWER_TAU = "τ";
 
-    PolyType addQuantifiers(Set<VarType> freeVars);
+    PolyInfr addQuantifiers(Set<VarInfr> freeVars);
 
-    void captureFreeVars(Set<VarType> freeVars);
+    void captureFreeVars(Set<VarInfr> freeVars);
 
-    Set<VarType> freeVars();
+    Set<VarInfr> freeVars();
 
-    MonoType instantiate(SuffixFactory suffixFactory);
+    MonoInfr instantiate(SuffixFactory suffixFactory);
 
     String name();
 
-    PolyType subst(TypeSubst subst);
+    PolyInfr subst(TypeSubst subst);
 }

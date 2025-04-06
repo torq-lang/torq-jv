@@ -7,29 +7,25 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Bool;
-import org.torqlang.klvm.Complete;
+import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
 
-public final class BoolAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, LabelType, FeatureType {
+public final class FieldType extends AbstractLang implements Type {
 
-    public final Bool bool;
+    public final FeatureType featureType;
+    public final Type valueType;
 
-    public BoolAsExpr(Bool bool, SourceSpan sourceSpan) {
+    public FieldType(FeatureType featureType, Type valueType, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.bool = bool;
+        this.featureType = featureType;
+        this.valueType = valueType;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitBoolAsExpr(this, state);
-    }
-
-    @Override
-    public final Complete value() {
-        return bool;
+        throw new NeedsImpl();
     }
 
 }

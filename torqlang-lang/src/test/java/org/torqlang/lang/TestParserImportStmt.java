@@ -35,13 +35,13 @@ public class TestParserImportStmt {
     @Test
     public void testDoubleQualifierMultiSelection() {
         //                         1         2         3
-        //               01234567890123456789012345678901234567
-        String source = "import system.module[ArrayList, Cell]";
+        //               012345678901234567890123456789012345678
+        String source = "import system.module.{ArrayList, Cell}";
         Parser p = new Parser(source);
         StmtOrExpr sox = p.parse();
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
-        assertSourceSpan(importStmt, 0, 37);
+        assertSourceSpan(importStmt, 0, 38);
         assertEquals(Str.of("system.module"), importStmt.qualifier);
         assertEquals(2, importStmt.names.size());
         assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
@@ -98,13 +98,13 @@ public class TestParserImportStmt {
     @Test
     public void testSingleQualifierMultiSelection() {
         //                         1         2         3
-        //               0123456789012345678901234567890
-        String source = "import system[ArrayList, Cell]";
+        //               01234567890123456789012345678901
+        String source = "import system.{ArrayList, Cell}";
         Parser p = new Parser(source);
         StmtOrExpr sox = p.parse();
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
-        assertSourceSpan(importStmt, 0, 30);
+        assertSourceSpan(importStmt, 0, 31);
         assertEquals(Str.of("system"), importStmt.qualifier);
         assertEquals(2, importStmt.names.size());
         assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
@@ -117,13 +117,13 @@ public class TestParserImportStmt {
     @Test
     public void testSingleQualifierMultiSelectionAlias() {
         //                         1         2         3         4
-        //               012345678901234567890123456789012345678901234567
-        String source = "import system[ArrayList as JavaArrayList, Cell]";
+        //               0123456789012345678901234567890123456789012345678
+        String source = "import system.{ArrayList as JavaArrayList, Cell}";
         Parser p = new Parser(source);
         StmtOrExpr sox = p.parse();
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
-        assertSourceSpan(importStmt, 0, 47);
+        assertSourceSpan(importStmt, 0, 48);
         assertEquals(Str.of("system"), importStmt.qualifier);
         assertEquals(2, importStmt.names.size());
         assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
@@ -133,13 +133,13 @@ public class TestParserImportStmt {
         assertEquals(source, sox.toString());
 
         //                  1         2         3         4
-        //        01234567890123456789012345678901234567890
-        source = "import system[ArrayList, Cell as MyCell]";
-        p = new Parser("import system[ArrayList, Cell as MyCell]");
+        //        012345678901234567890123456789012345678901
+        source = "import system.{ArrayList, Cell as MyCell}";
+        p = new Parser(source);
         sox = p.parse();
         assertInstanceOf(ImportStmt.class, sox);
         importStmt = (ImportStmt) sox;
-        assertSourceSpan(importStmt, 0, 40);
+        assertSourceSpan(importStmt, 0, 41);
         assertEquals(Str.of("system"), importStmt.qualifier);
         assertEquals(2, importStmt.names.size());
         assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);

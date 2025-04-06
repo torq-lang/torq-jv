@@ -9,6 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.klvm.*;
 import org.torqlang.util.IntegerCounter;
+import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
 
 import java.util.ArrayList;
@@ -184,18 +185,18 @@ public final class Parser {
         }
         nextToken(); // accept ')' token
         assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
-        nextToken(); // accept 'in' token
+        current = nextToken(); // accept 'in' token
         List<StmtOrExpr> body = new ArrayList<>();
         while (true) {
-            if (currentToken.isWeakKeyword(HANDLE_VALUE)) {
-                LexerToken handleToken = currentToken;
-                nextToken(); // accept 'handle' token
-                if (currentToken.isWeakKeyword(ASK_VALUE)) {
+            if (current.isWeakKeyword(HANDLE_VALUE)) {
+                LexerToken handleToken = current;
+                current = nextToken(); // accept 'handle' token
+                if (current.isWeakKeyword(ASK_VALUE)) {
                     body.add(parseAsk(handleToken));
-                } else if (currentToken.isWeakKeyword(TELL_VALUE)) {
+                } else if (current.isWeakKeyword(TELL_VALUE)) {
                     body.add(parseTell(handleToken));
                 } else {
-                    throw new ParserError(ASK_OR_TELL_EXPECTED, currentToken);
+                    throw new ParserError(ASK_OR_TELL_EXPECTED, current);
                 }
             } else {
                 StmtOrExpr next = parseStmtOrExpr();
@@ -205,6 +206,7 @@ public final class Parser {
                     break;
                 }
             }
+            current = currentToken;
         }
         LexerToken endToken = acceptEndToken();
         if (name != null) {
@@ -227,6 +229,33 @@ public final class Parser {
             operToken = currentToken;
         }
         return answer;
+    }
+
+    private ApplyType parseApplyType() {
+        LexerToken identToken = currentToken;
+        nextToken(); // accept IDENT token
+        return parseApplyType(identToken);
+    }
+
+    private ApplyType parseApplyType(LexerToken identToken) {
+        Ident ident = tokenToIdent(identToken);
+        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
+        LexerToken current = currentToken;
+        List<Type> typeArgs;
+        LexerToken endTypeApplyToken = identToken;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            nextToken(); // accept '[' token
+            typeArgs = parseTypeArgList();
+            current = currentToken;
+            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
+                throw new ParserError(R_BRACKET_EXPECTED, current);
+            }
+            endTypeApplyToken = current;
+            nextToken(); // accept ']' token
+        } else {
+            typeArgs = List.of();
+        }
+        return new ApplyType(name, typeArgs, identToken.adjoin(endTypeApplyToken));
     }
 
     private List<StmtOrExpr> parseArgList() {
@@ -351,85 +380,112 @@ public final class Parser {
             }
         }
         if (current.isKeyword()) {
-            if (current.substringEquals(VAR_VALUE)) {
-                nextToken(); // accept 'var' token
-                List<VarDecl> varDecls = parseVarDecls();
-                return new VarStmt(varDecls, current.adjoin(last(varDecls)));
-            }
-            if (current.substringEquals(IF_VALUE)) {
-                return parseIf();
-            }
-            if (current.substringEquals(FOR_VALUE)) {
-                return parseFor();
-            }
-            if (current.substringEquals(WHILE_VALUE)) {
-                return parseWhile();
-            }
-            if (current.substringEquals(CASE_VALUE)) {
-                return parseCase();
-            }
-            if (current.substringEquals(FUNC_VALUE)) {
-                return parseFunc();
-            }
-            if (current.substringEquals(PROC_VALUE)) {
-                return parseProc();
-            }
-            if (current.substringEquals(ACT_VALUE)) {
-                return parseAct();
-            }
-            if (current.substringEquals(SPAWN_VALUE)) {
-                return parseSpawn();
-            }
-            if (current.substringEquals(ACTOR_VALUE)) {
-                return parseActor();
-            }
-            if (current.substringEquals(IMPORT_VALUE)) {
-                return parseImport();
-            }
-            if (current.substringEquals(BEGIN_VALUE)) {
-                return parseBegin();
-            }
-            if (current.substringEquals(LOCAL_VALUE)) {
-                return parseLocal();
-            }
-            if (current.substringEquals(THROW_VALUE)) {
-                return parseThrow();
-            }
-            if (current.substringEquals(TRY_VALUE)) {
-                return parseTry();
-            }
-            if (current.substringEquals(SELF_VALUE)) {
-                nextToken(); // accept 'self' token
-                return new IdentAsExpr(Ident.$SELF, current);
-            }
-            if (current.substringEquals(BREAK_VALUE)) {
-                nextToken(); // accept 'break' token
-                return new BreakStmt(current);
-            }
-            if (current.substringEquals(CONTINUE_VALUE)) {
-                nextToken(); // accept 'continue' token
-                return new ContinueStmt(current);
-            }
-            if (current.substringEquals(RETURN_VALUE)) {
-                return parseReturn();
-            }
-            if (current.substringEquals(SKIP_VALUE)) {
-                nextToken(); // accept 'skip' token
-                return new SkipStmt(current);
+            int keywordLen = current.length();
+            if (keywordLen == 2) {
+                if (current.substringEquals(IF_VALUE)) {
+                    return parseIf();
+                }
+            } else if (keywordLen == 3) {
+                if (current.substringEquals(NEW_VALUE)) {
+                    return parseNew();
+                }
+                if (current.substringEquals(VAR_VALUE)) {
+                    nextToken(); // accept 'var' token
+                    List<VarDecl> varDecls = parseVarDecls();
+                    return new VarStmt(varDecls, current.adjoin(last(varDecls)));
+                }
+                if (current.substringEquals(FOR_VALUE)) {
+                    return parseFor();
+                }
+                if (current.substringEquals(ACT_VALUE)) {
+                    return parseAct();
+                }
+                if (current.substringEquals(TRY_VALUE)) {
+                    return parseTry();
+                }
+            } else if (keywordLen == 4) {
+                if (current.substringEquals(CASE_VALUE)) {
+                    return parseCase();
+                }
+                if (current.substringEquals(FUNC_VALUE)) {
+                    return parseFunc();
+                }
+                if (current.substringEquals(PROC_VALUE)) {
+                    return parseProc();
+                }
+                if (current.substringEquals(TYPE_VALUE)) {
+                    return parseType();
+                }
+                if (current.substringEquals(SELF_VALUE)) {
+                    nextToken(); // accept 'self' token
+                    return new IdentAsExpr(Ident.$SELF, current);
+                }
+                if (current.substringEquals(SKIP_VALUE)) {
+                    nextToken(); // accept 'skip' token
+                    return new SkipStmt(current);
+                }
+            } else if (keywordLen == 5) {
+                if (current.substringEquals(WHILE_VALUE)) {
+                    return parseWhile();
+                }
+                if (current.substringEquals(SPAWN_VALUE)) {
+                    return parseSpawn();
+                }
+                if (current.substringEquals(ACTOR_VALUE)) {
+                    return parseActor();
+                }
+                if (current.substringEquals(BEGIN_VALUE)) {
+                    return parseBegin();
+                }
+                if (current.substringEquals(LOCAL_VALUE)) {
+                    return parseLocal();
+                }
+                if (current.substringEquals(THROW_VALUE)) {
+                    return parseThrow();
+                }
+                if (current.substringEquals(BREAK_VALUE)) {
+                    nextToken(); // accept 'break' token
+                    return new BreakStmt(current);
+                }
+            } else if (keywordLen == 6) {
+                if (current.substringEquals(IMPORT_VALUE)) {
+                    return parseImport();
+                }
+                if (current.substringEquals(RETURN_VALUE)) {
+                    return parseReturn();
+                }
+            } else {
+                if (current.substringEquals(CONTINUE_VALUE)) {
+                    nextToken(); // accept 'continue' token
+                    return new ContinueStmt(current);
+                }
             }
         }
         return null;
     }
 
-    private FieldExpr parseFieldExpr() {
-        StmtOrExpr featureExpr = parseStmtOrExpr();
-        if (featureExpr == null) {
+    private FieldExpr parseFieldExpr(IntegerCounter nextImpliedFeature) {
+        StmtOrExpr featureOrValueExpr = parseStmtOrExpr();
+        if (featureOrValueExpr == null) {
             return null;
         }
-        LexerToken current = nextToken(); // accept ':'
-        StmtOrExpr valueExpr = parseStmtOrExpr();
-        if (valueExpr == null) {
-            throw new ParserError(INVALID_VALUE_EXPR, current);
+        FeatureExpr featureExpr;
+        StmtOrExpr valueExpr;
+        LexerToken current = currentToken;
+        if (current.isOneCharSymbol(COLON_CHAR)) {
+            current = nextToken(); // accept ':'
+            if (!(featureOrValueExpr instanceof FeatureExpr featureExprParsed)) {
+                throw new ParserError(INVALID_FEATURE_EXPR, current);
+            }
+            featureExpr = featureExprParsed;
+            valueExpr = parseStmtOrExpr();
+            if (valueExpr == null) {
+                throw new ParserError(INVALID_VALUE_EXPR, current);
+            }
+        } else {
+            int nextFeature = nextImpliedFeature.getAndAdd(1);
+            featureExpr = new IntAsExpr(Int32.of(nextFeature), featureOrValueExpr.toSourceBegin());
+            valueExpr = featureOrValueExpr;
         }
         return new FieldExpr(featureExpr, valueExpr, featureExpr.adjoin(valueExpr));
     }
@@ -458,6 +514,42 @@ public final class Parser {
             valuePat = featureOrValuePat;
         }
         return new FieldPat(featurePat, valuePat, featurePat.adjoin(valuePat));
+    }
+
+    private FieldType parseFieldType() {
+        LexerToken current = currentToken;
+        LexerToken featureToken = current;
+        FeatureType featureType;
+        if (current.isStr()) {
+            LexerToken next = nextToken(); // accept Str token
+            String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
+            featureType = new StrAsExpr(Str.of(substring), current);
+        } else if (current.isInt()) {
+            nextToken(); // accept Int token
+            String symbolText = current.substring();
+            featureType = new IntAsExpr(symbolText, current);
+        } else if (current.isEof()) {
+            nextToken(); // accept EOF token
+            featureType = new EofAsExpr(current);
+        } else if (current.isKeyword(TRUE_VALUE)) {
+            nextToken(); // accept EOF token
+            featureType = new BoolAsExpr(Bool.TRUE, current);
+        } else if (current.isKeyword(FALSE_VALUE)) {
+            nextToken(); // accept EOF token
+            featureType = new BoolAsExpr(Bool.FALSE, current);
+        } else if (current.isKeyword(NULL_VALUE)) {
+            nextToken(); // accept EOF token
+            featureType = new NullAsExpr(current);
+        } else {
+            throw new ParserError(EXPR_EXPECTED, current);
+        }
+        current = currentToken;
+        if (!current.isOneCharSymbol(COLON_CHAR)) {
+            throw new ParserError(COLON_EXPECTED, current);
+        }
+        nextToken(); // accept ':' token
+        Type typeExpr = parseUnionType();
+        return new FieldType(featureType, typeExpr, featureToken.adjoin(typeExpr));
     }
 
     private ForStmt parseFor() {
@@ -511,6 +603,10 @@ public final class Parser {
         } else {
             return new FuncExpr(formalArgs, returnType, body, funcToken.adjoin(endToken));
         }
+    }
+
+    private FuncType parseFuncType() {
+        throw new NeedsImpl();
     }
 
     private StmtOrExpr parseGroup() {
@@ -567,24 +663,24 @@ public final class Parser {
         LexerToken previous = current;
         current = nextToken();
         // Parse qualifier
-        while (current.isOneCharSymbol(DOT_OPER_CHAR) || current.isOneCharSymbol(L_BRACKET_CHAR)) {
+        while (current.isOneCharSymbol(DOT_OPER_CHAR)) {
             if (!qualifier.isEmpty()) {
                 qualifier.append('.');
             }
             qualifier.append(previous.substring());
-            if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            current = nextToken();
+            if (current.isOneCharSymbol(L_BRACE_CHAR)) {
                 break;
             }
-            current = nextToken();
             if (!current.isIdent()) {
                 throw new ParserError(IDENT_EXPECTED, current);
             }
             previous = current;
             current = nextToken();
         }
-        // Current token is either the '[' or one token past a name
-        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-            current = nextToken(); // accept '['
+        // Current token is either the '{' or one token past a name
+        if (current.isOneCharSymbol(L_BRACE_CHAR)) {
+            current = nextToken(); // accept '{'
             while (current.isIdent()) {
                 Str name = Str.of(current.substring());
                 current = nextToken(); // accept Ident
@@ -603,15 +699,34 @@ public final class Parser {
                     current = nextToken();
                 }
             }
-            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
-                throw new ParserError(R_BRACKET_EXPECTED, current);
+            if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
+                throw new ParserError(R_BRACE_EXPECTED, current);
             }
-            current = nextToken(); // accept ']'
+            current = nextToken(); // accept '}'
         } else {
             names.add(new ImportName(Str.of(previous.substring())));
         }
         // Current token is now one past the import expression
         return new ImportStmt(Str.of(qualifier.toString()), names, importToken.adjoin(current));
+    }
+
+    private Type parseIntersectionType() {
+        Type left = parseTypeExpr();
+        LexerToken operToken = currentToken;
+        if (!operToken.isOneCharSymbol(AND_OPER_CHAR)) {
+            return left;
+        }
+        List<Type> types = new ArrayList<>();
+        do {
+            nextToken(); // accept '&' token
+            Type right = parseTypeExpr();
+            if (right == null) {
+                throw new ParserError(TYPE_EXPECTED, currentToken);
+            }
+            types.add(right);
+            operToken = currentToken;
+        } while (operToken.isOneCharSymbol(AND_OPER_CHAR));
+        return new IntersectionType(types, left.adjoin(last(types)));
     }
 
     private LocalLang parseLocal() {
@@ -623,6 +738,28 @@ public final class Parser {
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
         return new LocalLang(varDecls, body, localToken.adjoin(endToken));
+    }
+
+    private NewExpr parseNew() {
+        LexerToken newToken = currentToken;
+        LexerToken current = nextToken(); // accept 'new' operator
+        if (!current.isIdent()) {
+            throw new ParserError(IDENT_EXPECTED, currentToken);
+        }
+        ApplyType applyType = parseApplyType();
+        current = currentToken;
+        if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
+            throw new ParserError(L_PAREN_EXPECTED, current);
+        }
+        nextToken(); // accept '(' token
+        List<StmtOrExpr> args = parseArgList();
+        current = currentToken;
+        if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
+            throw new ParserError(R_PAREN_EXPECTED, currentToken);
+        }
+        LexerToken endNewToken = current;
+        nextToken(); // accept ')' token
+        return new NewExpr(applyType, args, newToken.adjoin(endNewToken));
     }
 
     private StmtOrExpr parseOr() {
@@ -729,22 +866,18 @@ public final class Parser {
     }
 
     private List<Pat> parsePatList() {
-        List<Pat> args = new ArrayList<>();
-        Pat arg = parsePat();
-        if (arg != null) {
-            args.add(arg);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            arg = parsePat();
-            current = currentToken;
-            if (arg == null) {
-                throw new ParserError(PATTERN_EXPECTED, current);
+        List<Pat> pats = new ArrayList<>();
+        Pat pat = parsePat();
+        while (pat != null) {
+            pats.add(pat);
+            LexerToken current = currentToken;
+            if (!current.isOneCharSymbol(COMMA_CHAR)) {
+                break;
             }
-            args.add(arg);
+            nextToken(); // accept ',' token
+            pat = parsePat();
         }
-        return args;
+        return pats;
     }
 
     private ProcLang parseProc() {
@@ -776,6 +909,10 @@ public final class Parser {
         }
     }
 
+    private ProcType parseProcType() {
+        throw new NeedsImpl();
+    }
+
     private StmtOrExpr parseProduct() {
         StmtOrExpr answer = parseUnary();
         LexerToken operToken = currentToken;
@@ -796,20 +933,21 @@ public final class Parser {
     private RecExpr parseRecExpr(Expr label) {
         LexerToken recToken = currentToken;
         nextToken(); // accept '{' token
+        IntegerCounter nextImpliedFeature = new IntegerCounter(0);
         List<FieldExpr> fieldExprs = new ArrayList<>();
-        FieldExpr fieldExpr = parseFieldExpr();
+        FieldExpr fieldExpr = parseFieldExpr(nextImpliedFeature);
         if (fieldExpr != null) {
             fieldExprs.add(fieldExpr);
         }
         LexerToken current = currentToken;
         while (current.isOneCharSymbol(COMMA_CHAR)) {
             nextToken(); // accept ',' token
-            fieldExpr = parseFieldExpr();
+            fieldExpr = parseFieldExpr(nextImpliedFeature);
             current = currentToken;
             if (fieldExpr != null) {
                 fieldExprs.add(fieldExpr);
             } else {
-                throw new ParserError(FIELD_EXPECTED, current);
+                break;
             }
         }
         if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
@@ -844,6 +982,10 @@ public final class Parser {
         throw new ParserError(L_BRACE_OR_L_BRACKET_EXPECTED, current);
     }
 
+    private Type parseRecOrTupleType(LabelType label) {
+        throw new NeedsImpl();
+    }
+
     private RecPat parseRecPat(LabelPat label) {
         LexerToken recToken = currentToken;
         nextToken(); // accept '{' token
@@ -865,7 +1007,7 @@ public final class Parser {
                 current = nextToken(); // accept '...' token
                 partialArity = true;
             } else {
-                throw new ParserError(FIELD_EXPECTED, current);
+                break;
             }
         }
         if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
@@ -874,6 +1016,44 @@ public final class Parser {
         nextToken(); // accept '}' token
         SourceSpan recSpan = label == null ? recToken.adjoin(current) : label.adjoin(current);
         return new RecPat(label, fieldPats, partialArity, recSpan);
+    }
+
+    private Type parseRecType(LabelExpr label) {
+        LexerToken recToken = currentToken;
+        LexerToken current = nextToken(); // accept '{' token
+        List<FieldType> fieldTypes = new ArrayList<>();
+        while (!current.isOneCharSymbol(R_BRACE_CHAR)) {
+            FieldType fieldType = parseFieldType();
+            fieldTypes.add(fieldType);
+            current = currentToken;
+            if (current.isOneCharSymbol(COMMA_CHAR)) {
+                current = nextToken();
+            }
+        }
+        nextToken(); // accept '}' token
+
+        throw new NeedsImpl("Needs impl: " + currentToken);
+//        return new RecTypeExpr()
+
+//        while (current.isOneCharSymbol(COMMA_CHAR)) {
+//            nextToken(); // accept ',' token
+//            fieldPat = parseFieldPat(nextImpliedFeature);
+//            current = currentToken;
+//            if (fieldPat != null) {
+//                fieldPats.add(fieldPat);
+//            } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
+//                current = nextToken(); // accept '...' token
+//                partialArity = true;
+//            } else {
+//                throw new ParserError(FIELD_EXPECTED, current);
+//            }
+//        }
+//        if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
+//            throw new ParserError(R_BRACE_EXPECTED, current);
+//        }
+//        nextToken(); // accept '}' token
+//        SourceSpan recSpan = label == null ? recToken.adjoin(current) : label.adjoin(current);
+//        return new RecPat(label, fieldPats, partialArity, recSpan);
     }
 
     private StmtOrExpr parseRelational() {
@@ -991,6 +1171,9 @@ public final class Parser {
     }
 
     private StmtOrExpr parseStmtOrExpr() {
+        if (currentToken.isIdent("meta")) {
+            throw new NeedsImpl("Needs impl: " + currentToken);
+        }
         StmtOrExpr assign = parseAssign();
         while (currentToken.isOneCharSymbol(SEMICOLON_CHAR)) {
             nextToken();
@@ -1086,11 +1269,24 @@ public final class Parser {
     }
 
     private TupleExpr parseTupleExpr(Expr label) {
-        // tupleValue: '[' (expr (',' expr)*)? ']';
         LexerToken tupleToken = currentToken;
         nextToken(); // accept '[' token
-        List<StmtOrExpr> valueExprs = parseArgList();
+        List<StmtOrExpr> valueExprs = new ArrayList<>();
+        StmtOrExpr value = parseStmtOrExpr();
+        if (value != null) {
+            valueExprs.add(value);
+        }
         LexerToken current = currentToken;
+        while (current.isOneCharSymbol(COMMA_CHAR)) {
+            nextToken(); // accept ',' token
+            value = parseStmtOrExpr();
+            current = currentToken;
+            if (value != null) {
+                valueExprs.add(value);
+            } else {
+                break;
+            }
+        }
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
             throw new ParserError(R_BRACKET_EXPECTED, current);
         }
@@ -1119,7 +1315,7 @@ public final class Parser {
                 current = nextToken(); // accept '...' token
                 partialArity = true;
             } else {
-                throw new ParserError(PATTERN_EXPECTED, current);
+                break;
             }
         }
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
@@ -1128,6 +1324,113 @@ public final class Parser {
         nextToken(); // accept ']' token
         SourceSpan tupleSpan = label == null ? tupleToken.adjoin(current) : label.adjoin(current);
         return new TuplePat(label, valuePats, partialArity, tupleSpan);
+    }
+
+    private Type parseTupleType(LabelExpr label) {
+        throw new NeedsImpl();
+    }
+
+    private TypeStmt parseType() {
+        LexerToken typeToken = currentToken;
+        LexerToken current = nextToken(); // accept 'type' token
+        if (!current.isIdent()) {
+            throw new ParserError(IDENT_EXPECTED, current);
+        }
+        Ident name = tokenToIdent(current);
+        current = nextToken(); // accept IDENT token
+        List<TypeParam> typeParams;
+        if (isOneCharSymbol(current.firstChar()) && current.firstChar() == L_BRACKET_CHAR) {
+            typeParams = parseTypeParamList();
+            current = currentToken;
+        } else {
+            typeParams = List.of();
+        }
+        if (!current.isOneCharSymbol(EQUAL_OPER_CHAR)) {
+            throw new ParserError(EQUAL_EXPECTED, current);
+        }
+        nextToken(); // accept '=' token
+        Type body = parseUnionType();
+        return new TypeStmt(name, typeParams, body, typeToken.adjoin(body));
+    }
+
+    private List<Type> parseTypeArgList() {
+        List<Type> args = new ArrayList<>();
+        Type arg = parseUnionType();
+        while (arg != null) {
+            args.add(arg);
+            LexerToken current = currentToken;
+            if (!current.isOneCharSymbol(COMMA_CHAR)) {
+                break;
+            }
+            nextToken(); // accept ',' token
+            arg = parseUnionType();
+        }
+        return args;
+    }
+
+    private Type parseTypeExpr() {
+        /*
+            type_expr: ident (type_arg_list | '#' (rec_type_body | tuple_type_body))? |
+                       (bool | STR_LITERAL | 'eof' | 'null') '#' (rec_type_body | tuple_type_body) |
+                       rec_type_body |
+                       tuple_type_body |
+                       proc_type |
+                       func_type;
+         */
+        LexerToken current = currentToken;
+        if (current.isIdent()) {
+            LexerToken identToken = current;
+            Ident name = tokenToIdent(current);
+            IdentAsExpr identAsExpr = new IdentAsExpr(name, identToken);
+            current = nextToken(); // accept IDENT token
+            if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+                return parseApplyType(identToken);
+            } else if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
+                return parseRecOrTupleType(identAsExpr);
+            } else {
+                return identAsExpr;
+            }
+        } else if (current.isKeyword() || current.isStr()) {
+            if (current.isKeyword(PROC_VALUE)) {
+                return parseProcType();
+            } else if (current.isKeyword(FUNC_VALUE)) {
+                return parseFuncType();
+            } else {
+                LabelType labelTypeExpr;
+                if (current.isKeyword(TRUE_VALUE)) {
+                    labelTypeExpr = new BoolAsExpr(Bool.TRUE, current);
+                } else if (current.isKeyword(FALSE_VALUE)) {
+                    labelTypeExpr = new BoolAsExpr(Bool.FALSE, current);
+                } else if (current.isKeyword(NULL_VALUE)) {
+                    labelTypeExpr = new NullAsExpr(current);
+                } else if (current.isKeyword(EOF_VALUE)) {
+                    labelTypeExpr = new EofAsExpr(current);
+                } else if (current.isStr()) {
+                    String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
+                    labelTypeExpr = new StrAsExpr(Str.of(substring), current);
+                } else {
+                    throw new ParserError(TYPE_EXPECTED, current);
+                }
+                nextToken(); // accept label token
+                if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
+                    return parseRecOrTupleType(labelTypeExpr);
+                } else {
+                    throw new ParserError(HASH_TAG_EXPECTED, current);
+                }
+            }
+        } else if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            NullAsExpr nullAsExpr = new NullAsExpr(current.toSourceBegin());
+            return parseTupleType(nullAsExpr);
+        } else if (current.isOneCharSymbol(L_BRACE_CHAR)) {
+            NullAsExpr nullAsExpr = new NullAsExpr(current.toSourceBegin());
+            return parseRecType(nullAsExpr);
+        }
+        throw new ParserError(TYPE_EXPECTED, current);
+    }
+
+    private List<TypeParam> parseTypeParamList() {
+        LexerToken leftBracket = currentToken;
+        throw new NeedsImpl();
     }
 
     private StmtOrExpr parseUnary() {
@@ -1146,6 +1449,25 @@ public final class Parser {
             throw new ParserError(EXPR_EXPECTED, currentToken);
         }
         return new UnaryExpr(unaryOper, right, operToken.adjoin(right));
+    }
+
+    private Type parseUnionType() {
+        Type left = parseIntersectionType();
+        LexerToken operToken = currentToken;
+        if (!operToken.isOneCharSymbol(OR_OPER_CHAR)) {
+            return left;
+        }
+        List<Type> types = new ArrayList<>();
+        do {
+            nextToken(); // accept '|' token
+            Type right = parseIntersectionType();
+            if (right == null) {
+                throw new ParserError(TYPE_EXPECTED, currentToken);
+            }
+            types.add(right);
+            operToken = currentToken;
+        } while (operToken.isOneCharSymbol(OR_OPER_CHAR));
+        return new UnionType(types, left.adjoin(last(types)));
     }
 
     private Expr parseValueOrIdentAsExpr() {

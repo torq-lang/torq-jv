@@ -12,12 +12,16 @@ public final class MessageText {
     public static final String CASE_EXPR_MUST_HAVE_ELSE = "A case expression must have an unconditional else clause";
     public static final String CATCH_OR_FINALLY_EXPECTED = "'catch' or 'finally' expected";
     public static final String CHAR_IS_MISSING_CLOSING_QUOTE = "Character is missing closing quote";
+    public static final String COLON_EXPECTED = "':' expected";
     public static final String COMMENT_IS_MISSING_CLOSING_SEQUENCE = "Comment is missing closing sequence '*/'";
     public static final String DO_EXPECTED = "'do' expected";
     public static final String END_EXPECTED = "'end' expected";
+    public static final String EQUAL_EXPECTED = "'=' expected";
     public static final String EXPR_EXPECTED = "Expression expected";
     public static final String EXPR_EXPECTED_BUT_FOUND_A_STMT = "Expression expected but found a statement";
+    public static final String FEATURE_EXPECTED = "Feature expected";
     public static final String FIELD_EXPECTED = "Field expected";
+    public static final String HASH_TAG_EXPECTED = "'#' expected";
     public static final String IDENT_EXPECTED = "Identifier expected";
     public static final String IDENT_IS_MISSING_CLOSING_BACKTICK = "Identifier is missing closing backtick";
     public static final String IF_EXPR_MUST_HAVE_ELSE = "An if expression must have an unconditional else clause";
@@ -52,6 +56,7 @@ public final class MessageText {
     public static final String STR_IS_MISSING_CLOSING_DOUBLE_QUOTE = "String is missing closing double quote";
     public static final String STR_IS_MISSING_CLOSING_SINGLE_QUOTE = "String is missing closing single quote";
     public static final String THEN_EXPECTED = "'then' expected";
+    public static final String TYPE_EXPECTED = "Type expected";
     public static final String UNEXPECTED_EOF = "Unexpected EOF";
     public static final String UNEXPECTED_TOKEN = "Unexpected token";
 }

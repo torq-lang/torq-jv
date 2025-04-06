@@ -22,7 +22,7 @@ public class QueryOrders extends AbstractExample {
 
     public static final String SOURCE = """
         actor Orders() in
-            import system[ArrayList, FieldIter, ValueIter]
+            import system.{ArrayList, FieldIter, ValueIter}
             var orders = ${1}
             handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
                 func matches_query(order) in

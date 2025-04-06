@@ -12,7 +12,7 @@ import java.util.List;
 /*
  * An applied type constructor. Also known as an instantiated type.
  */
-public interface AppType extends MonoType {
+public interface AppInfr extends MonoInfr {
 
     /*
      * The name of the type constructor, such as 'Int32' or 'Func'.
@@ -23,5 +23,5 @@ public interface AppType extends MonoType {
     /*
      * The type parameters that instantiated this type.
      */
-    List<MonoType> params();
+    List<MonoInfr> params();
 }

@@ -24,11 +24,11 @@ public class TestValidatorVars {
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
         TypeEnv typeEnv = TypeEnv.create();
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(typeEnv, alphaVar));
         assertEquals(1, typeEnv.shallowSize());
-        assertInstanceOf(VarType.class, typeEnv.get(Ident.create("x")));
-        assertEquals(ScalarType.VOID, subst.get(alphaVar));
+        assertInstanceOf(VarInfr.class, typeEnv.get(Ident.create("x")));
+        assertEquals(ScalarInfr.VOID, subst.get(alphaVar));
     }
 
     @Test
@@ -40,12 +40,12 @@ public class TestValidatorVars {
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
         TypeEnv typeEnv = TypeEnv.create();
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(typeEnv, alphaVar));
         assertEquals(2, typeEnv.shallowSize());
-        assertInstanceOf(VarType.class, typeEnv.get(Ident.create("x")));
-        assertInstanceOf(VarType.class, typeEnv.get(Ident.create("y")));
-        assertEquals(ScalarType.VOID, subst.get(alphaVar));
+        assertInstanceOf(VarInfr.class, typeEnv.get(Ident.create("x")));
+        assertInstanceOf(VarInfr.class, typeEnv.get(Ident.create("y")));
+        assertEquals(ScalarInfr.VOID, subst.get(alphaVar));
     }
 
     @Test
@@ -57,11 +57,11 @@ public class TestValidatorVars {
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
         TypeEnv typeEnv = TypeEnv.create();
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(typeEnv, alphaVar));
         assertEquals(1, typeEnv.shallowSize());
-        assertEquals(ScalarType.INT32, typeEnv.get(Ident.create("x")));
-        assertEquals(ScalarType.VOID, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, typeEnv.get(Ident.create("x")));
+        assertEquals(ScalarInfr.VOID, subst.get(alphaVar));
     }
 
     @Test
@@ -73,12 +73,12 @@ public class TestValidatorVars {
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
         TypeEnv typeEnv = TypeEnv.create();
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(typeEnv, alphaVar));
         assertEquals(2, typeEnv.shallowSize());
-        assertEquals(ScalarType.INT32, typeEnv.get(Ident.create("x")));
-        assertEquals(ScalarType.STR, typeEnv.get(Ident.create("y")));
-        assertEquals(ScalarType.VOID, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, typeEnv.get(Ident.create("x")));
+        assertEquals(ScalarInfr.STR, typeEnv.get(Ident.create("y")));
+        assertEquals(ScalarInfr.VOID, subst.get(alphaVar));
     }
 
 }

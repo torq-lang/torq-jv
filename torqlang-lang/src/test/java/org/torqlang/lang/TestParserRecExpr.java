@@ -16,6 +16,59 @@ import static org.torqlang.lang.CommonTools.*;
 public class TestParserRecExpr {
 
     @Test
+    public void testBraceExpected() {
+        // Empty with and without dangling comma
+        String source = "{]";
+        Parser p = new Parser(source);
+        ParserError error = assertThrows(ParserError.class, p::parse);
+        assertEquals("'}' expected", error.getMessage());
+        source = "{,]";
+        p = new Parser(source);
+        error = assertThrows(ParserError.class, p::parse);
+        assertEquals("'}' expected", error.getMessage());
+        // 1 Feature with and without dangling comma
+        source = "{'0-feat': 0]";
+        p = new Parser(source);
+        error = assertThrows(ParserError.class, p::parse);
+        assertEquals("'}' expected", error.getMessage());
+        source = "{'0-feat': 0,]";
+        p = new Parser(source);
+        error = assertThrows(ParserError.class, p::parse);
+        assertEquals("'}' expected", error.getMessage());
+        // 2 Features with and without dangling comma
+        source = "{'0-feat': 0, '1-feat': 1]";
+        p = new Parser(source);
+        error = assertThrows(ParserError.class, p::parse);
+        assertEquals("'}' expected", error.getMessage());
+        source = "{'0-feat': 0, '1-feat': 1,]";
+        p = new Parser(source);
+        error = assertThrows(ParserError.class, p::parse);
+        assertEquals("'}' expected", error.getMessage());
+    }
+
+    @Test
+    public void testDanglingComma() {
+        String source = "{,}";
+        Parser p = new Parser(source);
+        StmtOrExpr sox = p.parse();
+        String expectedFormat = "{}";
+        String actualFormat = sox.toString();
+        assertEquals(expectedFormat, actualFormat);
+        source = "{'0-feat': 0,}";
+        p = new Parser(source);
+        sox = p.parse();
+        expectedFormat = "{'0-feat': 0}";
+        actualFormat = sox.toString();
+        assertEquals(expectedFormat, actualFormat);
+        source = "{'0-feat': 0, '1-feat': 1,}";
+        p = new Parser(source);
+        sox = p.parse();
+        expectedFormat = "{'0-feat': 0, '1-feat': 1}";
+        actualFormat = sox.toString();
+        assertEquals(expectedFormat, actualFormat);
+    }
+
+    @Test
     public void testEmpty() {
         //                            012
         Parser p = new Parser("{}");
@@ -124,6 +177,14 @@ public class TestParserRecExpr {
         expectedFormat = "{'0-feat': 0, '1-feat': 1}";
         actualFormat = LangFormatter.DEFAULT.format(recExpr);
         assertEquals(expectedFormat, actualFormat);
+    }
+
+    @Test
+    public void testImpliedFeatures() {
+        String source = "{'0-feat': 0, 15}";
+        Parser p = new Parser(source);
+        StmtOrExpr sox = p.parse();
+
     }
 
     @Test

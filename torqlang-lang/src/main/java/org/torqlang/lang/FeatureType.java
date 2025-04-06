@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface CompType extends AppType {
+public interface FeatureType extends Type {
 }
