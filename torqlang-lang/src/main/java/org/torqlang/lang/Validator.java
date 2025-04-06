@@ -338,8 +338,8 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
      * Create a function type representing the formal arguments and return type. The given type environment is used
      * to look up type identifiers.
      */
-    private FuncType createFuncType(Lang lang, List<Pat> formalArgs, TypeAnno returnType, TypeEnv typeEnv) {
-        List<MonoType> params = new ArrayList<>(formalArgs.size() + 1);
+    private FuncInfr createFuncType(Lang lang, List<Pat> formalArgs, TypeAnno returnType, TypeEnv typeEnv) {
+        List<MonoInfr> params = new ArrayList<>(formalArgs.size() + 1);
         for (Pat arg : formalArgs) {
             // TODO: Need to resolve ALL Pat types, not just IdentAsPat
             if (arg instanceof IdentAsPat identAsPat) {
@@ -349,12 +349,12 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             }
         }
         params.add(resolveTypeAnno(lang, returnType, typeEnv));
-        return FuncType.create(params);
+        return FuncInfr.create(params);
     }
 
-    private MonoType resolveTypeAnno(Lang lang, TypeAnno typeAnno, TypeEnv typeEnv) {
+    private MonoInfr resolveTypeAnno(Lang lang, TypeAnno typeAnno, TypeEnv typeEnv) {
         if (typeAnno != null) {
-            PolyType declaredType = typeEnv.get(typeAnno.ident);
+            PolyInfr declaredType = typeEnv.get(typeAnno.ident);
             if (declaredType == null) {
                 throw new TypeNotFoundError(lang);
             }
@@ -364,7 +364,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         }
     }
 
-    private TypeSubst unify(Lang origin, MonoType expected, MonoType provided) {
+    private TypeSubst unify(Lang origin, MonoInfr expected, MonoInfr provided) {
         try {
             return TypeSubst.unify(expected, provided);
         } catch (TypeUnificationError error) {
@@ -429,7 +429,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     @Override
     public final TypeSubst visitBoolAsExpr(BoolAsExpr lang, TypeScope scope) {
         lang.setTypeScope(scope);
-        return unify(lang, scope.monoType(), ScalarType.BOOL);
+        return unify(lang, scope.monoType(), ScalarInfr.BOOL);
     }
 
     @Override
@@ -545,19 +545,19 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
      *         Return the total substitutions learned in this step of type inference
      *             return S1
      */
-    private TypeSubst visitFuncApp(Lang origin, TypeEnv typeEnv, LangOrIdent func, List<StmtOrExpr> args, MonoType rho)
+    private TypeSubst visitFuncApp(Lang origin, TypeEnv typeEnv, LangOrIdent func, List<StmtOrExpr> args, MonoInfr rho)
         throws Exception
     {
         // Set S1 to substitutions that constrain ρ as the return type and the func body type:
-        List<MonoType> betas = new ArrayList<>(args.size() + 1);
+        List<MonoInfr> betas = new ArrayList<>(args.size() + 1);
         for (int i = 0; i < args.size(); i++) {
             betas.add(suffixFactory.nextBetaVar());
         }
         betas.add(rho);
-        FuncType funcType = FuncType.create(betas);
+        FuncInfr funcType = FuncInfr.create(betas);
         TypeSubst s1;
         if (func.ident != null) {
-            MonoType tau = typeEnv.get(func.ident).instantiate(suffixFactory);
+            MonoInfr tau = typeEnv.get(func.ident).instantiate(suffixFactory);
             s1 = unify(origin, funcType, tau);
         } else {
             s1 = func.lang.accept(this, new TypeScope(typeEnv, funcType));
@@ -598,24 +598,24 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
      *         Return the total substitutions learned in this step of type inference
      *             return S2(S1)  // Substitutions do not commute, we must apply S2 to S1
      */
-    public final TypeSubst visitFuncScope(Lang origin, TypeEnv typeEnv, List<Pat> params, SeqLang body, MonoType rho)
+    public final TypeSubst visitFuncScope(Lang origin, TypeEnv typeEnv, List<Pat> params, SeqLang body, MonoInfr rho)
         throws Exception
     {
         // Set S1 to substitutions that constrain ρ to a function type
-        List<MonoType> betas = new ArrayList<>();
+        List<MonoInfr> betas = new ArrayList<>();
         for (int i = 0; i < params.size() + 1; i++) {
             betas.add(suffixFactory.nextBetaVar());
         }
-        TypeSubst s1 = unify(origin, rho, FuncType.create(betas));
+        TypeSubst s1 = unify(origin, rho, FuncInfr.create(betas));
         // Append a type assignment for each param xi, where i is 1 to n in β1, ..., βn
         for (int i = 0; i < params.size(); i++) {
             Pat param = params.get(i);
-            MonoType beta = betas.get(i);
+            MonoInfr beta = betas.get(i);
             // Note that visiting Torq patterns adds them to the type environment
             TypeSubst paramSubst = param.accept(this, new TypeScope(s1.apply(typeEnv), s1.apply(beta)));
             s1 = paramSubst.apply(s1);
         }
-        MonoType beta = ListTools.last(betas);
+        MonoInfr beta = ListTools.last(betas);
         // Set S2 to substitutions that constrain the return type to the body type
         TypeSubst s2 = body.accept(this, new TypeScope(s1.apply(typeEnv), s1.apply(beta)));
         // Return the total substitutions learned in this step of type inference
@@ -645,12 +645,12 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         lang.setTypeScope(scope);
         TypeEnv thisTypeEnv = scope.typeEnv();
         // Unify the function statement type with Void
-        TypeSubst s1 = unify(lang, scope.monoType(), ScalarType.VOID);
+        TypeSubst s1 = unify(lang, scope.monoType(), ScalarInfr.VOID);
         s1.apply(thisTypeEnv);
         // Create a function type to be assigned to the function name
-        FuncType funcType = createFuncType(lang, lang.formalArgs, lang.returnType, thisTypeEnv);
+        FuncInfr funcType = createFuncType(lang, lang.formalArgs, lang.returnType, thisTypeEnv);
         // Validate a type is not already assigned to the function name
-        PolyType alreadyDefinedType = thisTypeEnv.shallowGet(lang.name());
+        PolyInfr alreadyDefinedType = thisTypeEnv.shallowGet(lang.name());
         if (alreadyDefinedType != null) {
             throw new AlreadyDefinedInScopeError(lang);
         }
@@ -669,11 +669,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     private TypeSubst visitIdent(Lang lang, Ident ident, TypeScope scope) {
-        PolyType polyType = scope.typeEnv().get(ident);
+        PolyInfr polyType = scope.typeEnv().get(ident);
         if (polyType == null) {
             throw new NotDefinedError(lang);
         }
-        MonoType freshType = polyType.instantiate(suffixFactory);
+        MonoInfr freshType = polyType.instantiate(suffixFactory);
         return unify(lang, scope.monoType(), freshType);
     }
 
@@ -709,12 +709,12 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             return visitIdent(lang, lang.ident, scope);
         }
         TypeEnv thisTypeEnv = scope.typeEnv();
-        PolyType alreadyDefinedType = thisTypeEnv.shallowGet(lang.ident);
+        PolyInfr alreadyDefinedType = thisTypeEnv.shallowGet(lang.ident);
         if (alreadyDefinedType != null) {
             throw new AlreadyDefinedInScopeError(lang);
         }
         // Get declared type from annotation or create a fresh beta
-        MonoType patType = resolveTypeAnno(lang, lang.typeAnno, thisTypeEnv);
+        MonoInfr patType = resolveTypeAnno(lang, lang.typeAnno, thisTypeEnv);
         TypeSubst result = unify(lang, scope.monoType(), patType);
         result.apply(thisTypeEnv);
         // Add declaration to the type environment
@@ -725,7 +725,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     @Override
     public final TypeSubst visitIdentVarDecl(IdentVarDecl lang, TypeScope scope) throws Exception {
         lang.setTypeScope(scope);
-        VarType varType = suffixFactory.nextBetaVar();
+        VarInfr varType = suffixFactory.nextBetaVar();
         return lang.identAsPat.accept(this, new TypeScope(scope.typeEnv(), varType));
     }
 
@@ -755,12 +755,12 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     @Override
     public final TypeSubst visitIfLang(IfLang lang, TypeScope scope) throws Exception {
         lang.setTypeScope(scope);
-        TypeSubst s1 = lang.ifClause.condition.accept(this, new TypeScope(scope.typeEnv(), ScalarType.BOOL));
+        TypeSubst s1 = lang.ifClause.condition.accept(this, new TypeScope(scope.typeEnv(), ScalarInfr.BOOL));
         TypeEnv nestedTypeEnv = TypeEnv.create(scope.typeEnv());
         TypeSubst s2 = lang.ifClause.body.accept(this, new TypeScope(s1.apply(nestedTypeEnv), scope.monoType()));
         TypeSubst sn = s2.apply(s1);
         for (IfClause ifClause : lang.altIfClauses) {
-            s1 = ifClause.condition.accept(this, new TypeScope(sn.apply(scope.typeEnv()), ScalarType.BOOL));
+            s1 = ifClause.condition.accept(this, new TypeScope(sn.apply(scope.typeEnv()), ScalarInfr.BOOL));
             sn = s1.apply(sn);
             nestedTypeEnv = TypeEnv.create(scope.typeEnv());
             s2 = ifClause.body.accept(this, new TypeScope(sn.apply(nestedTypeEnv), sn.apply(scope.monoType())));
@@ -786,10 +786,10 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         lang.setTypeScope(scope);
         TypeEnv thisTypeEnv = scope.typeEnv();
 
-        VarType varBeta = suffixFactory.nextBetaVar();
+        VarInfr varBeta = suffixFactory.nextBetaVar();
         TypeSubst result = lang.varPat.accept(this, new TypeScope(scope.typeEnv(), varBeta));
 
-        VarType valueBeta = suffixFactory.nextBetaVar();
+        VarInfr valueBeta = suffixFactory.nextBetaVar();
         TypeSubst valueSubst = lang.valueExpr.accept(this, new TypeScope(result.apply(thisTypeEnv), valueBeta));
         result = TypeSubst.combine(valueSubst, result);
 
@@ -813,9 +813,9 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         lang.setTypeScope(scope);
         TypeSubst result;
         if (int64 instanceof Int32) {
-            result = unify(lang, scope.monoType(), ScalarType.INT32);
+            result = unify(lang, scope.monoType(), ScalarInfr.INT32);
         } else {
-            result = unify(lang, scope.monoType(), ScalarType.INT64);
+            result = unify(lang, scope.monoType(), ScalarInfr.INT64);
         }
         return result;
     }
@@ -832,6 +832,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitLocalLang(LocalLang lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitNewExpr(NewExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -917,7 +922,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         lang.setTypeScope(scope);
         TypeSubst sn = TypeSubst.empty();
         for (int i = 0; i < lang.list.size() - 1; i++) {
-            TypeSubst s = lang.list.get(i).accept(this, new TypeScope(sn.apply(scope.typeEnv()), ScalarType.VOID));
+            TypeSubst s = lang.list.get(i).accept(this, new TypeScope(sn.apply(scope.typeEnv()), ScalarInfr.VOID));
             sn = s.apply(sn);
         }
         TypeSubst s = ListTools.last(lang.list).accept(this, new TypeScope(sn.apply(scope.typeEnv()), scope.monoType()));
@@ -943,7 +948,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     public final TypeSubst visitStrAsExpr(StrAsExpr lang, TypeScope scope) {
         lang.setTypeScope(scope);
         TypeEnv thisTypeEnv = scope.typeEnv();
-        TypeSubst result = unify(lang, scope.monoType(), ScalarType.STR);
+        TypeSubst result = unify(lang, scope.monoType(), ScalarInfr.STR);
         result.apply(thisTypeEnv);
         return result;
     }
@@ -1001,6 +1006,16 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitTypeApplyExpr(ApplyType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitTypeStmt(TypeStmt lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitUnaryExpr(UnaryExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -1021,11 +1036,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     @Override
     public final TypeSubst visitUnifyStmt(UnifyStmt lang, TypeScope scope) throws Exception {
         lang.setTypeScope(scope);
-        VarType beta = suffixFactory.nextBetaVar();
+        VarInfr beta = suffixFactory.nextBetaVar();
         TypeSubst s1 = lang.leftSide.accept(this, new TypeScope(scope.typeEnv(), beta));
         TypeSubst s2 = lang.rightSide.accept(this, new TypeScope(s1.apply(scope.typeEnv()), s1.apply(beta)));
         TypeSubst sn = s2.apply(s1);
-        TypeSubst s3 = unify(lang, sn.apply(scope.monoType()), ScalarType.VOID);
+        TypeSubst s3 = unify(lang, sn.apply(scope.monoType()), ScalarInfr.VOID);
         return s3.apply(sn);
     }
 
@@ -1042,9 +1057,9 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         lang.setTypeScope(scope);
         TypeSubst sn = TypeSubst.empty();
         for (VarDecl vd : lang.varDecls) {
-            sn = vd.accept(this, new TypeScope(sn.apply(scope.typeEnv()), ScalarType.VOID));
+            sn = vd.accept(this, new TypeScope(sn.apply(scope.typeEnv()), ScalarInfr.VOID));
         }
-        TypeSubst s = unify(lang, scope.monoType(), ScalarType.VOID);
+        TypeSubst s = unify(lang, scope.monoType(), ScalarInfr.VOID);
         sn = s.apply(sn);
         sn.apply(scope.typeEnv());
         return sn;

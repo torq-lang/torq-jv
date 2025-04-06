@@ -9,58 +9,58 @@ package org.torqlang.lang;
 
 import java.util.*;
 
-public interface QuantType extends PolyType {
-    static QuantType create(List<VarType> quantifiers, MonoType monoType) {
-        return new QuantTypeImpl(quantifiers, monoType);
+public interface QuantInfr extends PolyInfr {
+    static QuantInfr create(List<VarInfr> quantifiers, MonoInfr monoType) {
+        return new QuantInfrImpl(quantifiers, monoType);
     }
 
-    MonoType monoType();
+    MonoInfr monoType();
 
-    List<VarType> quantifiers();
+    List<VarInfr> quantifiers();
 
-    QuantType subst(TypeSubst subst);
+    QuantInfr subst(TypeSubst subst);
 }
 
 @SuppressWarnings("ClassCanBeRecord")
-final class QuantTypeImpl implements QuantType {
+final class QuantInfrImpl implements QuantInfr {
 
-    private final List<VarType> quantifiers;
-    private final MonoType monoType;
+    private final List<VarInfr> quantifiers;
+    private final MonoInfr monoType;
 
-    QuantTypeImpl(List<VarType> quantifiers, MonoType monoType) {
+    QuantInfrImpl(List<VarInfr> quantifiers, MonoInfr monoType) {
         this.quantifiers = List.copyOf(quantifiers);
         this.monoType = monoType;
     }
 
     @Override
-    public final PolyType addQuantifiers(Set<VarType> freeVars) {
+    public final PolyInfr addQuantifiers(Set<VarInfr> freeVars) {
         if (freeVars.isEmpty()) {
             return this;
         } else {
-            List<VarType> newQuants = new ArrayList<>(quantifiers);
+            List<VarInfr> newQuants = new ArrayList<>(quantifiers);
             newQuants.addAll(freeVars);
-            return QuantType.create(List.copyOf(newQuants), monoType);
+            return QuantInfr.create(List.copyOf(newQuants), monoType);
         }
     }
 
     @Override
-    public final void captureFreeVars(Set<VarType> freeVars) {
-        Set<VarType> fvs = monoType.freeVars();
+    public final void captureFreeVars(Set<VarInfr> freeVars) {
+        Set<VarInfr> fvs = monoType.freeVars();
         quantifiers.forEach(fvs::remove);
         freeVars.addAll(fvs);
     }
 
     @Override
-    public final Set<VarType> freeVars() {
-        Set<VarType> freeVars = new HashSet<>();
+    public final Set<VarInfr> freeVars() {
+        Set<VarInfr> freeVars = new HashSet<>();
         captureFreeVars(freeVars);
         return freeVars;
     }
 
     @Override
-    public final MonoType instantiate(SuffixFactory suffixFactory) {
-        Map<VarType, MonoType> mappings = new HashMap<>();
-        for (VarType quantType : quantifiers) {
+    public final MonoInfr instantiate(SuffixFactory suffixFactory) {
+        Map<VarInfr, MonoInfr> mappings = new HashMap<>();
+        for (VarInfr quantType : quantifiers) {
             mappings.put(quantType, suffixFactory.nextBetaVar());
         }
         TypeSubst subst = TypeSubst.create(mappings);
@@ -68,7 +68,7 @@ final class QuantTypeImpl implements QuantType {
     }
 
     @Override
-    public final MonoType monoType() {
+    public final MonoInfr monoType() {
         return monoType;
     }
 
@@ -78,19 +78,19 @@ final class QuantTypeImpl implements QuantType {
     }
 
     @Override
-    public final List<VarType> quantifiers() {
+    public final List<VarInfr> quantifiers() {
         return quantifiers;
     }
 
     @Override
-    public final QuantType subst(TypeSubst subst) {
-        return new QuantTypeImpl(quantifiers, monoType.subst(subst));
+    public final QuantInfr subst(TypeSubst subst) {
+        return new QuantInfrImpl(quantifiers, monoType.subst(subst));
     }
 
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        for (VarType q : quantifiers) {
+        for (VarInfr q : quantifiers) {
             sb.append(FOR_ALL_QUANT);
             sb.append(q.toString());
             sb.append(".");

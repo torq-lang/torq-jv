@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface Type extends Lang {
+public interface LabelType extends Type {
 }

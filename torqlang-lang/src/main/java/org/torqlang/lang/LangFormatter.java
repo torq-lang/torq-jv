@@ -7,10 +7,7 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Flt32;
-import org.torqlang.klvm.Ident;
-import org.torqlang.klvm.Int32;
-import org.torqlang.klvm.Str;
+import org.torqlang.klvm.*;
 import org.torqlang.util.FormatterState;
 import org.torqlang.util.NeedsImpl;
 
@@ -392,7 +389,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
             }
             state.write(ins.get(0).name.value);
         } else {
-            state.write('[');
+            state.write(".{");
             for (int i = 0; i < ins.size(); i++) {
                 ImportName in = ins.get(i);
                 if (i > 0) {
@@ -404,7 +401,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
                     state.write(in.alias.value);
                 }
             }
-            state.write(']');
+            state.write('}');
         }
         return null;
     }
@@ -453,6 +450,16 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         nextLevelState.writeNewLineAndIndent();
         lang.body.accept(this, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
+        return null;
+    }
+
+    @Override
+    public final Void visitNewExpr(NewExpr lang, FormatterState state) throws Exception {
+        state.write("new ");
+        lang.typeApply.accept(this, state);
+        state.write('(');
+        visitActualArgs(lang.args, state);
+        state.write(')');
         return null;
     }
 
@@ -720,6 +727,39 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     @Override
     public final Void visitTypeAnno(TypeAnno lang, FormatterState state) throws Exception {
         visitIdent(lang.ident, state);
+        return null;
+    }
+
+    @Override
+    public final Void visitTypeApplyExpr(ApplyType lang, FormatterState state) throws Exception {
+        lang.name.accept(this, state.inline());
+        if (lang.typeArgs != null && !lang.typeArgs.isEmpty()) {
+            state.write('[');
+            for (int i = 0; i < lang.typeArgs.size(); i++) {
+                if (i > 0) {
+                    state.write(", ");
+                }
+                Type arg = lang.typeArgs.get(i);
+                arg.accept(this, state.inline());
+            }
+            state.write(']');
+        }
+        return null;
+    }
+
+    @Override
+    public final Void visitTypeStmt(TypeStmt lang, FormatterState state) throws Exception {
+        state.write("type ");
+        state.write(lang.name.formatValue());
+        if (!lang.typeParams.isEmpty()) {
+            state.write("[");
+            for (TypeParam param: lang.typeParams) {
+                param.accept(this, state.inline());
+            }
+            state.write("]");
+        }
+        state.write(" = ");
+        lang.body.accept(this, state);
         return null;
     }
 

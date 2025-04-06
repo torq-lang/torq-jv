@@ -11,10 +11,10 @@ public final class TypeUnificationError extends RuntimeException {
 
     public static final String TYPE_UNIFICATION_ERROR = "Type unification error";
 
-    public final MonoType a;
-    public final MonoType b;
+    public final MonoInfr a;
+    public final MonoInfr b;
 
-    public TypeUnificationError(MonoType a, MonoType b) {
+    public TypeUnificationError(MonoInfr a, MonoInfr b) {
         super(TYPE_UNIFICATION_ERROR);
         this.a = a;
         this.b = b;

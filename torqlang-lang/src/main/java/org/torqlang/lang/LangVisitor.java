@@ -83,6 +83,8 @@ public interface LangVisitor<T, R> {
 
     R visitLocalLang(LocalLang lang, T state) throws Exception;
 
+    R visitNewExpr(NewExpr lang, T state) throws Exception;
+
     R visitNullAsExpr(NullAsExpr lang, T state) throws Exception;
 
     R visitNullAsPat(NullAsPat lang, T state) throws Exception;
@@ -132,6 +134,10 @@ public interface LangVisitor<T, R> {
     R visitTuplePat(TuplePat lang, T state) throws Exception;
 
     R visitTypeAnno(TypeAnno lang, T state) throws Exception;
+
+    R visitTypeStmt(TypeStmt lang, T state) throws Exception;
+
+    R visitTypeApplyExpr(ApplyType lang, T state) throws Exception;
 
     R visitUnaryExpr(UnaryExpr lang, T state) throws Exception;
 

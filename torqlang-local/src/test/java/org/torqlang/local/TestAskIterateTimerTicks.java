@@ -22,7 +22,7 @@ public class TestAskIterateTimerTicks {
     public void test() throws Exception {
         String source = """
             actor IterateTimerTicks() in
-                import system[Cell, Stream, Timer, ValueIter]
+                import system.{Cell, Stream, Timer, ValueIter}
                 handle ask 'iterate' in
                     var tick_count = new Cell(0)
                     var timer_stream = new Stream(spawn(new Timer(1, 'microseconds')),

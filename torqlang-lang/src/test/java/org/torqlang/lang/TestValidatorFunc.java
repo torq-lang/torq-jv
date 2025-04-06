@@ -26,9 +26,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -44,9 +44,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.STR, subst.get(alphaVar));
+        assertEquals(ScalarInfr.STR, subst.get(alphaVar));
     }
 
     @Test
@@ -62,9 +62,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -80,9 +80,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -98,9 +98,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -116,9 +116,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -134,9 +134,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -152,9 +152,9 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeSubst subst = sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar));
-        assertEquals(ScalarType.INT32, subst.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, subst.get(alphaVar));
     }
 
     @Test
@@ -170,7 +170,7 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         AlreadyDefinedInScopeError error = assertThrows(AlreadyDefinedInScopeError.class,
             () -> sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar)));
         String expectedErrorString = """
@@ -198,7 +198,7 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeConflictError error = assertThrows(TypeConflictError.class,
             () -> sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar)));
         String expectedErrorString = """
@@ -226,7 +226,7 @@ public class TestValidatorFunc {
         StmtOrExpr sox = p.parse();
         SuffixFactory suffixFactory = new SuffixFactory();
         Validator validator = new Validator(suffixFactory);
-        VarType alphaVar = suffixFactory.nextAlphaVar();
+        VarInfr alphaVar = suffixFactory.nextAlphaVar();
         TypeConflictError error = assertThrows(TypeConflictError.class,
             () -> sox.accept(validator, new TypeScope(TypeEnv.create(), alphaVar)));
         String expectedErrorString = """

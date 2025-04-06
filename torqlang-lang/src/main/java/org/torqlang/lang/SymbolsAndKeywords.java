@@ -20,6 +20,7 @@ public final class SymbolsAndKeywords {
     static final char DIVIDE_OPER_CHAR = '/';
     static final char DOUBLE_QUOTE_CHAR = '"';
     static final char DOT_OPER_CHAR = '.';
+    static final char EQUAL_OPER_CHAR = '=';
     static final char GREATER_THAN_OPER_CHAR = '>';
     static final char HASH_TAG_CHAR = '#';
     static final char IDENT_ESC_CHAR = '~';
@@ -37,7 +38,7 @@ public final class SymbolsAndKeywords {
     static final char SEMICOLON_CHAR = ';';
     static final char SINGLE_QUOTE_CHAR = '\'';
     static final char SUBTRACT_OPER_CHAR = '-';
-    static final char UNIFY_OPER_CHAR = '=';
+    static final char UNIFY_OPER_CHAR = EQUAL_OPER_CHAR;
 
     static final String AND_OPER = "&&";
     static final String ASSIGN_CELL_VALUE_OPER = ":=";
@@ -77,6 +78,7 @@ public final class SymbolsAndKeywords {
     static final String LOCAL_VALUE = "local";
     static final String META_VALUE = "meta";
     static final String NATIVE_VALUE = "native";
+    static final String NEW_VALUE = "new";
     static final String PACKAGE_VALUE = "package";
     static final String PROTOCOL_VALUE = "protocol";
     static final String NULL_VALUE = "null";
@@ -103,7 +105,7 @@ public final class SymbolsAndKeywords {
         {},
         {},
         {DO_VALUE, IF_VALUE, IN_VALUE, OF_VALUE},
-        {ACT_VALUE, END_VALUE, EOF_VALUE, FOR_VALUE, TRY_VALUE, VAR_VALUE},
+        {ACT_VALUE, END_VALUE, EOF_VALUE, FOR_VALUE, NEW_VALUE, TRY_VALUE, VAR_VALUE},
         {CASE_VALUE, ELSE_VALUE, FUNC_VALUE, NULL_VALUE, PROC_VALUE, SELF_VALUE, SKIP_VALUE, THEN_VALUE, TRUE_VALUE, TYPE_VALUE, WHEN_VALUE},
         {ACTOR_VALUE, BEGIN_VALUE, BREAK_VALUE, CATCH_VALUE, FALSE_VALUE, LOCAL_VALUE, SPAWN_VALUE, THROW_VALUE, WHILE_VALUE},
         {ELSEIF_VALUE, IMPORT_VALUE, RETURN_VALUE},

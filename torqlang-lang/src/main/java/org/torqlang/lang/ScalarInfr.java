@@ -12,33 +12,33 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public interface ScalarType extends AppType {
+public interface ScalarInfr extends AppInfr {
 
-    ScalarType BOOL = new ScalarTypeImpl("Bool");
-    ScalarType INT32 = new ScalarTypeImpl("Int32");
-    ScalarType INT64 = new ScalarTypeImpl("Int64");
-    ScalarType STR = new ScalarTypeImpl("Str");
-    ScalarType VOID = new ScalarTypeImpl("Void");
+    ScalarInfr BOOL = new ScalarInfrImpl("Bool");
+    ScalarInfr INT32 = new ScalarInfrImpl("Int32");
+    ScalarInfr INT64 = new ScalarInfrImpl("Int64");
+    ScalarInfr STR = new ScalarInfrImpl("Str");
+    ScalarInfr VOID = new ScalarInfrImpl("Void");
 
-    static ScalarType create(String name) {
-        return new ScalarTypeImpl(name);
+    static ScalarInfr create(String name) {
+        return new ScalarInfrImpl(name);
     }
 
     @Override
-    ScalarType subst(TypeSubst subst);
+    ScalarInfr subst(TypeSubst subst);
 }
 
 @SuppressWarnings("ClassCanBeRecord")
-final class ScalarTypeImpl implements ScalarType {
+final class ScalarInfrImpl implements ScalarInfr {
 
     private final String name;
 
-    ScalarTypeImpl(String name) {
+    ScalarInfrImpl(String name) {
         this.name = name;
     }
 
     @Override
-    public final PolyType addQuantifiers(Set<VarType> freeVars) {
+    public final PolyInfr addQuantifiers(Set<VarInfr> freeVars) {
         if (freeVars.isEmpty()) {
             return this;
         } else {
@@ -47,12 +47,12 @@ final class ScalarTypeImpl implements ScalarType {
     }
 
     @Override
-    public final void captureFreeVars(Set<VarType> freeVars) {
+    public final void captureFreeVars(Set<VarInfr> freeVars) {
         // Scalar types have no free type variables
     }
 
     @Override
-    public final boolean contains(MonoType other) {
+    public final boolean contains(MonoInfr other) {
         return this == other;
     }
 
@@ -64,12 +64,12 @@ final class ScalarTypeImpl implements ScalarType {
         if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        ScalarTypeImpl that = (ScalarTypeImpl) other;
+        ScalarInfrImpl that = (ScalarInfrImpl) other;
         return Objects.equals(name, that.name);
     }
 
     @Override
-    public final Set<VarType> freeVars() {
+    public final Set<VarInfr> freeVars() {
         return Collections.emptySet();
     }
 
@@ -79,7 +79,7 @@ final class ScalarTypeImpl implements ScalarType {
     }
 
     @Override
-    public final ScalarType instantiate(SuffixFactory suffixFactory) {
+    public final ScalarInfr instantiate(SuffixFactory suffixFactory) {
         return this;
     }
 
@@ -89,12 +89,12 @@ final class ScalarTypeImpl implements ScalarType {
     }
 
     @Override
-    public final List<MonoType> params() {
+    public final List<MonoInfr> params() {
         return Collections.emptyList();
     }
 
     @Override
-    public final ScalarType subst(TypeSubst subst) {
+    public final ScalarInfr subst(TypeSubst subst) {
         return this;
     }
 

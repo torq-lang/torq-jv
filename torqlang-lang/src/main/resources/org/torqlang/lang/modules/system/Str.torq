@@ -1,0 +1,52 @@
+package system
+
+meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
+type Str = Obj & {
+    // Required for Obj types
+    'new': func (params::Any...) -> Str,
+    'equals': func (other::Any) -> Bool,
+    'hash_code': func () -> Int32,
+    // Other methods
+    'char_at': func (index::Int32) -> Bool,
+    'chars': func () -> Array[Char],
+    'compare_to': func (other::Str) -> Int32,
+    'concat': func (other::Str) -> Str,
+    'contains': func (string::Str) -> Bool,
+    'ends_with': func (string::Str) -> Bool,
+    'equals_ignore_case': func (other::Str) -> Bool,
+    'index_of_char': func (char::Char) -> Int32,
+    'index_of_char_from': func (char::Char, from::Int32) -> Int32,
+    'index_of_str': func (str::Str) -> Int32,
+    'index_of_str_from': func (str::Str, from::Int32) -> Int32,
+    'is_blank': func () -> Bool,
+    'is_empty': func () -> Bool,
+    'last_index_of_char': func (char::Char) -> Int32,
+    'last_index_of_char_from': func (char::Char, from::Int32) -> Int32,
+    'last_index_of_str': func (str::Str) -> Int32,
+    'last_index_of_str_from': func (str::Str, from::Int32) -> Int32,
+    'length': func () -> Int32,
+    'replace': func (old_char::Char, new_char::Char) -> Str,
+    'starts_with': func (prefix::Str) -> Bool,
+    'starts_with_at_offset': func (prefix::Str, at_offset::Int32) -> Bool,
+    'strip': func () -> Str,
+    'strip_leading': func () -> Str,
+    'strip_trailing': func () -> Str,
+    'substring_from': func (from::Int32) -> Str,
+    'substring_from_end': func (from::Int32, to::Int32) -> Str,
+    'to_char_array': func () -> Array[Char],
+    'to_lower_case': func () -> Str,
+    'to_upper_case': func () -> Str,
+    'trim': func () -> Str,
+}
+
+
+meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
+type Strs = Obj & {
+    // Required for Obj types
+    'new': func (params::Any...) -> Str,
+    'equals': func (other::Any) -> Bool,
+    'hash_code': func () -> Int32,
+    // Other methods
+    'join': func (delimiter::Str, values::ValueIter[Str]) -> Str,
+    'format': func (format::Str, args::Str...) -> Str,
+}

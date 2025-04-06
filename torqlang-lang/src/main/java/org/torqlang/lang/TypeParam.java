@@ -7,25 +7,20 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.klvm.Ident;
 import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
 
-import java.util.List;
+public final class TypeParam extends AbstractLang {
+    public final Ident ident;
 
-public final class RecType extends AbstractLang implements Type {
-
-    public final List<FieldType> fieldTypes;
-
-    public RecType(List<FieldType> fieldTypes, SourceSpan sourceSpan) {
+    public TypeParam(Ident ident, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.fieldTypes = fieldTypes;
+        this.ident = ident;
     }
 
     @Override
-    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
-        throws Exception
-    {
+    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
         throw new NeedsImpl();
     }
-
 }

@@ -7,25 +7,30 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
-public final class RecType extends AbstractLang implements Type {
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-    public final List<FieldType> fieldTypes;
+public final class NewExpr extends AbstractLang implements Expr {
 
-    public RecType(List<FieldType> fieldTypes, SourceSpan sourceSpan) {
+    public final ApplyType typeApply;
+    public final List<StmtOrExpr> args;
+
+    public NewExpr(ApplyType typeApply,
+                   List<? extends StmtOrExpr> args,
+                   SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.fieldTypes = fieldTypes;
+        this.typeApply = typeApply;
+        this.args = nullSafeCopyOf(args);
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        throw new NeedsImpl();
+        return visitor.visitNewExpr(this, state);
     }
 
 }

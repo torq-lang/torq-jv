@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface StructType extends CompType {
+public interface ProcType extends Type {
 }

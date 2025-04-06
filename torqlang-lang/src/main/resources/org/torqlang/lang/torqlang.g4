@@ -9,27 +9,27 @@ grammar torqlang;
 //**************//
 
 // Next version changes:
-//     'new' operator for type application
-//     Module support
-//     Package statement
-//     Metadata support
-//     Cast expressions, e.g. ident::Int32
-//     Spread expressions, e.g. {customer..., person...}
-//     protocol statements
-//     type statements (Obj is a marker type)
-//     Actor implements
-//     Stream handlers
-//     Type parameters on actor, func, and proc
-//     Import is now 'package.{' instead of 'package['
-//     Record "rest" patterns, e.g. {'name': name, rest...}
-//     Tuple "rest" patterns, e.g. [value1, value2, rest...}
-//     Dangling commas in record and tuple values, e.g. {'name': name,}
-//     Variable input arguments, e.g. func MyFunc(params::Any...) -> Any
-//     Type expressions for protocol, record, and tuple
-//     Type extension (+) and union (|)
-//     Array type constructors, e.g. Array[Int32] or Array[Array[Int32]]
-//     Native actor declarations
-//     Weak keywords: 'as' | 'ask' | 'handle' | 'implements' | 'meta' | 'native' | 'protocol' | 'stream' | 'tell'
+//     [X] 'new' operator for instance creation
+//     [ ] Module support
+//     [ ] Package statement
+//     [ ] Metadata support
+//     [ ] Cast expressions, e.g. ident::Int32
+//     [ ] Spread expressions, e.g. {customer..., person...}
+//     [ ] protocol statements
+//     [ ] type statements (Obj is a marker type)
+//     [ ] Actor implements
+//     [ ] Stream handlers
+//     [ ] Type parameters on actor, func, and proc
+//     [ ] Import is now 'package.{' instead of 'package['
+//     [ ] Record "rest" patterns, e.g. {'name': name, rest...}
+//     [ ] Tuple "rest" patterns, e.g. [value1, value2, rest...}
+//     [X] Dangling commas in record and tuple values, e.g. {'name': name,}
+//     [ ] Variable input arguments, e.g. func MyFunc(params::Any...) -> Any
+//     [ ] Type expressions for protocol, record, and tuple
+//     [ ] Type extension (+) and union (|)
+//     [ ] Array type constructors, e.g. Array[Int32] or Array[Array[Int32]]
+//     [ ] Native actor declarations
+//     [ ] Weak keywords: 'as' | 'ask' | 'handle' | 'implements' | 'meta' | 'native' | 'protocol' | 'stream' | 'tell'
 
 module: package? stmt_or_expr* EOF;
 
@@ -90,7 +90,7 @@ keyword: act | actor | begin | 'break' | case | 'continue' |
 act: 'act' stmt_or_expr+ 'end';
 
 actor: 'actor' ident? type_param_list? '(' pat_list? ')'
-       ('implements' protocol_and)? 'in'
+       ('implements' intersection_protocol)? 'in'
        (stmt_or_expr | handler)+ 'end';
 
 handler: 'handle' (tell_handler | ask_handler | stream_handler);
@@ -192,9 +192,9 @@ feat_value: ident | bool | INT_LITERAL | STR_LITERAL |
 
 // The '...' is used to declare a variable argument
 // parameter in method declarations
-var_type_anno: '::' struct_or '...'? | '...';
+var_type_anno: '::' union_type '...'? | '...';
 
-return_type_anno: '->' struct_or;
+return_type_anno: '->' union_type;
 
 bool: 'true' | 'false';
 
@@ -206,30 +206,32 @@ ident: IDENT | 'as' | 'ask' | 'handle' | 'implements' |
 // Type System //
 // - - - - - - //
 
-type: 'type' ident type_param_list? '=' struct_or;
+type: 'type' ident type_param_list? '=' union_type;
 
 type_param_list: '[' type_param (',' type_param)* ']';
 
-type_param: ident (('<:' | '>:') struct_or)?;
+type_param: ident (('<:' | '>:') union_type)?;
 
-type_arg_list: '[' struct_or (',' struct_or)* ']';
+type_arg_list: '[' union_type (',' union_type)* ']';
 
-struct_or: struct_and ('|' struct_and)*;
+union_type: intersection_type ('|' intersection_type)*;
 
-struct_and: struct_expr ('&' struct_expr)*;
+intersection_type: type_expr ('&' type_expr)*;
 
-struct_expr: ident (type_arg_list | '#' (rec_type_body |
-             tuple_type_body))? |
-             (bool | STR_LITERAL | 'eof' | 'null')
-             '#' (rec_type_body | tuple_type_body)? |
-             rec_type_body | tuple_type_body | proc_type |
-             func_type;
+type_expr: ident (type_arg_list | '#' (rec_type_body | tuple_type_body))? |
+           (bool | STR_LITERAL | 'eof' | 'null') '#' (rec_type_body | tuple_type_body) |
+           rec_type_body |
+           tuple_type_body |
+           proc_type |
+           func_type;
 
 rec_type_body: '{' (field_type (',' field_type)* ','?)? '}';
 
-tuple_type_body: '[' (struct_or (',' struct_or)* ','?)? ']';
+tuple_type_body: '[' (union_type (',' union_type)* ','?)? ']';
 
-field_type: (feat_value ':')? struct_or;
+field_type: (feat_type ':')? union_type;
+
+feat_type: bool | INT_LITERAL | STR_LITERAL | 'eof' | 'null';
 
 func_type: 'func' ('(' pat_type_list? ')' | pat) return_type_anno;
 
@@ -237,9 +239,9 @@ proc_type: 'proc' ('(' pat_type_list? ')' | pat);
 
 pat_type_list: pat (',' pat)*;
 
-protocol: 'protocol' ident type_param_list? '=' protocol_and;
+protocol: 'protocol' ident type_param_list? '=' intersection_protocol;
 
-protocol_and: protocol_expr ('&' protocol_expr)*;
+intersection_protocol: protocol_expr ('&' protocol_expr)*;
 
 protocol_expr: ident type_arg_list? | protocol_body;
 

@@ -16,17 +16,17 @@ public final class TypeCntxt {
 
     private static final TypeCntxt EMPTY_CNTXT = new TypeCntxt();
 
-    private final Map<Lang, PolyType> mappings;
+    private final Map<Lang, PolyInfr> mappings;
 
     private TypeCntxt() {
         this(Collections.emptyMap());
     }
 
-    private TypeCntxt(Map<Lang, PolyType> mappings) {
+    private TypeCntxt(Map<Lang, PolyInfr> mappings) {
         this.mappings = mappings;
     }
 
-    public static TypeCntxt create(Map<Lang, PolyType> mappings) {
+    public static TypeCntxt create(Map<Lang, PolyInfr> mappings) {
         return new TypeCntxt(Map.copyOf(mappings));
     }
 
@@ -34,16 +34,16 @@ public final class TypeCntxt {
         return EMPTY_CNTXT;
     }
 
-    public Set<VarType> freeVars() {
-        Set<VarType> fvs = new HashSet<>();
-        for (PolyType pt : mappings.values()) {
+    public Set<VarInfr> freeVars() {
+        Set<VarInfr> fvs = new HashSet<>();
+        for (PolyInfr pt : mappings.values()) {
             pt.captureFreeVars(fvs);
         }
         return fvs;
     }
 
-    public final PolyType generalize(PolyType polyType) {
-        Set<VarType> polyFree = new HashSet<>(polyType.freeVars());
+    public final PolyInfr generalize(PolyInfr polyType) {
+        Set<VarInfr> polyFree = new HashSet<>(polyType.freeVars());
         polyFree.removeAll(freeVars());
         return polyType.addQuantifiers(polyFree);
     }
@@ -53,7 +53,7 @@ public final class TypeCntxt {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         boolean first = true;
-        for (Map.Entry<Lang, PolyType> assign : mappings.entrySet()) {
+        for (Map.Entry<Lang, PolyInfr> assign : mappings.entrySet()) {
             if (!first) {
                 sb.append(", ");
             }

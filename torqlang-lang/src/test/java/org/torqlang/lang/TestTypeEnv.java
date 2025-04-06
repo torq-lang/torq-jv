@@ -36,13 +36,13 @@ public class TestTypeEnv {
         // generalize(Γ, σ) = ∀α. ∀δ. ∀ε. α -> β -> γ -> δ -> ε
         //
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
-        VarType gammaVar = VarType.create(PolyType.LOWER_GAMMA);
-        VarType deltaVar = VarType.create(PolyType.LOWER_DELTA);
-        VarType epsilonVar = VarType.create(PolyType.LOWER_EPSILON);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
+        VarInfr gammaVar = VarInfr.create(PolyInfr.LOWER_GAMMA);
+        VarInfr deltaVar = VarInfr.create(PolyInfr.LOWER_DELTA);
+        VarInfr epsilonVar = VarInfr.create(PolyInfr.LOWER_EPSILON);
 
-        QuantType sigma = (QuantType) FuncType
+        QuantInfr sigma = (QuantInfr) FuncInfr
             .create(List.of(alphaVar, betaVar, gammaVar, deltaVar, epsilonVar))
             .addQuantifiers(Set.of(epsilonVar));
         assertEquals("∀ε. (α, β, γ, δ) -> ε", sigma.toString());
@@ -51,17 +51,17 @@ public class TestTypeEnv {
             .create(
                 Map.of(
                     Ident.create("x"), betaVar,
-                    Ident.create("y"), FuncType.create(
+                    Ident.create("y"), FuncInfr.create(
                         List.of(
-                            FuncType.create(List.of(gammaVar, ScalarType.INT32)), ScalarType.INT32
+                            FuncInfr.create(List.of(gammaVar, ScalarInfr.INT32)), ScalarInfr.INT32
                         )
                     ),
-                    Ident.create("z"), QuantType.create(List.of(deltaVar), deltaVar)
+                    Ident.create("z"), QuantInfr.create(List.of(deltaVar), deltaVar)
                 )
             );
-        PolyType generalSigma = gamma.generalize(sigma);
-        assertInstanceOf(QuantType.class, generalSigma);
-        QuantType sigmaQuant = (QuantType) generalSigma;
+        PolyInfr generalSigma = gamma.generalize(sigma);
+        assertInstanceOf(QuantInfr.class, generalSigma);
+        QuantInfr sigmaQuant = (QuantInfr) generalSigma;
         assertEquals(sigmaQuant.quantifiers().size(), 3);
         assertTrue(sigmaQuant.quantifiers().contains(alphaVar));
         assertTrue(sigmaQuant.quantifiers().contains(deltaVar));

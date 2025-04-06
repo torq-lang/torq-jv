@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface TupleType extends StructType {
+public interface StructInfr extends CompInfr {
 }

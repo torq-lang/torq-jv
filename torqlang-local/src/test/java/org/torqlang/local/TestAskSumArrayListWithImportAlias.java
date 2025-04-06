@@ -21,7 +21,7 @@ public class TestAskSumArrayListWithImportAlias {
     public void test() throws Exception {
         String source = """
             actor SumArrayList() in
-                import system[ArrayList as JavaArrayList, Cell, ValueIter]
+                import system.{ArrayList as JavaArrayList, Cell, ValueIter}
                 var one_thru_five = new JavaArrayList([1, 2, 3, 4, 5])
                 handle ask 'perform' in
                     var sum = new Cell(0)

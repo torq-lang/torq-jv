@@ -5,7 +5,8 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.lang;
+package org.torqlang.local;
 
-public interface Type extends Lang {
+public class Compiler {
+    // Compile one or more resource roots into an Artifacts
 }

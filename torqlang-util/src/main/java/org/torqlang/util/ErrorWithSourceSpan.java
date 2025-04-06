@@ -25,6 +25,13 @@ public abstract class ErrorWithSourceSpan extends RuntimeException implements So
         super(cause);
     }
 
+    public static <T extends Exception> void printWithSourceAndRethrow(T exc, int lineNrWidth, int showBefore, int showAfter) throws Exception {
+        if (exc instanceof ErrorWithSourceSpan error) {
+            System.err.println(error.formatWithSource(lineNrWidth, showBefore, showAfter));
+        }
+        throw exc;
+    }
+
     public final String formatWithSource(int lineNrWidth, int showBefore, int showAfter) {
         return sourceSpan() != null ?
             sourceSpan().formatSource(getMessage(), lineNrWidth, showBefore, showAfter) :

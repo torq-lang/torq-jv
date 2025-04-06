@@ -22,8 +22,8 @@ public class TestTypeSubst {
         // s = unify(α, β)
         // s = {α |-> β}
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
         TypeSubst s = TypeSubst.unify(alphaVar, betaVar);
         assertEquals(1, s.size());
         assertEquals(betaVar, s.get(alphaVar));
@@ -35,10 +35,10 @@ public class TestTypeSubst {
         // s = unify(α, Bool)
         // s = {α |-> Bool}
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        TypeSubst s = TypeSubst.unify(alphaVar, ScalarType.BOOL);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        TypeSubst s = TypeSubst.unify(alphaVar, ScalarInfr.BOOL);
         assertEquals(1, s.size());
-        assertEquals(ScalarType.BOOL, s.get(alphaVar));
+        assertEquals(ScalarInfr.BOOL, s.get(alphaVar));
     }
 
     @Test
@@ -47,10 +47,10 @@ public class TestTypeSubst {
         // s = unify(Bool, α)
         // s = {α |-> Bool}
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        TypeSubst s = TypeSubst.unify(ScalarType.BOOL, alphaVar);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        TypeSubst s = TypeSubst.unify(ScalarInfr.BOOL, alphaVar);
         assertEquals(1, s.size());
-        assertEquals(ScalarType.BOOL, s.get(alphaVar));
+        assertEquals(ScalarInfr.BOOL, s.get(alphaVar));
     }
 
     @Test
@@ -61,19 +61,19 @@ public class TestTypeSubst {
         // s = unify(a, b)
         // s(a) == s(b) == (Int32) -> Bool
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
 
         TypeSubst s = TypeSubst.unify(alphaVar, betaVar);
         assertEquals(betaVar, s.get(alphaVar));
         assertNull(s.get(betaVar));
         assertEquals(alphaVar.subst(s), betaVar.subst(s));
 
-        FuncType a = FuncType.create(List.of(ScalarType.INT32, alphaVar));
-        FuncType b = FuncType.create(List.of(betaVar, ScalarType.BOOL));
+        FuncInfr a = FuncInfr.create(List.of(ScalarInfr.INT32, alphaVar));
+        FuncInfr b = FuncInfr.create(List.of(betaVar, ScalarInfr.BOOL));
         s = TypeSubst.unify(a, b);
-        assertEquals(ScalarType.BOOL, s.get(alphaVar));
-        assertEquals(ScalarType.INT32, s.get(betaVar));
+        assertEquals(ScalarInfr.BOOL, s.get(alphaVar));
+        assertEquals(ScalarInfr.INT32, s.get(betaVar));
         assertEquals(a.subst(s), b.subst(s));
     }
 
@@ -92,10 +92,10 @@ public class TestTypeSubst {
         // s1(s2) = combine(s1, s2) = {α ↦ δ, δ ↦ β}
         //
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
-        VarType gammaVar = VarType.create(PolyType.LOWER_GAMMA);
-        VarType deltaVar = VarType.create(PolyType.LOWER_DELTA);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
+        VarInfr gammaVar = VarInfr.create(PolyInfr.LOWER_GAMMA);
+        VarInfr deltaVar = VarInfr.create(PolyInfr.LOWER_DELTA);
 
         TypeSubst s1 = TypeSubst.create(Map.of(
             alphaVar, gammaVar,
@@ -124,10 +124,10 @@ public class TestTypeSubst {
         // s1(s2) = combine(s1, s2) = {α ↦ δ, β ↦ γ}
         //
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
-        VarType gammaVar = VarType.create(PolyType.LOWER_GAMMA);
-        VarType deltaVar = VarType.create(PolyType.LOWER_DELTA);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
+        VarInfr gammaVar = VarInfr.create(PolyInfr.LOWER_GAMMA);
+        VarInfr deltaVar = VarInfr.create(PolyInfr.LOWER_DELTA);
 
         TypeSubst s1 = TypeSubst.create(Map.of(
             alphaVar, gammaVar,
@@ -161,12 +161,12 @@ public class TestTypeSubst {
         // s1(s2) = combine(s1, s2) = {α ↦ β, β ↦ δ, γ ↦ λ, ε ↦ δ}
         //
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
-        VarType gammaVar = VarType.create(PolyType.LOWER_GAMMA);
-        VarType deltaVar = VarType.create(PolyType.LOWER_DELTA);
-        VarType epsilonVar = VarType.create(PolyType.LOWER_EPSILON);
-        VarType lambdaVar = VarType.create(PolyType.LOWER_LAMBDA);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
+        VarInfr gammaVar = VarInfr.create(PolyInfr.LOWER_GAMMA);
+        VarInfr deltaVar = VarInfr.create(PolyInfr.LOWER_DELTA);
+        VarInfr epsilonVar = VarInfr.create(PolyInfr.LOWER_EPSILON);
+        VarInfr lambdaVar = VarInfr.create(PolyInfr.LOWER_LAMBDA);
 
         TypeSubst s1 = TypeSubst.create(Map.of(
             alphaVar, lambdaVar,
@@ -202,16 +202,16 @@ public class TestTypeSubst {
         // s1(s2) = combine(s1, s2) = {α ↦ β, β ↦ (Int32) -> Bool, γ ↦ Int32}
         //
 
-        VarType alphaVar = VarType.create(PolyType.LOWER_ALPHA);
-        VarType betaVar = VarType.create(PolyType.LOWER_BETA);
-        VarType gammaVar = VarType.create(PolyType.LOWER_GAMMA);
+        VarInfr alphaVar = VarInfr.create(PolyInfr.LOWER_ALPHA);
+        VarInfr betaVar = VarInfr.create(PolyInfr.LOWER_BETA);
+        VarInfr gammaVar = VarInfr.create(PolyInfr.LOWER_GAMMA);
 
-        TypeSubst s1 = TypeSubst.create(Map.of(gammaVar, ScalarType.INT32));
+        TypeSubst s1 = TypeSubst.create(Map.of(gammaVar, ScalarInfr.INT32));
         assertEquals("Int32", s1.get(gammaVar).toString());
 
         TypeSubst s2 = TypeSubst.create(Map.of(
             alphaVar, betaVar,
-            betaVar, FuncType.create(List.of(gammaVar, ScalarType.BOOL))
+            betaVar, FuncInfr.create(List.of(gammaVar, ScalarInfr.BOOL))
         ));
         assertEquals("β", s2.get(alphaVar).toString());
         assertEquals("(γ) -> Bool", s2.get(betaVar).toString());

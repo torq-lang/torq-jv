@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class IdentAsExpr extends AbstractLang implements LabelExpr {
+public final class IdentAsExpr extends AbstractLang implements LabelExpr, LabelType {
 
     public final Ident ident;
 

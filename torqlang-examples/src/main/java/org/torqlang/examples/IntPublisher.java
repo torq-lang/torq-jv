@@ -21,7 +21,7 @@ public final class IntPublisher extends AbstractExample {
 
     public static final String SOURCE = """
         actor IntPublisher(first, last, incr) in
-            import system[ArrayList, Cell]
+            import system.{ArrayList, Cell}
             import system.Procs.respond
             var next_int = new Cell(first)
             handle ask 'request'#{'count': n} in

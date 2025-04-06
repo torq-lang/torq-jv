@@ -7,16 +7,16 @@
 
 package org.torqlang.lang;
 
-public interface MonoType extends PolyType {
+public interface MonoInfr extends PolyInfr {
 
     /*
      * Contains is inclusive. Therefore, return true if this type is equal to or contains other.
      */
-    boolean contains(MonoType other);
+    boolean contains(MonoInfr other);
 
     /*
      * Substitute exiting type variables with the given type substitutions.
      */
     @Override
-    MonoType subst(TypeSubst subst);
+    MonoInfr subst(TypeSubst subst);
 }

@@ -101,34 +101,12 @@ public class TestAskConcurrentFeatures {
 
     @Test
     public void test02() throws Exception {
-        /*
-         * This source tests a previous deadlock condition caused by interdependent responses, which can occur while
-         * bindings records with undetermined features. The "spin waits" for responses to arrive in b, a, v order.
-         */
-        String sourceWithUndeterminedWaits = """
-            actor ConcurrentFeatures() in
-                import system.RangeIter
-                proc spin_wait(n) in
-                    for i in RangeIter.new(0, n) do
-                        skip
-                    end
-                end
-                handle ask 'perform' in
-                    var a, b, f, v
-                    a = {f, v}
-                    b = {v, f}
-                    b = act {1: 'one'} end
-                    a = act spin_wait(20) {'one': 1} end
-                    v = act spin_wait(4000) 1 end
-                    a.one + 1
-                end
-            end""";
         String source = """
             actor ConcurrentFeatures() in
                 handle ask 'perform' in
                     var a, b, f, v
-                    a = {f, v}
-                    b = {v, f}
+                    a = {f: v}
+                    b = {v: f}
                     b = act {1: 'one'} end
                     a = act {'one': 1} end
                     v = act 1 end
@@ -152,12 +130,51 @@ public class TestAskConcurrentFeatures {
 
     @Test
     public void test03() throws Exception {
+        /*
+         * This source tests a previous deadlock condition caused by interdependent responses, which can occur while
+         * bindings records with undetermined features. The "spin waits" for responses to arrive in b, a, v order.
+         */
+        String source = """
+            actor ConcurrentFeatures() in
+                import system.RangeIter
+                proc spin_wait(n) in
+                    for i in new RangeIter(0, n) do
+                        skip
+                    end
+                end
+                handle ask 'perform' in
+                    var a, b, f, v
+                    a = {f: v}
+                    b = {v: f}
+                    b = act {1: 'one'} end
+                    a = act spin_wait(20) {'one': 1} end
+                    v = act spin_wait(4000) 1 end
+                    a.one + 1
+                end
+            end""";
+        ActorBuilderGenerated g = Actor.builder()
+            .setAddress(Address.create(getClass().getName() + "Actor02"))
+            .setSource(source)
+            .generate();
+        ActorRef actorRef = g.spawn().actorRef();
+        Object response = RequestClient.builder()
+            .setAddress(Address.create("ConcurrentFeaturesClient"))
+            .send(actorRef, Str.of("perform"))
+            .awaitResponse(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        if (response instanceof FailedValue failedValue) {
+            System.out.println(failedValue.toDetailsString());
+        }
+        assertEquals(Int32.I32_2, response);
+    }
+
+    @Test
+    public void test04() throws Exception {
         String source = """
             actor ConcurrentFeatures() in
                 handle ask 'perform' in
                     var a, b, f, v
-                    a = {f, v}
-                    b = {v, f}
+                    a = {f: v}
+                    b = {v: f}
                     v = act 1 end
                     a = act {'one': 1} end
                     b = act {1: 'one'} end

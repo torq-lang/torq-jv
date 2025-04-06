@@ -13,15 +13,15 @@ package org.torqlang.lang;
 public final class TypeScope {
 
     private final TypeEnv typeEnv;
-    private final MonoType monoType;
+    private final MonoInfr monoType;
 
-    TypeScope(TypeEnv typeEnv, MonoType monoType) {
+    TypeScope(TypeEnv typeEnv, MonoInfr monoType) {
         this.typeEnv = typeEnv;
         this.monoType = monoType;
     }
 
     // TODO: Rename to `rho`
-    public final MonoType monoType() {
+    public final MonoInfr monoType() {
         return monoType;
     }
 

@@ -23,8 +23,8 @@ local
 null
 of
 package
-protocol
 proc
+protocol
 return
 self
 skip
