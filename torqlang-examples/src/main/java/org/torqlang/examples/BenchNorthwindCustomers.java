@@ -17,7 +17,7 @@ import org.torqlang.local.*;
 import static org.torqlang.examples.BenchTools.printTimingResults;
 
 /*
- * java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindCustomers
+ * java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindCustomers
  */
 public final class BenchNorthwindCustomers {
 
@@ -71,7 +71,7 @@ public final class BenchNorthwindCustomers {
         printTimingResults(getClass().getSimpleName(), start, stop, readCount);
     }
 
-    private TupleSample spawnSample(ActorImage actorImage, int expectedSize) throws Exception {
+    private TupleSample spawnSample(ActorImage actorImage, int expectedSize) {
         ActorRef actorRef = Actor.spawn(Address.create("test_actor"), actorImage);
         FutureResponse futureResp = new FutureResponse(Address.create("future_response"));
         Envelope rqs = Envelope.createRequest(GET_CUSTOMERS, futureResp, "get_request");

@@ -7,8 +7,8 @@
 
 package org.torqlang.local;
 
-/**
- * A simple and minimal interface to the concept of a Mailbox.
+/*
+ * A simple and minimal interface to the concept of a Mailbox queue.
  */
 public interface Mailbox {
 
@@ -23,12 +23,12 @@ public interface Mailbox {
     /**
      * Return the next message or null if mailbox is empty.
      */
-    Envelope peekNext();
+    Envelope peek();
 
     /**
      * Remove and return the next message or null if mailbox is empty.
      */
-    Envelope removeNext();
+    Envelope remove();
 
     int size();
 }

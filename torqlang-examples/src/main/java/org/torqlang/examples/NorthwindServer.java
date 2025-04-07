@@ -26,9 +26,9 @@ import static org.torqlang.server.ServerProps.RESOURCES_PROP;
  *     Example data must be copied from the project directory `resources/northwind/` to the local home
  *     directory `/home/USER/.torq_lang/resources/northwind`.
  * Run with all hardware threads:
- *     java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ *     java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
  * Run with 8 hardware threads:
- *     taskset -c 0-7 java -XX:+UseZGC -p ~/workspace/torq_jv_runtime -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ *     taskset -c 0-7 java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
  */
 public final class NorthwindServer {
 

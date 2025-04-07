@@ -58,7 +58,7 @@ public final class NorthwindDb extends AbstractActor {
      */
     @Override
     protected boolean isExecutable(Mailbox mailbox) {
-        Envelope envelope = mailbox.peekNext();
+        Envelope envelope = mailbox.peek();
         if (envelope == null) {
             return false;
         }
@@ -77,13 +77,13 @@ public final class NorthwindDb extends AbstractActor {
 
     @Override
     protected Envelope[] selectNext(Mailbox mailbox) {
-        Envelope envelope = mailbox.removeNext();
+        Envelope envelope = mailbox.remove();
         // Process requests or notifications one at a time
         if (!envelope.isResponse()) {
             return new Envelope[]{envelope};
         }
         // Process multiple adjacent responses if possible
-        Envelope peekNext = mailbox.peekNext();
+        Envelope peekNext = mailbox.peek();
         if (peekNext == null || !peekNext.isResponse()) {
             return new Envelope[]{envelope};
         }
@@ -91,8 +91,8 @@ public final class NorthwindDb extends AbstractActor {
         ArrayList<Envelope> list = new ArrayList<>();
         list.add(envelope);
         do {
-            list.add(mailbox.removeNext());
-            peekNext = mailbox.peekNext();
+            list.add(mailbox.remove());
+            peekNext = mailbox.peek();
         } while (peekNext != null && peekNext.isResponse());
         return list.toArray(new Envelope[0]);
     }

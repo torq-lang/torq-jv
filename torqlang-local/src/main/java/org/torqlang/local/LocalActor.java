@@ -304,7 +304,7 @@ final class LocalActor extends AbstractActor {
     @Override
     protected final boolean isExecutable(Mailbox mailbox) {
         if (waitState != null) {
-            Envelope next = mailbox.peekNext();
+            Envelope next = mailbox.peek();
             return nullSafeIsResponse(next) || !selectableResponses.isEmpty() || nullSafeIsControl(next);
         }
         return !mailbox.isEmpty();
@@ -648,7 +648,7 @@ final class LocalActor extends AbstractActor {
         }
         // EMPTY THE MAILBOX WHILE RESPONDING TO REQUESTS
         while (!mailbox.isEmpty()) {
-            Envelope next = mailbox.removeNext();
+            Envelope next = mailbox.remove();
             if (next.isRequest()) {
                 next.requester().send(Envelope.createResponse(failedValue, next.requestId()));
             }
@@ -728,7 +728,7 @@ final class LocalActor extends AbstractActor {
     }
 
     protected final Envelope[] selectNext(Mailbox mailbox) {
-        Envelope first = mailbox.removeNext();
+        Envelope first = mailbox.remove();
         if (first == null) {
             // Although there are no messages in the mailbox, we are executable because we contain selectable
             // responses. Therefore, return an empty batch of envelopes. (see isExecutable)
@@ -739,10 +739,10 @@ final class LocalActor extends AbstractActor {
         }
         ArrayList<Envelope> responses = new ArrayList<>();
         responses.add(first);
-        Envelope nextEnvelope = mailbox.peekNext();
+        Envelope nextEnvelope = mailbox.peek();
         while (nextEnvelope != null && nextEnvelope.isResponse()) {
-            responses.add(mailbox.removeNext());
-            nextEnvelope = mailbox.peekNext();
+            responses.add(mailbox.remove());
+            nextEnvelope = mailbox.peek();
         }
         return responses.toArray(new Envelope[0]);
     }

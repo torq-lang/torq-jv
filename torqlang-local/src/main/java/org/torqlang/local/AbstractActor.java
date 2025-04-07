@@ -101,6 +101,15 @@ public abstract class AbstractActor implements ActorRef {
         return logger;
     }
 
+    /**
+     * Should only be used for debugging and tracing.
+     */
+    protected final int mailboxSize() {
+        synchronized (mailboxLock) {
+            return mailbox.size();
+        }
+    }
+
     protected abstract OnMessageResult onMessage(Envelope[] next);
 
     protected void onReceivedAfterFailed(Envelope envelope) {
@@ -131,7 +140,7 @@ public abstract class AbstractActor implements ActorRef {
     }
 
     protected Envelope[] selectNext(Mailbox mailbox) {
-        return new Envelope[]{mailbox.removeNext()};
+        return new Envelope[]{mailbox.remove()};
     }
 
     @Override

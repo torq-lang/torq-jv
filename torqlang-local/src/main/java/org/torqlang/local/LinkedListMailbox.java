@@ -66,12 +66,12 @@ public class LinkedListMailbox implements Mailbox {
     }
 
     @Override
-    public final Envelope peekNext() {
+    public final Envelope peek() {
         return first != null ? first.message : null;
     }
 
     @Override
-    public final Envelope removeNext() {
+    public final Envelope remove() {
         if (first == null) {
             return null;
         }
