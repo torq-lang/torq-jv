@@ -15,20 +15,47 @@ import java.util.concurrent.RejectedExecutionException;
 import static org.torqlang.local.OnMessageResult.NOT_FINISHED;
 
 /*
+ * ACTOR REFERENCES
+ * ================
+ *
+ * Actors are abstract and hidden. Actors do not have identity or equality. Actors only communicate by sending messages
+ * to addresses. Systems of actors are organized around collections of addresses, not collections of actor objects.
+ * Theoretically, a single actor can have multiple addresses.
+ *
+ * With these principles foremost in mind, the following "ActorRef" and "Envelope" class establish the fundamental
+ * actor abstraction and its ability to communicate with other actors.
+ *
+ *     public interface ActorRef {
+ *         Address address();
+ *         void send(Envelope envelope);
+ *     }
+ *
+ *     public interface Envelope {
+ *         Object message();
+ *         Object requestId();
+ *         ActorRef requester();
+ *     }
+ *
+ * EQUALITY AND HASH-CODES
+ * =======================
+ *
+ * Because actor objects do not have a practical use for identity or equality, we overload the implementation of
+ * "equals" and "hashCode" to operate on an optional "affinityId" to determine a virtual thread ID for scheduling.
+ *
  * Actors are typically run in one of two strategies:
- * 1. An actor per core
- * 2. Many actors per core
+ *     1. An actor per core
+ *     2. Many actors per core
  *
- * An actor per core -- Explicit IDs are provided in actor-per-core strategy. Consider a runtime consisting of four
- * cores. To implement the actor-per-core strategy, create four actors with identifiers 0-3, and an AffinityExecutor
- * with a size of 4. The explicit IDs create a perfect distribution across the 4 threads contained within the
- * AffinityExecutor.
+ * An actor per core -- Explicit affinity IDs are provided in an actor-per-core strategy. Consider a runtime consisting
+ * of four cores. To implement the actor-per-core strategy, create four actors with affinity IDs 0-3, and an
+ * AffinityExecutor with a size of 4. The explicit IDs create a perfect distribution across the 4 threads contained
+ * within the AffinityExecutor.
  *
- * Many actors per core -- Explicit IDs are not provided in a many-actors-per-core strategy. Instead, the actors
- * default their ID to their identity hash code. Consider a runtime consisting of four cores for running thousands of
- * actors. To implement the many-actors-per-core strategy, create an AffinityExecutor with a size of 4. The identity
- * hash codes approximate an even distribution across the 4 threads contained within the AffinityExecutor, dynamically
- * partitioning the actors across the available threads.
+ * Many actors per core -- Explicit affinity IDs are not provided in a many-actors-per-core strategy. Instead, the
+ * actors default their ID to their identity hash code. Consider a runtime consisting of four cores for running
+ * thousands of actors. To implement the many-actors-per-core strategy, create an AffinityExecutor with a size of 4.
+ * The identity hash codes approximate an even distribution across the 4 threads contained within the AffinityExecutor,
+ * dynamically partitioning the actors across the available threads.
  *
  * The actor-per-core strategy is typically used to implement long-running actors, such as I/O services.
  * The many-actors-per-core strategy is typically used to implement short-lived actors, such as REST handlers.
@@ -41,7 +68,7 @@ public abstract class AbstractActor implements ActorRef {
      *     2. All access to the state value must be synchronized on mailboxLock
      */
 
-    private final int id;
+    private final int affinityId;
     private final Address address;
     private final Executor executor;
     private final Dispatcher dispatcher = new Dispatcher();
@@ -51,8 +78,8 @@ public abstract class AbstractActor implements ActorRef {
 
     private volatile State state = State.WAITING;
 
-    protected AbstractActor(int id, Address address, Mailbox mailbox, Executor executor, Logger logger) {
-        this.id = id == Integer.MIN_VALUE ? System.identityHashCode(this) : id;
+    protected AbstractActor(int affinityId, Address address, Mailbox mailbox, Executor executor, Logger logger) {
+        this.affinityId = affinityId == Integer.MIN_VALUE ? System.identityHashCode(this) : affinityId;
         this.address = address;
         this.mailbox = mailbox;
         this.executor = executor;
@@ -77,14 +104,17 @@ public abstract class AbstractActor implements ActorRef {
             return false;
         }
         AbstractActor that = (AbstractActor) other;
-        return id == that.id;
+        return affinityId == that.affinityId;
     }
 
     @Override
     public final int hashCode() {
-        return id;
+        return affinityId;
     }
 
+    /**
+     * You can override this method, but you should never call this method.
+     */
     protected boolean isExecutable(Mailbox mailbox) {
         return !mailbox.isEmpty();
     }
@@ -139,6 +169,9 @@ public abstract class AbstractActor implements ActorRef {
         return NOT_FINISHED;
     }
 
+    /**
+     * You can override this method, but you should never call this method.
+     */
     protected Envelope[] selectNext(Mailbox mailbox) {
         return new Envelope[]{mailbox.remove()};
     }
@@ -177,8 +210,8 @@ public abstract class AbstractActor implements ActorRef {
 
     private final class Dispatcher implements Runnable {
 
-        private int actorId() {
-            return id;
+        private int affinityId() {
+            return affinityId;
         }
 
         @Override
@@ -190,12 +223,12 @@ public abstract class AbstractActor implements ActorRef {
                 return false;
             }
             Dispatcher that = (Dispatcher) other;
-            return actorId() == that.actorId();
+            return affinityId() == that.affinityId();
         }
 
         @Override
         public final int hashCode() {
-            return id;
+            return affinityId;
         }
 
         @Override
