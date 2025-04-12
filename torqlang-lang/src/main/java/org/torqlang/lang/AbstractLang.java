@@ -12,11 +12,22 @@ import org.torqlang.util.SourceSpan;
 public abstract class AbstractLang implements Lang {
 
     private final SourceSpan sourceSpan;
+
+    private MetaStruct metaStruct;
     private TypeScope typeScope;
 
     public AbstractLang(SourceSpan sourceSpan) {
-        // infrType begins as a Java null
         this.sourceSpan = sourceSpan;
+    }
+
+    @Override
+    public final MetaStruct metaStruct() {
+        return metaStruct;
+    }
+
+    @Override
+    public final void setMetaStruct(MetaStruct meta) {
+        this.metaStruct = meta;
     }
 
     @Override

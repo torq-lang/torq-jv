@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public final class AskStmt extends HandlerStmt {
+public final class AskStmt extends HandleStmt {
 
     public final TypeAnno responseType;
 

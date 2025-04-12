@@ -49,8 +49,8 @@ final class CompiledPat {
         if (source instanceof IdentAsPat identAsPat) {
             Ident lhi = generator.toIdentOrNextAnonymousIdent(identAsPat.ident);
             root = new IdentPtn(lhi, identAsPat.escaped);
-        } else if (source instanceof FeatureAsPat featureAsPat) {
-            root = featureAsPat.value();
+        } else if (source instanceof FeatureValueAsPat featureValueAsPat) {
+            root = featureValueAsPat.value();
         } else if (source instanceof RecPat recPat) {
             root = compileRecPat(recPat);
         } else if (source instanceof TuplePat tuplePat) {
@@ -62,8 +62,8 @@ final class CompiledPat {
     }
 
     private FeatureOrIdentPtn compileFeaturePat(FeaturePat featurePat) {
-        if (featurePat instanceof FeatureAsPat featureAsPat) {
-            return featureAsPat.value();
+        if (featurePat instanceof FeatureValueAsPat featureValueAsPat) {
+            return featureValueAsPat.value();
         } else {
             IdentAsPat identAsPat = (IdentAsPat) featurePat;
             if (!identAsPat.escaped) {
@@ -122,8 +122,8 @@ final class CompiledPat {
         if (pat instanceof IdentAsPat identAsPat) {
             Ident ident = generator.toIdentOrNextAnonymousIdent(identAsPat.ident);
             return new IdentPtn(ident, identAsPat.escaped);
-        } else if (pat instanceof FeatureAsPat featureAsPat) {
-            return featureAsPat.value();
+        } else if (pat instanceof FeatureValueAsPat featureValueAsPat) {
+            return featureValueAsPat.value();
         } else if (pat instanceof RecPat recPat) {
             Ident valueIdent = generator.allocateNextSystemVarIdent();
             IdentPtn valueIdentPtn = new IdentPtn(valueIdent);

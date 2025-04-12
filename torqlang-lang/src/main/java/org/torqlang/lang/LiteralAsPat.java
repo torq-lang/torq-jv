@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.klvm.Literal;
 
-public interface LiteralAsPat extends FeatureAsPat, LabelPat {
+public interface LiteralAsPat extends FeatureValueAsPat, LabelPat {
 
     @Override
     Literal value();

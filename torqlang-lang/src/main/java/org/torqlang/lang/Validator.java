@@ -7,7 +7,9 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.*;
+import org.torqlang.klvm.Ident;
+import org.torqlang.klvm.Int32;
+import org.torqlang.klvm.Int64;
 import org.torqlang.util.ListTools;
 import org.torqlang.util.NeedsImpl;
 
@@ -354,7 +356,8 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     private MonoInfr resolveTypeAnno(Lang lang, TypeAnno typeAnno, TypeEnv typeEnv) {
         if (typeAnno != null) {
-            PolyInfr declaredType = typeEnv.get(typeAnno.ident);
+            // TODO: This must work with type expressions beyond identifiers
+            PolyInfr declaredType = typeEnv.get(((IdentAsExpr) typeAnno.type).ident);
             if (declaredType == null) {
                 throw new TypeNotFoundError(lang);
             }
@@ -498,6 +501,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitFieldType(FieldType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitFltAsExpr(FltAsExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -563,7 +571,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             s1 = func.lang.accept(this, new TypeScope(typeEnv, funcType));
         }
         // Infer type of each function parameter e2i, where i is 1 to n in β1, ..., βn
-        for (int i=0; i < args.size(); i++) {
+        for (int i = 0; i < args.size(); i++) {
             StmtOrExpr argExpr = args.get(i);
             betas = betas.stream().map(s1::apply).toList();
             TypeSubst argSubst = argExpr.accept(this, new TypeScope(s1.apply(typeEnv), betas.get(i)));
@@ -772,6 +780,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitImportName(ImportName lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitImportStmt(ImportStmt lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -831,7 +844,32 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitIntersectionType(IntersectionType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitLocalLang(LocalLang lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitMetaField(MetaField lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitMetaRec(MetaRec lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitMetaTuple(MetaTuple lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitModuleStmt(ModuleStmt lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -852,6 +890,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitOrExpr(OrExpr lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitPackageStmt(PackageStmt lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -880,6 +923,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         // TODO: Destructure record into current typeEnv, bringing new identifiers into scope
         //       This implies that the caller created a nestedTypeEnv appropriately.
         //       See visitIdentAsPat()
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitRecType(RecType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -1001,6 +1049,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitTupleType(TupleType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitTypeAnno(TypeAnno lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -1042,6 +1095,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         TypeSubst sn = s2.apply(s1);
         TypeSubst s3 = unify(lang, sn.apply(scope.monoType()), ScalarInfr.VOID);
         return s3.apply(sn);
+    }
+
+    @Override
+    public final TypeSubst visitUnionType(UnionType lang, TypeScope scope) {
+        throw new NeedsImpl();
     }
 
     /*

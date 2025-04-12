@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.klvm.Feature;
 
-public interface FeatureAsPat extends FeaturePat {
+public interface FeatureValueAsPat extends FeaturePat {
 
     Feature value();
 

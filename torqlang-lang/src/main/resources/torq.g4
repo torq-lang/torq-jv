@@ -1,4 +1,4 @@
-grammar torqlang;
+grammar torq;
 
 // This grammar was derived from the hand-written Torq lexer
 // and parser for documentation purposes and may not capture
@@ -8,30 +8,7 @@ grammar torqlang;
 // PARSER RULES //
 //**************//
 
-// Next version changes:
-//     [X] 'new' operator for instance creation
-//     [ ] Module support
-//     [ ] Package statement
-//     [ ] Metadata support
-//     [ ] Cast expressions, e.g. ident::Int32
-//     [ ] Spread expressions, e.g. {customer..., person...}
-//     [ ] protocol statements
-//     [ ] type statements (Obj is a marker type)
-//     [ ] Actor implements
-//     [ ] Stream handlers
-//     [ ] Type parameters on actor, func, and proc
-//     [ ] Import is now 'package.{' instead of 'package['
-//     [ ] Record "rest" patterns, e.g. {'name': name, rest...}
-//     [ ] Tuple "rest" patterns, e.g. [value1, value2, rest...}
-//     [X] Dangling commas in record and tuple values, e.g. {'name': name,}
-//     [ ] Variable input arguments, e.g. func MyFunc(params::Any...) -> Any
-//     [ ] Type expressions for protocol, record, and tuple
-//     [ ] Type extension (+) and union (|)
-//     [ ] Array type constructors, e.g. Array[Int32] or Array[Array[Int32]]
-//     [ ] Native actor declarations
-//     [ ] Weak keywords: 'as' | 'ask' | 'handle' | 'implements' | 'meta' | 'native' | 'protocol' | 'stream' | 'tell'
-
-module: package? stmt_or_expr* EOF;
+module: package stmt_or_expr+ EOF;
 
 package: 'package' ident ('.' ident)*;
 
@@ -39,18 +16,22 @@ package: 'package' ident ('.' ident)*;
 // Language //
 // - - - - -//
 
-stmt_or_expr: meta? assign ';'*;
+stmt_or_expr: meta_struct? assign ';'*;
 
-meta: 'meta' '#' (meta_rec | meta_tuple);
+meta_struct: 'meta' '#' (meta_rec | meta_tuple);
 
-meta_rec: '{' meta_field (',' meta_field)* '}';
+meta_rec: '{' (meta_field (',' meta_field)* ','?)? '}';
 
-meta_tuple: '[' meta_value (',' meta_value)* ']';
+meta_tuple: '[' (meta_value (',' meta_value)* ','?)? ']';
 
-meta_field: STR_LITERAL ':' meta_value;
+meta_field: (meta_feature ':')? meta_value;
 
-meta_value: meta_rec | meta_tuple | bool |
-            STR_LITERAL | INT_LITERAL;
+meta_feature: bool | 'eof' | 'null' |
+              STR_LITERAL | INT_LITERAL;
+
+meta_value: meta_struct | bool | 'eof' | 'null' |
+            STR_LITERAL | INT_LITERAL | CHAR_LITERAL |
+            FLT_LITERAL | DEC_LITERAL;
 
 assign: or ('=' or | ':=' or)?;
 
@@ -219,11 +200,8 @@ union_type: intersection_type ('|' intersection_type)*;
 intersection_type: type_expr ('&' type_expr)*;
 
 type_expr: ident (type_arg_list | '#' (rec_type_body | tuple_type_body))? |
-           (bool | STR_LITERAL | 'eof' | 'null') '#' (rec_type_body | tuple_type_body) |
-           rec_type_body |
-           tuple_type_body |
-           proc_type |
-           func_type;
+           (bool | STR_LITERAL | 'eof' | 'null') ('#' (rec_type_body | tuple_type_body))? |
+           INT_LITERAL | rec_type_body | tuple_type_body | proc_type | func_type;
 
 rec_type_body: '{' (field_type (',' field_type)* ','?)? '}';
 

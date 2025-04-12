@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Dec128;
 import org.torqlang.util.SourceSpan;
 
-public final class Dec128AsExpr extends AbstractLang implements NumAsExpr {
+public final class Dec128AsExpr extends AbstractLang implements NumAsExpr, MetaValue {
 
     private String decText;
 

@@ -22,6 +22,45 @@ public class TestFeatureComparator {
 
         FeatureComparator c = FeatureComparator.SINGLETON;
 
+        final Str aStr1 = Str.of("abc");
+        final Str anotherStr1 = Str.of("abc");
+        final Str aStr2 = Str.of("cba");
+        final Token aToken1 = new Token();
+        final Token aToken2 = new Token();
+
+        //
+        // Str
+        //
+
+        // Validate that a Str compares lexicographically
+        //noinspection all
+        assertEquals(0, c.compare(aStr1, aStr1));
+        assertEquals(0, c.compare(aStr1, anotherStr1));
+        assertTrue(c.compare(aStr1, aStr2) < 0);
+        assertTrue(c.compare(aStr2, aStr1) > 0);
+
+        // Validate that an Str compares greater than an Int
+        assertTrue(c.compare(aStr1, Int32.I32_5) < 0);
+        assertTrue(c.compare(Int32.I32_5, aStr1) > 0);
+
+        // Validate that a Str compares less than a Bool
+        assertTrue(c.compare(aStr1, Bool.FALSE) < 0);
+        assertTrue(c.compare(aStr1, Bool.TRUE) < 0);
+        assertTrue(c.compare(Bool.FALSE, aStr2) > 0);
+        assertTrue(c.compare(Bool.TRUE, aStr2) > 0);
+
+        // Validate that a Str compares less than Eof
+        assertTrue(c.compare(aStr1, Eof.SINGLETON) < 0);
+        assertTrue(c.compare(Eof.SINGLETON, aStr2) > 0);
+
+        // Validate that a Str compares less than Null
+        assertTrue(c.compare(aStr1, Null.SINGLETON) < 0);
+        assertTrue(c.compare(Null.SINGLETON, aStr2) > 0);
+
+        // Validate that a Str compares less than a Token
+        assertTrue(c.compare(aStr1, aToken1) < 0);
+        assertTrue(c.compare(aToken2, aStr2) > 0);
+
         //
         // Int
         //
@@ -42,16 +81,6 @@ public class TestFeatureComparator {
         assertTrue(c.compare(Int32.I32_4, Int64.I64_3) > 0);
         assertTrue(c.compare(Int64.I64_4, Int32.I32_3) > 0);
 
-        final Str aStr1 = Str.of("abc");
-        final Str anotherStr1 = Str.of("abc");
-        final Str aStr2 = Str.of("cba");
-        final Token aToken1 = new Token();
-        final Token aToken2 = new Token();
-
-        // Validate that an Int compares less than a Str
-        assertTrue(c.compare(Int32.I32_5, aStr1) < 0);
-        assertTrue(c.compare(aStr1, Int32.I32_5) > 0);
-
         // Validate that an Int compares less than a Bool
         assertTrue(c.compare(Int32.I32_5, Bool.FALSE) < 0);
         assertTrue(c.compare(Int32.I32_5, Bool.TRUE) < 0);
@@ -69,35 +98,6 @@ public class TestFeatureComparator {
         // Validate that an Int compares less than a Token
         assertTrue(c.compare(Int32.I32_5, aToken1) < 0);
         assertTrue(c.compare(aToken2, Int32.I32_5) > 0);
-
-        //
-        // Str
-        //
-
-        // Validate that a Str compares lexicographically
-        //noinspection all
-        assertEquals(0, c.compare(aStr1, aStr1));
-        assertEquals(0, c.compare(aStr1, anotherStr1));
-        assertTrue(c.compare(aStr1, aStr2) < 0);
-        assertTrue(c.compare(aStr2, aStr1) > 0);
-
-        // Validate that a Str compares less than a Bool
-        assertTrue(c.compare(aStr1, Bool.FALSE) < 0);
-        assertTrue(c.compare(aStr1, Bool.TRUE) < 0);
-        assertTrue(c.compare(Bool.FALSE, aStr2) > 0);
-        assertTrue(c.compare(Bool.TRUE, aStr2) > 0);
-
-        // Validate that a Str compares less than Eof
-        assertTrue(c.compare(aStr1, Eof.SINGLETON) < 0);
-        assertTrue(c.compare(Eof.SINGLETON, aStr2) > 0);
-
-        // Validate that a Str compares less than Null
-        assertTrue(c.compare(aStr1, Null.SINGLETON) < 0);
-        assertTrue(c.compare(Null.SINGLETON, aStr2) > 0);
-
-        // Validate that a Str compares less than a Token
-        assertTrue(c.compare(aStr1, aToken1) < 0);
-        assertTrue(c.compare(aToken2, aStr2) > 0);
 
         //
         // Bool

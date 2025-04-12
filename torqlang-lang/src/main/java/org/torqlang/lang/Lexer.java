@@ -7,7 +7,7 @@
 
 package org.torqlang.lang;
 
-import static org.torqlang.lang.MessageText.*;
+import static org.torqlang.lang.LexerText.*;
 import static org.torqlang.lang.SymbolsAndKeywords.*;
 
 public final class Lexer {

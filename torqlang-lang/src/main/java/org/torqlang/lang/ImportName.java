@@ -7,19 +7,28 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Str;
+import org.torqlang.util.SourceSpan;
 
-public final class ImportName {
-    public final Str name;
-    public final Str alias;
+public final class ImportName extends AbstractLang {
+    public final IdentAsExpr name;
+    public final IdentAsExpr alias;
 
-    public ImportName(Str name, Str alias) {
+    public ImportName(IdentAsExpr name, IdentAsExpr alias, SourceSpan sourceSpan) {
+        super(sourceSpan);
         this.name = name;
         this.alias = alias;
     }
 
-    public ImportName(Str name) {
+    public ImportName(IdentAsExpr name, SourceSpan sourceSpan) {
+        super(sourceSpan);
         this.name = name;
         this.alias = null;
+    }
+
+    @Override
+    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
+        throws Exception
+    {
+        return visitor.visitImportName(this, state);
     }
 }

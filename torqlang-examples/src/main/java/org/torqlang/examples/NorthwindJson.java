@@ -21,26 +21,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class NorthwindJson {
 
-    public static final String RESOURCES_DIR = "/northwind/";
-    public static final String SUPPLIERS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.SUPPLIERS_COLL_NAME + ".json";
-    public static final String SHIPPERS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.SHIPPERS_COLL_NAME + ".json";
-    public static final String PURCHASE_ORDERS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.PURCHASE_ORDERS_COLL_NAME + ".json";
-    public static final String PURCHASE_ORDER_STATUS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.PURCHASE_ORDER_STATUS_COLL_NAME + ".json";
-    public static final String PURCHASE_ORDER_DETAILS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.PURCHASE_ORDER_DETAILS_COLL_NAME + ".json";
-    public static final String PRODUCT_SUPPLIERS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.PRODUCT_SUPPLIERS_COLL_NAME + ".json";
-    public static final String PRODUCTS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.PRODUCTS_COLL_NAME + ".json";
-    public static final String PRIVILEGES_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.PRIVILEGES_COLL_NAME + ".json";
-    public static final String ORDERS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.ORDERS_COLL_NAME + ".json";
-    public static final String ORDER_TAX_STATUS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.ORDER_TAX_STATUS_COLL_NAME + ".json";
-    public static final String ORDER_STATUS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.ORDER_STATUS_COLL_NAME + ".json";
-    public static final String ORDER_DETAILS_STATUS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.ORDER_DETAILS_STATUS_COLL_NAME + ".json";
-    public static final String ORDER_DETAILS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.ORDER_DETAILS_COLL_NAME + ".json";
-    public static final String INVOICES_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.INVOICES_COLL_NAME + ".json";
-    public static final String INVENTORY_TRANSACTIONS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.INVENTORY_TRANSACTIONS_COLL_NAME + ".json";
-    public static final String INVENTORY_TRANSACTION_TYPES_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.INVENTORY_TRANSACTION_TYPES_COLL_NAME + ".json";
-    public static final String EMPLOYEE_PRIVILEGES_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.EMPLOYEE_PRIVILEGES_COLL_NAME + ".json";
-    public static final String EMPLOYEES_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.EMPLOYEES_COLL_NAME + ".json";
-    public static final String CUSTOMERS_JSON_RESOURCE = RESOURCES_DIR + NorthwindFiles.CUSTOMERS_COLL_NAME + ".json";
+    public static final String DATA_DIR = "/northwind/data/";
+    public static final String TORQSRC_DIR = "/northwind/torqsrc/examples/";
+    public static final String SUPPLIERS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.SUPPLIERS_COLL_NAME + ".json";
+    public static final String SHIPPERS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.SHIPPERS_COLL_NAME + ".json";
+    public static final String PURCHASE_ORDERS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.PURCHASE_ORDERS_COLL_NAME + ".json";
+    public static final String PURCHASE_ORDER_STATUS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.PURCHASE_ORDER_STATUS_COLL_NAME + ".json";
+    public static final String PURCHASE_ORDER_DETAILS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.PURCHASE_ORDER_DETAILS_COLL_NAME + ".json";
+    public static final String PRODUCT_SUPPLIERS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.PRODUCT_SUPPLIERS_COLL_NAME + ".json";
+    public static final String PRODUCTS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.PRODUCTS_COLL_NAME + ".json";
+    public static final String PRIVILEGES_JSON_RESOURCE = DATA_DIR + NorthwindFiles.PRIVILEGES_COLL_NAME + ".json";
+    public static final String ORDERS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.ORDERS_COLL_NAME + ".json";
+    public static final String ORDER_TAX_STATUS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.ORDER_TAX_STATUS_COLL_NAME + ".json";
+    public static final String ORDER_STATUS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.ORDER_STATUS_COLL_NAME + ".json";
+    public static final String ORDER_DETAILS_STATUS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.ORDER_DETAILS_STATUS_COLL_NAME + ".json";
+    public static final String ORDER_DETAILS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.ORDER_DETAILS_COLL_NAME + ".json";
+    public static final String INVOICES_JSON_RESOURCE = DATA_DIR + NorthwindFiles.INVOICES_COLL_NAME + ".json";
+    public static final String INVENTORY_TRANSACTIONS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.INVENTORY_TRANSACTIONS_COLL_NAME + ".json";
+    public static final String INVENTORY_TRANSACTION_TYPES_JSON_RESOURCE = DATA_DIR + NorthwindFiles.INVENTORY_TRANSACTION_TYPES_COLL_NAME + ".json";
+    public static final String EMPLOYEE_PRIVILEGES_JSON_RESOURCE = DATA_DIR + NorthwindFiles.EMPLOYEE_PRIVILEGES_COLL_NAME + ".json";
+    public static final String EMPLOYEES_JSON_RESOURCE = DATA_DIR + NorthwindFiles.EMPLOYEES_COLL_NAME + ".json";
+    public static final String CUSTOMERS_JSON_RESOURCE = DATA_DIR + NorthwindFiles.CUSTOMERS_COLL_NAME + ".json";
 
     static final Map<String, String> jsonTextCache = new ConcurrentHashMap<>();
 

@@ -1,4 +1,6 @@
-package system
+package system.lang
+
+// TODO
 
 meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
 type Str = Obj & {
@@ -42,8 +44,7 @@ type Str = Obj & {
 
 meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
 type Strs = Obj & {
-    // Required for Obj types
-    'new': func (params::Any...) -> Str,
+    // Required for Obj companions
     'equals': func (other::Any) -> Bool,
     'hash_code': func () -> Int32,
     // Other methods

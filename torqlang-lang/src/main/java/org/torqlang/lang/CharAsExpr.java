@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Char;
 import org.torqlang.util.SourceSpan;
 
-public final class CharAsExpr extends AbstractLang implements NumAsExpr {
+public final class CharAsExpr extends AbstractLang implements NumAsExpr, MetaValue {
 
     private final Char charNum;
 

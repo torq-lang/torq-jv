@@ -9,7 +9,7 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public final class TellStmt extends HandlerStmt {
+public final class TellStmt extends HandleStmt {
 
     public TellStmt(Pat pat, SeqLang body, SourceSpan sourceSpan) {
         super(pat, body, sourceSpan);

@@ -7,12 +7,12 @@
 
 package org.torqlang.lang;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.torqlang.util.NeedsImpl;
+import org.torqlang.klvm.Ident;
+import org.torqlang.klvm.Str;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.torqlang.lang.CommonTools.*;
 import static org.torqlang.util.ErrorWithSourceSpan.printWithSourceAndRethrow;
 
 public class TestParserTypeStmt {
@@ -24,7 +24,6 @@ public class TestParserTypeStmt {
                 type MyArray = Array[Int32]
                 var list = new MyArray()
             end""";
-
         Parser p = new Parser(source);
         StmtOrExpr sox;
         try {
@@ -63,28 +62,8 @@ public class TestParserTypeStmt {
         assertEquals(expectedText, errorText);
     }
 
-    @Disabled
     @Test
     public void test03() throws Exception {
-        String source = """
-            begin
-                meta#{'export': true}
-                type MyArray = Array[Int32]
-                var list = new MyArray()
-            end""";
-
-        Parser p = new Parser(source);
-        try {
-            StmtOrExpr sox = p.parse();
-            throw new NeedsImpl("Validate meta record is attached. Validate MyArray is an alias for Array[Int32]");
-        } catch (Exception exc) {
-            printWithSourceAndRethrow(exc, 5, 50, 50);
-        }
-    }
-
-    @Disabled
-    @Test
-    public void test04() throws Exception {
         String source = """
             begin
                 type Customer = {
@@ -93,11 +72,69 @@ public class TestParserTypeStmt {
                 }
                 var c::Customer
             end""";
-
+        String expectedFormat = """
+            begin
+                type Customer = {'email': Str, 'name': Str}
+                var c::Customer
+            end""";
         Parser p = new Parser(source);
         try {
             StmtOrExpr sox = p.parse();
-            throw new NeedsImpl("Validate Customer is the expected type expression]");
+            String actualFormat = sox.toString();
+            assertEquals(expectedFormat, actualFormat);
+            TypeStmt typeStmt = getFromSeq(asBeginLang(sox).body, 0);
+            assertEquals("Customer", typeStmt.name.name);
+            assertEquals(0, typeStmt.typeParams.size());
+            assertInstanceOf(RecType.class, typeStmt.body);
+            RecType recType = (RecType) typeStmt.body;
+            assertNull(recType.label);
+            assertEquals(2, recType.fields.size());
+            assertEquals(Str.of("email"), asStrAsExpr(recType.fields.get(0).feature).value());
+            assertEquals(Ident.create("Str"), asIdentAsExpr(recType.fields.get(0).value).ident);
+            assertEquals(Str.of("name"), asStrAsExpr(recType.fields.get(1).feature).value());
+            assertEquals(Ident.create("Str"), asIdentAsExpr(recType.fields.get(1).value).ident);
+            VarStmt varStmt = getFromSeq(asBeginLang(sox).body, 1);
+            assertEquals(1, varStmt.varDecls.size());
+            IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
+            assertEquals("c", identVarDecl.identAsPat.ident.name);
+            assertEquals("Customer", asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident.name);
+        } catch (Exception exc) {
+            printWithSourceAndRethrow(exc, 5, 50, 50);
+        }
+    }
+
+    @Test
+    public void test04() throws Exception {
+        String source = """
+            begin
+                type Path = [Str, Int32, Bool]
+                var p::Path
+            end""";
+        String expectedFormat = """
+            begin
+                type Path = [Str, Int32, Bool]
+                var p::Path
+            end""";
+        Parser p = new Parser(source);
+        try {
+            StmtOrExpr sox = p.parse();
+            String actualFormat = sox.toString();
+            assertEquals(expectedFormat, actualFormat);
+            TypeStmt typeStmt = getFromSeq(asBeginLang(sox).body, 0);
+            assertEquals("Path", typeStmt.name.name);
+            assertEquals(0, typeStmt.typeParams.size());
+            assertInstanceOf(TupleType.class, typeStmt.body);
+            TupleType tupleType = (TupleType) typeStmt.body;
+            assertNull(tupleType.label);
+            assertEquals(3, tupleType.values.size());
+            assertEquals(Ident.create("Str"), asIdentAsExpr(tupleType.values.get(0)).ident);
+            assertEquals(Ident.create("Int32"), asIdentAsExpr(tupleType.values.get(1)).ident);
+            assertEquals(Ident.create("Bool"), asIdentAsExpr(tupleType.values.get(2)).ident);
+            VarStmt varStmt = getFromSeq(asBeginLang(sox).body, 1);
+            assertEquals(1, varStmt.varDecls.size());
+            IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
+            assertEquals("p", identVarDecl.identAsPat.ident.name);
+            assertEquals("Path", asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident.name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }

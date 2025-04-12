@@ -7,25 +7,41 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.util.NeedsImpl;
+import org.torqlang.klvm.Feature;
+import org.torqlang.klvm.FeatureComparator;
 import org.torqlang.util.SourceSpan;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class RecType extends AbstractLang implements Type {
 
-    public final List<FieldType> fieldTypes;
+    public final LabelType label;
+    public final List<FieldType> fields;
 
-    public RecType(List<FieldType> fieldTypes, SourceSpan sourceSpan) {
+    public RecType(LabelType label, List<FieldType> fields, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.fieldTypes = fieldTypes;
+        this.label = label;
+        this.fields = nullSafeCopyOf(sort(fields));
+    }
+
+    private static List<FieldType> sort(List<FieldType> fields) {
+        ArrayList<FieldType> answer = new ArrayList<>(fields);
+        answer.sort((a, b) -> {
+            ValueAsExpr ax = (ValueAsExpr) a.feature;
+            ValueAsExpr bx = (ValueAsExpr) b.feature;
+            return FeatureComparator.SINGLETON.compare((Feature) ax.value(), (Feature) bx.value());
+        });
+        return answer;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        throw new NeedsImpl();
+        return visitor.visitRecType(this, state);
     }
 
 }

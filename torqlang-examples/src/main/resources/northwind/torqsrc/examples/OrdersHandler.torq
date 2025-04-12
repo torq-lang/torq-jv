@@ -29,21 +29,21 @@ actor OrdersHandler() in
     // TODO: change `shipping_fee` in JSON files to be a decimal string
     // TODO: change `taxes` in JSON files to be a decimal string
 
-    import system[ArrayList, Int64, LocalDate, Rec, ValueIter]
+    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
         var northwind_db = spawn(new NorthwindDb())
         case path
             of ['orders'] then
-                var orders_ext = ArrayList.new()
+                var orders_ext = new ArrayList()
                 var orders = northwind_db.ask(
                     'findAll'#{
                         'entity': 'orders',
                         'criteria': query
                     }
                 )
-                for order in ValueIter.new(orders) do
+                for order in new ValueIter(orders) do
                     var employee = northwind_db.ask(
                         'findByKey'#{
                             'entity': 'employees',
@@ -77,14 +77,14 @@ actor OrdersHandler() in
                 )
                 Rec.assign({'details': if details == null then [] else details end}, order)
             of ['orders', order_id, 'details'] then
-                var details_ext = ArrayList.new()
+                var details_ext = new ArrayList()
                 var details = northwind_db.ask(
                     'findAll'#{
                         'entity': 'order_details',
                         'criteria': {'order_id': order_id}
                     }
                 )
-                for d in ValueIter.new(details) do
+                for d in new ValueIter(details) do
                     var product = northwind_db.ask(
                         'findByKey'#{
                             'entity': 'products',
@@ -100,8 +100,8 @@ actor OrdersHandler() in
                             'criteria': {'product_id': d.product_id}
                         }
                     )
-                    var product_suppliers = ArrayList.new()
-                    for ps in ValueIter.new(product_suppliers) do
+                    var product_suppliers = new ArrayList()
+                    for ps in new ValueIter(product_suppliers) do
                         product_suppliers.add(
                             northwind_db.ask(
                                 'findByKey'#{

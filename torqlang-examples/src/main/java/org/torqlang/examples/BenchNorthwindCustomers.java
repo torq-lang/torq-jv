@@ -51,7 +51,7 @@ public final class BenchNorthwindCustomers {
             .addModule("examples", examplesMod)
             .build();
         String customersHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.RESOURCES_DIR + "CustomersHandler.torq");
+            NorthwindJson.TORQSRC_DIR + "CustomersHandler.torq");
         ActorImage actorImage = Actor.builder()
             .setSystem(system)
             .actorImage(customersHandlerSource);

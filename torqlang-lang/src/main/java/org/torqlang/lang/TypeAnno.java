@@ -7,16 +7,15 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class TypeAnno extends AbstractLang {
 
-    public final Ident ident;
+    public final Type type;
 
-    public TypeAnno(Ident ident, SourceSpan sourceSpan) {
+    public TypeAnno(Type type, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.ident = ident;
+        this.type = type;
     }
 
     @Override

@@ -37,8 +37,16 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         arg2.accept(this, state.inline());
     }
 
+    private void maybeWriteMeta(Lang lang, FormatterState state) throws Exception {
+        if (lang.metaStruct() != null) {
+            lang.metaStruct().accept(this, state.inline());
+            state.writeNewLineAndIndent();
+        }
+    }
+
     @Override
     public final Void visitActExpr(ActExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("act");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
@@ -49,6 +57,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitActorExpr(ActorExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("actor ");
         visitActorLang(lang, state);
         return null;
@@ -66,6 +75,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitActorStmt(ActorStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("actor ");
         state.write(lang.name.formatValue());
         visitActorLang(lang, state);
@@ -99,6 +109,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitAskStmt(AskStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("handle ask ");
         lang.pat.accept(this, state.inline());
         if (lang.responseType != null) {
@@ -115,6 +126,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitBeginLang(BeginLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("begin");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
@@ -125,18 +137,21 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitBoolAsExpr(BoolAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.bool.formatValue());
         return null;
     }
 
     @Override
     public final Void visitBoolAsPat(BoolAsPat lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.bool.formatValue());
         return null;
     }
 
     @Override
     public final Void visitBreakStmt(BreakStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("break");
         return null;
     }
@@ -158,6 +173,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitCaseLang(CaseLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("case ");
         lang.arg.accept(this, state.inline());
         FormatterState nextLevelState = state.nextLevel();
@@ -190,6 +206,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitCharAsExpr(CharAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("&'");
         state.write(lang.charNum().formatValue());
         state.write('\'');
@@ -198,12 +215,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitContinueStmt(ContinueStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("continue");
         return null;
     }
 
     @Override
     public final Void visitDec128AsExpr(Dec128AsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.dec128().formatValue());
         state.write('m');
         return null;
@@ -219,12 +238,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitEofAsExpr(EofAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.value().formatValue());
         return null;
     }
 
     @Override
     public final Void visitEofAsPat(EofAsPat lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.value().formatValue());
         return null;
     }
@@ -246,7 +267,16 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitFieldType(FieldType lang, FormatterState state) throws Exception {
+        lang.feature.accept(this, state);
+        state.write(": ");
+        lang.value.accept(this, state);
+        return null;
+    }
+
+    @Override
     public final Void visitFltAsExpr(FltAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.flt64().formatValue());
         if (lang.flt64() instanceof Flt32) {
             state.write('f');
@@ -256,6 +286,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitForStmt(ForStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("for ");
         lang.pat.accept(this, state.inline());
         state.write(" in ");
@@ -280,6 +311,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitFuncExpr(FuncExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("func ");
         visitFuncLang(lang, state);
         return null;
@@ -302,6 +334,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitFuncStmt(FuncStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("func ");
         state.write(lang.name().name);
         visitFuncLang(lang, state);
@@ -326,12 +359,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitIdentAsExpr(IdentAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         visitIdent(lang.ident, state);
         return null;
     }
 
     @Override
     public final Void visitIdentAsPat(IdentAsPat lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         if (lang.escaped) {
             state.write('~');
         }
@@ -361,6 +396,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitIfLang(IfLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("if ");
         lang.ifClause.accept(this, state);
         for (IfClause altIfClause : lang.altIfClauses) {
@@ -378,16 +414,25 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitImportName(ImportName lang, FormatterState state) throws Exception {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final Void visitImportStmt(ImportStmt lang, FormatterState state) throws Exception {
-        Str q = lang.qualifier;
+        maybeWriteMeta(lang, state);
+        List<IdentAsExpr> q = lang.qualifier;
         List<ImportName> ins = lang.names;
         state.write("import ");
-        state.write(q.value);
-        if (ins.size() == 1 && ins.get(0).alias == null) {
-            if (!q.value.isEmpty()) {
-                state.write('.');
+        for (int i = 0; i < q.size(); i++) {
+            if (i > 0) {
+                state.write(".");
             }
-            state.write(ins.get(0).name.value);
+            state.write(q.get(i).ident.name);
+        }
+        if (ins.size() == 1 && ins.get(0).alias == null) {
+            state.write('.');
+            state.write(ins.get(0).name.ident.name);
         } else {
             state.write(".{");
             for (int i = 0; i < ins.size(); i++) {
@@ -395,10 +440,10 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
                 if (i > 0) {
                     state.write(", ");
                 }
-                state.write(in.name.value);
+                state.write(in.name.ident.name);
                 if (in.alias != null) {
                     state.write(" as ");
-                    state.write(in.alias.value);
+                    state.write(in.alias.ident.name);
                 }
             }
             state.write('}');
@@ -425,6 +470,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitIntAsExpr(IntAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.int64().formatValue());
         if (!(lang.int64() instanceof Int32)) {
             state.write('L');
@@ -434,6 +480,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitIntAsPat(IntAsPat lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.int64().formatValue());
         if (!(lang.int64() instanceof Int32)) {
             state.write('L');
@@ -442,7 +489,17 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitIntersectionType(IntersectionType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        lang.arg1.accept(this, state.inline());
+        state.write(" & ");
+        lang.arg2.accept(this, state.inline());
+        return null;
+    }
+
+    @Override
     public final Void visitLocalLang(LocalLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("local ");
         visitVarDecls(lang.varDecls, state);
         state.write(" in");
@@ -454,7 +511,78 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitMetaField(MetaField lang, FormatterState state) throws Exception {
+        lang.feature.accept(this, state);
+        state.write(": ");
+        visitMetaValue(lang.value, state);
+        return null;
+    }
+
+    @Override
+    public final Void visitMetaRec(MetaRec lang, FormatterState state) throws Exception {
+        visitMetaRec(lang, state, true);
+        return null;
+    }
+
+    private void visitMetaRec(MetaRec lang, FormatterState state, boolean showLabel) throws Exception {
+        if (showLabel) {
+            state.write("meta#");
+        }
+        state.write('{');
+        List<MetaField> fields = lang.fields();
+        for (int i = 0; i < fields.size(); i++) {
+            MetaField next = fields.get(i);
+            if (i > 0) {
+                state.write(", ");
+            }
+            next.accept(this, state.inline());
+        }
+        state.write('}');
+    }
+
+    @Override
+    public final Void visitMetaTuple(MetaTuple lang, FormatterState state) throws Exception {
+        visitMetaTuple(lang, state, true);
+        return null;
+    }
+
+    private void visitMetaTuple(MetaTuple lang, FormatterState state, boolean showLabel) throws Exception {
+        if (showLabel) {
+            state.write("meta#");
+        }
+        state.write('[');
+        List<MetaValue> values = lang.values();
+        for (int i = 0; i < values.size(); i++) {
+            MetaValue next = values.get(i);
+            if (i > 0) {
+                state.write(", ");
+            }
+            next.accept(this, state.inline());
+        }
+        state.write(']');
+    }
+
+    private void visitMetaValue(MetaValue lang, FormatterState state) throws Exception {
+        if (lang instanceof MetaRec) {
+            visitMetaRec((MetaRec) lang, state, false);
+        } else if (lang instanceof MetaTuple) {
+            visitMetaTuple((MetaTuple) lang, state, false);
+        } else {
+            lang.accept(this, state);
+        }
+    }
+
+    @Override
+    public final Void visitModuleStmt(ModuleStmt lang, FormatterState state) throws Exception {
+        lang.packageStmt.accept(this, state);
+        state.writeNewLineAndIndent();
+        visitSeqList(lang.body, state);
+        return null;
+    }
+
+    @Override
     public final Void visitNewExpr(NewExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("new ");
         lang.typeApply.accept(this, state);
         state.write('(');
@@ -465,12 +593,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitNullAsExpr(NullAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.value().formatValue());
         return null;
     }
 
     @Override
     public final Void visitNullAsPat(NullAsPat lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(lang.value().formatValue());
         return null;
     }
@@ -482,7 +612,20 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitPackageStmt(PackageStmt lang, FormatterState state) throws Exception {
+        state.write("package ");
+        for (int i=0; i < lang.path.size(); i++) {
+            if (i > 0) {
+                state.write('.');
+            }
+            lang.path.get(i).accept(this, state);
+        }
+        return null;
+    }
+
+    @Override
     public final Void visitProcExpr(ProcExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("proc ");
         visitProcLang(lang, state);
         return null;
@@ -500,6 +643,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitProcStmt(ProcStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("proc ");
         state.write(lang.name().name);
         visitProcLang(lang, state);
@@ -508,12 +652,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitProductExpr(ProductExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         formatBinaryExpr(lang.oper.symbol(), lang.arg1, lang.arg2, state);
         return null;
     }
 
     @Override
     public final Void visitRecExpr(RecExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         if (lang.label() != null) {
             lang.label().accept(this, state.inline());
             state.write('#');
@@ -554,7 +700,28 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitRecType(RecType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        if (lang.label != null) {
+            lang.label.accept(this, state.inline());
+            state.write('#');
+        }
+        state.write('{');
+        List<FieldType> list = lang.fields;
+        for (int i = 0; i < list.size(); i++) {
+            FieldType next = list.get(i);
+            if (i > 0) {
+                state.write(", ");
+            }
+            next.accept(this, state.inline());
+        }
+        state.write('}');
+        return null;
+    }
+
+    @Override
     public final Void visitRelationalExpr(RelationalExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         formatBinaryExpr(lang.oper.symbol(), lang.arg1, lang.arg2, state);
         return null;
     }
@@ -566,6 +733,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitReturnStmt(ReturnStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("return");
         if (lang.value != null) {
             state.write(' ');
@@ -576,6 +744,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitSelectAndApplyLang(SelectAndApplyLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         lang.selectExpr.accept(this, state);
         state.write('(');
         visitActualArgs(lang.args, state);
@@ -615,12 +784,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitSkipStmt(SkipStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("skip");
         return null;
     }
 
     @Override
     public final Void visitSpawnExpr(SpawnExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("spawn(");
         visitActualArgs(lang.args, state.inline());
         state.write(')');
@@ -629,24 +800,28 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitStrAsExpr(StrAsExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(Str.quote(lang.str.value, '\''));
         return null;
     }
 
     @Override
     public final Void visitStrAsPat(StrAsPat lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write(Str.quote(lang.str.value, '\''));
         return null;
     }
 
     @Override
     public final Void visitSumExpr(SumExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         formatBinaryExpr(lang.oper.symbol(), lang.arg1, lang.arg2, state);
         return null;
     }
 
     @Override
     public final Void visitTellStmt(TellStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("handle tell ");
         lang.pat.accept(this, state.inline());
         state.write(" in");
@@ -659,6 +834,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitThrowLang(ThrowLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("throw ");
         lang.arg.accept(this, state.nextLevel());
         return null;
@@ -666,6 +842,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitTryLang(TryLang lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("try");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
@@ -685,6 +862,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitTupleExpr(TupleExpr lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         if (lang.label() != null) {
             lang.label().accept(this, state.inline());
             state.write('#');
@@ -725,8 +903,28 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitTupleType(TupleType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        if (lang.label != null) {
+            lang.label.accept(this, state.inline());
+            state.write('#');
+        }
+        state.write("[");
+        List<Type> list = lang.values;
+        for (int i = 0; i < list.size(); i++) {
+            Type next = list.get(i);
+            if (i > 0) {
+                state.write(", ");
+            }
+            next.accept(this, state.inline());
+        }
+        state.write(']');
+        return null;
+    }
+
+    @Override
     public final Void visitTypeAnno(TypeAnno lang, FormatterState state) throws Exception {
-        visitIdent(lang.ident, state);
+        lang.type.accept(this, state.inline());
         return null;
     }
 
@@ -749,11 +947,12 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitTypeStmt(TypeStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("type ");
         state.write(lang.name.formatValue());
         if (!lang.typeParams.isEmpty()) {
             state.write("[");
-            for (TypeParam param: lang.typeParams) {
+            for (TypeParam param : lang.typeParams) {
                 param.accept(this, state.inline());
             }
             state.write("]");
@@ -772,9 +971,19 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitUnifyStmt(UnifyStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         lang.leftSide.accept(this, state.inline());
         state.write(" = ");
         lang.rightSide.accept(this, state);
+        return null;
+    }
+
+    @Override
+    public final Void visitUnionType(UnionType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        lang.arg1.accept(this, state.inline());
+        state.write(" | ");
+        lang.arg2.accept(this, state.inline());
         return null;
     }
 
@@ -790,6 +999,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitVarStmt(VarStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("var ");
         visitVarDecls(lang.varDecls, state);
         return null;
@@ -797,6 +1007,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitWhileStmt(WhileStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
         state.write("while ");
         lang.cond.accept(this, state.inline());
         state.write(" do");

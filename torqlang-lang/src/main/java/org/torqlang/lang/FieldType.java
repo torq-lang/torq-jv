@@ -7,25 +7,24 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
 
 public final class FieldType extends AbstractLang implements Type {
 
-    public final FeatureType featureType;
-    public final Type valueType;
+    public final FeatureType feature;
+    public final Type value;
 
-    public FieldType(FeatureType featureType, Type valueType, SourceSpan sourceSpan) {
+    public FieldType(FeatureType feature, Type value, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.featureType = featureType;
-        this.valueType = valueType;
+        this.feature = feature;
+        this.value = value;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        throw new NeedsImpl();
+        return visitor.visitFieldType(this, state);
     }
 
 }

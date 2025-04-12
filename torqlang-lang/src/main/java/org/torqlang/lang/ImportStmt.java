@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Str;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
@@ -16,10 +15,10 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class ImportStmt extends AbstractLang implements Stmt {
 
-    public final Str qualifier;
+    public final List<IdentAsExpr> qualifier;
     public final List<ImportName> names;
 
-    public ImportStmt(Str qualifier, List<ImportName> names, SourceSpan sourceSpan) {
+    public ImportStmt(List<IdentAsExpr> qualifier, List<ImportName> names, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.qualifier = qualifier;
         this.names = nullSafeCopyOf(names);

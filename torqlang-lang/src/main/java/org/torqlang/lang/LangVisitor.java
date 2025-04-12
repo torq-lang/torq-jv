@@ -51,6 +51,8 @@ public interface LangVisitor<T, R> {
 
     R visitFieldPat(FieldPat lang, T state) throws Exception;
 
+    R visitFieldType(FieldType lang, T state) throws Exception;
+
     R visitFltAsExpr(FltAsExpr lang, T state) throws Exception;
 
     R visitForStmt(ForStmt lang, T state) throws Exception;
@@ -71,6 +73,8 @@ public interface LangVisitor<T, R> {
 
     R visitIfLang(IfLang lang, T state) throws Exception;
 
+    R visitImportName(ImportName lang, T state) throws Exception;
+
     R visitImportStmt(ImportStmt lang, T state) throws Exception;
 
     R visitIndexSelectExpr(IndexSelectExpr lang, T state) throws Exception;
@@ -81,7 +85,17 @@ public interface LangVisitor<T, R> {
 
     R visitIntAsPat(IntAsPat lang, T state) throws Exception;
 
+    R visitIntersectionType(IntersectionType lang, T state) throws Exception;
+
     R visitLocalLang(LocalLang lang, T state) throws Exception;
+
+    R visitMetaField(MetaField lang, T state) throws Exception;
+
+    R visitMetaRec(MetaRec lang, T state) throws Exception;
+
+    R visitMetaTuple(MetaTuple lang, T state) throws Exception;
+
+    R visitModuleStmt(ModuleStmt lang, T state) throws Exception;
 
     R visitNewExpr(NewExpr lang, T state) throws Exception;
 
@@ -90,6 +104,8 @@ public interface LangVisitor<T, R> {
     R visitNullAsPat(NullAsPat lang, T state) throws Exception;
 
     R visitOrExpr(OrExpr lang, T state) throws Exception;
+
+    R visitPackageStmt(PackageStmt lang, T state) throws Exception;
 
     R visitProcExpr(ProcExpr lang, T state) throws Exception;
 
@@ -100,6 +116,8 @@ public interface LangVisitor<T, R> {
     R visitRecExpr(RecExpr lang, T state) throws Exception;
 
     R visitRecPat(RecPat lang, T state) throws Exception;
+
+    R visitRecType(RecType lang, T state) throws Exception;
 
     R visitRelationalExpr(RelationalExpr lang, T state) throws Exception;
 
@@ -133,6 +151,8 @@ public interface LangVisitor<T, R> {
 
     R visitTuplePat(TuplePat lang, T state) throws Exception;
 
+    R visitTupleType(TupleType lang, T state) throws Exception;
+
     R visitTypeAnno(TypeAnno lang, T state) throws Exception;
 
     R visitTypeStmt(TypeStmt lang, T state) throws Exception;
@@ -142,6 +162,8 @@ public interface LangVisitor<T, R> {
     R visitUnaryExpr(UnaryExpr lang, T state) throws Exception;
 
     R visitUnifyStmt(UnifyStmt lang, T state) throws Exception;
+
+    R visitUnionType(UnionType lang, T state) throws Exception;
 
     R visitVarStmt(VarStmt lang, T state) throws Exception;
 

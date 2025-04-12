@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.junit.jupiter.api.Test;
-import org.torqlang.klvm.Str;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.lang.CommonTools.assertSourceSpan;
@@ -25,9 +24,10 @@ public class TestParserImportStmt {
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
         assertSourceSpan(importStmt, 0, 30);
-        assertEquals(Str.of("system.module"), importStmt.qualifier);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
+        assertEquals("module", importStmt.qualifier.get(1).ident.name);
         assertEquals(1, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
         assertNull(importStmt.names.get(0).alias);
         assertEquals(source, sox.toString());
     }
@@ -42,40 +42,14 @@ public class TestParserImportStmt {
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
         assertSourceSpan(importStmt, 0, 38);
-        assertEquals(Str.of("system.module"), importStmt.qualifier);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
+        assertEquals("module", importStmt.qualifier.get(1).ident.name);
         assertEquals(2, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
         assertNull(importStmt.names.get(0).alias);
-        assertEquals(Str.of("Cell"), importStmt.names.get(1).name);
+        assertEquals("Cell", importStmt.names.get(1).name.ident.name);
         assertNull(importStmt.names.get(1).alias);
         assertEquals(source, sox.toString());
-    }
-
-    @Test
-    public void testNoQualifier() {
-        //                         1
-        //               01234567890123456
-        String source = "import ArrayList";
-        Parser p = new Parser(source);
-        StmtOrExpr sox = p.parse();
-        assertInstanceOf(ImportStmt.class, sox);
-        ImportStmt importStmt = (ImportStmt) sox;
-        assertSourceSpan(importStmt, 0, 16);
-        assertEquals(Str.of(""), importStmt.qualifier);
-        assertEquals(1, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
-        assertNull(importStmt.names.get(0).alias);
-        assertEquals(source, sox.toString());
-    }
-
-    @Test
-    public void testNoQualifierMultiSelection() {
-        //                         1         2
-        //               0123456789012345678901234
-        String source = "import [ArrayList, Cell]";
-        Parser p = new Parser(source);
-        ParserError exc = assertThrows(ParserError.class, p::parse);
-        assertEquals("Identifier expected", exc.getMessage());
     }
 
     @Test
@@ -88,9 +62,9 @@ public class TestParserImportStmt {
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
         assertSourceSpan(importStmt, 0, 23);
-        assertEquals(Str.of("system"), importStmt.qualifier);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
         assertEquals(1, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
         assertNull(importStmt.names.get(0).alias);
         assertEquals(source, sox.toString());
     }
@@ -105,11 +79,11 @@ public class TestParserImportStmt {
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
         assertSourceSpan(importStmt, 0, 31);
-        assertEquals(Str.of("system"), importStmt.qualifier);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
         assertEquals(2, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
         assertNull(importStmt.names.get(0).alias);
-        assertEquals(Str.of("Cell"), importStmt.names.get(1).name);
+        assertEquals("Cell", importStmt.names.get(1).name.ident.name);
         assertNull(importStmt.names.get(1).alias);
         assertEquals(source, sox.toString());
     }
@@ -124,11 +98,11 @@ public class TestParserImportStmt {
         assertInstanceOf(ImportStmt.class, sox);
         ImportStmt importStmt = (ImportStmt) sox;
         assertSourceSpan(importStmt, 0, 48);
-        assertEquals(Str.of("system"), importStmt.qualifier);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
         assertEquals(2, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
-        assertEquals(Str.of("JavaArrayList"), importStmt.names.get(0).alias);
-        assertEquals(Str.of("Cell"), importStmt.names.get(1).name);
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
+        assertEquals("JavaArrayList", importStmt.names.get(0).alias.ident.name);
+        assertEquals("Cell", importStmt.names.get(1).name.ident.name);
         assertNull(importStmt.names.get(1).alias);
         assertEquals(source, sox.toString());
 
@@ -140,12 +114,36 @@ public class TestParserImportStmt {
         assertInstanceOf(ImportStmt.class, sox);
         importStmt = (ImportStmt) sox;
         assertSourceSpan(importStmt, 0, 41);
-        assertEquals(Str.of("system"), importStmt.qualifier);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
         assertEquals(2, importStmt.names.size());
-        assertEquals(Str.of("ArrayList"), importStmt.names.get(0).name);
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
         assertNull(importStmt.names.get(0).alias);
-        assertEquals(Str.of("Cell"), importStmt.names.get(1).name);
-        assertEquals(Str.of("MyCell"), importStmt.names.get(1).alias);
+        assertEquals("Cell", importStmt.names.get(1).name.ident.name);
+        assertEquals("MyCell", importStmt.names.get(1).alias.ident.name);
+        assertEquals(source, sox.toString());
+    }
+
+    @Test
+    public void testImportAndOneExpr() {
+        //          1         2         3         4
+        //012345678901234567890123456789012345678901
+        //begin     import system.ArrayList     new ArrayList() end
+        String source = """
+            begin
+                import system.ArrayList
+                new ArrayList()
+            end""";
+        Parser p = new Parser(source);
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(BeginLang.class, sox);
+        BeginLang beginLang = (BeginLang) sox;
+        assertInstanceOf(ImportStmt.class, beginLang.body.list.get(0));
+        ImportStmt importStmt = (ImportStmt) beginLang.body.list.get(0);
+        assertSourceSpan(importStmt, 10, 33);
+        assertEquals("system", importStmt.qualifier.get(0).ident.name);
+        assertEquals(1, importStmt.names.size());
+        assertEquals("ArrayList", importStmt.names.get(0).name.ident.name);
+        assertNull(importStmt.names.get(0).alias);
         assertEquals(source, sox.toString());
     }
 

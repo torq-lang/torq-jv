@@ -7,25 +7,24 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
-
-import java.util.List;
 
 public final class UnionType extends AbstractLang implements Type {
 
-    public final List<Type> types;
+    public final Type arg1;
+    public final Type arg2;
 
-    public UnionType(List<Type> types, SourceSpan sourceSpan) {
+    public UnionType(Type arg1, Type arg2, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.types = types;
+        this.arg1 = arg1;
+        this.arg2 = arg2;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        throw new NeedsImpl();
+        return visitor.visitUnionType(this, state);
     }
 
 }

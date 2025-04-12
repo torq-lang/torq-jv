@@ -40,6 +40,30 @@ public class TestParserFuncLang {
     }
 
     @Test
+    public void testExprWithReturnType() {
+        //                                      1         2
+        //                            01234567890123456789012345
+        Parser p = new Parser("func () -> Int32 in 0 end");
+        StmtOrExpr sox = p.parse();
+        assertInstanceOf(FuncExpr.class, sox);
+        FuncExpr funcExpr = (FuncExpr) sox;
+        assertSourceSpan(funcExpr, 0, 25);
+        assertSourceSpan(funcExpr.body, 20, 21);
+        assertEquals(0, funcExpr.formalArgs.size());
+        TypeAnno returnType = asTypeAnno(funcExpr.returnType);
+        assertSourceSpan(returnType, 11, 16);
+        assertEquals(1, funcExpr.body.list.size());
+        assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
+        // Test format
+        String expectedFormat = """
+            func () -> Int32 in
+                0
+            end""";
+        String actualFormat = funcExpr.toString();
+        assertEquals(expectedFormat, actualFormat);
+    }
+
+    @Test
     public void testExprWithArgs1() {
         //                                      1
         //                            012345678901234567

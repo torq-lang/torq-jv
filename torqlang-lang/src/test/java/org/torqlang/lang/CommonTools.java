@@ -17,6 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class CommonTools {
 
+    static BeginLang asBeginLang(Object value) {
+        assertInstanceOf(BeginLang.class, value);
+        return (BeginLang) value;
+    }
+
     static BoolAsExpr asBoolAsExpr(Object value) {
         assertInstanceOf(BoolAsExpr.class, value);
         return (BoolAsExpr) value;
@@ -47,9 +52,9 @@ public class CommonTools {
         return (EofAsPat) value;
     }
 
-    static FeatureAsPat asFeatureAsPat(Object value) {
-        assertInstanceOf(FeatureAsPat.class, value);
-        return (FeatureAsPat) value;
+    static FeatureValueAsPat asFeatureValueAsPat(Object value) {
+        assertInstanceOf(FeatureValueAsPat.class, value);
+        return (FeatureValueAsPat) value;
     }
 
     static FltAsExpr asFltAsExpr(Object value) {
@@ -107,10 +112,12 @@ public class CommonTools {
     static StmtOrExpr asSingleExprFromGroupExpr(Object value) {
         assertInstanceOf(GroupExpr.class, value);
         GroupExpr groupExpr = (GroupExpr) value;
-        assertInstanceOf(SeqLang.class, groupExpr.expr);
-        SeqLang seqLang = (SeqLang) groupExpr.expr;
-        assertEquals(1, seqLang.list.size());
-        return seqLang.list.get(0);
+        if (groupExpr.expr instanceof SeqLang seqLang) {
+            assertEquals(1, seqLang.list.size());
+            return seqLang.list.get(0);
+        } else {
+            return groupExpr.expr;
+        }
     }
 
     static StmtOrExpr asSingleExprFromSeqLang(Object value) {
@@ -130,6 +137,11 @@ public class CommonTools {
         return (StrAsPat) value;
     }
 
+    static TypeAnno asTypeAnno(Object value) {
+        assertInstanceOf(TypeAnno.class, value);
+        return (TypeAnno) value;
+    }
+
     static UnaryExpr asUnaryExpr(Object value) {
         assertInstanceOf(UnaryExpr.class, value);
         return (UnaryExpr) value;
@@ -142,6 +154,11 @@ public class CommonTools {
 
     static <T> Boolean getBoolean(T argument, Function<T, Boolean> function) {
         return getValue(argument, function);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> T getFromSeq(SeqLang seq, int index) {
+        return (T) seq.list.get(index);
     }
 
     static <T, R> R getValue(T argument, Function<T, R> function) {

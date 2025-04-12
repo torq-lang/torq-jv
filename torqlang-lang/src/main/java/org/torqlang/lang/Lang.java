@@ -19,6 +19,10 @@ public interface Lang extends SourceSpan {
 
     <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception;
 
+    MetaStruct metaStruct();
+
+    void setMetaStruct(MetaStruct meta);
+
     void setTypeScope(TypeScope typeScope);
 
     TypeScope typeScope();

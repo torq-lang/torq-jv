@@ -656,6 +656,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitFieldType(FieldType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitFltAsExpr(FltAsExpr lang, LocalTarget target) {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         if (exprIdent == null) {
@@ -770,22 +775,34 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitImportName(ImportName lang, LocalTarget target) throws Exception {
+        throw new IllegalStateException("ImportName visited directly");
+    }
+
+    @Override
     public final CompleteOrIdent visitImportStmt(ImportStmt lang, LocalTarget target) {
         LocalTarget childTarget = target.asStmtTargetWithNewScope();
         List<CompleteOrIdent> ys = new ArrayList<>();
-        ys.add(lang.qualifier);
+        StringBuilder qualifier = new StringBuilder();
+        for (int i=0; i < lang.qualifier.size(); i++) {
+            if (i > 0) {
+                qualifier.append(".");
+            }
+            qualifier.append(lang.qualifier.get(i));
+        }
+        ys.add(Str.of(qualifier.toString()));
         CompleteTupleBuilder builder = Rec.completeTupleBuilder();
         // Imported names are added to the parent scope, not the child scope
         for (ImportName in : lang.names) {
             if (in.alias != null) {
-                target.addIdentDef(new IdentDef(Ident.create(in.alias.value)));
+                target.addIdentDef(new IdentDef(in.alias.ident));
                 builder.addValue(Rec.completeTupleBuilder()
-                    .addValue(in.name)
-                    .addValue(in.alias)
+                    .addValue(Str.of(in.name.ident.name))
+                    .addValue(Str.of(in.alias.ident.name))
                     .build());
             } else {
-                target.addIdentDef(new IdentDef(Ident.create(in.name.value)));
-                builder.addValue(in.name);
+                target.addIdentDef(new IdentDef(in.name.ident));
+                builder.addValue(Str.of(in.name.ident.name));
             }
         }
         ys.add(builder.build());
@@ -803,6 +820,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(new SelectInstr(rec, feature, exprIdent, lang));
         target.addInstr(childTarget.build());
         return exprIdent;
+    }
+
+    @Override
+    public final CompleteOrIdent visitIntersectionType(IntersectionType lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -918,6 +940,26 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitMetaField(MetaField lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitMetaRec(MetaRec lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitMetaTuple(MetaTuple lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitModuleStmt(ModuleStmt lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitNewExpr(NewExpr lang, LocalTarget target) throws Exception {
         ApplyType typeApply = lang.typeApply;
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
@@ -982,6 +1024,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         target.addInstr(leftTarget.build());
 
         return exprIdent;
+    }
+
+    @Override
+    public final CompleteOrIdent visitPackageStmt(PackageStmt lang, LocalTarget target) throws Exception {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -1053,6 +1100,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitRecPat(RecPat lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitRecType(RecType lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 
@@ -1333,6 +1385,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitTupleType(TupleType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitTypeAnno(TypeAnno lang, LocalTarget target) {
         throw new NeedsImpl();
     }
@@ -1386,6 +1443,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
             target.addInstr(BindInstr.create(leftSide, rightSide, lang));
         }
         return null;
+    }
+
+    @Override
+    public final CompleteOrIdent visitUnionType(UnionType lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override

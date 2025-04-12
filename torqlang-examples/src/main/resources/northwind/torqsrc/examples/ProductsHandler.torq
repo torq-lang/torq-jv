@@ -1,7 +1,7 @@
 
 actor ProductsHandler() in
 
-    import system[ArrayList, Int64, LocalDate, Rec, ValueIter]
+    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in

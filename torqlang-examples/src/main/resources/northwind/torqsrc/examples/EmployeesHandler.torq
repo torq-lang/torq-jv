@@ -1,24 +1,24 @@
 
-actor CustomersHandler() in
+actor EmployeesHandler() in
 
-    import system[ArrayList, Int64, LocalDate, Rec, ValueIter]
+    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
         var northwind_db = spawn(new NorthwindDb())
         case path
-            of ['customers'] then
+            of ['employees'] then
                 northwind_db.ask(
                     'findAll'#{
-                        'entity': 'customers',
+                        'entity': 'employees',
                         'criteria': query
                     }
                 )
-            of ['customers', customer_id] then
+            of ['employees', employee_id] then
                 northwind_db.ask(
                     'findByKey'#{
-                        'entity': 'customers',
-                        'key': {'id': customer_id}
+                        'entity': 'employees',
+                        'key': {'id': employee_id}
                     }
                 )
             else

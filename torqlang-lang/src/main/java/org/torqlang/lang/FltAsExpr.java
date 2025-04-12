@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Flt64;
 import org.torqlang.util.SourceSpan;
 
-public final class FltAsExpr extends AbstractLang implements NumAsExpr {
+public final class FltAsExpr extends AbstractLang implements NumAsExpr, MetaValue {
 
     private String fltText;
 

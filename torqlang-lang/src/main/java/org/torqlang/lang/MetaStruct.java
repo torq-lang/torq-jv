@@ -7,12 +7,5 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.util.SourceSpan;
-
-public abstract class HandlerStmt extends MatchClause implements Stmt {
-
-    public HandlerStmt(Pat pat, SeqLang body, SourceSpan sourceSpan) {
-        super(pat, null, body, sourceSpan);
-    }
-
+public interface MetaStruct extends MetaValue {
 }
