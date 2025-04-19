@@ -13,6 +13,7 @@ import org.torqlang.klvm.CompleteTuple;
 import org.torqlang.klvm.Rec;
 import org.torqlang.klvm.Str;
 import org.torqlang.local.*;
+import org.torqlang.util.ReadTextFromResource;
 
 import static org.torqlang.examples.BenchTools.printTimingResults;
 
@@ -50,8 +51,7 @@ public final class BenchNorthwindCustomers {
             .addDefaultModules()
             .addModule("examples", examplesMod)
             .build();
-        String customersHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQSRC_DIR + "CustomersHandler.torq");
+        String customersHandlerSource = ReadTextFromResource.apply(NorthwindHandlerFactory.TORQSRC_DIR + "CustomersHandler.torq");
         ActorImage actorImage = Actor.builder()
             .setSystem(system)
             .actorImage(customersHandlerSource);

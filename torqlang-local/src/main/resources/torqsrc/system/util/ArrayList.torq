@@ -1,18 +1,20 @@
 package system.util
 
-// TODO
-
 meta#{'export': true, 'native': 'org.torqlang.local.ArrayListPack'}
-type ArrayList = Obj & {
-    // Required for Obj instances
-    'new': func (params::Any...) -> Str,
+type ArrayList[T] = Obj & {
+    // Factory methods
+    'factory': {
+        'new': func [T]() -> ArrayList[T],
+        'of_array': func [T](array::ArrayList[T]) -> ArrayList[T],
+        'of_size': func [T](size::Int32) -> ArrayList[T],
+        'of_tuple': func [T](tuple::Tuple) -> ArrayList[T],
+    },
+    // Object methods
     'equals': func (other::Any) -> Bool,
     'hash_code': func () -> Int32,
-}
-
-meta#{'export': true, 'native': 'org.torqlang.local.ArrayListPack'}
-type ArrayLists = Obj & {
-    // Required for Obj companions
-    'equals': func (other::Any) -> Bool,
-    'hash_code': func () -> Int32,
+    // Other methods
+    'add': proc (elem::T),
+    'clear': proc (),
+    'size': func() -> Int32,
+    'to_array': func() -> Array[T],
 }

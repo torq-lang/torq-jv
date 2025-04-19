@@ -23,6 +23,24 @@
   - Currently, where a weak keyword may be found, we have used `isIdent(<<keyword>>)`
   - Weak keywords must be detected accurately in syntax highlighters or IDE tools
 
+## Compiler
+
+Automatically build examples router for:
+
+```
+"/customers", CustomersHandler
+"/customers/{id::Int32}", CustomersHandler
+"/employees", EmployeesHandler
+"/employees/{id}", EmployeesHandler
+"/orders", OrdersHandlerImage
+"/orders/{id}", OrdersHandler
+"/orders/{id}/details", OrdersHandler
+"/products", ProductsHandler
+"/products/{id}", ProductsHandler
+"/suppliers", SuppliersHandlerImage
+"/suppliers/{id}", SuppliersHandler
+```
+
 ## Stream protocol
 
 Before we can complete `Timer`, we must enhance the stream protocol.
@@ -75,7 +93,7 @@ actor IntPublisher(first, last, incr) in
             next_int := @next_int + incr
         end
         if response.size() > 0 then
-            respond(response.to_tuple())
+            respond(response.to_array())
         end
         if @next_int <= last then
             eof#{'more': true}
@@ -169,6 +187,189 @@ Working through type definitions has solidified composites as either "structures
     'from'#{'Bob'},
     'to'#{'Sue'},
 }
+```
+
+## `type_of` operator
+
+```
+type_of(<<expression>>) -> Str | Rec | Tuple 
+```
+
+What structures does the `type_of` operator render?
+
+HERE --> ///////////////////////////// UNION VS ENUMERATION????????
+REMEMBER --> WE ARE STRUCTURALLY TYPED
+
+- The scalar name if the expression is a scalar type
+- A record of specifics if the expression is a record type where the label is `'Rec'` and the features are `'label'` and `'fields'`
+- A tuple of scalar values if the expression is an enumeration of values where the label is the first common supertype
+- A tuple of types if the expression is union type
+
+Examples:
+
+```
+var x::Str
+type_of(x) = 'Str'
+
+type_of('Bob') = 'Str'#['Bob']
+type_of('Sue') = 'Str'#['Sue']
+
+var x::Bool
+type_of(x) = 'Bool'
+
+type_of(true) = 'Bool'#[true]
+type_of(false) = 'Bool'#[false]
+
+type_of(Rec) = 'Rec'
+
+type Customer = {
+    'name': Str,
+    'phone': Int32
+}
+var x::Customer
+type_of(x) = 'Rec'#{
+    'label': 'Null',
+    'fields': {
+      'name': 'Str',
+      'phone': 'Int32'
+    },
+}
+
+var x::Array[Int32]
+type_of(x) = 'Array'#{
+    'type': 'Int32'
+}
+
+type Customer = {
+    'name': Str,
+    'phone': Int32,
+    'address': {
+        'street': Str,
+        'city': Str
+    },
+}
+var x::Customer
+type_of(x) = 'Rec'#{
+    'label': 'Null',
+    'fields': {
+      'name': 'Str',
+      'phone': 'Int32',
+      'address': 'Rec'#{
+          'label': 'Null',
+          'fields': {
+              'street': 'Str',
+              'city': 'Str'
+          }
+      }
+    },
+}
+
+var x::Array[Customer]
+type_of(x) = 'Array'#{
+    'type': 'Rec'#{
+        'label': 'Null',
+        'fields': {
+            'name': 'Str',
+            'phone': 'Int32',
+            'address': 'Rec'#{
+                'label': 'Null',
+                'fields': {
+                    'street': 'Str',
+                    'city': 'Str'
+                }
+            },
+        }
+    }
+}
+
+type Customer = {
+    'name': Str,
+    'phone': Int32,
+    'address': {
+        'street': Str,
+        'city': Str
+    }
+}
+type Account = {
+  'account': Str
+}
+type CustomerWithAccount = Customer & Account
+
+// Note that we are structurally typed 
+var x::CustomerWithAccount
+type_of(x) = 'Rec'#{
+    'label': 'Null',
+    'fields': {
+      'name': 'Str',
+      'phone': 'Int32',
+      'address': 'Rec'#{
+          'label': 'Null',
+          'fields': {
+              'street': 'Str',
+              'city': 'Str'
+          }
+      }
+      'account': 'Str',
+    }
+}
+
+var x::'Bob'|'Sue'
+type_of(x) = 'Union'#[
+    'Str'#['Bob'],
+    'Str'#['Sue'],
+]
+
+type Person = {
+    'name': Str,
+    'phone': Int32,
+    'address': {
+        'street': Str,
+        'city': Str
+    }
+}
+type Company = {
+    'tax_id': Str
+    'legal_name': Str,
+    'phone': Int32,
+    'address': {
+        'street': Str,
+        'city': Str
+    }
+}
+type PersonOrCompany = Person | Company
+var x::PersonOrCompany
+type_of(x) = 'Union'#[
+    'Rec'#{
+        'label': 'Null',
+        'fields': {
+          'name': 'Str',
+          'phone': 'Int32',
+          'address': 'Rec'#{
+              'label': 'Null',
+              'fields': {
+                  'street': 'Str',
+                  'city': 'Str'
+              }
+          }
+        },
+    },
+    'Rec'#{
+        'label': 'Null',
+        'fields': {
+          'tax_id': 'Str',
+          'legal_name': 'Str',
+          'phone': 'Int32',
+          'address': 'Rec'#{
+              'label': 'Null',
+              'fields': {
+                  'street': 'Str',
+                  'city': 'Str'
+              }
+          }
+        },
+    },
+]
+
 ```
 
 ## torq.g4

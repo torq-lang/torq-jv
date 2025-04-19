@@ -36,7 +36,7 @@ public final class IntPublisher extends AbstractExample {
                     next_int := @next_int + incr
                 end
                 if response.size() > 0 then
-                    respond(response.to_tuple())
+                    respond(response.to_array())
                 end
                 if @next_int <= last then
                     eof#{'more': true}

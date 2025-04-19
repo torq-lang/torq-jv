@@ -8,5 +8,8 @@ module org.torqlang.examples {
 
     requires org.eclipse.jetty.server;
 
+    opens org.torqlang.examples.data.northwind to org.torqlang.util;
+    opens org.torqlang.examples.torqsrc.northwind to org.torqlang.util;
+
     exports org.torqlang.examples;
 }

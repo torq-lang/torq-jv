@@ -1,11 +1,14 @@
 package system.lang
 
-// TODO
-
 meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
 type Str = Obj & {
-    // Required for Obj types
-    'new': func (params::Any...) -> Str,
+    // Factory methods
+    'factory': {
+        'new': func (chars::Array[Char]) -> Str,
+        'join': func (delimiter::Str, values::ValueIter[Str]) -> Str,
+        'format': func (format::Str, args::Str...) -> Str,
+    },
+    // Object methods
     'equals': func (other::Any) -> Bool,
     'hash_code': func () -> Int32,
     // Other methods
@@ -39,15 +42,4 @@ type Str = Obj & {
     'to_lower_case': func () -> Str,
     'to_upper_case': func () -> Str,
     'trim': func () -> Str,
-}
-
-
-meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
-type Strs = Obj & {
-    // Required for Obj companions
-    'equals': func (other::Any) -> Bool,
-    'hash_code': func () -> Int32,
-    // Other methods
-    'join': func (delimiter::Str, values::ValueIter[Str]) -> Str,
-    'format': func (format::Str, args::Str...) -> Str,
 }

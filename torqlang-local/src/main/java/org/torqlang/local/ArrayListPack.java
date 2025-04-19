@@ -21,12 +21,12 @@ final class ArrayListPack {
         .addEntry(CommonFeatures.ADD, ArrayListPack::objAdd)
         .addEntry(CommonFeatures.CLEAR, ArrayListPack::objClear)
         .addEntry(CommonFeatures.SIZE, ArrayListPack::objSize)
-        .addEntry(CommonFeatures.TO_TUPLE, ArrayListPack::objToTuple)
+        .addEntry(CommonFeatures.TO_ARRAY, ArrayListPack::objToArray)
         .build();
 
     // Signatures:
     //     ArrayList.new() -> ArrayList
-    //     ArrayList.new(values::Tuple) -> ArrayList
+    //     ArrayList.new(values::Array) -> ArrayList
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         int argCount = ys.size();
         if (argCount < 1 || argCount > 2) {
@@ -51,7 +51,7 @@ final class ArrayListPack {
                 for (int i = 0; i < fieldCount; i++) {
                     Field f = r.fieldAt(i);
                     if (!f.feature().resolveValue().equals(Int32.of(i))) {
-                        throw new IllegalArgumentException("Initial argument must be a tuple");
+                        throw new IllegalArgumentException("Not an array");
                     }
                     elements.add(f.value());
                 }
@@ -95,11 +95,11 @@ final class ArrayListPack {
     }
 
     // Signatures:
-    //     array_list.to_tuple() -> Tuple
-    static void objToTuple(ArrayListObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+    //     array_list.to_array() -> Array
+    static void objToArray(ArrayListObj obj, List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 1;
         if (ys.size() != expectedArgCount) {
-            throw new InvalidArgCountError(expectedArgCount, ys, "ArrayList.to_tuple");
+            throw new InvalidArgCountError(expectedArgCount, ys, "ArrayList.to_array");
         }
         PartialTupleBuilder builder = Rec.partialTupleBuilder();
         for (ValueOrVar elem : obj.state) {

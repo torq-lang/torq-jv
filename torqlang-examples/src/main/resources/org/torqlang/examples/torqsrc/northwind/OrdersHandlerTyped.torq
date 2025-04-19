@@ -50,7 +50,10 @@ meta#{'export': true}
 type OrderWithDetails = Order & {'details': Array[OrderDetails]}
 
 meta#{'export': true}
-type OrderDetailsWithProductWithSuppliers = OrderDetails & {'product': Product, 'suppliers': Array[Supplier]}
+type ProductWithSuppliers = Product & {'suppliers': Array[Supplier]}
+
+meta#{'export': true}
+type OrderDetailsWithProductWithSuppliers = OrderDetails & {'product': ProductWithSuppliers}
 
 meta#{'export': true}
 type Message = {
@@ -91,7 +94,7 @@ actor OrdersHandler() in
              )
              orders_ext.add(Rec.assign({'employee': employee, 'customer': customer}, order))
          end
-         orders_ext.to_tuple()
+         orders_ext.to_array()
     end
 
     meta#{'export': true}
@@ -141,9 +144,9 @@ actor OrdersHandler() in
                     'criteria': {'product_id': d.product_id}
                 }
             )
-            var product_suppliers = new ArrayList()
+            var product_suppliers_ext = new ArrayList()
             for ps in new ValueIter(product_suppliers) do
-                product_suppliers.add(
+                product_suppliers_ext.add(
                     northwind_db.ask(
                         'findByKey'#{
                             'entity': 'suppliers',
@@ -152,10 +155,10 @@ actor OrdersHandler() in
                     )
                 )
             end
-            var product_ext = Rec.assign({'suppliers': product_suppliers.to_tuple()}, product)
+            var product_ext = Rec.assign({'suppliers': product_suppliers_ext.to_array()}, product)
             details_ext.add(Rec.assign({'product': product_ext}, d))
         end
-        details_ext.to_tuple()
+        details_ext.to_array()
     end
 
     meta#{'export': true}

@@ -16,8 +16,11 @@ import org.torqlang.local.*;
 import org.torqlang.server.ApiDesc;
 import org.torqlang.server.ApiHandler;
 import org.torqlang.server.ApiRouter;
+import org.torqlang.util.ReadTextFromResource;
 
 public final class NorthwindHandlerFactory {
+
+    public static final String TORQSRC_DIR = "/org/torqlang/examples/torqsrc/northwind/";
 
     private static CompleteRec emptyContextProvider(Request request) {
         return Rec.completeRecBuilder().build();
@@ -43,8 +46,7 @@ public final class NorthwindHandlerFactory {
             .setQueryDesc(NorthwindDescs.CUSTOMER_DESC)
             .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
             .build();
-        String customersHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQSRC_DIR + "CustomersHandler.torq");
+        String customersHandlerSource = ReadTextFromResource.apply(TORQSRC_DIR + "CustomersHandler.torq");
         ActorImage customersHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(customersHandlerSource);
@@ -58,8 +60,7 @@ public final class NorthwindHandlerFactory {
             .setQueryDesc(NorthwindDescs.EMPLOYEE_DESC)
             .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
             .build();
-        String employeesHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQSRC_DIR + "EmployeesHandler.torq");
+        String employeesHandlerSource = ReadTextFromResource.apply(TORQSRC_DIR + "EmployeesHandler.torq");
         ActorImage employeesHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(employeesHandlerSource);
@@ -78,8 +79,7 @@ public final class NorthwindHandlerFactory {
             .setQueryDesc(NorthwindDescs.ORDER_DETAILS_DESC)
             .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
             .build();
-        String ordersHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQSRC_DIR + "OrdersHandler.torq");
+        String ordersHandlerSource = ReadTextFromResource.apply(TORQSRC_DIR + "OrdersHandler.torq");
         ActorImage ordersHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(ordersHandlerSource);
@@ -93,8 +93,7 @@ public final class NorthwindHandlerFactory {
             .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
             .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
             .build();
-        String productsHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQSRC_DIR + "ProductsHandler.torq");
+        String productsHandlerSource = ReadTextFromResource.apply(TORQSRC_DIR + "ProductsHandler.torq");
         ActorImage productsHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(productsHandlerSource);
@@ -108,8 +107,7 @@ public final class NorthwindHandlerFactory {
             .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
             .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
             .build();
-        String suppliersHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQSRC_DIR + "SuppliersHandler.torq");
+        String suppliersHandlerSource = ReadTextFromResource.apply(TORQSRC_DIR + "SuppliersHandler.torq");
         ActorImage suppliersHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(suppliersHandlerSource);

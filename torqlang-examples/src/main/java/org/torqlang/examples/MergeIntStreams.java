@@ -42,7 +42,7 @@ public final class MergeIntStreams extends AbstractExample {
                     answer.add(@even_next)
                     even_next := even_iter()
                 end
-                answer.to_tuple()
+                answer.to_array()
             end
         end""";
 

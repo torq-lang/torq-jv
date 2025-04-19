@@ -101,7 +101,7 @@ public class TestAskConcurrentData {
                     var list = new ArrayList()
                     list.add({'customer': act 'Alice and Bob' end, 'order': act '20 pounds of Sugar' end})
                     list.add({'customer': act 'Charles and Debbie' end, 'order': act '50 pounds of Flour' end})
-                    list.to_tuple()
+                    list.to_array()
                 end
             end""";
         ActorBuilderGenerated g = Actor.builder()
@@ -151,7 +151,7 @@ public class TestAskConcurrentData {
                                             end
                                             $select_apply(list, ['add'], $v7)
                                         end
-                                        $select_apply(list, ['to_tuple'], $v3)
+                                        $select_apply(list, ['to_array'], $v3)
                                         $respond($v3)
                                     end
                                 else

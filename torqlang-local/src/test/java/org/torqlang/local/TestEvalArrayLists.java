@@ -78,12 +78,12 @@ public class TestEvalArrayLists {
     }
 
     @Test
-    public void testToTuple() throws Exception {
+    public void testToArray() throws Exception {
         String source = """
             begin
                 var a = [3, 2, 1]
                 var b = new ArrayList(a)
-                x = b.to_tuple()
+                x = b.to_array()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
             .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
@@ -95,7 +95,7 @@ public class TestEvalArrayLists {
             local a, b in
                 $bind([3, 2, 1], a)
                 $select_apply(ArrayList, ['new'], a, b)
-                $select_apply(b, ['to_tuple'], x)
+                $select_apply(b, ['to_array'], x)
             end""";
         assertEquals(expected, e.kernel().toString());
         CompleteTuple expectedTuple = Rec.completeTupleBuilder()

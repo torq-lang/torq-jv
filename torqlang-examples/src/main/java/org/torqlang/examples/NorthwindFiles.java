@@ -9,6 +9,7 @@ package org.torqlang.examples;
 
 import org.torqlang.lang.JsonFormatter;
 import org.torqlang.lang.JsonParser;
+import org.torqlang.util.ReadTextLinesFromFile;
 
 import java.io.*;
 import java.util.*;
@@ -120,15 +121,8 @@ public final class NorthwindFiles {
         if (coll != null) {
             return coll;
         }
-        List<Map<String, Object>> list = new ArrayList<>();
         String filePath = directory + "/" + collName + ".nldjson";
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                Map<String, Object> rec = JsonParser.parseAndCast(line);
-                list.add(rec);
-            }
-        }
+        List<Map<String, Object>> list = ReadTextLinesFromFile.apply(filePath, JsonParser::parseAndCast);
         coll = new NorthwindColl(collName, list);
         cache.data.put(collName, coll);
         return coll;

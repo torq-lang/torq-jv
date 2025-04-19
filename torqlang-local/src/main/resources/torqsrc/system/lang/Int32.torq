@@ -1,0 +1,6 @@
+package system.lang
+
+meta#{'export': true, 'native': 'org.torqlang.klvm.Int32Pack'}
+type Int32 = Obj & {
+    // TODO
+}

@@ -58,7 +58,7 @@ actor OrdersHandler() in
                     )
                     orders_ext.add(Rec.assign({'employee': employee, 'customer': customer}, order))
                 end
-                orders_ext.to_tuple()
+                orders_ext.to_array()
             of ['orders', order_id] then
                 var order = northwind_db.ask(
                     'findByKey'#{
@@ -100,9 +100,9 @@ actor OrdersHandler() in
                             'criteria': {'product_id': d.product_id}
                         }
                     )
-                    var product_suppliers = new ArrayList()
+                    var product_suppliers_ext = new ArrayList()
                     for ps in new ValueIter(product_suppliers) do
-                        product_suppliers.add(
+                        product_suppliers_ext.add(
                             northwind_db.ask(
                                 'findByKey'#{
                                     'entity': 'suppliers',
@@ -111,10 +111,10 @@ actor OrdersHandler() in
                             )
                         )
                     end
-                    var product_ext = Rec.assign({'suppliers': product_suppliers.to_tuple()}, product)
+                    var product_ext = Rec.assign({'suppliers': product_suppliers_ext.to_array()}, product)
                     details_ext.add(Rec.assign({'product': product_ext}, d))
                 end
-                details_ext.to_tuple()
+                details_ext.to_array()
             else
                 throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
         end

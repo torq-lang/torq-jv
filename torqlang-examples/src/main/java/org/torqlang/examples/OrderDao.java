@@ -76,7 +76,7 @@ public final class OrderDao extends AbstractExample {
                         selected_lines.add(line)
                     end
                 end
-                Rec.assign({'order-lines': selected_lines.to_tuple()}, order)
+                Rec.assign({'order-lines': selected_lines.to_array()}, order)
             end
         end""";
 

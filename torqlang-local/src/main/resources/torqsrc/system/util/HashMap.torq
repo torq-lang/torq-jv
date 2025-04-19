@@ -1,18 +1,17 @@
 package system.util
 
-// TODO
-
-meta#{'export': true, 'native': 'org.torqlang.local.ArrayListPack'}
-type HashMap = Obj & {
-    // Required for Obj instances
-    'new': func (params::Any...) -> Str,
+meta#{'export': true, 'native': 'org.torqlang.local.HashMapPack'}
+type HashMap[K, V] = Obj & {
+    // Factory methods
+    'factory': {
+        'new': func [K, V]() -> HashMap[K, V],
+    },
+    // Object methods
     'equals': func (other::Any) -> Bool,
     'hash_code': func () -> Int32,
-}
-
-meta#{'export': true, 'native': 'org.torqlang.local.ArrayListPack'}
-type HashMaps = Obj & {
-    // Required for Obj companions
-    'equals': func (other::Any) -> Bool,
-    'hash_code': func () -> Int32,
+    // Other methods
+    'get': func (key::K) -> V,
+    'put': proc (key::K, value::V),
+    'clear': proc (),
+    'size': func() -> Int32,
 }
