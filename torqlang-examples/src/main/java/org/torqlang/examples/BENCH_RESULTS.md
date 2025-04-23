@@ -37,7 +37,7 @@ Vendor ID:                AuthenticAMD
 Each request is a native actor request. There is no Torq program. Each response is a Map<String, Object>.
 
 ```
-taskset -c 0-7 java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
+taskset -c 0-7 <<use-java-expression-from-BenchNortwindDb-class>>
 NorthwindDb created: {concurrency: 3, read_latency: 0}
 BenchNorthwindDb
   Total time: 2,181 millis
@@ -97,7 +97,7 @@ A new Torq actor is created for each request to simulate servicing a REST API re
 customers.
 
 ```
-taskset -c 0-7 java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindCustomers
+taskset -c 0-7 <<use-java-expression-from-BenchNorthwindCustomers-class>>
 NorthwindDb created: {concurrency: 8, read_latency: 0}
 BenchNorthwindCustomers
   Total time: 3,429 millis
@@ -156,7 +156,7 @@ BenchNorthwindCustomers
 ### Server
 
 ```
-taskset -c 0-15 java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+taskset -c 0-15  <<use-java-expression-from-NorthwindServer-class>>
 ```
 
 ### 8 = 1,468/sec (HIGHEST)

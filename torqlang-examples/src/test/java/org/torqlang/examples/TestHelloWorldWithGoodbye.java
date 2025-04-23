@@ -13,7 +13,7 @@ public class TestHelloWorldWithGoodbye {
 
     @Test
     public void test() throws Exception {
-        new HelloWorldWithGoodbye().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new HelloWorldWithGoodbye()::perform);
     }
 
 }

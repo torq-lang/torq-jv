@@ -13,7 +13,7 @@ public class TestOrderDao {
 
     @Test
     public void test() throws Exception {
-        new OrderDao().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new OrderDao()::perform);
     }
 
 }

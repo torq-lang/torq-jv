@@ -13,7 +13,7 @@ public class TestQueryOrders {
 
     @Test
     public void test() throws Exception {
-        new QueryOrders().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new QueryOrders()::perform);
     }
 
 }

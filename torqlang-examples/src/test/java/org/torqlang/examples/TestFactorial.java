@@ -13,7 +13,7 @@ public class TestFactorial {
 
     @Test
     public void test() throws Exception {
-        new Factorial().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new Factorial()::perform);
     }
 
 }

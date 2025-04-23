@@ -15,7 +15,7 @@ import org.torqlang.local.*;
 
 import java.util.concurrent.TimeUnit;
 
-public final class SumOddIntsStream extends AbstractExample {
+public final class SumOddIntsStream {
 
     public static final String SOURCE = """
         actor SumOddIntsStream() in
@@ -33,11 +33,10 @@ public final class SumOddIntsStream extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new SumOddIntsStream().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new SumOddIntsStream()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         ActorSystem system = ActorSystem.builder()

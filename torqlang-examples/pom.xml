@@ -62,16 +62,16 @@
                 <version>2.6</version>
                 <executions>
                     <execution>
-                        <id>copy-resources-1</id>
-                        <phase>install</phase>
+                        <id>export-resources</id>
+                        <phase>compile</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.torq_lang/resources/northwind</outputDirectory>
+                            <outputDirectory>${user.home}/.torq/resources</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/main/resources/northwind</directory>
+                                    <directory>${basedir}/src/main/resources</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>

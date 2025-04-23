@@ -16,7 +16,7 @@ import org.torqlang.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-public final class NestedMathActs extends AbstractExample {
+public final class NestedMathActs {
 
     public static final String SOURCE = """
         actor NestedMathActs() in
@@ -31,11 +31,10 @@ public final class NestedMathActs extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new NestedMathActs().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new NestedMathActs()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder()
@@ -49,7 +48,7 @@ public final class NestedMathActs extends AbstractExample {
             .send(actorRef, Str.of("calculate"))
             .awaitResponse(100, TimeUnit.MILLISECONDS);
 
-        checkExpectedResponse(Int32.of(35), response);
+        BenchTools.checkExpected(Int32.of(35), response);
     }
 
 }

@@ -14,7 +14,7 @@ import org.torqlang.local.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class HelloWorldBuilder extends AbstractExample {
+public final class HelloWorldBuilder {
 
     public static final boolean TRACE = false;
 
@@ -52,11 +52,10 @@ public final class HelloWorldBuilder extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new HelloWorldBuilder().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new HelloWorldBuilder()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         ActorBuilderReady ready = Actor.builder().setSource(SOURCE_1);
@@ -80,7 +79,7 @@ public final class HelloWorldBuilder extends AbstractExample {
 
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("hello"), 100, TimeUnit.MILLISECONDS);
-        checkExpectedResponse(Str.of("Hello, World! My name is Bob."), response);
+        BenchTools.checkExpected(Str.of("Hello, World! My name is Bob."), response);
 
         actorRef.send(Envelope.createNotify(
             Rec.completeRecBuilder()
@@ -90,7 +89,7 @@ public final class HelloWorldBuilder extends AbstractExample {
 
         response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("hello"), 100, TimeUnit.MILLISECONDS);
-        checkExpectedResponse(Str.of("Hello, World! My name is Bobby."), response);
+        BenchTools.checkExpected(Str.of("Hello, World! My name is Bobby."), response);
 
         ready = Actor.builder().setSource(SOURCE_2);
         generated = ready.generate();
@@ -112,7 +111,7 @@ public final class HelloWorldBuilder extends AbstractExample {
         actorRef = spawned.actorRef();
         response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("perform"), 100, TimeUnit.MILLISECONDS);
-        checkExpectedResponse(
+        BenchTools.checkExpected(
             Rec.completeTupleBuilder()
                 .addValue(Str.of("Hello, World! My name is Bob."))
                 .addValue(Str.of("Hello, World! My name is Bobby."))

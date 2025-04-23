@@ -13,7 +13,7 @@ public class TestConcurrentMathWithIncr {
 
     @Test
     public void test() throws Exception {
-        new ConcurrentMathWithIncr().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new ConcurrentMathWithIncr()::perform);
     }
 
 }

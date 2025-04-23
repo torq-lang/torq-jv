@@ -13,7 +13,7 @@ public class TestGlobalCounter {
 
     @Test
     public void test() throws Exception {
-        new GlobalCounter().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new GlobalCounter()::perform);
     }
 
 }

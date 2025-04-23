@@ -15,7 +15,7 @@ import org.torqlang.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-public final class ConcurrentMathWithIncr extends AbstractExample {
+public final class ConcurrentMathWithIncr {
 
     public static final String SOURCE = """
         actor ConcurrentMath() in
@@ -41,11 +41,10 @@ public final class ConcurrentMathWithIncr extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new ConcurrentMathWithIncr().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new ConcurrentMathWithIncr()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder().spawn(SOURCE).actorRef();
@@ -53,17 +52,17 @@ public final class ConcurrentMathWithIncr extends AbstractExample {
         // 1 + 2 * 3
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("calculate"), 100, TimeUnit.MILLISECONDS);
-        checkExpectedResponse(Int32.of(7), response);
+        BenchTools.checkExpected(Int32.of(7), response);
 
         // 2 + 4 * 6
         response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("calculate"), 100, TimeUnit.MILLISECONDS);
-        checkExpectedResponse(Int32.of(26), response);
+        BenchTools.checkExpected(Int32.of(26), response);
 
         // 3 + 6 * 9
         response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("calculate"), 100, TimeUnit.MILLISECONDS);
-        checkExpectedResponse(Int32.of(57), response);
+        BenchTools.checkExpected(Int32.of(57), response);
     }
 
 }

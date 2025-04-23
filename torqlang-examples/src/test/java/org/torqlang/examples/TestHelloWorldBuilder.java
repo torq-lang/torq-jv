@@ -13,7 +13,7 @@ public class TestHelloWorldBuilder {
 
     @Test
     public void test() throws Exception {
-        new HelloWorldBuilder().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new HelloWorldBuilder()::perform);
     }
 
 }

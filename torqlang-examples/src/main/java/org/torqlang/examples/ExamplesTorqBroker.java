@@ -68,7 +68,7 @@ public final class ExamplesTorqBroker implements FileBroker {
     @Override
     public final String source(List<Name> path) throws IOException {
         String absolutePath = "/" + path.stream().map(Name::value).collect(Collectors.joining("/"));
-        return ReadTextFromResource.apply(absolutePath);
+        return ReadTextFromResource.apply(getClass(), absolutePath);
     }
 
     private record Entry(Name name, List<Entry> children) {

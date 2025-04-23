@@ -18,7 +18,7 @@ import org.torqlang.util.ReadTextFromResource;
 import static org.torqlang.examples.BenchTools.printTimingResults;
 
 /*
- * java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindCustomers
+ * java -XX:+UseZGC -p ~/.torq/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindCustomers
  */
 public final class BenchNorthwindCustomers {
 
@@ -51,7 +51,7 @@ public final class BenchNorthwindCustomers {
             .addDefaultModules()
             .addModule("examples", examplesMod)
             .build();
-        String customersHandlerSource = ReadTextFromResource.apply(NorthwindHandlerFactory.TORQSRC_DIR + "CustomersHandler.torq");
+        String customersHandlerSource = ReadTextFromResource.apply(getClass(), NorthwindHandlerFactory.TORQSRC_DIR + "CustomersHandler.torq");
         ActorImage actorImage = Actor.builder()
             .setSystem(system)
             .actorImage(customersHandlerSource);

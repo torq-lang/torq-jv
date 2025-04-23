@@ -16,7 +16,13 @@ import java.util.*;
 
 public final class NorthwindFiles {
 
-    public static final String FILES_DIR = System.getProperty("user.home") + "/.torq_lang/resources/northwind";
+    /*
+     * Example data:
+     *     Northwind example data must be copied from the project directory
+     *     `src/main/resources/org/torqlang/examples/data/northwind/` to the local home directory
+     *     `/home/USER/.torq/resources/org/torqlang/examples/data/northwind/`.
+     */
+    public static final String FILES_DIR = System.getProperty("user.home") + "/.torq/resources/org/torqlang/examples/data/northwind/";
 
     public static final List<String> CUSTOMERS_KEY_NAMES = List.of("id");
     public static final List<String> EMPLOYEE_PRIVILEGES_KEY_NAMES = List.of("employee_id", "privilege_id");

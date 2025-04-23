@@ -13,7 +13,7 @@ public class TestFactorialWithTypeAnnos {
 
     @Test
     public void test() throws Exception {
-        new FactorialWithTypeAnnos().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new FactorialWithTypeAnnos()::perform);
     }
 
 }

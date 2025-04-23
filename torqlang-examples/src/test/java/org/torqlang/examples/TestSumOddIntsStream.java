@@ -13,7 +13,7 @@ public class TestSumOddIntsStream {
 
     @Test
     public void test() throws Exception {
-        new SumOddIntsStream().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new SumOddIntsStream()::perform);
     }
 
 }

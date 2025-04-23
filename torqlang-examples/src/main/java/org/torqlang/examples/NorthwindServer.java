@@ -9,8 +9,6 @@ package org.torqlang.examples;
 
 import org.torqlang.local.ActorSystem;
 import org.torqlang.local.ConsoleLogger;
-import org.torqlang.local.DebuggerSetting;
-import org.torqlang.local.DefaultDebugger;
 import org.torqlang.server.EchoHandler;
 import org.torqlang.server.LocalServer;
 import org.torqlang.server.ServerProps;
@@ -23,12 +21,18 @@ import static org.torqlang.server.ServerProps.RESOURCES_PROP;
 
 /*
  * Example data:
- *     Example data must be copied from the project directory `resources/northwind/` to the local home
- *     directory `/home/USER/.torq_lang/resources/northwind`.
+ *     Northwind example data must be copied from the project directory
+ *     `src/main/resources/org/torqlang/examples/data/northwind/` to the local home directory
+ *     `/home/USER/.torq/resources/org/torqlang/examples/data/northwind/`.
+ *
  * Run with all hardware threads:
- *     java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ *     java -XX:+UseZGC -p ~/.torq/lib -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ *
  * Run with 8 hardware threads:
- *     taskset -c 0-7 java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.NorthwindServer
+ *     taskset -c 0-7 <<nest-previous-java-expression-here>>
+ *
+ * Run in debug mode by adding the following "-agentlib" option to the previous java expression:
+ *     -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005
  */
 public final class NorthwindServer {
 
@@ -46,7 +50,7 @@ public final class NorthwindServer {
         String resourcesRoot = GetArg.getSingleFromEither(ServerProps.RESOURCES_SHORT_OPTION,
             ServerProps.RESOURCES_LONG_OPTION, argsList);
         if (resourcesRoot == null) {
-            resourcesRoot = System.getProperty("user.home") + "/.torq_lang/resources";
+            resourcesRoot = System.getProperty("user.home") + "/.torq/resources";
         }
         ServerProps.put(RESOURCES_PROP, resourcesRoot);
         ConsoleLogger.SINGLETON.info("Resources root " + RESOURCES_PROP + ": " + resourcesRoot);
@@ -54,7 +58,7 @@ public final class NorthwindServer {
         LocalServer server = LocalServer.builder()
             .setPort(8080)
             .addContextHandler(new EchoHandler(), "/echo")
-            .addContextHandler(NorthwindHandlerFactory.createHandler(), "/api")
+            .addContextHandler(NorthwindHandlerFactory.createApiHandler(), "/api")
             .build();
         server.start();
         server.join();

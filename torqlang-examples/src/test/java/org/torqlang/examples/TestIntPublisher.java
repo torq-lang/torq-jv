@@ -13,7 +13,7 @@ public class TestIntPublisher {
 
     @Test
     public void test() throws Exception {
-        new IntPublisher().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new IntPublisher()::perform);
     }
 
 }

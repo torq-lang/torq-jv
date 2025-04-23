@@ -13,7 +13,7 @@ import org.torqlang.local.*;
 
 import java.util.concurrent.TimeUnit;
 
-public final class GlobalCounter extends AbstractExample {
+public final class GlobalCounter {
 
     public static final String GLOBAL_COUNTER = """
         actor Counter() in
@@ -40,11 +40,10 @@ public final class GlobalCounter extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new GlobalCounter().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new GlobalCounter()::perform);
         System.exit(0);
     }
 
-    @Override
     public void perform() throws Exception {
 
         ActorRefObj globalCounterRefObj = new ActorRefObj(Actor.builder().spawn(GLOBAL_COUNTER).actorRef());
@@ -63,7 +62,7 @@ public final class GlobalCounter extends AbstractExample {
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(testClientRef, Str.of("get"), 100, TimeUnit.MILLISECONDS);
 
-        checkExpectedResponse(Int32.of(2), response);
+        BenchTools.checkExpected(Int32.of(2), response);
     }
 
 }

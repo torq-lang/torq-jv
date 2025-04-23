@@ -16,12 +16,18 @@ import static org.torqlang.examples.NorthwindDbPack.NORTHWIND_DB;
 
 /*
  * Example data:
- *     Example data must be copied from the project directory `resources/northwind/` to the local home
- *     directory `/home/USER/.torq_lang/resources/northwind`.
+ *     Northwind example data must be copied from the project directory
+ *     `src/main/resources/org/torqlang/examples/data/northwind/` to the local home directory
+ *     `/home/USER/.torq/resources/org/torqlang/examples/data/northwind/`.
+ *
  * Run with all hardware threads:
- *     java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
+ *     java -XX:+UseZGC -p ~/.torq/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
+ *
  * Run with 3 hardware threads:
- *     taskset -c 0-2 java -XX:+UseZGC -p ~/.torq_lang/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindDb
+ *     taskset -c 0-2 <<nest-previous-java-expression-here>>
+ *
+ * Run in debug mode by adding the following "-agentlib" option to the previous java expression:
+ *     -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005
  */
 public final class BenchNorthwindDb {
 

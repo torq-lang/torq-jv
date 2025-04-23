@@ -11,7 +11,7 @@ import org.eclipse.jetty.server.Request;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.Rec;
 
-public class QueryOrders extends AbstractExample {
+public class QueryOrders {
 
     public static final String SOURCE = """
         actor Orders() in
@@ -62,11 +62,10 @@ public class QueryOrders extends AbstractExample {
     }
 
     public static void main(String[] args) throws Exception {
-        new QueryOrders().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new QueryOrders()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
         // TODO: REPLACE THIS TEST
         /*

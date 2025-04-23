@@ -22,7 +22,10 @@ import static org.torqlang.examples.NorthwindFiles.FILES_DIR;
  * the application. If the data is not in memory, the cache loads it from the database, stores it in memory, and then
  * returns it to the application.
  *
- * The Northwind data is stored in the `/home/USER/.torq_lang/resources/northwind` directory.
+ * Example data:
+ *     Northwind example data must be copied from the project directory
+ *     `src/main/resources/org/torqlang/examples/data/northwind/` to the local home directory
+ *     `/home/USER/.torq/resources/org/torqlang/examples/data/northwind/`.
  */
 public final class NorthwindReader extends NorthwindAccessor {
 

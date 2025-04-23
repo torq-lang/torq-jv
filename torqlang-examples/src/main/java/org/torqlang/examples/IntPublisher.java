@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
-public final class IntPublisher extends AbstractExample {
+public final class IntPublisher {
 
     public static final String SOURCE = """
         actor IntPublisher(first, last, incr) in
@@ -47,11 +47,10 @@ public final class IntPublisher extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new IntPublisher().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new IntPublisher()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         ActorRef actorRef = Actor.builder()

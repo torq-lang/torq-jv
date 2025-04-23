@@ -13,15 +13,37 @@ import org.torqlang.local.Envelope;
 import org.torqlang.local.FutureResponse;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static org.torqlang.util.ErrorWithSourceSpan.printWithSourceAndRethrow;
+
 public class BenchTools {
+
+    /*
+     * Argument order (expected, actual) is the same order used in JUnit assert methods.
+     */
+    public static void checkExpected(Object expected, Object actual) {
+        if (!Objects.equals(expected, actual)) {
+            String error = "Not expected: " + actual;
+            if (actual instanceof FailedValue failedValue) {
+                error += "\n" + failedValue.toDetailsString();
+            }
+            throw new IllegalStateException(error);
+        }
+    }
+
+    public static void checkFalse(boolean value) {
+        if (value) {
+            throw new IllegalArgumentException("Not false");
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public static void checkMapResponse(int expectedId, FutureResponse futureResponse) throws Exception {
         Envelope resp = futureResponse.future().get(1, TimeUnit.SECONDS);
         if (resp.message() instanceof FailedValue) {
-            throw new IllegalStateException("Request failed");
+            throw new IllegalStateException("Request failed: " + resp.message());
         }
         Map<String, Object> rec = (Map<String, Object>) resp.message();
         long id = (Long) rec.get("id");
@@ -35,6 +57,18 @@ public class BenchTools {
             checkMapResponse(sample.id, sample.result);
         }
         return samples.length;
+    }
+
+    public static void checkNotNull(Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Value is null");
+        }
+    }
+
+    public static void checkTrue(boolean value) {
+        if (!value) {
+            throw new IllegalArgumentException("Not true");
+        }
     }
 
     public static void checkTupleResponse(int expectedSize, FutureResponse futureResponse) throws Exception {
@@ -64,9 +98,21 @@ public class BenchTools {
             "  " + String.format("Reads per second: %,.2f", (readsPerSecond * readCount));
     }
 
+    public static void performWithErrorCheck(Performer performer) throws Exception {
+        try {
+            performer.perform();
+        } catch (Exception exc) {
+            printWithSourceAndRethrow(exc, 5, 5, 5);
+        }
+    }
+
     public static void printTimingResults(String owner, long start, long stop, int readCount) {
         long totalTimeMillis = stop - start;
         System.out.println(formatTotalsMessage(owner, totalTimeMillis, readCount));
+    }
+
+    public interface Performer {
+        void perform() throws Exception;
     }
 
     public record MapSample(int id, FutureResponse result) {

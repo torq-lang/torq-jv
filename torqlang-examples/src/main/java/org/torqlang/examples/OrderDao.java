@@ -18,7 +18,7 @@ import org.torqlang.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-public final class OrderDao extends AbstractExample {
+public final class OrderDao {
 
     public static final String SOURCE = """
         actor OrderDao() in
@@ -81,11 +81,10 @@ public final class OrderDao extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new OrderDao().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new OrderDao()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
         ActorRef actorRef = Actor.builder()
             .setAddress(Address.create(OrderDao.class.getName()))

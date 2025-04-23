@@ -13,7 +13,7 @@ import org.torqlang.local.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class MergeIntStreams extends AbstractExample {
+public final class MergeIntStreams {
 
     public static final String SOURCE = """
         actor MergeIntStreams() in
@@ -47,11 +47,10 @@ public final class MergeIntStreams extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new MergeIntStreams().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new MergeIntStreams()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         ActorSystem system = ActorSystem.builder()
@@ -68,7 +67,7 @@ public final class MergeIntStreams extends AbstractExample {
 
         List<?> expectedTuple = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        checkExpectedResponse(expectedTuple, ValueTools.toNativeValue((Complete) response));
+        BenchTools.checkExpected(expectedTuple, ValueTools.toNativeValue((Complete) response));
     }
 
 }

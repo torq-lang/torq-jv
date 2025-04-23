@@ -14,7 +14,7 @@ import org.torqlang.local.RequestClient;
 
 import java.util.concurrent.TimeUnit;
 
-public final class HelloWorld extends AbstractExample {
+public final class HelloWorld {
 
     public static final String SOURCE = """
         actor HelloWorld() in
@@ -24,11 +24,10 @@ public final class HelloWorld extends AbstractExample {
         end""";
 
     public static void main(String[] args) throws Exception {
-        new HelloWorld().performWithErrorCheck();
+        BenchTools.performWithErrorCheck(new HelloWorld()::perform);
         System.exit(0);
     }
 
-    @Override
     public final void perform() throws Exception {
 
         // Build and spawn HelloWorld. After spawning, `HelloWorld` is waiting to
@@ -41,7 +40,7 @@ public final class HelloWorld extends AbstractExample {
         Object response = RequestClient.builder()
             .sendAndAwaitResponse(actorRef, Str.of("hello"), 100, TimeUnit.MILLISECONDS);
 
-        checkExpectedResponse(Str.of("Hello, World!"), response);
+        BenchTools.checkExpected(Str.of("Hello, World!"), response);
     }
 
 }
