@@ -16,19 +16,22 @@ import org.torqlang.local.*;
 import org.torqlang.server.ApiDesc;
 import org.torqlang.server.ApiHandler;
 import org.torqlang.server.ApiRouter;
-import org.torqlang.util.ReadTextFromResource;
+import org.torqlang.util.FileBroker;
+import org.torqlang.util.FileName;
+import org.torqlang.util.FileType;
 
-import java.lang.invoke.MethodHandles;
+import static org.torqlang.examples.ExamplesSourceBroker.NORTHWIND;
+import static org.torqlang.examples.ExamplesSourceBroker.ROOT;
 
-public final class NorthwindHandlerFactory {
-
-    public static final String TORQSRC_DIR = "/org/torqlang/examples/torqsrc/northwind/";
+public final class NorthwindHandlerFactoryForActors {
 
     private static CompleteRec emptyContextProvider(Request request) {
         return Rec.completeRecBuilder().build();
     }
 
     public static Handler createApiHandler() throws Exception {
+
+        FileBroker sourceBroker = ExamplesSourceBroker.createResourcesBrokerForActors();
 
         CompleteRec examplesMod = Rec.completeRecBuilder()
             .addField(Str.of("NorthwindDb"), NorthwindDbPack.NORTHWIND_DB_ACTOR)
@@ -41,75 +44,85 @@ public final class NorthwindHandlerFactory {
 
         ApiDesc customerApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc customersApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.CUSTOMER_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
-        String customersHandlerSource = ReadTextFromResource.apply(MethodHandles.lookup().lookupClass(), TORQSRC_DIR + "CustomersHandler.torq");
+        String customersHandlerSource = sourceBroker.source(
+            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "CustomersHandler.torq"))
+        );
         ActorImage customersHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(customersHandlerSource);
 
         ApiDesc employeeApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc employeesApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.EMPLOYEE_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
-        String employeesHandlerSource = ReadTextFromResource.apply(MethodHandles.lookup().lookupClass(), TORQSRC_DIR + "EmployeesHandler.torq");
+        String employeesHandlerSource = sourceBroker.source(
+            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "EmployeesHandler.torq"))
+        );
         ActorImage employeesHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(employeesHandlerSource);
 
         ApiDesc orderApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc ordersApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.ORDER_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc orderDetailsApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC, StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.ORDER_DETAILS_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
-        String ordersHandlerSource = ReadTextFromResource.apply(MethodHandles.lookup().lookupClass(), TORQSRC_DIR + "OrdersHandler.torq");
+        String ordersHandlerSource = sourceBroker.source(
+            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "OrdersHandler.torq"))
+        );
         ActorImage ordersHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(ordersHandlerSource);
 
         ApiDesc productApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc productsApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
-        String productsHandlerSource = ReadTextFromResource.apply(MethodHandles.lookup().lookupClass(), TORQSRC_DIR + "ProductsHandler.torq");
+        String productsHandlerSource = sourceBroker.source(
+            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "ProductsHandler.torq"))
+        );
         ActorImage productsHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(productsHandlerSource);
 
         ApiDesc supplierApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc suppliersApiDesc = ApiDesc.builder()
             .setPathDesc(TupleDesc.of(StrDesc.BASIC))
             .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
+            .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
-        String suppliersHandlerSource = ReadTextFromResource.apply(MethodHandles.lookup().lookupClass(), TORQSRC_DIR + "SuppliersHandler.torq");
+        String suppliersHandlerSource = sourceBroker.source(
+            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "SuppliersHandler.torq"))
+        );
         ActorImage suppliersHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(suppliersHandlerSource);

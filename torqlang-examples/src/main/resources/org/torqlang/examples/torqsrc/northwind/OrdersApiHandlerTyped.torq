@@ -5,7 +5,7 @@ import examples.Employee
 import examples.Product
 import examples.Supplier
 
-meta#{'export': true}
+meta#{'export'}
 type Order = {
     'id': Int64,
     'employee_id': Int64,
@@ -29,10 +29,10 @@ type Order = {
     'status_id': Int32
 }
 
-meta#{'export': true}
+meta#{'export'}
 type OrderWithCustomerAndEmployee = Order & {'customer': Customer, 'employee': Employee}
 
-meta#{'export': true}
+meta#{'export'}
 type OrderDetails = {
     'order_id': Int64,
     'product_id': Int64,
@@ -46,16 +46,16 @@ type OrderDetails = {
     'inventory_id': Int64,
 }
 
-meta#{'export': true}
+meta#{'export'}
 type OrderWithDetails = Order & {'details': Array[OrderDetails]}
 
-meta#{'export': true}
+meta#{'export'}
 type ProductWithSuppliers = Product & {'suppliers': Array[Supplier]}
 
-meta#{'export': true}
+meta#{'export'}
 type OrderDetailsWithProductWithSuppliers = OrderDetails & {'product': ProductWithSuppliers}
 
-meta#{'export': true}
+meta#{'export'}
 type Message = {
     'name': Str,
     'type': "ERROR" | "INFO" | "WARN",
@@ -64,12 +64,12 @@ type Message = {
     'trace_id': Str,
 }
 
-meta#{'export': true, 'stereotype': 'api-handler'}
-actor OrdersHandler() in
+meta#{'export': 'api-handler'}
+actor OrdersApiHandler() in
     import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
-    meta#{'export': true, 'return-codes': {'Array[OrderWithCustomerAndEmployee]': 200, 'Message': 400}}
+    meta#{'export', 'return-codes': {'Array[OrderWithCustomerAndEmployee]': 200, 'Message': 400}}
     handle ask 'GET'#{'headers': headers, 'path': ['orders'], 'query': query, 'context': context, ...} -> Array[OrderWithCustomerAndEmployee] | Message in
          var northwind_db = spawn(new NorthwindDb())
          var orders_ext = new ArrayList()
@@ -97,7 +97,7 @@ actor OrdersHandler() in
          orders_ext.to_array()
     end
 
-    meta#{'export': true}
+    meta#{'export'}
     handle ask 'GET'#{'headers': headers, 'path': ['orders', order_id::Int64], 'query': query, 'context': context, ...} -> OrderWithDetails | Message in
         var northwind_db = spawn(new NorthwindDb())
         var order = northwind_db.ask(
@@ -118,7 +118,7 @@ actor OrdersHandler() in
         Rec.assign({'details': if details == null then [] else details end}, order)
     end
 
-    meta#{'export': true}
+    meta#{'export'}
     handle ask 'GET'#{'headers': headers, 'path': ['orders', order_id::Int64, 'details'], 'query': query, 'context': context, ...} -> Array[OrderDetailsWithProductWithSuppliers] | Message in
         var northwind_db = spawn(new NorthwindDb())
         var details_ext = new ArrayList()

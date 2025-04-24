@@ -1,0 +1,20 @@
+package northwind
+
+import northwind.{Customer, Employee, Order, Product, Supplier}
+
+protocol NorthwindDb = {
+    ask 'findAll'#{'entity': 'customers', 'criteria': criteria} -> Array[Customer],
+    ask 'findByKey'#{'entity': 'customers', 'key': key} -> Customer,
+    ask 'findAll'#{'entity': 'employees', 'criteria': criteria} -> Array[Employee],
+    ask 'findByKey'#{'entity': 'employees', 'key': key} -> Employee,
+    ask 'findAll'#{'entity': 'orders', 'criteria': criteria} -> Array[Order],
+    ask 'findByKey'#{'entity': 'orders', 'key': key} -> Order,
+    ask 'findAll'#{'entity': 'products', 'criteria': criteria} -> Array[Product],
+    ask 'findByKey'#{'entity': 'products', 'key': key} -> Product,
+    ask 'findAll'#{'entity': 'suppliers', 'criteria': criteria} -> Array[Supplier],
+    ask 'findByKey'#{'entity': 'suppliers', 'key': key} -> Supplier,
+}
+
+actor NorthwindDbHandler() implements NorthwindDb in
+    native
+end

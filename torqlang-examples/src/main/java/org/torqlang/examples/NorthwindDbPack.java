@@ -54,6 +54,7 @@ public class NorthwindDbPack {
     /*
      * Using an ActorRef as a protocol adapter is a repeating pattern.
      */
+    @SuppressWarnings("ClassCanBeRecord")
     static final class NorthwindDbAdapter implements ActorRef {
 
         private final Address address;

@@ -1,0 +1,34 @@
+package northwind
+
+actor ProductsApiHandler() in
+
+    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
+    import examples.NorthwindDb
+
+    handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+        var northwind_db = spawn(new NorthwindDb())
+        case path
+            of ['products'] then
+                northwind_db.ask(
+                    'findAll'#{
+                        'entity': 'products',
+                        'criteria': query
+                    }
+                )
+            of ['products', product_id] then
+                northwind_db.ask(
+                    'findByKey'#{
+                        'entity': 'products',
+                        'key': {'id': product_id}
+                    }
+                )
+            else
+                throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
+        end
+    end
+
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
+        throw 'error'#{'message': 'PATCH needs impl', 'details': {'path': path}}
+    end
+
+end

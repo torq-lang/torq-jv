@@ -1,9 +1,34 @@
+package northwind
 
-actor EmployeesHandler() in
+meta#{'export'}
+type Employee = {
+    'id': Int64,
+    'company': Str,
+    'last_name': Str,
+    'first_name': Str,
+    'email_address': Str,
+    'job_title': Str,
+    'business_phone': Str,
+    'home_phone': Str,
+    'mobile_phone': Str,
+    'fax_number': Str,
+    'address': Str,
+    'city': Str,
+    'state_province': Str,
+    'zip_postal_code': Str,
+    'country_region': Str,
+    'web_page': Str,
+    'notes': Str,
+    'attachments': Str
+}
+
+meta#{'export': 'api-handler'}
+actor EmployeesApiHandler() in
 
     import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
-    import examples.NorthwindDb
+    import northwind.NorthwindDb
 
+    meta#{'export'}
     handle ask 'GET'#{'headers': headers, 'path': ['employees'], 'query': query, 'context': context} -> Array[Employee] in
         var northwind_db = spawn(new NorthwindDb())
         northwind_db.ask(
@@ -14,7 +39,8 @@ actor EmployeesHandler() in
         )
     end
 
-    handle ask 'GET'#{'headers': headers, 'path': ['employees', employee_id], 'query': query, 'context': context} -> Employee in
+    meta#{'export'}
+    handle ask 'GET'#{'headers': headers, 'path': ['employees', employee_id::Int64], 'query': query, 'context': context} -> Employee in
         var northwind_db = spawn(new NorthwindDb())
         northwind_db.ask(
             'findByKey'#{

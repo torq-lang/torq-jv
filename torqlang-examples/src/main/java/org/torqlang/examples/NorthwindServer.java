@@ -13,6 +13,7 @@ import org.torqlang.server.EchoHandler;
 import org.torqlang.server.LocalServer;
 import org.torqlang.server.ServerProps;
 import org.torqlang.util.GetArg;
+import org.torqlang.util.GetStackTrace;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,16 @@ import static org.torqlang.server.ServerProps.RESOURCES_PROP;
 public final class NorthwindServer {
 
     public static void main(String[] args) throws Exception {
+        try {
+            start(args);
+        } catch (Exception e) {
+            String message = "Start ended in error\n" + GetStackTrace.apply(e, true);
+            System.err.println(message);
+            System.exit(-1);
+        }
+    }
+
+    private static void start(String[] args) throws Exception {
 
 //        DebuggerSetting.set(new DefaultDebugger());
 //        DebuggerSetting.get().addRecognizer((actorRef -> actorRef.address().path().equals("customers")));
@@ -58,7 +69,7 @@ public final class NorthwindServer {
         LocalServer server = LocalServer.builder()
             .setPort(8080)
             .addContextHandler(new EchoHandler(), "/echo")
-            .addContextHandler(NorthwindHandlerFactory.createApiHandler(), "/api")
+            .addContextHandler(NorthwindHandlerFactoryForActors.createApiHandler(), "/api")
             .build();
         server.start();
         server.join();

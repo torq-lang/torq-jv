@@ -11,6 +11,9 @@ import org.torqlang.klvm.CompleteRec;
 
 import java.util.concurrent.Executor;
 
+// TODO: How can we structure systems such that child systems inherit
+//       access to modules and can override executors?
+// TODO: How can we use meta tags to assign actors to actor systems?
 public interface ActorSystem {
 
     static ActorSystemBuilder builder() {
@@ -33,6 +36,10 @@ public interface ActorSystem {
 
     Executor executor();
 
+    // TODO: Rename to `assemblyAt`.
+    //       Packages are directories that contain modules.
+    //       Modules are files that contain members.
+    //       Assemblies are records that contain exported members.
     CompleteRec moduleAt(String path);
 
     String name();

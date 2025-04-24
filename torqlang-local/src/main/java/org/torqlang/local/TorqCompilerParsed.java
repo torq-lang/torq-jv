@@ -7,6 +7,5 @@
 
 package org.torqlang.local;
 
-public class Compiler {
-    // Compile one or more resource roots into an Artifacts
+public interface TorqCompilerParsed {
 }

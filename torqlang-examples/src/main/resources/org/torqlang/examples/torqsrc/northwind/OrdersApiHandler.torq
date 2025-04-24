@@ -1,5 +1,31 @@
+package northwind
 
-actor OrdersHandler() in
+/*
+type Order <: Rec = {
+    "id"::Int64,
+    "employee_id"::Int64,
+    "customer_id"::Int64,
+    "order_date"::Date,
+    "shipped_date"::Date,
+    "shipper_id"::Int64,
+    "ship_name"::Str,
+    "ship_address"::Str,
+    "ship_city"::Str,
+    "ship_state_province"::Str,
+    "ship_zip_postal_code"::Int64,
+    "ship_country_region"::Str,
+    "shipping_fee"::Dec128,
+    "taxes"::Dec128,
+    "payment_type"::Str,
+    "paid_date"::Date,
+    "notes"::Str,
+    "tax_rate"::Flt64,
+    "tax_status_id"::Int32,
+    "status_id"::Int32
+}
+*/
+
+actor OrdersApiHandler() in
 
     // TODO: change `shipping_fee` in JSON files to be a decimal string
     // TODO: change `taxes` in JSON files to be a decimal string
