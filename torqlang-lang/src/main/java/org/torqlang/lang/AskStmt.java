@@ -11,9 +11,9 @@ import org.torqlang.util.SourceSpan;
 
 public final class AskStmt extends HandleStmt {
 
-    public final TypeAnno responseType;
+    public final Type responseType;
 
-    public AskStmt(Pat pat, SeqLang body, TypeAnno responseType, SourceSpan sourceSpan) {
+    public AskStmt(Pat pat, SeqLang body, Type responseType, SourceSpan sourceSpan) {
         super(pat, body, sourceSpan);
         this.responseType = responseType;
     }

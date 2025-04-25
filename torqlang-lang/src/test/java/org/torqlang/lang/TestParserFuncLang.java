@@ -50,7 +50,7 @@ public class TestParserFuncLang {
         assertSourceSpan(funcExpr, 0, 25);
         assertSourceSpan(funcExpr.body, 20, 21);
         assertEquals(0, funcExpr.formalArgs.size());
-        TypeAnno returnType = asTypeAnno(funcExpr.returnType);
+        Type returnType = asType(funcExpr.returnType);
         assertSourceSpan(returnType, 11, 16);
         assertEquals(1, funcExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());

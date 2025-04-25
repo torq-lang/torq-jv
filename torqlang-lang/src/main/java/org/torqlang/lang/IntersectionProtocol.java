@@ -9,22 +9,22 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public final class FieldType extends AbstractLang {
+public final class IntersectionProtocol extends AbstractLang implements Protocol {
 
-    public final FeatureType feature;
-    public final Type value;
+    public final Protocol arg1;
+    public final Protocol arg2;
 
-    public FieldType(FeatureType feature, Type value, SourceSpan sourceSpan) {
+    public IntersectionProtocol(Protocol arg1, Protocol arg2, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.feature = feature;
-        this.value = value;
+        this.arg1 = arg1;
+        this.arg2 = arg2;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFieldType(this, state);
+        return visitor.visitIntersectionProtocol(this, state);
     }
 
 }

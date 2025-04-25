@@ -58,8 +58,8 @@ public class TestParserVarStmt {
         assertSourceSpan(identVarDecl.identAsPat, 4, 12);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
         assertFalse(identVarDecl.identAsPat.escaped);
-        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident);
-        assertSourceSpan(identVarDecl.identAsPat.typeAnno, 7, 12);
+        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.type).ident);
+        assertSourceSpan(identVarDecl.identAsPat.type, 7, 12);
         // Test toString format
         String expectedFormat = "var x::Int32";
         String actualFormat = varStmt.toString();

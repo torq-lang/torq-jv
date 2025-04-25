@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.Ident;
-import org.torqlang.util.NeedsImpl;
 import org.torqlang.util.SourceSpan;
 
 public final class TypeParam extends AbstractLang {
@@ -21,6 +20,6 @@ public final class TypeParam extends AbstractLang {
 
     @Override
     public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        throw new NeedsImpl();
+        return visitor.visitTypeParam(this, state);
     }
 }

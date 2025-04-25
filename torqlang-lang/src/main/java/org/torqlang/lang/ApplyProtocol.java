@@ -13,25 +13,25 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class ApplyType extends AbstractLang implements Type {
+public final class ApplyProtocol extends AbstractLang implements Protocol {
 
     public final IdentAsExpr name;
-    public final List<Type> typeArgs;
+    public final List<Protocol> protocolArgs;
 
-    public ApplyType(IdentAsExpr name,
-                     List<? extends Type> typeArgs,
-                     SourceSpan sourceSpan)
+    public ApplyProtocol(IdentAsExpr name,
+                         List<? extends Protocol> protocolArgs,
+                         SourceSpan sourceSpan)
     {
         super(sourceSpan);
         this.name = name;
-        this.typeArgs = nullSafeCopyOf(typeArgs);
+        this.protocolArgs = nullSafeCopyOf(protocolArgs);
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitApplyType(this, state);
+        return visitor.visitApplyProtocol(this, state);
     }
 
 }

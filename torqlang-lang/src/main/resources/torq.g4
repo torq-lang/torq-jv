@@ -64,8 +64,8 @@ cast: construct ('::' construct)*;
 construct: keyword | ident '...'? | value;
 
 keyword: act | actor | begin | 'break' | case | 'continue' |
-         for | func | group | if | import_ | local | new | proc |
-         package | protocol | return | 'self' | 'skip' | spawn |
+         for | func | group | if | import_ | local | new |
+         proc | protocol | return | 'self' | 'skip' | spawn |
          throw | try | type | var | while;
 
 act: 'act' stmt_or_expr+ 'end';
@@ -199,6 +199,8 @@ union_type: intersection_type ('|' intersection_type)*;
 
 intersection_type: type_expr ('&' type_expr)*;
 
+// The following grammar relies on the next token being one of:
+//     ident | bool | STR_LITERAL | 'eof' | 'null' | INT_LITERAL | '{' | '[' | 'proc' | 'func'
 type_expr: ident (type_arg_list | '#' (rec_type_body | tuple_type_body))? |
            (bool | STR_LITERAL | 'eof' | 'null') ('#' (rec_type_body | tuple_type_body))? |
            INT_LITERAL | rec_type_body | tuple_type_body | proc_type | func_type;
@@ -217,16 +219,22 @@ proc_type: 'proc' ('(' pat_type_list? ')' | pat);
 
 pat_type_list: pat (',' pat)*;
 
-protocol: 'protocol' ident type_param_list? '=' intersection_protocol;
+protocol: 'protocol' ident protocol_param_list? '=' intersection_protocol;
+
+protocol_param_list: '[' protocol_param (',' protocol_param)* ']';
+
+protocol_param: ident (('<:' | '>:') intersection_protocol)?;
+
+protocol_arg_list: '[' intersection_protocol (',' intersection_protocol)* ']';
 
 intersection_protocol: protocol_expr ('&' protocol_expr)*;
 
-protocol_expr: ident type_arg_list? | protocol_body;
+protocol_expr: ident protocol_arg_list? | protocol_struct;
 
-protocol_body: '{' protocol_handler
-               (',' protocol_handler)* ','? '}';
+protocol_struct: '{' protocol_handler
+                 (',' protocol_handler)* ','? '}';
 
-protocol_handler: 'handle' (protocol_tell_handler |
+protocol_handler: (protocol_tell_handler |
                   protocol_ask_handler |
                   protocol_stream_handler);
 

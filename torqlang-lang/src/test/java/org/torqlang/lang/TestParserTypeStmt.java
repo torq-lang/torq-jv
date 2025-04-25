@@ -97,7 +97,7 @@ public class TestParserTypeStmt {
             assertEquals(1, varStmt.varDecls.size());
             IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
             assertEquals("c", identVarDecl.identAsPat.ident.name);
-            assertEquals("Customer", asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident.name);
+            assertEquals("Customer", asIdentAsExpr(identVarDecl.identAsPat.type).ident.name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }
@@ -134,7 +134,7 @@ public class TestParserTypeStmt {
             assertEquals(1, varStmt.varDecls.size());
             IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
             assertEquals("p", identVarDecl.identAsPat.ident.name);
-            assertEquals("Path", asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident.name);
+            assertEquals("Path", asIdentAsExpr(identVarDecl.identAsPat.type).ident.name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }

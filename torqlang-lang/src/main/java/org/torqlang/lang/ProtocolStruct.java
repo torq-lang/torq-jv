@@ -9,20 +9,24 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public final class TypeAnno extends AbstractLang {
+import java.util.List;
 
-    public final Type type;
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-    public TypeAnno(Type type, SourceSpan sourceSpan) {
+public final class ProtocolStruct extends AbstractLang implements Protocol {
+
+    public final List<ProtocolHandler> handlers;
+
+    public ProtocolStruct(List<ProtocolHandler> handlers, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.type = type;
+        this.handlers = nullSafeCopyOf(handlers);
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitTypeAnno(this, state);
+        return visitor.visitProtocolStruct(this, state);
     }
 
 }

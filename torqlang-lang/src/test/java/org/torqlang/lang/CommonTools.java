@@ -137,9 +137,9 @@ public class CommonTools {
         return (StrAsPat) value;
     }
 
-    static TypeAnno asTypeAnno(Object value) {
-        assertInstanceOf(TypeAnno.class, value);
-        return (TypeAnno) value;
+    static Type asType(Object value) {
+        assertInstanceOf(Type.class, value);
+        return (Type) value;
     }
 
     static UnaryExpr asUnaryExpr(Object value) {

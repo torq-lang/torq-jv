@@ -12,6 +12,7 @@ import org.torqlang.local.ConsoleLogger;
 import org.torqlang.server.EchoHandler;
 import org.torqlang.server.LocalServer;
 import org.torqlang.server.ServerProps;
+import org.torqlang.util.ErrorWithSourceSpan;
 import org.torqlang.util.GetArg;
 import org.torqlang.util.GetStackTrace;
 
@@ -41,7 +42,12 @@ public final class NorthwindServer {
         try {
             start(args);
         } catch (Exception e) {
-            String message = "Start ended in error\n" + GetStackTrace.apply(e, true);
+            String message;
+            if (e instanceof ErrorWithSourceSpan errorWithSourceSpan) {
+                message = "Failed to parse source\n" + errorWithSourceSpan.formatWithSource(5, 50, 50);
+            } else {
+                message = "Failed to start server\n" + GetStackTrace.apply(e, true);
+            }
             System.err.println(message);
             System.exit(-1);
         }

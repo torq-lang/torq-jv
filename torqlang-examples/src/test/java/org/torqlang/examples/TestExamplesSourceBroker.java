@@ -54,9 +54,10 @@ public class TestExamplesSourceBroker {
 
         content = broker.list(List.of(org, torqlang, examples, torqsrc, northwind));
         assertNotNull(content);
-        assertEquals(5, content.size());
+        assertEquals(6, content.size());
         assertTrue(content.contains(new FileName(FileType.TORQ, "CustomersApiHandler.torq")));
         assertTrue(content.contains(new FileName(FileType.TORQ, "EmployeesApiHandler.torq")));
+        assertTrue(content.contains(new FileName(FileType.TORQ, "NorthwindDb.torq")));
         assertTrue(content.contains(new FileName(FileType.TORQ, "OrdersApiHandler.torq")));
         assertTrue(content.contains(new FileName(FileType.TORQ, "ProductsApiHandler.torq")));
         assertTrue(content.contains(new FileName(FileType.TORQ, "SuppliersApiHandler.torq")));

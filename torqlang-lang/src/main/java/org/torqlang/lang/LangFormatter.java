@@ -7,7 +7,10 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.*;
+import org.torqlang.klvm.Flt32;
+import org.torqlang.klvm.Ident;
+import org.torqlang.klvm.Int32;
+import org.torqlang.klvm.Str;
 import org.torqlang.util.FormatterState;
 import org.torqlang.util.NeedsImpl;
 
@@ -104,6 +107,40 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         state.write('(');
         visitActualArgs(lang.args, state);
         state.write(')');
+        return null;
+    }
+
+    @Override
+    public final Void visitApplyProtocol(ApplyProtocol lang, FormatterState state) throws Exception {
+        lang.name.accept(this, state.inline());
+        if (lang.protocolArgs != null && !lang.protocolArgs.isEmpty()) {
+            state.write('[');
+            for (int i = 0; i < lang.protocolArgs.size(); i++) {
+                if (i > 0) {
+                    state.write(", ");
+                }
+                Protocol arg = lang.protocolArgs.get(i);
+                arg.accept(this, state.inline());
+            }
+            state.write(']');
+        }
+        return null;
+    }
+
+    @Override
+    public final Void visitApplyType(ApplyType lang, FormatterState state) throws Exception {
+        lang.name.accept(this, state.inline());
+        if (lang.typeArgs != null && !lang.typeArgs.isEmpty()) {
+            state.write('[');
+            for (int i = 0; i < lang.typeArgs.size(); i++) {
+                if (i > 0) {
+                    state.write(", ");
+                }
+                Type arg = lang.typeArgs.get(i);
+                arg.accept(this, state.inline());
+            }
+            state.write(']');
+        }
         return null;
     }
 
@@ -371,9 +408,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
             state.write('~');
         }
         visitIdent(lang.ident, state);
-        if (lang.typeAnno != null) {
+        if (lang.type != null) {
             state.write(SymbolsAndKeywords.TYPE_OPER);
-            lang.typeAnno.accept(this, state.inline());
+            lang.type.accept(this, state.inline());
         }
         return null;
     }
@@ -415,7 +452,12 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitImportName(ImportName lang, FormatterState state) throws Exception {
-        throw new NeedsImpl();
+        lang.name.accept(this, state.inline());
+        if (lang.alias != null) {
+            state.write(" as ");
+            lang.alias.accept(this, state.inline());
+        }
+        return null;
     }
 
     @Override
@@ -428,23 +470,18 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
             if (i > 0) {
                 state.write(".");
             }
-            state.write(q.get(i).ident.name);
+            q.get(i).accept(this, state.inline());
         }
         if (ins.size() == 1 && ins.get(0).alias == null) {
             state.write('.');
-            state.write(ins.get(0).name.ident.name);
+            ins.get(0).accept(this, state.inline());
         } else {
             state.write(".{");
             for (int i = 0; i < ins.size(); i++) {
-                ImportName in = ins.get(i);
                 if (i > 0) {
                     state.write(", ");
                 }
-                state.write(in.name.ident.name);
-                if (in.alias != null) {
-                    state.write(" as ");
-                    state.write(in.alias.ident.name);
-                }
+                ins.get(i).accept(this, state.inline());
             }
             state.write('}');
         }
@@ -485,6 +522,15 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         if (!(lang.int64() instanceof Int32)) {
             state.write('L');
         }
+        return null;
+    }
+
+    @Override
+    public final Void visitIntersectionProtocol(IntersectionProtocol lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        lang.arg1.accept(this, state.inline());
+        state.write(" & ");
+        lang.arg2.accept(this, state.inline());
         return null;
     }
 
@@ -614,7 +660,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     @Override
     public final Void visitPackageStmt(PackageStmt lang, FormatterState state) throws Exception {
         state.write("package ");
-        for (int i=0; i < lang.path.size(); i++) {
+        for (int i = 0; i < lang.path.size(); i++) {
             if (i > 0) {
                 state.write('.');
             }
@@ -654,6 +700,76 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitProductExpr(ProductExpr lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         formatBinaryExpr(lang.oper.symbol(), lang.arg1, lang.arg2, state);
+        return null;
+    }
+
+    @Override
+    public final Void visitProtocolAskHandler(ProtocolAskHandler lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write("ask ");
+        lang.pat.accept(this, state.inline());
+        if (lang.responseType != null) {
+            state.write(" -> ");
+            lang.responseType.accept(this, state.inline());
+        }
+        return null;
+    }
+
+    @Override
+    public final Void visitProtocolParam(ProtocolParam lang, FormatterState state) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final Void visitProtocolStmt(ProtocolStmt lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write("protocol ");
+        state.write(lang.name.formatValue());
+        if (!lang.protocolParams.isEmpty()) {
+            state.write("[");
+            for (ProtocolParam param : lang.protocolParams) {
+                param.accept(this, state.inline());
+            }
+            state.write("]");
+        }
+        state.write(" = ");
+        lang.body.accept(this, state);
+        return null;
+    }
+
+    @Override
+    public final Void visitProtocolStreamHandler(ProtocolStreamHandler lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write("stream ");
+        lang.pat.accept(this, state.inline());
+        if (lang.responseType != null) {
+            state.write(" -> ");
+            lang.responseType.accept(this, state.inline());
+        }
+        return null;
+    }
+
+    @Override
+    public final Void visitProtocolStruct(ProtocolStruct lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write('{');
+        List<ProtocolHandler> list = lang.handlers;
+        for (int i = 0; i < list.size(); i++) {
+            ProtocolHandler next = list.get(i);
+            if (i > 0) {
+                state.write(", ");
+            }
+            next.accept(this, state.inline());
+        }
+        state.write('}');
+        return null;
+    }
+
+    @Override
+    public final Void visitProtocolTellHandler(ProtocolTellHandler lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write("tell ");
+        lang.pat.accept(this, state.inline());
         return null;
     }
 
@@ -923,26 +1039,8 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitTypeAnno(TypeAnno lang, FormatterState state) throws Exception {
-        lang.type.accept(this, state.inline());
-        return null;
-    }
-
-    @Override
-    public final Void visitTypeApplyExpr(ApplyType lang, FormatterState state) throws Exception {
-        lang.name.accept(this, state.inline());
-        if (lang.typeArgs != null && !lang.typeArgs.isEmpty()) {
-            state.write('[');
-            for (int i = 0; i < lang.typeArgs.size(); i++) {
-                if (i > 0) {
-                    state.write(", ");
-                }
-                Type arg = lang.typeArgs.get(i);
-                arg.accept(this, state.inline());
-            }
-            state.write(']');
-        }
-        return null;
+    public final Void visitTypeParam(TypeParam lang, FormatterState state) {
+        throw new NeedsImpl();
     }
 
     @Override

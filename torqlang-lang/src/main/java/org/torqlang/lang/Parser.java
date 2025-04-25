@@ -92,7 +92,7 @@ public final class Parser {
         return current;
     }
 
-    private void assertCurrentAtKeyword(String message, String keywordValue) {
+    private void assertCurrentAtKeyword(String keywordValue, String message) {
         if (!currentToken.isKeyword(keywordValue)) {
             throw new ParserError(message, currentToken);
         }
@@ -183,8 +183,13 @@ public final class Parser {
         if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
             throw new ParserError(R_PAREN_EXPECTED, current);
         }
-        nextToken(); // accept ')' token
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        current = nextToken(); // accept ')' token
+        Protocol protocol = null;
+        if (current.isIdent(IMPLEMENTS_VALUE)) {
+            nextToken(); // accept 'implements' token
+            protocol = parseProtocolExpr();
+        }
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         List<StmtOrExpr> body = new ArrayList<>();
         StmtOrExpr stmtOrExpr = parseActorStmtOrExpr();
@@ -194,9 +199,9 @@ public final class Parser {
         }
         LexerToken endToken = acceptEndToken();
         if (name != null) {
-            return new ActorStmt(name, formalArgs, body, actorToken.adjoin(endToken));
+            return new ActorStmt(name, formalArgs, protocol, body, actorToken.adjoin(endToken));
         } else {
-            return new ActorExpr(formalArgs, body, actorToken.adjoin(endToken));
+            return new ActorExpr(formalArgs, protocol, body, actorToken.adjoin(endToken));
         }
     }
 
@@ -209,8 +214,10 @@ public final class Parser {
                 return parseAsk(handleToken);
             } else if (current.isIdent(TELL_VALUE)) {
                 return parseTell(handleToken);
+            } else if (current.isIdent(STREAM_VALUE)) {
+                throw new NeedsImpl("handle stream");
             } else {
-                throw new ParserError(ASK_OR_TELL_EXPECTED, current);
+                throw new ParserError(ASK_TELL_OR_STREAM_EXPECTED, current);
             }
         } else {
             return parseStmtOrExpr();
@@ -261,6 +268,27 @@ public final class Parser {
         return answer;
     }
 
+    private ApplyProtocol parseApplyProtocol(LexerToken identToken) {
+        Ident ident = tokenToIdent(identToken);
+        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
+        LexerToken current = currentToken;
+        List<Protocol> protocolArgs;
+        LexerToken endApplyProtocol = identToken;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            nextToken(); // accept '[' token
+            protocolArgs = parseProtocolArgList();
+            current = currentToken;
+            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
+                throw new ParserError(R_BRACKET_EXPECTED, current);
+            }
+            endApplyProtocol = current;
+            nextToken(); // accept ']' token
+        } else {
+            protocolArgs = List.of();
+        }
+        return new ApplyProtocol(name, protocolArgs, identToken.adjoin(endApplyProtocol));
+    }
+
     private ApplyType parseApplyType() {
         LexerToken identToken = currentToken;
         nextToken(); // accept IDENT token
@@ -272,7 +300,7 @@ public final class Parser {
         IdentAsExpr name = new IdentAsExpr(ident, currentToken);
         LexerToken current = currentToken;
         List<Type> typeArgs;
-        LexerToken endTypeApplyToken = identToken;
+        LexerToken endApplyTypeToken = identToken;
         if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
             nextToken(); // accept '[' token
             typeArgs = parseTypeArgList();
@@ -280,12 +308,12 @@ public final class Parser {
             if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
                 throw new ParserError(R_BRACKET_EXPECTED, current);
             }
-            endTypeApplyToken = current;
+            endApplyTypeToken = current;
             nextToken(); // accept ']' token
         } else {
             typeArgs = List.of();
         }
-        return new ApplyType(name, typeArgs, identToken.adjoin(endTypeApplyToken));
+        return new ApplyType(name, typeArgs, identToken.adjoin(endApplyTypeToken));
     }
 
     private List<StmtOrExpr> parseArgList() {
@@ -309,8 +337,8 @@ public final class Parser {
         if (pat == null) {
             throw new ParserError(PAT_EXPECTED, current);
         }
-        TypeAnno responseType = parseReturnTypeAnno();
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        Type responseType = parseReturnTypeAnno();
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
@@ -360,7 +388,7 @@ public final class Parser {
         if (arg == null) {
             throw new ParserError(EXPR_EXPECTED, current);
         }
-        assertCurrentAtKeyword(OF_EXPECTED, OF_VALUE);
+        assertCurrentAtKeyword(OF_VALUE, OF_EXPECTED);
         CaseClause caseClause = parseCaseClause();
         List<CaseClause> altCaseClauses = new ArrayList<>();
         current = currentToken;
@@ -391,7 +419,7 @@ public final class Parser {
             nextToken(); // accept 'when'
             guard = parseStmtOrExpr();
         }
-        assertCurrentAtKeyword(THEN_EXPECTED, THEN_VALUE);
+        assertCurrentAtKeyword(THEN_VALUE, THEN_EXPECTED);
         nextToken(); // accept THEN
         SeqLang body = parseSeq();
         return new CaseClause(pat, guard, body, ofToken.adjoin(body));
@@ -531,6 +559,9 @@ public final class Parser {
                     return parseReturn();
                 }
             } else {
+                if (current.substringEquals(PROTOCOL_VALUE)) {
+                    return parseProtocol();
+                }
                 if (current.substringEquals(CONTINUE_VALUE)) {
                     nextToken(); // accept 'continue' token
                     return new ContinueStmt(current);
@@ -625,7 +656,7 @@ public final class Parser {
         if (pat == null) {
             throw new ParserError(PAT_EXPECTED, current);
         }
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         StmtOrExpr iter = parseStmtOrExpr();
         current = currentToken;
@@ -659,8 +690,8 @@ public final class Parser {
             throw new ParserError(R_PAREN_EXPECTED, current);
         }
         nextToken(); // accept ')' token
-        TypeAnno returnType = parseReturnTypeAnno();
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        Type returnType = parseReturnTypeAnno();
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
@@ -717,7 +748,7 @@ public final class Parser {
         if (condition == null) {
             throw new ParserError(EXPR_EXPECTED, current);
         }
-        assertCurrentAtKeyword(THEN_EXPECTED, THEN_VALUE);
+        assertCurrentAtKeyword(THEN_VALUE, THEN_EXPECTED);
         nextToken(); // accept THEN token
         SeqLang body = parseSeq();
         return new IfClause(condition, body, ifOrElseIfToken.adjoin(body));
@@ -779,6 +810,22 @@ public final class Parser {
         return new ImportStmt(qualifier, names, importToken.adjoin(last(names)));
     }
 
+    private Protocol parseIntersectionProtocol() {
+        Protocol answer = parseProtocolExpr();
+        if (answer == null) {
+            return null;
+        }
+        while (currentToken.isOneCharSymbol(AND_OPER_CHAR)) {
+            nextToken(); // accept '&' token
+            Protocol right = parseProtocolExpr();
+            if (right == null) {
+                throw new ParserError(PROTOCOL_EXPECTED, currentToken);
+            }
+            answer = new IntersectionProtocol(answer, right, answer.adjoin(right));
+        }
+        return answer;
+    }
+
     private Type parseIntersectionType() {
         Type answer = parseTypeExpr();
         if (answer == null) {
@@ -799,7 +846,7 @@ public final class Parser {
         LexerToken localToken = currentToken;
         nextToken(); // accept 'local' token
         List<VarDecl> varDecls = parseVarDecls();
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
@@ -838,18 +885,18 @@ public final class Parser {
         IntegerCounter nextImpliedFeature = new IntegerCounter(0);
         List<MetaField> fields = new ArrayList<>();
         MetaField field = parseMetaField(nextImpliedFeature);
+        LexerToken current = currentToken;
         if (field != null) {
             fields.add(field);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            field = parseMetaField(nextImpliedFeature);
-            current = currentToken;
-            if (field != null) {
-                fields.add(field);
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                field = parseMetaField(nextImpliedFeature);
+                current = currentToken;
+                if (field != null) {
+                    fields.add(field);
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
@@ -887,18 +934,18 @@ public final class Parser {
         nextToken(); // accept '[' token
         List<MetaValue> values = new ArrayList<>();
         MetaValue value = parseMetaValue();
+        LexerToken current = currentToken;
         if (value != null) {
             values.add(value);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            value = parseMetaValue();
-            current = currentToken;
-            if (value != null) {
-                values.add(value);
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                value = parseMetaValue();
+                current = currentToken;
+                if (value != null) {
+                    values.add(value);
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
@@ -1103,8 +1150,7 @@ public final class Parser {
             }
             nextToken(); // accept '::' token
             Type type = parseUnionType();
-            return new IdentAsPat(ident, false,
-                new TypeAnno(type, type), current.adjoin(type));
+            return new IdentAsPat(ident, false, type, current.adjoin(type));
         }
         if (current.isInt()) {
             nextToken(); // accept Int token
@@ -1179,7 +1225,7 @@ public final class Parser {
             throw new ParserError(R_PAREN_EXPECTED, current);
         }
         nextToken(); // accept ')' token
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
@@ -1214,24 +1260,141 @@ public final class Parser {
         return answer;
     }
 
+    private ProtocolStmt parseProtocol() {
+        LexerToken typeToken = currentToken;
+        LexerToken current = nextToken(); // accept 'protocol' token
+        if (!current.isIdent()) {
+            throw new ParserError(IDENT_EXPECTED, current);
+        }
+        Ident name = tokenToIdent(current);
+        current = nextToken(); // accept IDENT token
+        List<ProtocolParam> protocolParams;
+        if (isOneCharSymbol(current.firstChar()) && current.firstChar() == L_BRACKET_CHAR) {
+            protocolParams = parseProtocolParamList();
+            current = currentToken;
+        } else {
+            protocolParams = List.of();
+        }
+        if (!current.isOneCharSymbol(EQUAL_OPER_CHAR)) {
+            throw new ParserError(EQUAL_EXPECTED, current);
+        }
+        nextToken(); // accept '=' token
+        Protocol body = parseIntersectionProtocol();
+        return new ProtocolStmt(name, protocolParams, body, typeToken.adjoin(body));
+    }
+
+    private List<Protocol> parseProtocolArgList() {
+        List<Protocol> args = new ArrayList<>();
+        Protocol arg = parseIntersectionProtocol();
+        while (arg != null) {
+            args.add(arg);
+            LexerToken current = currentToken;
+            if (!current.isOneCharSymbol(COMMA_CHAR)) {
+                break;
+            }
+            nextToken(); // accept ',' token
+            arg = parseIntersectionProtocol();
+        }
+        return args;
+    }
+
+    private Protocol parseProtocolExpr() {
+        LexerToken current = currentToken;
+        if (current.isIdent()) {
+            LexerToken identToken = current;
+            Ident name = tokenToIdent(current);
+            IdentAsExpr identAsExpr = new IdentAsExpr(name, identToken);
+            current = nextToken(); // accept IDENT token
+            if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+                return parseApplyProtocol(identToken);
+            } else {
+                return identAsExpr;
+            }
+        } else if (current.isOneCharSymbol(L_BRACE_CHAR)) {
+            return parseProtocolStruct();
+        }
+        return null;
+    }
+
+    private ProtocolHandler parseProtocolHandler() {
+        LexerToken current = currentToken;
+        if (current.isIdent(ASK_VALUE)) {
+            nextToken(); // accept 'ask' token
+            Pat pat = parsePat();
+            if (pat == null) {
+                throw new ParserError(PAT_EXPECTED, current);
+            }
+            Type responseType = parseReturnTypeAnno();
+            SourceSpan askSpan = responseType == null ? current.adjoin(pat) : current.adjoin(responseType);
+            return new ProtocolAskHandler(pat, responseType, askSpan);
+        } else if (current.isIdent(TELL_VALUE)) {
+            nextToken(); // accept 'tell' token
+            Pat pat = parsePat();
+            return new ProtocolAskHandler(pat, null, current.adjoin(pat));
+        } else if (current.isIdent(STREAM_VALUE)) {
+            nextToken(); // accept 'stream' token
+            Pat pat = parsePat();
+            if (pat == null) {
+                throw new ParserError(PAT_EXPECTED, current);
+            }
+            Type responseType = parseReturnTypeAnno();
+            SourceSpan askSpan = responseType == null ? current.adjoin(pat) : current.adjoin(responseType);
+            return new ProtocolStreamHandler(pat, responseType, askSpan);
+        } else {
+            return null;
+        }
+    }
+
+    private List<ProtocolParam> parseProtocolParamList() {
+        LexerToken leftBracket = currentToken;
+        throw new NeedsImpl("ProtocolParamList");
+    }
+
+    private ProtocolStruct parseProtocolStruct() {
+        LexerToken structToken = currentToken;
+        nextToken(); // accept '{' token
+        List<ProtocolHandler> handlers = new ArrayList<>();
+        ProtocolHandler handler = parseProtocolHandler();
+        LexerToken current = currentToken;
+        if (handler != null) {
+            handlers.add(handler);
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                handler = parseProtocolHandler();
+                current = currentToken;
+                if (handler != null) {
+                    handlers.add(handler);
+                } else {
+                    break;
+                }
+            }
+        }
+        if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
+            throw new ParserError(ASK_TELL_OR_STREAM_EXPECTED, current);
+        }
+        nextToken(); // accept '}' token
+        SourceSpan structSpan = structToken.adjoin(current);
+        return new ProtocolStruct(handlers, structSpan);
+    }
+
     private RecExpr parseRecExpr(Expr label) {
         LexerToken recToken = currentToken;
         nextToken(); // accept '{' token
         IntegerCounter nextImpliedFeature = new IntegerCounter(0);
         List<FieldExpr> fieldExprs = new ArrayList<>();
         FieldExpr fieldExpr = parseFieldExpr(nextImpliedFeature);
+        LexerToken current = currentToken;
         if (fieldExpr != null) {
             fieldExprs.add(fieldExpr);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            fieldExpr = parseFieldExpr(nextImpliedFeature);
-            current = currentToken;
-            if (fieldExpr != null) {
-                fieldExprs.add(fieldExpr);
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                fieldExpr = parseFieldExpr(nextImpliedFeature);
+                current = currentToken;
+                if (fieldExpr != null) {
+                    fieldExprs.add(fieldExpr);
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
@@ -1249,21 +1412,21 @@ public final class Parser {
         boolean partialArity = false;
         List<FieldPat> fieldPats = new ArrayList<>();
         FieldPat fieldPat = parseFieldPat(nextImpliedFeature);
+        LexerToken current = currentToken;
         if (fieldPat != null) {
             fieldPats.add(fieldPat);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            fieldPat = parseFieldPat(nextImpliedFeature);
-            current = currentToken;
-            if (fieldPat != null) {
-                fieldPats.add(fieldPat);
-            } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
-                current = nextToken(); // accept '...' token
-                partialArity = true;
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                fieldPat = parseFieldPat(nextImpliedFeature);
+                current = currentToken;
+                if (fieldPat != null) {
+                    fieldPats.add(fieldPat);
+                } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
+                    current = nextToken(); // accept '...' token
+                    partialArity = true;
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
@@ -1280,18 +1443,18 @@ public final class Parser {
         IntegerCounter nextImpliedFeature = new IntegerCounter(0);
         List<FieldType> fieldTypes = new ArrayList<>();
         FieldType fieldType = parseFieldType(nextImpliedFeature);
+        LexerToken current = currentToken;
         if (fieldType != null) {
             fieldTypes.add(fieldType);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            fieldType = parseFieldType(nextImpliedFeature);
-            current = currentToken;
-            if (fieldType != null) {
-                fieldTypes.add(fieldType);
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                fieldType = parseFieldType(nextImpliedFeature);
+                current = currentToken;
+                if (fieldType != null) {
+                    fieldTypes.add(fieldType);
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACE_CHAR)) {
@@ -1332,15 +1495,14 @@ public final class Parser {
         return new ReturnStmt(expr, returnToken.adjoin(expr));
     }
 
-    private TypeAnno parseReturnTypeAnno() {
+    private Type parseReturnTypeAnno() {
         LexerToken current = currentToken;
-        TypeAnno typeAnno = null;
+        Type type = null;
         if (current.isTwoCharSymbol(RETURN_TYPE_OPER)) {
             nextToken(); // accept '->' token
-            Type type = parseUnionType();
-            typeAnno = new TypeAnno(type, type);
+            type = parseUnionType();
         }
-        return typeAnno;
+        return type;
     }
 
     /*
@@ -1499,7 +1661,7 @@ public final class Parser {
         if (pat == null) {
             throw new ParserError(PAT_EXPECTED, current);
         }
-        assertCurrentAtKeyword(IN_EXPECTED, IN_VALUE);
+        assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
         LexerToken endToken = acceptEndToken();
@@ -1529,7 +1691,7 @@ public final class Parser {
             if (pat == null) {
                 throw new ParserError(PAT_EXPECTED, current);
             }
-            assertCurrentAtKeyword(THEN_EXPECTED, THEN_VALUE);
+            assertCurrentAtKeyword(THEN_VALUE, THEN_EXPECTED);
             nextToken(); // accept 'then' token
             SeqLang catchSeq = parseSeq();
             catchClauses.add(new CatchClause(pat, catchSeq, catchToken.adjoin(catchSeq)));
@@ -1552,18 +1714,18 @@ public final class Parser {
         nextToken(); // accept '[' token
         List<StmtOrExpr> valueExprs = new ArrayList<>();
         StmtOrExpr value = parseStmtOrExpr();
+        LexerToken current = currentToken;
         if (value != null) {
             valueExprs.add(value);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            value = parseStmtOrExpr();
-            current = currentToken;
-            if (value != null) {
-                valueExprs.add(value);
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                value = parseStmtOrExpr();
+                current = currentToken;
+                if (value != null) {
+                    valueExprs.add(value);
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
@@ -1580,21 +1742,21 @@ public final class Parser {
         boolean partialArity = false;
         List<Pat> valuePats = new ArrayList<>();
         Pat pat = parsePat();
+        LexerToken current = currentToken;
         if (pat != null) {
             valuePats.add(pat);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            pat = parsePat();
-            current = currentToken;
-            if (pat != null) {
-                valuePats.add(pat);
-            } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
-                current = nextToken(); // accept '...' token
-                partialArity = true;
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                pat = parsePat();
+                current = currentToken;
+                if (pat != null) {
+                    valuePats.add(pat);
+                } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
+                    current = nextToken(); // accept '...' token
+                    partialArity = true;
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
@@ -1610,18 +1772,18 @@ public final class Parser {
         nextToken(); // accept '[' token
         List<Type> values = new ArrayList<>();
         Type value = parseTypeExpr();
+        LexerToken current = currentToken;
         if (value != null) {
             values.add(value);
-        }
-        LexerToken current = currentToken;
-        while (current.isOneCharSymbol(COMMA_CHAR)) {
-            nextToken(); // accept ',' token
-            value = parseTypeExpr();
-            current = currentToken;
-            if (value != null) {
-                values.add(value);
-            } else {
-                break;
+            while (current.isOneCharSymbol(COMMA_CHAR)) {
+                nextToken(); // accept ',' token
+                value = parseTypeExpr();
+                current = currentToken;
+                if (value != null) {
+                    values.add(value);
+                } else {
+                    break;
+                }
             }
         }
         if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
@@ -1674,15 +1836,17 @@ public final class Parser {
         LexerToken current = currentToken;
         if (current.isIdent()) {
             LexerToken identToken = current;
-            Ident name = tokenToIdent(current);
-            IdentAsExpr identAsExpr = new IdentAsExpr(name, identToken);
             current = nextToken(); // accept IDENT token
             if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
                 return parseApplyType(identToken);
-            } else if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
-                return parseStructType(identAsExpr);
             } else {
-                return identAsExpr;
+                Ident name = tokenToIdent(identToken);
+                IdentAsExpr identAsExpr = new IdentAsExpr(name, identToken);
+                if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
+                    return parseStructType(identAsExpr);
+                } else {
+                    return identAsExpr;
+                }
             }
         } else if (current.isKeyword() || current.isStr() || current.isInt()) {
             if (current.isKeyword(PROC_VALUE)) {

@@ -32,8 +32,8 @@ public class TestParserLocalLang {
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
         assertFalse(identVarDecl.identAsPat.escaped);
-        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident);
-        assertSourceSpan(identVarDecl.identAsPat.typeAnno, 9, 14);
+        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.type).ident);
+        assertSourceSpan(identVarDecl.identAsPat.type, 9, 14);
         // Test format
         String expectedFormat = """
             local x::Int32 in
@@ -59,8 +59,8 @@ public class TestParserLocalLang {
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
         assertFalse(identVarDecl.identAsPat.escaped);
-        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.typeAnno.type).ident);
-        assertSourceSpan(identVarDecl.identAsPat.typeAnno, 9, 14);
+        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.type).ident);
+        assertSourceSpan(identVarDecl.identAsPat.type, 9, 14);
         assertInstanceOf(InitVarDecl.class, varStmt.varDecls.get(1));
         assertInstanceOf(InitVarDecl.class, varStmt.varDecls.get(1));
         InitVarDecl initVarDecl = (InitVarDecl) varStmt.varDecls.get(1);

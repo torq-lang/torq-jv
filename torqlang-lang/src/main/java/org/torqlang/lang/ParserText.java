@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 public final class ParserText {
-    public static final String ASK_OR_TELL_EXPECTED = "'ask' or 'tell' expected";
+    public static final String ASK_TELL_OR_STREAM_EXPECTED = "'ask', 'tell' or 'stream' expected";
     public static final String CATCH_OR_FINALLY_EXPECTED = "'catch' or 'finally' expected";
     public static final String CHAR_EXPECTED = "Character expected";
     public static final String DO_EXPECTED = "'do' expected";
@@ -29,6 +29,7 @@ public final class ParserText {
     public static final String OF_EXPECTED = "'of' expected";
     public static final String PACKAGE_EXPECTED = "'package' expected";
     public static final String PAT_EXPECTED = "Pattern expected";
+    public static final String PROTOCOL_EXPECTED = "Protocol expected";
     public static final String R_BRACE_EXPECTED = "'}' expected";
     public static final String R_BRACKET_EXPECTED = "']' expected";
     public static final String R_PAREN_EXPECTED = "')' expected";

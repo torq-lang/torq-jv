@@ -7,14 +7,14 @@ package orderentry
 type StreamResponse[T] = Array[T] | eof#{'more': Bool}
 
 protocol OrdersStreamApi = {
-    handle ask 'openOrdersStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token,
-    handle stream 'nextOrders'#{'id': Token, 'count': Int32} -> StreamResponse[T],
-    handle ask 'closeOrdersStream'#{'id': Token} -> Bool
+    ask 'openOrdersStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token,
+    stream 'nextOrders'#{'id': Token, 'count': Int32} -> StreamResponse[T],
+    ask 'closeOrdersStream'#{'id': Token} -> Bool
 }
 
 protocol CustomersApi = OrdersStreamApi & {
-    handle ask 'findById'#{'id': Str} -> Customer,
-    handle tell 'notify'#{'message': Str},
+    ask 'findById'#{'id': Str} -> Customer,
+    tell 'notify'#{'message': Str},
 }
 
 actor CustomersApiHandler() implements CustomersApi in
@@ -37,11 +37,11 @@ end
 
 actor CustomersApiHandler() implements
     {
-        handle ask 'openOrdersStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token,
-        handle stream 'nextOrders'#{'id': Token, 'count': Int32} -> Array[Order] | eof#{'more': Bool},
-        handle ask 'closeOrdersStream'#{'id': Token} -> Bool,
-        handle ask 'findById'#{'id': Str} -> Customer,
-        handle tell 'notify'#{'message': Str},
+        ask 'openOrdersStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token,
+        stream 'nextOrders'#{'id': Token, 'count': Int32} -> Array[Order] | eof#{'more': Bool},
+        ask 'closeOrdersStream'#{'id': Token} -> Bool,
+        ask 'findById'#{'id': Str} -> Customer,
+        tell 'notify'#{'message': Str},
     }
 in
     handle ask 'openOrdersStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token in

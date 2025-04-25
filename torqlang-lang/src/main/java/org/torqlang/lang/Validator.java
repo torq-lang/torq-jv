@@ -340,12 +340,12 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
      * Create a function type representing the formal arguments and return type. The given type environment is used
      * to look up type identifiers.
      */
-    private FuncInfr createFuncType(Lang lang, List<Pat> formalArgs, TypeAnno returnType, TypeEnv typeEnv) {
+    private FuncInfr createFuncType(Lang lang, List<Pat> formalArgs, Type returnType, TypeEnv typeEnv) {
         List<MonoInfr> params = new ArrayList<>(formalArgs.size() + 1);
         for (Pat arg : formalArgs) {
             // TODO: Need to resolve ALL Pat types, not just IdentAsPat
             if (arg instanceof IdentAsPat identAsPat) {
-                params.add(resolveTypeAnno(identAsPat, identAsPat.typeAnno, typeEnv));
+                params.add(resolveTypeAnno(identAsPat, identAsPat.type, typeEnv));
             } else {
                 params.add(suffixFactory.nextBetaVar());
             }
@@ -354,10 +354,10 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         return FuncInfr.create(params);
     }
 
-    private MonoInfr resolveTypeAnno(Lang lang, TypeAnno typeAnno, TypeEnv typeEnv) {
-        if (typeAnno != null) {
+    private MonoInfr resolveTypeAnno(Lang lang, Type type, TypeEnv typeEnv) {
+        if (type != null) {
             // TODO: This must work with type expressions beyond identifiers
-            PolyInfr declaredType = typeEnv.get(((IdentAsExpr) typeAnno.type).ident);
+            PolyInfr declaredType = typeEnv.get(((IdentAsExpr) type).ident);
             if (declaredType == null) {
                 throw new TypeNotFoundError(lang);
             }
@@ -403,6 +403,16 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             lang.args,
             scope.monoType()
         );
+    }
+
+    @Override
+    public final TypeSubst visitApplyProtocol(ApplyProtocol lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitApplyType(ApplyType lang, TypeScope scope) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -722,7 +732,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             throw new AlreadyDefinedInScopeError(lang);
         }
         // Get declared type from annotation or create a fresh beta
-        MonoInfr patType = resolveTypeAnno(lang, lang.typeAnno, thisTypeEnv);
+        MonoInfr patType = resolveTypeAnno(lang, lang.type, thisTypeEnv);
         TypeSubst result = unify(lang, scope.monoType(), patType);
         result.apply(thisTypeEnv);
         // Add declaration to the type environment
@@ -844,6 +854,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitIntersectionProtocol(IntersectionProtocol lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitIntersectionType(IntersectionType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -910,6 +925,36 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitProductExpr(ProductExpr lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProtocolAskHandler(ProtocolAskHandler lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProtocolParam(ProtocolParam lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProtocolStmt(ProtocolStmt lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProtocolStreamHandler(ProtocolStreamHandler lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProtocolStruct(ProtocolStruct lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProtocolTellHandler(ProtocolTellHandler lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -1054,12 +1099,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitTypeAnno(TypeAnno lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitTypeApplyExpr(ApplyType lang, TypeScope scope) {
+    public final TypeSubst visitTypeParam(TypeParam lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 

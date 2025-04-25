@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class FuncExpr extends FuncLang implements Expr {
 
-    public FuncExpr(List<Pat> formalArgs, TypeAnno returnType, SeqLang body, SourceSpan sourceSpan) {
+    public FuncExpr(List<Pat> formalArgs, Type returnType, SeqLang body, SourceSpan sourceSpan) {
         super(formalArgs, returnType, body, sourceSpan);
     }
 

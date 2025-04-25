@@ -17,15 +17,17 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 public abstract class ActorLang extends AbstractLang implements StmtOrExpr {
 
     public final List<Pat> formalArgs;
+    public final Protocol protocol;
     public final List<StmtOrExpr> body;
 
     private List<StmtOrExpr> initializer;
     private List<AskStmt> askHandlers;
     private List<TellStmt> tellHandlers;
 
-    public ActorLang(List<Pat> formalArgs, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+    public ActorLang(List<Pat> formalArgs, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.formalArgs = nullSafeCopyOf(formalArgs);
+        this.protocol = protocol;
         this.body = nullSafeCopyOf(body);
     }
 

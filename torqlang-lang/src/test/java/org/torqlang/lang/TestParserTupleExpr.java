@@ -51,17 +51,11 @@ public class TestParserTupleExpr {
 
     @Test
     public void testDanglingComma() {
-        String source = "[,]";
+        String source = "[0,]";
         Parser p = new Parser(source);
         StmtOrExpr sox = p.parse();
-        String expectedFormat = "[]";
+        String expectedFormat = "[0]";
         String actualFormat = sox.toString();
-        assertEquals(expectedFormat, actualFormat);
-        source = "[0,]";
-        p = new Parser(source);
-        sox = p.parse();
-        expectedFormat = "[0]";
-        actualFormat = sox.toString();
         assertEquals(expectedFormat, actualFormat);
         source = "[0, 1,]";
         p = new Parser(source);

@@ -172,7 +172,7 @@ public class TestParserRecPat {
         IdentAsPat bPat = asIdentAsPat(fieldPat.value);
         assertTrue(bPat.escaped);
         assertEquals(Ident.create("b"), bPat.ident);
-        assertNull(bPat.typeAnno);
+        assertNull(bPat.type);
         // Test toString format
         String expectedFormat = "var {0: a, 1: ~b, ...} = x";
         String actualFormat = varStmt.toString();

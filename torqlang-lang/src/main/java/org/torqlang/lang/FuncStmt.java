@@ -16,7 +16,7 @@ public final class FuncStmt extends FuncLang implements NameDecl, Stmt {
 
     private final Ident name;
 
-    public FuncStmt(Ident name, List<Pat> formalArgs, TypeAnno returnType, SeqLang body,
+    public FuncStmt(Ident name, List<Pat> formalArgs, Type returnType, SeqLang body,
                     SourceSpan sourceSpan)
     {
         super(formalArgs, returnType, body, sourceSpan);

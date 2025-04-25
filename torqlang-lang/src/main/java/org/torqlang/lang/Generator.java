@@ -524,6 +524,16 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitApplyProtocol(ApplyProtocol lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitApplyType(ApplyType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitAskStmt(AskStmt lang, LocalTarget target) throws Exception {
         Ident exprIdent = allocateNextSystemVarIdent();
         LocalTarget askTarget = target.asAskTargetWithNewScope(exprIdent);
@@ -775,7 +785,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitImportName(ImportName lang, LocalTarget target) throws Exception {
+    public final CompleteOrIdent visitImportName(ImportName lang, LocalTarget target) {
         throw new IllegalStateException("ImportName visited directly");
     }
 
@@ -820,6 +830,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(new SelectInstr(rec, feature, exprIdent, lang));
         target.addInstr(childTarget.build());
         return exprIdent;
+    }
+
+    @Override
+    public final CompleteOrIdent visitIntersectionProtocol(IntersectionProtocol lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -1027,7 +1042,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitPackageStmt(PackageStmt lang, LocalTarget target) throws Exception {
+    public final CompleteOrIdent visitPackageStmt(PackageStmt lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 
@@ -1067,6 +1082,36 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(productInstr);
         target.addInstr(childTarget.build());
         return exprIdent;
+    }
+
+    @Override
+    public final CompleteOrIdent visitProtocolAskHandler(ProtocolAskHandler lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitProtocolParam(ProtocolParam lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitProtocolStmt(ProtocolStmt lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitProtocolStreamHandler(ProtocolStreamHandler lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitProtocolStruct(ProtocolStruct lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitProtocolTellHandler(ProtocolTellHandler lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -1390,12 +1435,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitTypeAnno(TypeAnno lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitTypeApplyExpr(ApplyType lang, LocalTarget target) {
+    public final CompleteOrIdent visitTypeParam(TypeParam lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 

@@ -14,22 +14,22 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public class TypeStmt extends AbstractLang implements NameDecl, Stmt {
+public class ProtocolStmt extends AbstractLang implements NameDecl, Stmt {
 
     public final Ident name;
-    public final List<TypeParam> typeParams;
-    public final Type body;
+    public final List<ProtocolParam> protocolParams;
+    public final Protocol body;
 
-    public TypeStmt(Ident name, List<TypeParam> typeParams, Type body, SourceSpan sourceSpan) {
+    public ProtocolStmt(Ident name, List<ProtocolParam> protocolParams, Protocol body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.name = name;
-        this.typeParams = nullSafeCopyOf(typeParams);
+        this.protocolParams = nullSafeCopyOf(protocolParams);
         this.body = body;
     }
 
     @Override
     public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitTypeStmt(this, state);
+        return visitor.visitProtocolStmt(this, state);
     }
 
     @Override

@@ -16,8 +16,8 @@ public final class ActorStmt extends ActorLang implements NameDecl, Stmt {
 
     public final Ident name;
 
-    public ActorStmt(Ident name, List<Pat> formalArgs, List<StmtOrExpr> body, SourceSpan sourceSpan) {
-        super(formalArgs, body, sourceSpan);
+    public ActorStmt(Ident name, List<Pat> formalArgs, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+        super(formalArgs, protocol, body, sourceSpan);
         this.name = name;
     }
 

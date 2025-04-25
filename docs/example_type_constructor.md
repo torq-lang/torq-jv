@@ -5,7 +5,7 @@
 package factorial
 
 protocol FactorialApi[T] = {
-    handle ask x::T -> T
+    ask x::T -> T
 }
 
 actor Factorial() implements FactorialApi[Int64] in

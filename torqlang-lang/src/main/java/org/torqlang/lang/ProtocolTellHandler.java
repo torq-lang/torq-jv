@@ -9,22 +9,20 @@ package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
 
-public final class FieldType extends AbstractLang {
+public final class ProtocolTellHandler extends AbstractLang implements ProtocolHandler {
 
-    public final FeatureType feature;
-    public final Type value;
+    public final Pat pat;
 
-    public FieldType(FeatureType feature, Type value, SourceSpan sourceSpan) {
+    public ProtocolTellHandler(Pat pat, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.feature = feature;
-        this.value = value;
+        this.pat = pat;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFieldType(this, state);
+        return visitor.visitProtocolTellHandler(this, state);
     }
 
 }

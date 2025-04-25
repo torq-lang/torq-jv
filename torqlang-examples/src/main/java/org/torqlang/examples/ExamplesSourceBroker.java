@@ -25,8 +25,7 @@ public final class ExamplesSourceBroker {
                         new Entry(new FileName(FileType.DIRECTORY, "northwind"), List.of(
                             new Entry(new FileName(FileType.TORQ, "CustomersApiHandler.torq"), null),
                             new Entry(new FileName(FileType.TORQ, "EmployeesApiHandler.torq"), null),
-// TODO:
-//                            new Entry(new Name(NameType.FILE, "NorthwindDb.torq"), null),
+                            new Entry(new FileName(FileType.TORQ, "NorthwindDb.torq"), null),
                             new Entry(new FileName(FileType.TORQ, "OrdersApiHandler.torq"), null),
                             new Entry(new FileName(FileType.TORQ, "ProductsApiHandler.torq"), null),
                             new Entry(new FileName(FileType.TORQ, "SuppliersApiHandler.torq"), null)

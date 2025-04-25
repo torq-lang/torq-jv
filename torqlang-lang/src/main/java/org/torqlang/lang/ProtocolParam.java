@@ -10,19 +10,16 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class IdentAsExpr extends AbstractLang implements LabelExpr, LabelType, Protocol {
-
+public final class ProtocolParam extends AbstractLang {
     public final Ident ident;
 
-    public IdentAsExpr(Ident ident, SourceSpan sourceSpan) {
+    public ProtocolParam(Ident ident, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.ident = ident;
     }
 
     @Override
-    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
-        throws Exception
-    {
-        return visitor.visitIdentAsExpr(this, state);
+    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
+        return visitor.visitProtocolParam(this, state);
     }
 }
