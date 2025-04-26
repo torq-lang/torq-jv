@@ -1,6 +1,0 @@
-package system.lang
-
-meta#{'export': true, 'native': 'org.torqlang.klvm.Int64Pack'}
-type Int64 = Obj & {
-    // TODO
-}

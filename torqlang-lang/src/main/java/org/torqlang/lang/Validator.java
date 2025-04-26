@@ -337,21 +337,21 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     /*
-     * Create a function type representing the formal arguments and return type. The given type environment is used
-     * to look up type identifiers.
+     * Create a function type representing the parameters and return type. The given type environment is used to look
+     * up type identifiers.
      */
-    private FuncInfr createFuncType(Lang lang, List<Pat> formalArgs, Type returnType, TypeEnv typeEnv) {
-        List<MonoInfr> params = new ArrayList<>(formalArgs.size() + 1);
-        for (Pat arg : formalArgs) {
+    private FuncInfr createFuncType(Lang lang, List<Pat> params, Type returnType, TypeEnv typeEnv) {
+        List<MonoInfr> paramsInfr = new ArrayList<>(params.size() + 1);
+        for (Pat param : params) {
             // TODO: Need to resolve ALL Pat types, not just IdentAsPat
-            if (arg instanceof IdentAsPat identAsPat) {
-                params.add(resolveTypeAnno(identAsPat, identAsPat.type, typeEnv));
+            if (param instanceof IdentAsPat identAsPat) {
+                paramsInfr.add(resolveTypeAnno(identAsPat, identAsPat.type, typeEnv));
             } else {
-                params.add(suffixFactory.nextBetaVar());
+                paramsInfr.add(suffixFactory.nextBetaVar());
             }
         }
-        params.add(resolveTypeAnno(lang, returnType, typeEnv));
-        return FuncInfr.create(params);
+        paramsInfr.add(resolveTypeAnno(lang, returnType, typeEnv));
+        return FuncInfr.create(paramsInfr);
     }
 
     private MonoInfr resolveTypeAnno(Lang lang, Type type, TypeEnv typeEnv) {
@@ -666,19 +666,24 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         TypeSubst s1 = unify(lang, scope.monoType(), ScalarInfr.VOID);
         s1.apply(thisTypeEnv);
         // Create a function type to be assigned to the function name
-        FuncInfr funcType = createFuncType(lang, lang.formalArgs, lang.returnType, thisTypeEnv);
+        FuncInfr funcType = createFuncType(lang, lang.params, lang.returnType, thisTypeEnv);
         // Validate a type is not already assigned to the function name
-        PolyInfr alreadyDefinedType = thisTypeEnv.shallowGet(lang.name());
+        PolyInfr alreadyDefinedType = thisTypeEnv.shallowGet(lang.name.ident);
         if (alreadyDefinedType != null) {
             throw new AlreadyDefinedInScopeError(lang);
         }
         // Add the "name : function-type" assignment to the type environment
-        thisTypeEnv.put(lang.name(), funcType);
+        thisTypeEnv.put(lang.name.ident, funcType);
         // Create a child environment as a nested lexical scope
         TypeEnv nestedTypeEnv = TypeEnv.create(thisTypeEnv);
         // Infer the type of the function body constrained to the function type and child environment
-        TypeSubst s2 = visitFuncScope(lang, nestedTypeEnv, lang.formalArgs, lang.body, funcType);
+        TypeSubst s2 = visitFuncScope(lang, nestedTypeEnv, lang.params, lang.body, funcType);
         return s2.apply(s1);
+    }
+
+    @Override
+    public final TypeSubst visitFuncType(FuncType lang, TypeScope scope) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -920,6 +925,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitProcStmt(ProcStmt lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitProcType(ProcType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 

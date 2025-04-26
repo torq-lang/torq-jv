@@ -29,7 +29,7 @@ public class TestParserMetaRec {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.name);
+            assertEquals("MyArray", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
             ApplyType applyType = (ApplyType) typeStmt.body;
             assertEquals(1, applyType.typeArgs.size());
@@ -63,7 +63,7 @@ public class TestParserMetaRec {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.name);
+            assertEquals("MyArray", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
             ApplyType applyType = (ApplyType) typeStmt.body;
             assertEquals(1, applyType.typeArgs.size());
@@ -102,7 +102,7 @@ public class TestParserMetaRec {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.name);
+            assertEquals("MyArray", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
             ApplyType applyType = (ApplyType) typeStmt.body;
             assertEquals(1, applyType.typeArgs.size());

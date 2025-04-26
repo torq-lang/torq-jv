@@ -15,12 +15,12 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public abstract class ProcLang extends AbstractLang implements StmtOrExpr {
 
-    public final List<Pat> formalArgs;
+    public final List<Pat> params;
     public final SeqLang body;
 
-    public ProcLang(List<Pat> formalArgs, SeqLang body, SourceSpan sourceSpan) {
+    public ProcLang(List<Pat> params, SeqLang body, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.formalArgs = nullSafeCopyOf(formalArgs);
+        this.params = nullSafeCopyOf(params);
         this.body = body;
     }
 

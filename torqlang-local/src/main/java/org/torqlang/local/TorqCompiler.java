@@ -21,13 +21,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static org.torqlang.util.ListTools.last;
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed {
 
     private final Map<String, ParsedModule> parsedModules = new HashMap<>();
     private State state = State.READY;
-    private FileBroker fileBroker;
+    private List<FileBroker> fileBrokers;
     private Consumer<String> messageListener;
 
     private TorqCompiler() {
@@ -51,8 +51,8 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed {
         return true;
     }
 
-    public final FileBroker fileBroker() {
-        return fileBroker;
+    public final List<FileBroker> fileBrokers() {
+        return fileBrokers;
     }
 
     private void notifyMessageListener(String message) {
@@ -66,9 +66,13 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed {
         if (state != State.READY) {
             throw new IllegalStateException("Cannot parse at state: " + state);
         }
-        List<FileName> files = fileBroker.list();
-        for (FileName name : files) {
-            parse(List.of(name));
+        for (FileBroker fileBroker : fileBrokers) {
+            for (List<FileName> root : fileBroker.roots()) {
+                List<FileName> files = fileBroker.list(root);
+                for (FileName file : files) {
+                    parse(fileBroker, root, file);
+                }
+            }
         }
         this.state = State.PARSED;
         return this;
@@ -82,21 +86,20 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed {
         return name.endsWith(".torq");
     }
 
-    private void parse(List<FileName> absolutePath) throws Exception {
-        FileName fileName = last(absolutePath);
-        if (fileName.type() == FileType.DIRECTORY) {
-            List<FileName> files = fileBroker.list(absolutePath);
-            for (FileName name : files) {
-                List<FileName> filePath = FileBroker.append(absolutePath, name);
-                parse(filePath);
+    private void parse(FileBroker fileBroker, List<FileName> directory, FileName file) throws Exception {
+        if (file.type() == FileType.DIRECTORY) {
+            List<FileName> children = fileBroker.list(FileBroker.append(directory, file));
+            for (FileName child : children) {
+                parse(fileBroker, FileBroker.append(directory, file), child);
             }
-        } else if (fileName.type() == FileType.TORQ) {
-            if (isTorqSourceFile(fileName.value())) {
-                String source = fileBroker.source(absolutePath);
-                String absolutePathFormatted = formatFilePath(absolutePath);
+        } else if (file.type() == FileType.TORQ) {
+            if (isTorqSourceFile(file.value())) {
+                List<FileName> modulePath = FileBroker.append(directory, file);
+                String source = fileBroker.source(modulePath);
+                String absolutePathFormatted = formatFilePath(modulePath);
                 notifyMessageListener("Parsing source: " + absolutePathFormatted);
                 Parser parser = new Parser(source);
-                List<FileName> qualifiedTorqName = fileBroker.trimRoot(absolutePath);
+                List<FileName> qualifiedTorqName = fileBroker.trimRoot(modulePath);
                 if (qualifiedTorqName.size() < 2) {
                     throw new IllegalArgumentException("Missing package");
                 }
@@ -105,19 +108,19 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed {
                 if (!equalsPackageStmt(torqPackage, moduleStmt.packageStmt)) {
                     throw new IllegalArgumentException("Package directory does not match package statement");
                 }
-                parsedModules.put(absolutePathFormatted, new ParsedModule(absolutePath, qualifiedTorqName, torqPackage, fileName, moduleStmt));
+                parsedModules.put(absolutePathFormatted, new ParsedModule(modulePath, qualifiedTorqName, torqPackage, file, moduleStmt));
             } else {
-                notifyMessageListener("Skipping unknown file type: " + fileName.value());
+                notifyMessageListener("Skipping unknown file type: " + file.value());
             }
         }
     }
 
     @Override
-    public final TorqCompilerReady setFileBroker(FileBroker fileBroker) {
+    public final TorqCompilerReady setFileBrokers(List<FileBroker> fileBrokers) {
         if (state != State.READY) {
             throw new IllegalStateException("Cannot setFileBroker at state: " + state);
         }
-        this.fileBroker = fileBroker;
+        this.fileBrokers = nullSafeCopyOf(fileBrokers);
         return this;
     }
 

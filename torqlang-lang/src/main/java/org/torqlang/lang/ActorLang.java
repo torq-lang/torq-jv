@@ -16,7 +16,7 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public abstract class ActorLang extends AbstractLang implements StmtOrExpr {
 
-    public final List<Pat> formalArgs;
+    public final List<Pat> params;
     public final Protocol protocol;
     public final List<StmtOrExpr> body;
 
@@ -24,9 +24,9 @@ public abstract class ActorLang extends AbstractLang implements StmtOrExpr {
     private List<AskStmt> askHandlers;
     private List<TellStmt> tellHandlers;
 
-    public ActorLang(List<Pat> formalArgs, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+    public ActorLang(List<Pat> params, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.formalArgs = nullSafeCopyOf(formalArgs);
+        this.params = nullSafeCopyOf(params);
         this.protocol = protocol;
         this.body = nullSafeCopyOf(body);
     }

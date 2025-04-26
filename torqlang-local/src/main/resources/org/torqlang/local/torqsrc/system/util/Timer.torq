@@ -1,0 +1,6 @@
+package system.util
+
+meta#{'export', 'native': 'org.torqlang.local.TimerPack'}
+actor Timer() in
+    // TODO
+end

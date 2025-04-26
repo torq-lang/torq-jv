@@ -1,6 +1,6 @@
 package system.lang
 
-meta#{'export': true, 'native': 'org.torqlang.klvm.RecPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.RecPack'}
 type Rec = {
     // Factory methods
     'factory': {

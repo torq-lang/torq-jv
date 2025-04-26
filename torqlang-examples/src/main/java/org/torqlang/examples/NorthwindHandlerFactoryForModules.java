@@ -16,6 +16,8 @@ import org.torqlang.local.TorqCompiler;
 import org.torqlang.local.TorqCompilerParsed;
 import org.torqlang.util.NeedsImpl;
 
+import java.util.List;
+
 public final class NorthwindHandlerFactoryForModules {
 
     private static CompleteRec emptyContextProvider(Request request) {
@@ -26,7 +28,8 @@ public final class NorthwindHandlerFactoryForModules {
 
         TorqCompilerParsed compiler = TorqCompiler.create()
             .setMessageListener(ConsoleLogger.SINGLETON::info)
-            .setFileBroker(ExamplesSourceBroker.createResourcesBrokerForModules())
+//            .setFileBrokers(List.of(SystemFileBroker.create(), ExamplesSourceBroker.createResourcesBrokerForModules()))
+            .setFileBrokers(List.of(ExamplesSourceBroker.createResourcesBrokerForModules()))
             .parse();
 
         throw new NeedsImpl("Needs API Router");

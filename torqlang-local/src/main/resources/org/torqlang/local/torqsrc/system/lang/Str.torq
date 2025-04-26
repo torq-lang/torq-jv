@@ -1,6 +1,6 @@
 package system.lang
 
-meta#{'export': true, 'native': 'org.torqlang.klvm.StrPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.StrPack'}
 type Str = Obj & {
     // Factory methods
     'factory': {

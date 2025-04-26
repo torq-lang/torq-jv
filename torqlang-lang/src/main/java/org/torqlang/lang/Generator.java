@@ -94,15 +94,15 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         return identAsPat;
     }
 
-    private static void compileFormalArgsToIdents(List<Pat> formalArgs, List<Ident> formalIdents) {
-        for (Pat arg : formalArgs) {
-            if (arg instanceof IdentAsPat identAsPat) {
+    private static void compileParamsToIdents(List<Pat> params, List<Ident> idents) {
+        for (Pat param : params) {
+            if (param instanceof IdentAsPat identAsPat) {
                 if (identAsPat.escaped) {
-                    throw new InvalidEscapeError(arg);
+                    throw new InvalidEscapeError(param);
                 }
-                formalIdents.add(identAsPat.ident);
+                idents.add(identAsPat.ident);
             } else {
-                throw new NotIdentError(arg);
+                throw new NotIdentError(param);
             }
         }
     }
@@ -195,9 +195,9 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         LocalTarget childTarget = target.asStmtTargetWithNewScope();
 
         // --- Build the configurator
-        List<Pat> formalArgs = lang.formalArgs;
-        List<Ident> xs = new ArrayList<>(formalArgs.size() + 1);
-        compileFormalArgsToIdents(formalArgs, xs);
+        List<Pat> params = lang.params;
+        List<Ident> xs = new ArrayList<>(params.size() + 1);
+        compileParamsToIdents(params, xs);
         xs.add(Ident.$R);
         // Initializer
         LocalTarget actorBodyTarget = childTarget.asStmtTargetWithNewScope();
@@ -423,15 +423,15 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         caseBodyTarget.addInstr(ifInstr);
     }
 
-    private ProcDef buildProcDef(List<Pat> formalArgs, Ident returnArg, List<StmtOrExpr> bodyList, SourceSpan sourceSpan)
+    private ProcDef buildProcDef(List<Pat> params, Ident returnParam, List<StmtOrExpr> bodyList, SourceSpan sourceSpan)
         throws Exception
     {
-        List<Ident> xs = new ArrayList<>(formalArgs.size() + 1);
-        compileFormalArgsToIdents(formalArgs, xs);
+        List<Ident> xs = new ArrayList<>(params.size() + 1);
+        compileParamsToIdents(params, xs);
         LocalTarget bodyTarget;
-        if (returnArg != null) {
-            xs.add(returnArg);
-            bodyTarget = LocalTarget.createExprTargetForFuncBody(returnArg);
+        if (returnParam != null) {
+            xs.add(returnParam);
+            bodyTarget = LocalTarget.createExprTargetForFuncBody(returnParam);
         } else {
             bodyTarget = LocalTarget.createStmtTargetForProcBody();
         }
@@ -466,8 +466,8 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitActorStmt(ActorStmt lang, LocalTarget target) throws Exception {
-        target.addIdentDef(new IdentDef(lang.name()));
-        buildActorInstrs(lang.name, lang, target);
+        target.addIdentDef(new IdentDef(lang.name.ident));
+        buildActorInstrs(lang.name.ident, lang, target);
         return null;
     }
 
@@ -729,17 +729,22 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitFuncExpr(FuncExpr lang, LocalTarget target) throws Exception {
         Ident funcIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        ProcDef procDef = buildProcDef(lang.formalArgs, Ident.$R, lang.body.list, lang);
+        ProcDef procDef = buildProcDef(lang.params, Ident.$R, lang.body.list, lang);
         target.addInstr(new CreateProcInstr(funcIdent, procDef, lang));
         return funcIdent;
     }
 
     @Override
     public final CompleteOrIdent visitFuncStmt(FuncStmt lang, LocalTarget target) throws Exception {
-        target.addIdentDef(new IdentDef(lang.name()));
-        ProcDef procDef = buildProcDef(lang.formalArgs, Ident.$R, lang.body.list, lang);
-        target.addInstr(new CreateProcInstr(lang.name(), procDef, lang));
+        target.addIdentDef(new IdentDef(lang.name.ident));
+        ProcDef procDef = buildProcDef(lang.params, Ident.$R, lang.body.list, lang);
+        target.addInstr(new CreateProcInstr(lang.name.ident, procDef, lang));
         return null;
+    }
+
+    @Override
+    public final CompleteOrIdent visitFuncType(FuncType lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -930,14 +935,14 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
                 elseSeq.accept(this, elseOrAltTarget);
             }
             Instr elseInstr = elseOrAltTarget.build();
-            List<Ident> elseFormalArgs;
+            List<Ident> elseParams;
             if (exprIdent != null) {
-                elseFormalArgs = List.of(Ident.$R);
+                elseParams = List.of(Ident.$R);
             } else {
-                elseFormalArgs = List.of();
+                elseParams = List.of();
             }
             childTarget.addInstr(new CreateProcInstr(
-                Ident.$ELSE, new ProcDef(elseFormalArgs, elseInstr, elseInstr),
+                Ident.$ELSE, new ProcDef(elseParams, elseInstr, elseInstr),
                 elseInstr));
         }
 
@@ -1049,17 +1054,22 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitProcExpr(ProcExpr lang, LocalTarget target) throws Exception {
         Ident procIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
-        ProcDef procDef = buildProcDef(lang.formalArgs, null, lang.body.list, lang);
+        ProcDef procDef = buildProcDef(lang.params, null, lang.body.list, lang);
         target.addInstr(new CreateProcInstr(procIdent, procDef, lang));
         return procIdent;
     }
 
     @Override
     public final CompleteOrIdent visitProcStmt(ProcStmt lang, LocalTarget target) throws Exception {
-        target.addIdentDef(new IdentDef(lang.name()));
-        ProcDef procDef = buildProcDef(lang.formalArgs, null, lang.body.list, lang);
-        target.addInstr(new CreateProcInstr(lang.name(), procDef, lang));
+        target.addIdentDef(new IdentDef(lang.name.ident));
+        ProcDef procDef = buildProcDef(lang.params, null, lang.body.list, lang);
+        target.addInstr(new CreateProcInstr(lang.name.ident, procDef, lang));
         return null;
+    }
+
+    @Override
+    public final CompleteOrIdent visitProcType(ProcType lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override

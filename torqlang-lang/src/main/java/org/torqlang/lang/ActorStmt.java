@@ -7,17 +7,16 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
-public final class ActorStmt extends ActorLang implements NameDecl, Stmt {
+public final class ActorStmt extends ActorLang implements Stmt {
 
-    public final Ident name;
+    public final IdentAsExpr name;
 
-    public ActorStmt(Ident name, List<Pat> formalArgs, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
-        super(formalArgs, protocol, body, sourceSpan);
+    public ActorStmt(IdentAsExpr name, List<Pat> params, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+        super(params, protocol, body, sourceSpan);
         this.name = name;
     }
 
@@ -26,11 +25,6 @@ public final class ActorStmt extends ActorLang implements NameDecl, Stmt {
         throws Exception
     {
         return visitor.visitActorStmt(this, state);
-    }
-
-    @Override
-    public final Ident name() {
-        return name;
     }
 
 }

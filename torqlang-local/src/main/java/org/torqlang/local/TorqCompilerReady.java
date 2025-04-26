@@ -9,10 +9,13 @@ package org.torqlang.local;
 
 import org.torqlang.util.FileBroker;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface TorqCompilerReady {
     TorqCompilerReady setMessageListener(Consumer<String> messageListener);
-    TorqCompilerReady setFileBroker(FileBroker fileBroker);
+
+    TorqCompilerReady setFileBrokers(List<FileBroker> fileBrokers);
+
     TorqCompilerParsed parse() throws Exception;
 }

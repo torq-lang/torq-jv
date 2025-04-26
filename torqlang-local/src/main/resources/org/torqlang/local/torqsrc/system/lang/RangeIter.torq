@@ -1,0 +1,7 @@
+package system.util
+
+meta#{'export', 'native': 'org.torqlang.klvm.RangeIterPack'}
+type RangeIter[T] = Obj & {
+    // TODO
+}
+

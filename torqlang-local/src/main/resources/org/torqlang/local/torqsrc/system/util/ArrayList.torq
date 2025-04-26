@@ -1,6 +1,6 @@
 package system.util
 
-meta#{'export': true, 'native': 'org.torqlang.local.ArrayListPack'}
+meta#{'export', 'native': 'org.torqlang.local.ArrayListPack'}
 type ArrayList[T] = Obj & {
     // Factory methods
     'factory': {

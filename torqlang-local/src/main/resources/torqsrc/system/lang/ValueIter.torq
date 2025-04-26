@@ -1,6 +1,0 @@
-package system.util
-
-meta#{'export': true, 'native': 'org.torqlang.klvm.ValueIterPack'}
-type ValueIter[T] = Obj & {
-    // TODO
-}

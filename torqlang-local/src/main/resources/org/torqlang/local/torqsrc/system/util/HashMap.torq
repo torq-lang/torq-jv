@@ -1,6 +1,6 @@
 package system.util
 
-meta#{'export': true, 'native': 'org.torqlang.local.HashMapPack'}
+meta#{'export', 'native': 'org.torqlang.local.HashMapPack'}
 type HashMap[K, V] = Obj & {
     // Factory methods
     'factory': {

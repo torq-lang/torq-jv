@@ -68,7 +68,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     private void visitActorLang(ActorLang lang, FormatterState state) throws Exception {
         state.write('(');
-        visitFormalArgs(lang.formalArgs, state.inline());
+        visitParams(lang.params, state.inline());
         state.write(") in");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
@@ -80,14 +80,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitActorStmt(ActorStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("actor ");
-        state.write(lang.name.formatValue());
+        lang.name.accept(this, state.inline());
         visitActorLang(lang, state);
         return null;
     }
 
-    private void visitActualArgs(List<StmtOrExpr> list, FormatterState state) throws Exception {
-        for (int i = 0; i < list.size(); i++) {
-            StmtOrExpr next = list.get(i);
+    private void visitArgs(List<StmtOrExpr> args, FormatterState state) throws Exception {
+        for (int i = 0; i < args.size(); i++) {
+            StmtOrExpr next = args.get(i);
             if (i > 0) {
                 state.write(", ");
             }
@@ -105,7 +105,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitApplyLang(ApplyLang lang, FormatterState state) throws Exception {
         lang.proc.accept(this, state.inline());
         state.write('(');
-        visitActualArgs(lang.args, state);
+        visitArgs(lang.args, state);
         state.write(')');
         return null;
     }
@@ -336,9 +336,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         return null;
     }
 
-    private void visitFormalArgs(List<Pat> formalArgs, FormatterState state) throws Exception {
-        for (int i = 0; i < formalArgs.size(); i++) {
-            Pat next = formalArgs.get(i);
+    private void visitParams(List<Pat> params, FormatterState state) throws Exception {
+        for (int i = 0; i < params.size(); i++) {
+            Pat next = params.get(i);
             if (i > 0) {
                 state.write(", ");
             }
@@ -356,7 +356,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     private void visitFuncLang(FuncLang lang, FormatterState state) throws Exception {
         state.write('(');
-        visitFormalArgs(lang.formalArgs, state.inline());
+        visitParams(lang.params, state.inline());
         state.write(')');
         if (lang.returnType != null) {
             state.write(" -> ");
@@ -373,9 +373,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitFuncStmt(FuncStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("func ");
-        state.write(lang.name().name);
+        lang.name.accept(this, state.inline());
         visitFuncLang(lang, state);
         return null;
+    }
+
+    @Override
+    public final Void visitFuncType(FuncType lang, FormatterState state) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -632,7 +637,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         state.write("new ");
         lang.typeApply.accept(this, state);
         state.write('(');
-        visitActualArgs(lang.args, state);
+        visitArgs(lang.args, state);
         state.write(')');
         return null;
     }
@@ -679,7 +684,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     private void visitProcLang(ProcLang lang, FormatterState state) throws Exception {
         state.write('(');
-        visitFormalArgs(lang.formalArgs, state.inline());
+        visitParams(lang.params, state.inline());
         state.write(") in");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
@@ -691,9 +696,14 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitProcStmt(ProcStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("proc ");
-        state.write(lang.name().name);
+        lang.name.accept(this, state.inline());
         visitProcLang(lang, state);
         return null;
+    }
+
+    @Override
+    public final Void visitProcType(ProcType lang, FormatterState state) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -724,7 +734,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitProtocolStmt(ProtocolStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("protocol ");
-        state.write(lang.name.formatValue());
+        lang.name.accept(this, state.inline());
         if (!lang.protocolParams.isEmpty()) {
             state.write("[");
             for (ProtocolParam param : lang.protocolParams) {
@@ -863,7 +873,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         maybeWriteMeta(lang, state);
         lang.selectExpr.accept(this, state);
         state.write('(');
-        visitActualArgs(lang.args, state);
+        visitArgs(lang.args, state);
         state.write(')');
         return null;
     }
@@ -909,7 +919,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitSpawnExpr(SpawnExpr lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("spawn(");
-        visitActualArgs(lang.args, state.inline());
+        visitArgs(lang.args, state.inline());
         state.write(')');
         return null;
     }
@@ -1047,7 +1057,7 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitTypeStmt(TypeStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("type ");
-        state.write(lang.name.formatValue());
+        lang.name.accept(this, state.inline());
         if (!lang.typeParams.isEmpty()) {
             state.write("[");
             for (TypeParam param : lang.typeParams) {

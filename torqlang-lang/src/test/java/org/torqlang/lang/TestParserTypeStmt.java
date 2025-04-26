@@ -32,7 +32,7 @@ public class TestParserTypeStmt {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.name);
+            assertEquals("MyArray", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
             ApplyType applyType = (ApplyType) typeStmt.body;
             assertEquals(1, applyType.typeArgs.size());
@@ -83,7 +83,7 @@ public class TestParserTypeStmt {
             String actualFormat = sox.toString();
             assertEquals(expectedFormat, actualFormat);
             TypeStmt typeStmt = getFromSeq(asBeginLang(sox).body, 0);
-            assertEquals("Customer", typeStmt.name.name);
+            assertEquals("Customer", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
             assertInstanceOf(RecType.class, typeStmt.body);
             RecType recType = (RecType) typeStmt.body;
@@ -121,7 +121,7 @@ public class TestParserTypeStmt {
             String actualFormat = sox.toString();
             assertEquals(expectedFormat, actualFormat);
             TypeStmt typeStmt = getFromSeq(asBeginLang(sox).body, 0);
-            assertEquals("Path", typeStmt.name.name);
+            assertEquals("Path", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
             assertInstanceOf(TupleType.class, typeStmt.body);
             TupleType tupleType = (TupleType) typeStmt.body;

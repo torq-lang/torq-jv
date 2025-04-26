@@ -18,8 +18,8 @@ import org.torqlang.util.FileName;
 import org.torqlang.util.FileType;
 
 import static org.torqlang.examples.BenchTools.printTimingResults;
+import static org.torqlang.examples.ExamplesSourceBroker.EXAMPLES_ROOT;
 import static org.torqlang.examples.ExamplesSourceBroker.NORTHWIND;
-import static org.torqlang.examples.ExamplesSourceBroker.ROOT;
 
 /*
  * java -XX:+UseZGC -p ~/.torq/lib -m org.torqlang.examples/org.torqlang.examples.BenchNorthwindCustomers
@@ -57,7 +57,7 @@ public final class BenchNorthwindCustomers {
             .build();
         FileBroker sourceBroker = ExamplesSourceBroker.createResourcesBrokerForActors();
         String customersHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "CustomersHandler.torq"))
+            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "CustomersHandler.torq"))
         );
         ActorImage actorImage = Actor.builder()
             .setSystem(system)

@@ -13,8 +13,8 @@ import java.util.List;
 
 public final class ActorExpr extends ActorLang implements Expr {
 
-    public ActorExpr(List<Pat> formalArgs, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
-        super(formalArgs, protocol, body, sourceSpan);
+    public ActorExpr(List<Pat> params, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+        super(params, protocol, body, sourceSpan);
     }
 
     @Override

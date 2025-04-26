@@ -15,13 +15,13 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public abstract class FuncLang extends AbstractLang implements StmtOrExpr {
 
-    public final List<Pat> formalArgs;
+    public final List<Pat> params;
     public final Type returnType;
     public final SeqLang body;
 
-    public FuncLang(List<Pat> formalArgs, Type returnType, SeqLang body, SourceSpan sourceSpan) {
+    public FuncLang(List<Pat> params, Type returnType, SeqLang body, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.formalArgs = nullSafeCopyOf(formalArgs);
+        this.params = nullSafeCopyOf(params);
         this.returnType = returnType;
         this.body = body;
     }

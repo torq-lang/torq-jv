@@ -213,11 +213,9 @@ field_type: (feat_type ':')? union_type;
 
 feat_type: bool | INT_LITERAL | STR_LITERAL | 'eof' | 'null';
 
-func_type: 'func' ('(' pat_type_list? ')' | pat) return_type_anno;
+func_type: 'func' type_param_list? '(' pat_list? ')' return_type_anno;
 
-proc_type: 'proc' ('(' pat_type_list? ')' | pat);
-
-pat_type_list: pat (',' pat)*;
+proc_type: 'proc' type_param_list? '(' pat_list? ')';
 
 protocol: 'protocol' ident protocol_param_list? '=' intersection_protocol;
 

@@ -72,7 +72,7 @@ actor OrdersApiHandler() in
     meta#{'export', 'return-codes': {'Array[OrderWithCustomerAndEmployee]': 200, 'Message': 400}}
     handle ask 'GET'#{'headers': headers, 'path': ['orders'], 'query': query, 'context': context, ...} -> Array[OrderWithCustomerAndEmployee] | Message in
          var northwind_db = spawn(new NorthwindDb())
-         var orders_ext = new ArrayList()
+         var orders_ext = new ArrayList[OrderWithCustomerAndEmployee]()
          var orders = northwind_db.ask(
              'findAll'#{
                  'entity': 'orders',

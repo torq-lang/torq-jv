@@ -466,7 +466,9 @@ public final class Lexer {
             }
             char nextChar = source.charAt(charPos);
             if (nextChar != '\'') {
-                return parseKeywordOrIdent();
+                // A standalone '&' is a one character symbol
+                charPos += 1;
+                return new LexerToken(LexerTokenType.ONE_CHAR_TOKEN, source, start, charPos);
             }
             charPos += 1; // accept single quote
             if (charPos == source.length()) {

@@ -7,20 +7,19 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public class ProtocolStmt extends AbstractLang implements NameDecl, Stmt {
+public class ProtocolStmt extends AbstractLang implements Stmt {
 
-    public final Ident name;
+    public final IdentAsExpr name;
     public final List<ProtocolParam> protocolParams;
     public final Protocol body;
 
-    public ProtocolStmt(Ident name, List<ProtocolParam> protocolParams, Protocol body, SourceSpan sourceSpan) {
+    public ProtocolStmt(IdentAsExpr name, List<ProtocolParam> protocolParams, Protocol body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.name = name;
         this.protocolParams = nullSafeCopyOf(protocolParams);
@@ -32,8 +31,4 @@ public class ProtocolStmt extends AbstractLang implements NameDecl, Stmt {
         return visitor.visitProtocolStmt(this, state);
     }
 
-    @Override
-    public Ident name() {
-        return name;
-    }
 }

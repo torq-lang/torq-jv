@@ -7,17 +7,16 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
-public final class ProcStmt extends ProcLang implements NameDecl, Stmt {
+public final class ProcStmt extends ProcLang implements Stmt {
 
-    public final Ident name;
+    public final IdentAsExpr name;
 
-    public ProcStmt(Ident name, List<Pat> formalArgs, SeqLang body, SourceSpan sourceSpan) {
-        super(formalArgs, body, sourceSpan);
+    public ProcStmt(IdentAsExpr name, List<Pat> params, SeqLang body, SourceSpan sourceSpan) {
+        super(params, body, sourceSpan);
         this.name = name;
     }
 
@@ -26,11 +25,6 @@ public final class ProcStmt extends ProcLang implements NameDecl, Stmt {
         throws Exception
     {
         return visitor.visitProcStmt(this, state);
-    }
-
-    @Override
-    public final Ident name() {
-        return name;
     }
 
 }

@@ -24,7 +24,7 @@ public class TestParserActorStmt {
         StmtOrExpr sox = p.parse();
         ActorStmt actorStmt = (ActorStmt) sox;
         assertSourceSpan(actorStmt, 0, 76);
-        assertEquals(Ident.create("MyActor"), actorStmt.name());
+        assertEquals(Ident.create("MyActor"), actorStmt.name.ident);
         // Test format
         String expectedFormat = """
             actor MyActor() in
@@ -54,7 +54,7 @@ public class TestParserActorStmt {
         StmtOrExpr sox = p.parse();
         ActorStmt actorStmt = (ActorStmt) sox;
         assertSourceSpan(actorStmt, 0, 96);
-        assertEquals(Ident.create("MyActor"), actorStmt.name());
+        assertEquals(Ident.create("MyActor"), actorStmt.name.ident);
         // Test format
         String expectedFormat = """
             actor MyActor() in
@@ -88,7 +88,7 @@ public class TestParserActorStmt {
         StmtOrExpr sox = p.parse();
         ActorStmt actorStmt = (ActorStmt) sox;
         assertSourceSpan(actorStmt, 0, 57);
-        assertEquals(Ident.create("MyActor"), actorStmt.name());
+        assertEquals(Ident.create("MyActor"), actorStmt.name.ident);
         // Test format
         String expectedFormat = """
             actor MyActor() in

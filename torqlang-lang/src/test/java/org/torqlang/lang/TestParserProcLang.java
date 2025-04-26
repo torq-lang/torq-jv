@@ -27,7 +27,7 @@ public class TestParserProcLang {
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 16);
         assertSourceSpan(procExpr.body, 11, 12);
-        assertEquals(0, procExpr.formalArgs.size());
+        assertEquals(0, procExpr.params.size());
         assertEquals(1, procExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(procExpr.body.list.get(0)).int64());
         // Test format
@@ -49,8 +49,8 @@ public class TestParserProcLang {
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 17);
         assertSourceSpan(procExpr.body, 12, 13);
-        assertEquals(1, procExpr.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(procExpr.formalArgs.get(0)).ident);
+        assertEquals(1, procExpr.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(procExpr.params.get(0)).ident);
         assertEquals(1, procExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(procExpr.body.list.get(0)).int64());
         // Test format
@@ -72,9 +72,9 @@ public class TestParserProcLang {
         ProcExpr procExpr = (ProcExpr) sox;
         assertSourceSpan(procExpr, 0, 20);
         assertSourceSpan(procExpr.body, 15, 16);
-        assertEquals(2, procExpr.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(procExpr.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(procExpr.formalArgs.get(1)).ident);
+        assertEquals(2, procExpr.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(procExpr.params.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(procExpr.params.get(1)).ident);
         assertEquals(1, procExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(procExpr.body.list.get(0)).int64());
         // Test format
@@ -95,9 +95,9 @@ public class TestParserProcLang {
         assertInstanceOf(ProcStmt.class, sox);
         ProcStmt procStmt = (ProcStmt) sox;
         assertSourceSpan(procStmt, 0, 22);
-        assertEquals(Ident.create("MyProc"), procStmt.name());
+        assertEquals(Ident.create("MyProc"), procStmt.name.ident);
         assertSourceSpan(procStmt.body, 17, 18);
-        assertEquals(0, procStmt.formalArgs.size());
+        assertEquals(0, procStmt.params.size());
         assertEquals(1, procStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
         // Test format
@@ -118,10 +118,10 @@ public class TestParserProcLang {
         assertInstanceOf(ProcStmt.class, sox);
         ProcStmt procStmt = (ProcStmt) sox;
         assertSourceSpan(procStmt, 0, 23);
-        assertEquals(Ident.create("MyProc"), procStmt.name());
+        assertEquals(Ident.create("MyProc"), procStmt.name.ident);
         assertSourceSpan(procStmt.body, 18, 19);
-        assertEquals(1, procStmt.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(procStmt.formalArgs.get(0)).ident);
+        assertEquals(1, procStmt.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(procStmt.params.get(0)).ident);
         assertEquals(1, procStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
         // Test format
@@ -142,11 +142,11 @@ public class TestParserProcLang {
         assertInstanceOf(ProcStmt.class, sox);
         ProcStmt procStmt = (ProcStmt) sox;
         assertSourceSpan(procStmt, 0, 26);
-        assertEquals(Ident.create("MyProc"), procStmt.name());
+        assertEquals(Ident.create("MyProc"), procStmt.name.ident);
         assertSourceSpan(procStmt.body, 21, 22);
-        assertEquals(2, procStmt.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(procStmt.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(procStmt.formalArgs.get(1)).ident);
+        assertEquals(2, procStmt.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(procStmt.params.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(procStmt.params.get(1)).ident);
         assertEquals(1, procStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
         // Test format

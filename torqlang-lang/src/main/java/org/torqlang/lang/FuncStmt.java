@@ -7,19 +7,18 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
-public final class FuncStmt extends FuncLang implements NameDecl, Stmt {
+public final class FuncStmt extends FuncLang implements Stmt {
 
-    private final Ident name;
+    public final IdentAsExpr name;
 
-    public FuncStmt(Ident name, List<Pat> formalArgs, Type returnType, SeqLang body,
+    public FuncStmt(IdentAsExpr name, List<Pat> params, Type returnType, SeqLang body,
                     SourceSpan sourceSpan)
     {
-        super(formalArgs, returnType, body, sourceSpan);
+        super(params, returnType, body, sourceSpan);
         this.name = name;
     }
 
@@ -28,11 +27,6 @@ public final class FuncStmt extends FuncLang implements NameDecl, Stmt {
         throws Exception
     {
         return visitor.visitFuncStmt(this, state);
-    }
-
-    @Override
-    public final Ident name() {
-        return name;
     }
 
 }

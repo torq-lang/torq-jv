@@ -65,6 +65,8 @@ public interface LangVisitor<T, R> {
 
     R visitFuncStmt(FuncStmt lang, T state) throws Exception;
 
+    R visitFuncType(FuncType lang, T state) throws Exception;
+
     R visitGroupExpr(GroupExpr lang, T state) throws Exception;
 
     R visitIdentAsExpr(IdentAsExpr lang, T state) throws Exception;
@@ -116,6 +118,8 @@ public interface LangVisitor<T, R> {
     R visitProcExpr(ProcExpr lang, T state) throws Exception;
 
     R visitProcStmt(ProcStmt lang, T state) throws Exception;
+
+    R visitProcType(ProcType lang, T state) throws Exception;
 
     R visitProductExpr(ProductExpr lang, T state) throws Exception;
 

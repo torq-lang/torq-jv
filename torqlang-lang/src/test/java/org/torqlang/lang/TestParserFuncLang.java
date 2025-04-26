@@ -27,7 +27,7 @@ public class TestParserFuncLang {
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 16);
         assertSourceSpan(funcExpr.body, 11, 12);
-        assertEquals(0, funcExpr.formalArgs.size());
+        assertEquals(0, funcExpr.params.size());
         assertEquals(1, funcExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
@@ -49,7 +49,7 @@ public class TestParserFuncLang {
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 25);
         assertSourceSpan(funcExpr.body, 20, 21);
-        assertEquals(0, funcExpr.formalArgs.size());
+        assertEquals(0, funcExpr.params.size());
         Type returnType = asType(funcExpr.returnType);
         assertSourceSpan(returnType, 11, 16);
         assertEquals(1, funcExpr.body.list.size());
@@ -73,8 +73,8 @@ public class TestParserFuncLang {
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 17);
         assertSourceSpan(funcExpr.body, 12, 13);
-        assertEquals(1, funcExpr.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcExpr.formalArgs.get(0)).ident);
+        assertEquals(1, funcExpr.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcExpr.params.get(0)).ident);
         assertEquals(1, funcExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
@@ -96,9 +96,9 @@ public class TestParserFuncLang {
         FuncExpr funcExpr = (FuncExpr) sox;
         assertSourceSpan(funcExpr, 0, 20);
         assertSourceSpan(funcExpr.body, 15, 16);
-        assertEquals(2, funcExpr.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcExpr.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(funcExpr.formalArgs.get(1)).ident);
+        assertEquals(2, funcExpr.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcExpr.params.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(funcExpr.params.get(1)).ident);
         assertEquals(1, funcExpr.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
@@ -119,9 +119,9 @@ public class TestParserFuncLang {
         assertInstanceOf(FuncStmt.class, sox);
         FuncStmt funcStmt = (FuncStmt) sox;
         assertSourceSpan(funcStmt, 0, 22);
-        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertEquals(Ident.create("MyFunc"), funcStmt.name.ident);
         assertSourceSpan(funcStmt.body, 17, 18);
-        assertEquals(0, funcStmt.formalArgs.size());
+        assertEquals(0, funcStmt.params.size());
         assertEquals(1, funcStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
@@ -142,10 +142,10 @@ public class TestParserFuncLang {
         assertInstanceOf(FuncStmt.class, sox);
         FuncStmt funcStmt = (FuncStmt) sox;
         assertSourceSpan(funcStmt, 0, 23);
-        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertEquals(Ident.create("MyFunc"), funcStmt.name.ident);
         assertSourceSpan(funcStmt.body, 18, 19);
-        assertEquals(1, funcStmt.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.formalArgs.get(0)).ident);
+        assertEquals(1, funcStmt.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.params.get(0)).ident);
         assertEquals(1, funcStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
@@ -166,11 +166,11 @@ public class TestParserFuncLang {
         assertInstanceOf(FuncStmt.class, sox);
         FuncStmt funcStmt = (FuncStmt) sox;
         assertSourceSpan(funcStmt, 0, 26);
-        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertEquals(Ident.create("MyFunc"), funcStmt.name.ident);
         assertSourceSpan(funcStmt.body, 21, 22);
-        assertEquals(2, funcStmt.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.formalArgs.get(1)).ident);
+        assertEquals(2, funcStmt.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.params.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.params.get(1)).ident);
         assertEquals(1, funcStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
@@ -191,11 +191,11 @@ public class TestParserFuncLang {
         assertInstanceOf(FuncStmt.class, sox);
         FuncStmt funcStmt = (FuncStmt) sox;
         assertSourceSpan(funcStmt, 0, 35);
-        assertEquals(Ident.create("MyFunc"), funcStmt.name());
+        assertEquals(Ident.create("MyFunc"), funcStmt.name.ident);
         assertSourceSpan(funcStmt.body, 30, 31);
-        assertEquals(2, funcStmt.formalArgs.size());
-        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.formalArgs.get(0)).ident);
-        assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.formalArgs.get(1)).ident);
+        assertEquals(2, funcStmt.params.size());
+        assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.params.get(0)).ident);
+        assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.params.get(1)).ident);
         assertEquals(1, funcStmt.body.list.size());
         assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
         // Test format

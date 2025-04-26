@@ -1,6 +1,0 @@
-package system.util
-
-meta#{'export': true, 'native': 'org.torqlang.local.StringBuilderPack'}
-type StringBuilder = Obj & {
-    // TODO
-}

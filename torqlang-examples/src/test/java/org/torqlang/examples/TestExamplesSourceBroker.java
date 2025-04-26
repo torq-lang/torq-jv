@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.torqlang.examples.ExamplesSourceBroker.EXAMPLES_ROOT;
 
 public class TestExamplesSourceBroker {
 
@@ -23,36 +24,15 @@ public class TestExamplesSourceBroker {
     public void test01() throws IOException {
         FileBroker broker = ExamplesSourceBroker.createResourcesBrokerForModules();
 
-        List<FileName> content = broker.list();
-        assertEquals(1, content.size());
-        FileName org = content.get(0);
-        assertEquals(new FileName(FileType.DIRECTORY, "org"), org);
+        assertEquals(1, broker.roots().size());
 
-        content = broker.list(List.of(org));
-        assertNotNull(content);
-        assertEquals(1, content.size());
-        FileName torqlang = content.get(0);
-        assertEquals(new FileName(FileType.DIRECTORY, "torqlang"), torqlang);
-
-        content = broker.list(List.of(org, torqlang));
-        assertNotNull(content);
-        assertEquals(1, content.size());
-        FileName examples = content.get(0);
-        assertEquals(new FileName(FileType.DIRECTORY, "examples"), examples);
-
-        content = broker.list(List.of(org, torqlang, examples));
-        assertNotNull(content);
-        assertEquals(1, content.size());
-        FileName torqsrc = content.get(0);
-        assertEquals(new FileName(FileType.DIRECTORY, "torqsrc"), torqsrc);
-
-        content = broker.list(List.of(org, torqlang, examples, torqsrc));
+        List<FileName> content = broker.list(EXAMPLES_ROOT);
         assertNotNull(content);
         assertEquals(1, content.size());
         FileName northwind = content.get(0);
         assertEquals(new FileName(FileType.DIRECTORY, "northwind"), northwind);
 
-        content = broker.list(List.of(org, torqlang, examples, torqsrc, northwind));
+        content = broker.list(FileBroker.append(EXAMPLES_ROOT, northwind));
         assertNotNull(content);
         assertEquals(6, content.size());
         assertTrue(content.contains(new FileName(FileType.TORQ, "CustomersApiHandler.torq")));
@@ -62,23 +42,25 @@ public class TestExamplesSourceBroker {
         assertTrue(content.contains(new FileName(FileType.TORQ, "ProductsApiHandler.torq")));
         assertTrue(content.contains(new FileName(FileType.TORQ, "SuppliersApiHandler.torq")));
 
-        String customersHandler = broker.source(List.of(org, torqlang, examples, torqsrc, northwind, new FileName(FileType.TORQ, "CustomersHandler.torq")));
+        List<FileName> northwindRoot = FileBroker.append(EXAMPLES_ROOT, northwind);
+
+        String customersHandler = broker.source(FileBroker.append(northwindRoot, new FileName(FileType.TORQ, "CustomersHandler.torq")));
         assertNotNull(customersHandler);
         assertTrue(customersHandler.contains("CustomersHandler"));
 
-        String employeesHandler = broker.source(List.of(org, torqlang, examples, torqsrc, northwind, new FileName(FileType.TORQ, "EmployeesHandler.torq")));
+        String employeesHandler = broker.source(FileBroker.append(northwindRoot, new FileName(FileType.TORQ, "EmployeesHandler.torq")));
         assertNotNull(employeesHandler);
         assertTrue(employeesHandler.contains("EmployeesHandler"));
 
-        String ordersHandler = broker.source(List.of(org, torqlang, examples, torqsrc, northwind, new FileName(FileType.TORQ, "OrdersHandler.torq")));
+        String ordersHandler = broker.source(FileBroker.append(northwindRoot, new FileName(FileType.TORQ, "OrdersHandler.torq")));
         assertNotNull(ordersHandler);
         assertTrue(ordersHandler.contains("OrdersHandler"));
 
-        String productsHandler = broker.source(List.of(org, torqlang, examples, torqsrc, northwind, new FileName(FileType.TORQ, "ProductsHandler.torq")));
+        String productsHandler = broker.source(FileBroker.append(northwindRoot, new FileName(FileType.TORQ, "ProductsHandler.torq")));
         assertNotNull(productsHandler);
         assertTrue(productsHandler.contains("ProductsHandler"));
 
-        String suppliersHandler = broker.source(List.of(org, torqlang, examples, torqsrc, northwind, new FileName(FileType.TORQ, "SuppliersHandler.torq")));
+        String suppliersHandler = broker.source(FileBroker.append(northwindRoot, new FileName(FileType.TORQ, "SuppliersHandler.torq")));
         assertNotNull(suppliersHandler);
         assertTrue(suppliersHandler.contains("SuppliersHandler"));
     }

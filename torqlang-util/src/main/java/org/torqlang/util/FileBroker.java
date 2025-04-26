@@ -26,6 +26,31 @@ public interface FileBroker {
     }
 
     /*
+     * Throw an IllegalArgumentException if the list of roots contains duplicates.
+     */
+    static List<List<FileName>> checkForDuplicates(List<List<FileName>> roots) {
+        for (int i = 0; i < roots.size(); i++) {
+            List<FileName> left = roots.get(i);
+            for (int j = i+1; j < roots.size(); j++) {
+                List<FileName> right = roots.get(j);
+                if (left.size() == right.size()) {
+                    boolean same = true;
+                    for (int k = 0; k < left.size(); k++) {
+                        if (!left.get(k).value().equals(right.get(k).value())) {
+                            same = false;
+                            break;
+                        }
+                    }
+                    if (same) {
+                        throw new IllegalArgumentException("Duplicate path");
+                    }
+                }
+            }
+        }
+        return roots;
+    }
+
+    /*
      * Return true if path begins with root.
      */
     static boolean hasRoot(List<FileName> path, List<FileName> root) {
@@ -41,29 +66,21 @@ public interface FileBroker {
     }
 
     /*
-     * List all names from all roots.
-     */
-    List<FileName> list();
-
-    /*
-     * List all names in the given absolute path.
+     * List all names in the given absolute path. Return null if the absolute path is not found.
      */
     List<FileName> list(List<FileName> absolutePath);
 
     /*
-     * A file broker can serve source from multiple roots. In other words, a file broker can serve a collection
-     * of absolute paths with different beginnings that contain the same Torq packages. Consider these two absolute
-     * paths that contain `mypackage.Foo.torq` and `mypackage.Bar.torq` served from two different root paths,
-     * `/Users/USER/foo_source` and `/Users/USER/bar_source`, respectively.
-     *     1. /Users/USER/foo_source/mypackage/Foo.torq
-     *     2. /Users/USER/bar_source/mypackage/Bar.torq
+     * A file broker serves source from one or more root directories where Torq packages begin. Given the root
+     * directory `/Users/USER/project/torqsrc` and the absolute path `/Users/USER/project/torqsrc/my/package/Bar.torq`,
+     * we get the qualified Torq name `my.package.Bar.torq` having the package `my.package` and simple name `Bar.torq`.
      */
     List<List<FileName>> roots();
 
     String source(List<FileName> path) throws IOException;
 
     /*
-     * Trim the root from the given absolute path.
+     * Trim the root from the given absolute path. Return null if the absolute path does not contain a root.
      */
     default List<FileName> trimRoot(List<FileName> absolutePath) {
         for (List<FileName> root : roots()) {
@@ -71,7 +88,7 @@ public interface FileBroker {
                 return absolutePath.subList(root.size(), absolutePath.size());
             }
         }
-        throw new IllegalArgumentException("Path does not contain a root");
+        return null;
     }
 
 }

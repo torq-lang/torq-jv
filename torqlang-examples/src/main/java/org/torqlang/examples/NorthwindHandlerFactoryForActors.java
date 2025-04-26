@@ -20,8 +20,8 @@ import org.torqlang.util.FileBroker;
 import org.torqlang.util.FileName;
 import org.torqlang.util.FileType;
 
+import static org.torqlang.examples.ExamplesSourceBroker.EXAMPLES_ROOT;
 import static org.torqlang.examples.ExamplesSourceBroker.NORTHWIND;
-import static org.torqlang.examples.ExamplesSourceBroker.ROOT;
 
 public final class NorthwindHandlerFactoryForActors {
 
@@ -52,7 +52,7 @@ public final class NorthwindHandlerFactoryForActors {
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         String customersHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "CustomersHandler.torq"))
+            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "CustomersHandler.torq"))
         );
         ActorImage customersHandlerImage = Actor.builder()
             .setSystem(system)
@@ -68,7 +68,7 @@ public final class NorthwindHandlerFactoryForActors {
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         String employeesHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "EmployeesHandler.torq"))
+            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "EmployeesHandler.torq"))
         );
         ActorImage employeesHandlerImage = Actor.builder()
             .setSystem(system)
@@ -89,7 +89,7 @@ public final class NorthwindHandlerFactoryForActors {
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         String ordersHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "OrdersHandler.torq"))
+            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "OrdersHandler.torq"))
         );
         ActorImage ordersHandlerImage = Actor.builder()
             .setSystem(system)
@@ -105,7 +105,7 @@ public final class NorthwindHandlerFactoryForActors {
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         String productsHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "ProductsHandler.torq"))
+            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "ProductsHandler.torq"))
         );
         ActorImage productsHandlerImage = Actor.builder()
             .setSystem(system)
@@ -121,7 +121,7 @@ public final class NorthwindHandlerFactoryForActors {
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         String suppliersHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(ROOT, NORTHWIND), new FileName(FileType.TORQ, "SuppliersHandler.torq"))
+            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "SuppliersHandler.torq"))
         );
         ActorImage suppliersHandlerImage = Actor.builder()
             .setSystem(system)

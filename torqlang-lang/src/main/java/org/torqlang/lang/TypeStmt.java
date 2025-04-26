@@ -7,20 +7,19 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public class TypeStmt extends AbstractLang implements NameDecl, Stmt {
+public class TypeStmt extends AbstractLang implements Stmt {
 
-    public final Ident name;
+    public final IdentAsExpr name;
     public final List<TypeParam> typeParams;
     public final Type body;
 
-    public TypeStmt(Ident name, List<TypeParam> typeParams, Type body, SourceSpan sourceSpan) {
+    public TypeStmt(IdentAsExpr name, List<TypeParam> typeParams, Type body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.name = name;
         this.typeParams = nullSafeCopyOf(typeParams);
@@ -32,8 +31,4 @@ public class TypeStmt extends AbstractLang implements NameDecl, Stmt {
         return visitor.visitTypeStmt(this, state);
     }
 
-    @Override
-    public Ident name() {
-        return name;
-    }
 }

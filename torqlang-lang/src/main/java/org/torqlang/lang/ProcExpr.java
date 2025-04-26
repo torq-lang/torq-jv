@@ -13,8 +13,8 @@ import java.util.List;
 
 public final class ProcExpr extends ProcLang implements Expr {
 
-    public ProcExpr(List<Pat> formalArgs, SeqLang body, SourceSpan sourceSpan) {
-        super(formalArgs, body, sourceSpan);
+    public ProcExpr(List<Pat> params, SeqLang body, SourceSpan sourceSpan) {
+        super(params, body, sourceSpan);
     }
 
     @Override

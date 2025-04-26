@@ -8,6 +8,7 @@
 package org.torqlang.lang;
 
 public final class ParserText {
+    public static final String ARROW_EXPECTED = "'->' expected";
     public static final String ASK_TELL_OR_STREAM_EXPECTED = "'ask', 'tell' or 'stream' expected";
     public static final String CATCH_OR_FINALLY_EXPECTED = "'catch' or 'finally' expected";
     public static final String CHAR_EXPECTED = "Character expected";

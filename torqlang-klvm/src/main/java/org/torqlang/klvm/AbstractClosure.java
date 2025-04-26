@@ -33,11 +33,11 @@ public abstract class AbstractClosure implements Closure {
         }
         Env bodyEnv;
         if (!ys.isEmpty()) {
-            EnvEntry[] actualArgs = new EnvEntry[ys.size()];
+            EnvEntry[] args = new EnvEntry[ys.size()];
             for (int i = 0; i < ys.size(); i++) {
-                actualArgs[i] = new EnvEntry(procDef.xs.get(i), ys.get(i).toVar(env));
+                args[i] = new EnvEntry(procDef.xs.get(i), ys.get(i).toVar(env));
             }
-            bodyEnv = Env.createPrivatelyForKlvm(capturedEnv, actualArgs);
+            bodyEnv = Env.createPrivatelyForKlvm(capturedEnv, args);
         } else {
             bodyEnv = capturedEnv;
         }

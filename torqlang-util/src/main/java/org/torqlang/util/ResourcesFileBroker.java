@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
+
 /*
  * A resources file broker has just one root.
  */
@@ -20,9 +22,9 @@ public final class ResourcesFileBroker implements FileBroker {
     private final List<List<FileName>> roots;
     private final List<Entry> content;
 
-    public ResourcesFileBroker(Class<?> reference, List<FileName> root, List<Entry> content) {
+    public ResourcesFileBroker(Class<?> reference, List<List<FileName>> roots, List<Entry> content) {
         this.reference = reference;
-        this.roots = List.of(ListTools.nullSafeCopyOf(root));
+        this.roots = FileBroker.checkForDuplicates(nullSafeCopyOf(roots.stream().map(ListTools::nullSafeCopyOf).toList()));
         this.content = content;
     }
 
@@ -31,34 +33,27 @@ public final class ResourcesFileBroker implements FileBroker {
     }
 
     @Override
-    public final List<FileName> list() {
-        return content.stream().map(e -> e.name).collect(Collectors.toList());
-    }
-
-    private Entry findEntry(FileName name, List<Entry> content) {
-        return content.stream().filter(e -> e.name.equals(name)).findFirst().orElse(null);
-    }
-
-    private Entry findEntry(List<FileName> subPath) {
+    public final List<FileName> list(List<FileName> absolutePath) {
         List<Entry> content = content();
-        Entry entry = null;
-        for (FileName n : subPath) {
-            entry = findEntry(n, content);
-            if (entry == null) {
+        for (FileName fileName : absolutePath) {
+            boolean found = false;
+            for (Entry entry : content) {
+                if (fileName.value().equals(entry.name.value())) {
+                    found = true;
+                    content = entry.children;
+                    break;
+                }
+            }
+            if (!found) {
+                content = null;
                 break;
             }
-            content = entry.children;
         }
-        return entry;
-    }
-
-    @Override
-    public final List<FileName> list(List<FileName> absolutePath) {
-        Entry entry = findEntry(absolutePath);
-        if (entry == null) {
+        if (content != null) {
+            return nullSafeCopyOf(content.stream().map(e -> e.name).toList());
+        } else {
             return null;
         }
-        return entry.children.stream().map(e -> e.name).collect(Collectors.toList());
     }
 
     @Override
