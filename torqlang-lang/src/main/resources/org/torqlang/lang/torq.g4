@@ -79,11 +79,11 @@ handler: 'handle' (tell_handler | ask_handler | stream_handler);
 tell_handler: 'tell' pat ('when' stmt_or_expr)?
               'in' stmt_or_expr+ 'end';
 
-ask_handler: 'ask' pat ('when' stmt_or_expr)? return_type_anno?
+ask_handler: 'ask' pat ('when' stmt_or_expr)? result_type_anno?
              'in' stmt_or_expr+ 'end';
 
 stream_handler: 'stream' pat ('when' stmt_or_expr)?
-                return_type_anno?
+                result_type_anno?
                 'in' stmt_or_expr+ 'end';
 
 begin: 'begin' stmt_or_expr+ 'end';
@@ -95,7 +95,7 @@ case: 'case' stmt_or_expr
 for: 'for' pat 'in' stmt_or_expr 'do' stmt_or_expr+ 'end';
 
 func: 'func' ident? type_param_list?
-      '(' pat_list? ')' return_type_anno?
+      '(' pat_list? ')' result_type_anno?
       'in' stmt_or_expr+ 'end';
 
 group: '(' stmt_or_expr+ ')';
@@ -175,7 +175,7 @@ feat_value: ident | bool | INT_LITERAL | STR_LITERAL |
 // parameter in method declarations
 var_type_anno: '::' union_type '...'? | '...';
 
-return_type_anno: '->' union_type;
+result_type_anno: '->' union_type;
 
 bool: 'true' | 'false';
 
@@ -213,7 +213,7 @@ field_type: (feat_type ':')? union_type;
 
 feat_type: bool | INT_LITERAL | STR_LITERAL | 'eof' | 'null';
 
-func_type: 'func' type_param_list? '(' pat_list? ')' return_type_anno;
+func_type: 'func' type_param_list? '(' pat_list? ')' result_type_anno;
 
 proc_type: 'proc' type_param_list? '(' pat_list? ')';
 
@@ -238,9 +238,9 @@ protocol_handler: (protocol_tell_handler |
 
 protocol_tell_handler: 'tell' pat;
 
-protocol_ask_handler: 'ask' pat return_type_anno;
+protocol_ask_handler: 'ask' pat result_type_anno;
 
-protocol_stream_handler: 'stream' pat return_type_anno;
+protocol_stream_handler: 'stream' pat result_type_anno;
 
 //*************//
 // LEXER RULES //

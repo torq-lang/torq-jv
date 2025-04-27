@@ -47,7 +47,7 @@ public final class SymbolsAndKeywords {
     static final String LESS_THAN_OR_EQUAL_TO_OPER = "<=";
     static final String NOT_EQUAL_TO_OPER = "!=";
     static final String OR_OPER = "||";
-    static final String RETURN_TYPE_OPER = "->";
+    static final String RESULT_TYPE_OPER = "->";
     static final String SUBTYPE_OPER = "<:";
     static final String SUPERTYPE_OPER = ">:";
     static final String TYPE_OPER = "::";
@@ -99,7 +99,7 @@ public final class SymbolsAndKeywords {
     static final String WHEN_VALUE = "when";
     static final String WHILE_VALUE = "while";
 
-    static final String PARTIAL_ARITY_OPER = "...";
+    static final String ARITY_OPER = "...";
 
     private static final String[][] KEYWORDS_BY_LENGTH = new String[][]{
         {},

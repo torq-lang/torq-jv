@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.torqlang.util.ResourcesFileBroker.Entry;
 
-public final class SystemFileBroker {
+public final class SystemSourceBroker {
 
     public static final List<Entry> CONTENT = List.of(
         new Entry(new FileName(FileType.DIRECTORY, "org"), List.of(

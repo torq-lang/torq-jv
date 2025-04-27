@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.Request;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.Rec;
 import org.torqlang.local.ConsoleLogger;
+import org.torqlang.local.SystemSourceBroker;
 import org.torqlang.local.TorqCompiler;
 import org.torqlang.local.TorqCompilerParsed;
 import org.torqlang.util.NeedsImpl;
@@ -28,8 +29,8 @@ public final class NorthwindHandlerFactoryForModules {
 
         TorqCompilerParsed compiler = TorqCompiler.create()
             .setMessageListener(ConsoleLogger.SINGLETON::info)
-//            .setFileBrokers(List.of(SystemFileBroker.create(), ExamplesSourceBroker.createResourcesBrokerForModules()))
-            .setFileBrokers(List.of(ExamplesSourceBroker.createResourcesBrokerForModules()))
+            .setFileBrokers(List.of(SystemSourceBroker.create(), ExamplesSourceBroker.createResourcesBrokerForModules()))
+//            .setFileBrokers(List.of(ExamplesSourceBroker.createResourcesBrokerForModules()))
             .parse();
 
         throw new NeedsImpl("Needs API Router");

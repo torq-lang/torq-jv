@@ -7,5 +7,28 @@
 
 package org.torqlang.lang;
 
-public interface ProcType extends Type {
+import org.torqlang.util.SourceSpan;
+
+import java.util.List;
+
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
+
+public final class ProcType extends AbstractLang implements Type {
+
+    public final List<TypeParam> typeParams;
+    public final List<Pat> params;
+
+    public ProcType(List<TypeParam> typeParams, List<Pat> params, SourceSpan sourceSpan) {
+        super(sourceSpan);
+        this.typeParams = nullSafeCopyOf(typeParams);
+        this.params = nullSafeCopyOf(params);
+    }
+
+    @Override
+    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
+        throws Exception
+    {
+        return visitor.visitProcType(this, state);
+    }
+
 }

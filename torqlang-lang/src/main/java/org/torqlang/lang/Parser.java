@@ -337,7 +337,7 @@ public final class Parser {
         if (pat == null) {
             throw new ParserError(PAT_EXPECTED, current);
         }
-        Type responseType = parseReturnTypeOptional();
+        Type responseType = parseResultTypeOptional();
         assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
@@ -690,7 +690,7 @@ public final class Parser {
             throw new ParserError(R_PAREN_EXPECTED, current);
         }
         nextToken(); // accept ')' token
-        Type returnType = parseReturnTypeOptional();
+        Type returnType = parseResultTypeOptional();
         assertCurrentAtKeyword(IN_VALUE, IN_EXPECTED);
         nextToken(); // accept 'in' token
         SeqLang body = parseSeq();
@@ -703,7 +703,27 @@ public final class Parser {
     }
 
     private FuncType parseFuncType() {
-        throw new ParserError("TODO: needs impl - func type", currentToken);
+        LexerToken funcToken = currentToken;
+        LexerToken current = nextToken(); // accept 'func' token
+        List<TypeParam> typeParams;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            typeParams = parseTypeParamList();
+            current = currentToken;
+        } else {
+            typeParams = List.of();
+        }
+        if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
+            throw new ParserError(L_PAREN_EXPECTED, current);
+        }
+        nextToken(); // accept '(' token
+        List<Pat> params = parsePatList();
+        current = currentToken;
+        if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
+            throw new ParserError(R_PAREN_EXPECTED, current);
+        }
+        nextToken(); // accept ')' token
+        Type returnType = parseResultTypeRequired();
+        return new FuncType(typeParams, params, returnType, funcToken.adjoin(returnType));
     }
 
     private StmtOrExpr parseGroup() {
@@ -1145,12 +1165,21 @@ public final class Parser {
         if (current.isIdent()) {
             LexerToken next = nextToken(); // accept Ident token
             Ident ident = tokenToIdent(current);
-            if (!next.isTwoCharSymbol(TYPE_OPER)) {
+            if (next.isThreeCharSymbol(ARITY_OPER)) {
+                return new IdentAsPat(ident, false, null, Cardinality.REST, current.adjoin(next));
+            } else if (!next.isTwoCharSymbol(TYPE_OPER)) {
                 return new IdentAsPat(ident, false, current);
             }
             nextToken(); // accept '::' token
             Type type = parseUnionType();
-            return new IdentAsPat(ident, false, type, current.adjoin(type));
+            SourceSpan endOfSpan = type;
+            Cardinality cardinality = Cardinality.ONE;
+            if (currentToken.isThreeCharSymbol(ARITY_OPER)) {
+                cardinality = Cardinality.MANY;
+                endOfSpan = currentToken;
+                nextToken(); // accept '...' token
+            }
+            return new IdentAsPat(ident, false, type, cardinality, current.adjoin(endOfSpan));
         }
         if (current.isInt()) {
             nextToken(); // accept Int token
@@ -1237,7 +1266,26 @@ public final class Parser {
     }
 
     private ProcType parseProcType() {
-        throw new ParserError("TODO: needs impl - proc type", currentToken);
+        LexerToken funcToken = currentToken;
+        LexerToken current = nextToken(); // accept 'func' token
+        List<TypeParam> typeParams;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            typeParams = parseTypeParamList();
+            current = currentToken;
+        } else {
+            typeParams = List.of();
+        }
+        if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
+            throw new ParserError(L_PAREN_EXPECTED, current);
+        }
+        nextToken(); // accept '(' token
+        List<Pat> params = parsePatList();
+        current = currentToken;
+        if (!current.isOneCharSymbol(R_PAREN_CHAR)) {
+            throw new ParserError(R_PAREN_EXPECTED, current);
+        }
+        nextToken(); // accept ')' token
+        return new ProcType(typeParams, params, funcToken.adjoin(current));
     }
 
     private StmtOrExpr parseProduct() {
@@ -1324,20 +1372,20 @@ public final class Parser {
             if (pat == null) {
                 throw new ParserError(PAT_EXPECTED, current);
             }
-            Type responseType = parseReturnTypeRequired();
+            Type responseType = parseResultTypeRequired();
             SourceSpan askSpan = responseType == null ? current.adjoin(pat) : current.adjoin(responseType);
             return new ProtocolAskHandler(pat, responseType, askSpan);
         } else if (current.isIdent(TELL_VALUE)) {
             nextToken(); // accept 'tell' token
             Pat pat = parsePat();
-            return new ProtocolAskHandler(pat, null, current.adjoin(pat));
+            return new ProtocolTellHandler(pat, current.adjoin(pat));
         } else if (current.isIdent(STREAM_VALUE)) {
             nextToken(); // accept 'stream' token
             Pat pat = parsePat();
             if (pat == null) {
                 throw new ParserError(PAT_EXPECTED, current);
             }
-            Type responseType = parseReturnTypeRequired();
+            Type responseType = parseResultTypeRequired();
             SourceSpan askSpan = responseType == null ? current.adjoin(pat) : current.adjoin(responseType);
             return new ProtocolStreamHandler(pat, responseType, askSpan);
         } else {
@@ -1346,8 +1394,22 @@ public final class Parser {
     }
 
     private List<ProtocolParam> parseProtocolParamList() {
-        LexerToken leftBracket = currentToken;
-        throw new ParserError("TODO: needs impl - protocol param list", currentToken);
+        LexerToken current = nextToken(); // accept '[' token
+        List<ProtocolParam> protocolParams = new ArrayList<>();
+        while (current.isIdent()) {
+            Ident paramIdent = tokenToIdent(current);
+            protocolParams.add(new ProtocolParam(paramIdent, current));
+            current = nextToken();
+            if (!current.isOneCharSymbol(COMMA_CHAR)) {
+                break;
+            }
+            current = nextToken(); // accept ',' token
+        }
+        if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
+            throw new ParserError(R_BRACKET_EXPECTED, current);
+        }
+        nextToken(); // accept ']' token
+        return protocolParams;
     }
 
     private ProtocolStruct parseProtocolStruct() {
@@ -1421,7 +1483,7 @@ public final class Parser {
                 current = currentToken;
                 if (fieldPat != null) {
                     fieldPats.add(fieldPat);
-                } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
+                } else if (current.isThreeCharSymbol(ARITY_OPER)) {
                     current = nextToken(); // accept '...' token
                     partialArity = true;
                 } else {
@@ -1495,19 +1557,19 @@ public final class Parser {
         return new ReturnStmt(expr, returnToken.adjoin(expr));
     }
 
-    private Type parseReturnTypeOptional() {
+    private Type parseResultTypeOptional() {
         LexerToken current = currentToken;
         Type type = null;
-        if (current.isTwoCharSymbol(RETURN_TYPE_OPER)) {
+        if (current.isTwoCharSymbol(RESULT_TYPE_OPER)) {
             nextToken(); // accept '->' token
             type = parseUnionType();
         }
         return type;
     }
 
-    private Type parseReturnTypeRequired() {
+    private Type parseResultTypeRequired() {
         LexerToken current = currentToken;
-        if (!current.isTwoCharSymbol(RETURN_TYPE_OPER)) {
+        if (!current.isTwoCharSymbol(RESULT_TYPE_OPER)) {
             throw new ParserError(ARROW_EXPECTED, current);
         }
         nextToken(); // accept '->' token
@@ -1760,7 +1822,7 @@ public final class Parser {
                 current = currentToken;
                 if (pat != null) {
                     valuePats.add(pat);
-                } else if (current.isThreeCharSymbol(PARTIAL_ARITY_OPER)) {
+                } else if (current.isThreeCharSymbol(ARITY_OPER)) {
                     current = nextToken(); // accept '...' token
                     partialArity = true;
                 } else {
@@ -1901,8 +1963,22 @@ public final class Parser {
     }
 
     private List<TypeParam> parseTypeParamList() {
-        LexerToken leftBracket = currentToken;
-        throw new ParserError("TODO: needs impl - type param list", currentToken);
+        LexerToken current = nextToken(); // accept '[' token
+        List<TypeParam> typeParams = new ArrayList<>();
+        while (current.isIdent()) {
+            Ident paramIdent = tokenToIdent(current);
+            typeParams.add(new TypeParam(paramIdent, current));
+            current = nextToken();
+            if (!current.isOneCharSymbol(COMMA_CHAR)) {
+                break;
+            }
+            current = nextToken(); // accept ',' token
+        }
+        if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
+            throw new ParserError(R_BRACKET_EXPECTED, current);
+        }
+        nextToken(); // accept ']' token
+        return typeParams;
     }
 
     private StmtOrExpr parseUnary() {
@@ -1969,6 +2045,8 @@ public final class Parser {
                 } else {
                     return parseStructExpr(identAsExpr);
                 }
+            } else if (next.isThreeCharSymbol(ARITY_OPER)) {
+                throw new NeedsImpl("spread operator");
             }
             return identAsExpr;
         }

@@ -69,7 +69,12 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     private void visitActorLang(ActorLang lang, FormatterState state) throws Exception {
         state.write('(');
         visitParams(lang.params, state.inline());
-        state.write(") in");
+        state.write(')');
+        if (lang.protocol != null) {
+            state.write(" implements ");
+            lang.protocol.accept(this, state.inline());
+        }
+        state.write(" in");
         FormatterState nextLevelState = state.nextLevel();
         nextLevelState.writeNewLineAndIndent();
         visitSeqList(lang.body, nextLevelState);
@@ -379,8 +384,15 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitFuncType(FuncType lang, FormatterState state) {
-        throw new NeedsImpl();
+    public final Void visitFuncType(FuncType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write("func ");
+        state.write('(');
+        visitParams(lang.params, state.inline());
+        state.write(')');
+        state.write(" -> ");
+        lang.returnType.accept(this, state.inline());
+        return null;
     }
 
     @Override
@@ -416,6 +428,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         if (lang.type != null) {
             state.write(SymbolsAndKeywords.TYPE_OPER);
             lang.type.accept(this, state.inline());
+        }
+        if (lang.cardinality != Cardinality.ONE) {
+            state.write(SymbolsAndKeywords.ARITY_OPER);
         }
         return null;
     }
@@ -702,8 +717,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitProcType(ProcType lang, FormatterState state) {
-        throw new NeedsImpl();
+    public final Void visitProcType(ProcType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write("func ");
+        state.write('(');
+        visitParams(lang.params, state.inline());
+        state.write(')');
+        return null;
     }
 
     @Override
@@ -726,8 +746,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitProtocolParam(ProtocolParam lang, FormatterState state) {
-        throw new NeedsImpl();
+    public final Void visitProtocolParam(ProtocolParam lang, FormatterState state) throws Exception {
+        visitIdent(lang.ident, state);
+        return null;
     }
 
     @Override
@@ -1049,8 +1070,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitTypeParam(TypeParam lang, FormatterState state) {
-        throw new NeedsImpl();
+    public final Void visitTypeParam(TypeParam lang, FormatterState state) throws Exception {
+        visitIdent(lang.ident, state);
+        return null;
     }
 
     @Override

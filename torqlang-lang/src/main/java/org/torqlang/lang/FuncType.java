@@ -7,5 +7,30 @@
 
 package org.torqlang.lang;
 
-public interface FuncType extends Type {
+import org.torqlang.util.SourceSpan;
+
+import java.util.List;
+
+import static org.torqlang.util.ListTools.nullSafeCopyOf;
+
+public final class FuncType extends AbstractLang implements Type {
+
+    public final List<TypeParam> typeParams;
+    public final List<Pat> params;
+    public final Type returnType;
+
+    public FuncType(List<TypeParam> typeParams, List<Pat> params, Type returnType, SourceSpan sourceSpan) {
+        super(sourceSpan);
+        this.typeParams = nullSafeCopyOf(typeParams);
+        this.params = nullSafeCopyOf(params);
+        this.returnType = returnType;
+    }
+
+    @Override
+    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
+        throws Exception
+    {
+        return visitor.visitFuncType(this, state);
+    }
+
 }
