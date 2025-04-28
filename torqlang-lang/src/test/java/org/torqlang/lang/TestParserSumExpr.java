@@ -25,12 +25,12 @@ public class TestParserSumExpr {
         SumExpr sumExpr = (SumExpr) sox;
         assertSourceSpan(sumExpr, 0, 5);
         assertEquals("3 + 5", sumExpr.toString());
-        assertInstanceOf(IntAsExpr.class, sumExpr.arg1);
-        assertEquals(Int32.I32_3, asIntAsExpr(sumExpr.arg1).int64());
-        assertSourceSpan(asIntAsExpr(sumExpr.arg1), 0, 1);
+        assertInstanceOf(Int64AsExpr.class, sumExpr.arg1);
+        assertEquals(Int32.I32_3, asInt64AsExpr(sumExpr.arg1).int64());
+        assertSourceSpan(asInt64AsExpr(sumExpr.arg1), 0, 1);
         assertEquals(SumOper.ADD, sumExpr.oper);
-        assertEquals(Int32.I32_5, asIntAsExpr(sumExpr.arg2).int64());
-        assertSourceSpan(asIntAsExpr(sumExpr.arg2), 4, 5);
+        assertEquals(Int32.I32_5, asInt64AsExpr(sumExpr.arg2).int64());
+        assertSourceSpan(asInt64AsExpr(sumExpr.arg2), 4, 5);
     }
 
     @Test
@@ -42,13 +42,12 @@ public class TestParserSumExpr {
         SumExpr sumExpr = (SumExpr) sox;
         assertSourceSpan(sumExpr, 0, 6);
         assertEquals("3 + -5", sumExpr.toString());
-        assertInstanceOf(IntAsExpr.class, sumExpr.arg1);
-        assertEquals(Int32.I32_3, asIntAsExpr(sumExpr.arg1).int64());
-        assertSourceSpan(asIntAsExpr(sumExpr.arg1), 0, 1);
+        assertInstanceOf(Int64AsExpr.class, sumExpr.arg1);
+        assertEquals(Int32.I32_3, asInt64AsExpr(sumExpr.arg1).int64());
+        assertSourceSpan(asInt64AsExpr(sumExpr.arg1), 0, 1);
         assertEquals(SumOper.ADD, sumExpr.oper);
-        UnaryExpr unaryExpr = asUnaryExpr(sumExpr.arg2);
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Int32.of(5), asIntAsExpr(unaryExpr.arg).int64());
+        Int64AsExpr intAsExpr = asInt64AsExpr(sumExpr.arg2);
+        assertEquals(Int32.of(-5), intAsExpr.int64());
         assertSourceSpan(sumExpr.arg2, 4, 6);
     }
 

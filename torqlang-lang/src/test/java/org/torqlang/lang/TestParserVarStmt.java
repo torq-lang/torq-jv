@@ -30,7 +30,7 @@ public class TestParserVarStmt {
         assertSourceSpan(initVarDecl, 4, 9);
         assertSourceSpan(initVarDecl.varPat, 4, 5);
         assertEquals(Ident.create("x"), asIdentAsPat(initVarDecl.varPat).ident);
-        assertEquals(Int32.I32_1, asIntAsExpr(initVarDecl.valueExpr).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(initVarDecl.valueExpr).int64());
         assertSourceSpan(initVarDecl.valueExpr, 8, 9);
         // Test toString format
         String expectedFormat = "var x = 1";

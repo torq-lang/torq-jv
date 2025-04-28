@@ -30,8 +30,9 @@ public final class NorthwindHandlerFactoryForModules {
         TorqCompilerParsed compiler = TorqCompiler.create()
             .setMessageListener(ConsoleLogger.SINGLETON::info)
             .setFileBrokers(List.of(SystemSourceBroker.create(), ExamplesSourceBroker.createResourcesBrokerForModules()))
-//            .setFileBrokers(List.of(ExamplesSourceBroker.createResourcesBrokerForModules()))
-            .parse();
+            .parse()
+            .collect()
+            .assemble();
 
         throw new NeedsImpl("Needs API Router");
     }

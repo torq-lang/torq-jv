@@ -21,8 +21,6 @@ public interface LangVisitor<T, R> {
 
     R visitApplyProtocol(ApplyProtocol lang, T state) throws Exception;
 
-    R visitApplyType(ApplyType lang, T state) throws Exception;
-
     R visitAskStmt(AskStmt lang, T state) throws Exception;
 
     R visitBeginLang(BeginLang lang, T state) throws Exception;
@@ -30,6 +28,10 @@ public interface LangVisitor<T, R> {
     R visitBoolAsExpr(BoolAsExpr lang, T state) throws Exception;
 
     R visitBoolAsPat(BoolAsPat lang, T state) throws Exception;
+
+    R visitBoolAsType(BoolAsType lang, T state) throws Exception;
+
+    R visitBoolType(BoolType lang, T state) throws Exception;
 
     R visitBreakStmt(BreakStmt lang, T state) throws Exception;
 
@@ -51,13 +53,17 @@ public interface LangVisitor<T, R> {
 
     R visitEofAsPat(EofAsPat lang, T state) throws Exception;
 
+    R visitEofAsType(EofAsType lang, T state) throws Exception;
+
+    R visitEofType(EofType lang, T state) throws Exception;
+
     R visitFieldExpr(FieldExpr lang, T state) throws Exception;
 
     R visitFieldPat(FieldPat lang, T state) throws Exception;
 
     R visitFieldType(FieldType lang, T state) throws Exception;
 
-    R visitFltAsExpr(FltAsExpr lang, T state) throws Exception;
+    R visitFlt64AsExpr(Flt64AsExpr lang, T state) throws Exception;
 
     R visitForStmt(ForStmt lang, T state) throws Exception;
 
@@ -73,6 +79,8 @@ public interface LangVisitor<T, R> {
 
     R visitIdentAsPat(IdentAsPat lang, T state) throws Exception;
 
+    R visitIdentAsType(IdentAsType lang, T state) throws Exception;
+
     R visitIdentVarDecl(IdentVarDecl lang, T state) throws Exception;
 
     R visitIfClause(IfClause lang, T state) throws Exception;
@@ -87,7 +95,7 @@ public interface LangVisitor<T, R> {
 
     R visitInitVarDecl(InitVarDecl lang, T state) throws Exception;
 
-    R visitIntAsExpr(IntAsExpr lang, T state) throws Exception;
+    R visitInt64AsExpr(Int64AsExpr lang, T state) throws Exception;
 
     R visitIntAsPat(IntAsPat lang, T state) throws Exception;
 
@@ -110,6 +118,10 @@ public interface LangVisitor<T, R> {
     R visitNullAsExpr(NullAsExpr lang, T state) throws Exception;
 
     R visitNullAsPat(NullAsPat lang, T state) throws Exception;
+
+    R visitNullAsType(NullAsType lang, T state) throws Exception;
+
+    R visitNullType(NullType lang, T state) throws Exception;
 
     R visitOrExpr(OrExpr lang, T state) throws Exception;
 
@@ -161,6 +173,10 @@ public interface LangVisitor<T, R> {
 
     R visitStrAsPat(StrAsPat lang, T state) throws Exception;
 
+    R visitStrAsType(StrAsType lang, T state) throws Exception;
+
+    R visitStrType(StrType lang, T state) throws Exception;
+
     R visitSumExpr(SumExpr lang, T state) throws Exception;
 
     R visitTellStmt(TellStmt lang, T state) throws Exception;
@@ -174,6 +190,8 @@ public interface LangVisitor<T, R> {
     R visitTuplePat(TuplePat lang, T state) throws Exception;
 
     R visitTupleType(TupleType lang, T state) throws Exception;
+
+    R visitTypeApply(TypeApply lang, T state) throws Exception;
 
     R visitTypeParam(TypeParam lang, T state) throws Exception;
 

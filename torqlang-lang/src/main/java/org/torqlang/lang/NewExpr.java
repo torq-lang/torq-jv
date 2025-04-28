@@ -15,12 +15,13 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class NewExpr extends AbstractLang implements Expr {
 
-    public final ApplyType typeApply;
+    public final TypeApply typeApply;
     public final List<StmtOrExpr> args;
 
-    public NewExpr(ApplyType typeApply,
+    public NewExpr(TypeApply typeApply,
                    List<? extends StmtOrExpr> args,
-                   SourceSpan sourceSpan) {
+                   SourceSpan sourceSpan)
+    {
         super(sourceSpan);
         this.typeApply = typeApply;
         this.args = nullSafeCopyOf(args);

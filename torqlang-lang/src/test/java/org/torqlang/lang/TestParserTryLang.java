@@ -75,7 +75,7 @@ public class TestParserTryLang {
         // Test part -- catchClause body
         assertEquals(1, catchClause.body.list.size());
         StmtOrExpr catchBodyExpr = catchClause.body.list.get(0);
-        assertInstanceOf(IntAsExpr.class, catchBodyExpr);
+        assertInstanceOf(Int64AsExpr.class, catchBodyExpr);
         assertSourceSpan(catchBodyExpr, 19, 20);
         // Test part -- finallySeq
         assertNull(tryLang.finallySeq);
@@ -113,13 +113,13 @@ public class TestParserTryLang {
         // Test part -- catchClause body
         assertEquals(1, catchClause.body.list.size());
         StmtOrExpr catchBodyExpr = catchClause.body.list.get(0);
-        assertInstanceOf(IntAsExpr.class, catchBodyExpr);
+        assertInstanceOf(Int64AsExpr.class, catchBodyExpr);
         assertSourceSpan(catchBodyExpr, 19, 20);
         // Test part -- finallySeq
         assertNotNull(tryLang.finallySeq);
         assertEquals(1, tryLang.finallySeq.list.size());
         StmtOrExpr finallyExpr = tryLang.finallySeq.list.get(0);
-        assertInstanceOf(IntAsExpr.class, finallyExpr);
+        assertInstanceOf(Int64AsExpr.class, finallyExpr);
         assertSourceSpan(finallyExpr, 29, 30);
     }
 
@@ -149,7 +149,7 @@ public class TestParserTryLang {
         assertNotNull(tryLang.finallySeq);
         assertEquals(1, tryLang.finallySeq.list.size());
         StmtOrExpr finallyExpr = tryLang.finallySeq.list.get(0);
-        assertInstanceOf(IntAsExpr.class, finallyExpr);
+        assertInstanceOf(Int64AsExpr.class, finallyExpr);
         assertSourceSpan(finallyExpr, 14, 15);
     }
 

@@ -13,12 +13,12 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class ApplyType extends AbstractLang implements Type {
+public final class TypeApply extends AbstractLang implements Type {
 
     public final IdentAsExpr name;
     public final List<Type> typeArgs;
 
-    public ApplyType(IdentAsExpr name,
+    public TypeApply(IdentAsExpr name,
                      List<? extends Type> typeArgs,
                      SourceSpan sourceSpan)
     {
@@ -31,7 +31,7 @@ public final class ApplyType extends AbstractLang implements Type {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitApplyType(this, state);
+        return visitor.visitTypeApply(this, state);
     }
 
 }

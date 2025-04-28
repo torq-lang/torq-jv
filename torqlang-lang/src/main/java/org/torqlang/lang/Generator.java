@@ -529,11 +529,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitApplyType(ApplyType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitAskStmt(AskStmt lang, LocalTarget target) throws Exception {
         Ident exprIdent = allocateNextSystemVarIdent();
         LocalTarget askTarget = target.asAskTargetWithNewScope(exprIdent);
@@ -562,6 +557,16 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitBoolAsPat(BoolAsPat lang, LocalTarget target) {
         throw new IllegalStateException("BoolAsPat visited directly");
+    }
+
+    @Override
+    public final CompleteOrIdent visitBoolAsType(BoolAsType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitBoolType(BoolType lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -656,6 +661,16 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitEofAsType(EofAsType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitEofType(EofType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitFieldExpr(FieldExpr lang, LocalTarget target) {
         throw new NeedsImpl();
     }
@@ -671,7 +686,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitFltAsExpr(FltAsExpr lang, LocalTarget target) {
+    public final CompleteOrIdent visitFlt64AsExpr(Flt64AsExpr lang, LocalTarget target) {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         if (exprIdent == null) {
             return lang.flt64();
@@ -768,6 +783,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitIdentAsType(IdentAsType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitIdentVarDecl(IdentVarDecl lang, LocalTarget target) {
         IdentAsPat identAsPat = lang.identAsPat;
         if (identAsPat.escaped) {
@@ -799,7 +819,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         LocalTarget childTarget = target.asStmtTargetWithNewScope();
         List<CompleteOrIdent> ys = new ArrayList<>();
         StringBuilder qualifier = new StringBuilder();
-        for (int i=0; i < lang.qualifier.size(); i++) {
+        for (int i = 0; i < lang.qualifier.size(); i++) {
             if (i > 0) {
                 qualifier.append(".");
             }
@@ -867,7 +887,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitIntAsExpr(IntAsExpr lang, LocalTarget target) {
+    public final CompleteOrIdent visitInt64AsExpr(Int64AsExpr lang, LocalTarget target) {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         if (exprIdent == null) {
             return lang.int64();
@@ -981,7 +1001,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitNewExpr(NewExpr lang, LocalTarget target) throws Exception {
-        ApplyType typeApply = lang.typeApply;
+        TypeApply typeApply = lang.typeApply;
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
         LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent cls = typeApply.name.accept(this, childTarget);
@@ -1009,6 +1029,16 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitNullAsPat(NullAsPat lang, LocalTarget target) {
         throw new IllegalStateException("NullAsPat visited directly");
+    }
+
+    @Override
+    public final CompleteOrIdent visitNullAsType(NullAsType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitNullType(NullType lang, LocalTarget target) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -1302,6 +1332,16 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitStrAsType(StrAsType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitStrType(StrType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitSumExpr(SumExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
         LocalTarget childTarget = target.asExprTargetWithNewScope();
@@ -1441,6 +1481,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitTupleType(TupleType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitTypeApply(TypeApply lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 

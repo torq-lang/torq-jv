@@ -24,11 +24,11 @@ public class TestParserProductExpr {
         ProductExpr productExpr = (ProductExpr) sox;
         assertSourceSpan(productExpr, 0, 5);
         assertEquals("3 * 5", productExpr.toString());
-        assertInstanceOf(IntAsExpr.class, productExpr.arg1);
-        assertEquals(Int32.I32_3, asIntAsExpr(productExpr.arg1).int64());
+        assertInstanceOf(Int64AsExpr.class, productExpr.arg1);
+        assertEquals(Int32.I32_3, asInt64AsExpr(productExpr.arg1).int64());
         assertSourceSpan(productExpr.arg1, 0, 1);
         assertEquals(ProductOper.MULTIPLY, productExpr.oper);
-        assertEquals(Int32.I32_5, asIntAsExpr(productExpr.arg2).int64());
+        assertEquals(Int32.I32_5, asInt64AsExpr(productExpr.arg2).int64());
         assertSourceSpan(productExpr.arg2, 4, 5);
     }
 
@@ -41,13 +41,12 @@ public class TestParserProductExpr {
         ProductExpr productExpr = (ProductExpr) sox;
         assertSourceSpan(productExpr, 0, 6);
         assertEquals("3 * -5", productExpr.toString());
-        assertInstanceOf(IntAsExpr.class, productExpr.arg1);
-        assertEquals(Int32.I32_3, asIntAsExpr(productExpr.arg1).int64());
+        assertInstanceOf(Int64AsExpr.class, productExpr.arg1);
+        assertEquals(Int32.I32_3, asInt64AsExpr(productExpr.arg1).int64());
         assertSourceSpan(productExpr.arg1, 0, 1);
         assertEquals(ProductOper.MULTIPLY, productExpr.oper);
-        UnaryExpr unaryExpr = asUnaryExpr(productExpr.arg2);
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Int32.of(5), asIntAsExpr(unaryExpr.arg).int64());
+        Int64AsExpr intAsExpr = asInt64AsExpr(productExpr.arg2);
+        assertEquals(Int32.of(-5), intAsExpr.int64());
         assertSourceSpan(productExpr.arg2, 4, 6);
     }
 

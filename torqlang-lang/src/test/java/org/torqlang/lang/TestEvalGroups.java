@@ -61,10 +61,7 @@ public class TestEvalGroups {
         String expected = """
             local $v0 in
                 local $v1 in
-                    local $v2 in
-                        $negate(4, $v2)
-                        $add(3, $v2, $v1)
-                    end
+                    $add(3, -4, $v1)
                     $mult(2, $v1, $v0)
                 end
                 $mult($v0, 5, x)
@@ -81,19 +78,15 @@ public class TestEvalGroups {
             .perform();
         assertEquals("x = -9 > 2 * (3 + -4) * 5", e.stmtOrExpr().toString());
         String expected = """
-            local $v0, $v1 in
-                $negate(9, $v0)
-                local $v2 in
-                    local $v3 in
-                        local $v4 in
-                            $negate(4, $v4)
-                            $add(3, $v4, $v3)
-                        end
-                        $mult(2, $v3, $v2)
+            local $v0 in
+                local $v1 in
+                    local $v2 in
+                        $add(3, -4, $v2)
+                        $mult(2, $v2, $v1)
                     end
-                    $mult($v2, 5, $v1)
+                    $mult($v1, 5, $v0)
                 end
-                $gt($v0, $v1, x)
+                $gt(-9, $v0, x)
             end""";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Bool.TRUE, e.varAtName("x").valueOrVarSet());
@@ -107,19 +100,15 @@ public class TestEvalGroups {
             .perform();
         assertEquals("x = -11 > 2 * (3 + -4) * 5", e.stmtOrExpr().toString());
         String expected = """
-            local $v0, $v1 in
-                $negate(11, $v0)
-                local $v2 in
-                    local $v3 in
-                        local $v4 in
-                            $negate(4, $v4)
-                            $add(3, $v4, $v3)
-                        end
-                        $mult(2, $v3, $v2)
+            local $v0 in
+                local $v1 in
+                    local $v2 in
+                        $add(3, -4, $v2)
+                        $mult(2, $v2, $v1)
                     end
-                    $mult($v2, 5, $v1)
+                    $mult($v1, 5, $v0)
                 end
-                $gt($v0, $v1, x)
+                $gt(-11, $v0, x)
             end""";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
@@ -135,19 +124,13 @@ public class TestEvalGroups {
         String expected = """
             local $v0 in
                 local $v1 in
-                    local $v2, $v4 in
-                        local $v3 in
-                            $negate(3, $v3)
-                            $negate($v3, $v2)
+                    local $v2, $v3 in
+                        $negate(-3, $v2)
+                        local $v4 in
+                            $negate(-4, $v4)
+                            $negate($v4, $v3)
                         end
-                        local $v5 in
-                            local $v6 in
-                                $negate(4, $v6)
-                                $negate($v6, $v5)
-                            end
-                            $negate($v5, $v4)
-                        end
-                        $add($v2, $v4, $v1)
+                        $add($v2, $v3, $v1)
                     end
                     $mult(2, $v1, $v0)
                 end
@@ -165,36 +148,29 @@ public class TestEvalGroups {
             .perform();
         assertEquals("x = -11 > 2 * (--3 + ---4) * 5", e.stmtOrExpr().toString());
         String expected = """
-            local $v0, $v1 in
-                $negate(11, $v0)
-                local $v2 in
-                    local $v3 in
-                        local $v4, $v6 in
+            local $v0 in
+                local $v1 in
+                    local $v2 in
+                        local $v3, $v4 in
+                            $negate(-3, $v3)
                             local $v5 in
-                                $negate(3, $v5)
+                                $negate(-4, $v5)
                                 $negate($v5, $v4)
                             end
-                            local $v7 in
-                                local $v8 in
-                                    $negate(4, $v8)
-                                    $negate($v8, $v7)
-                                end
-                                $negate($v7, $v6)
-                            end
-                            $add($v4, $v6, $v3)
+                            $add($v3, $v4, $v2)
                         end
-                        $mult(2, $v3, $v2)
+                        $mult(2, $v2, $v1)
                     end
-                    $mult($v2, 5, $v1)
+                    $mult($v1, 5, $v0)
                 end
-                $gt($v0, $v1, x)
+                $gt(-11, $v0, x)
             end""";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Bool.FALSE, e.varAtName("x").valueOrVarSet());
     }
 
     @Test
-    public void test08_1() throws Exception {
+    public void test08() throws Exception {
         String source = """
             begin
                 var a = 5

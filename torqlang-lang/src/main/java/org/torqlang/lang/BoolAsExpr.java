@@ -11,7 +11,7 @@ import org.torqlang.klvm.Bool;
 import org.torqlang.klvm.Complete;
 import org.torqlang.util.SourceSpan;
 
-public final class BoolAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, MetaFeature, MetaValue, LabelType, FeatureType {
+public final class BoolAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, MetaFeature, MetaValue {
 
     public final Bool bool;
 

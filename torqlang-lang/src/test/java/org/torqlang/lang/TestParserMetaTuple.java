@@ -32,9 +32,9 @@ public class TestParserMetaTuple {
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
             assertEquals("MyArray", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
-            ApplyType applyType = (ApplyType) typeStmt.body;
-            assertEquals(1, applyType.typeArgs.size());
-            IdentAsExpr identAsExpr = (IdentAsExpr) applyType.typeArgs.get(0);
+            TypeApply typeApply = (TypeApply) typeStmt.body;
+            assertEquals(1, typeApply.typeArgs.size());
+            IdentAsExpr identAsExpr = (IdentAsExpr) typeApply.typeArgs.get(0);
             assertEquals("Int32", identAsExpr.ident.name);
             assertNotNull(typeStmt.metaStruct());
             assertInstanceOf(MetaTuple.class, typeStmt.metaStruct());

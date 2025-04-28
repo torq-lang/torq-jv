@@ -7,5 +7,8 @@
 
 package org.torqlang.lang;
 
-public interface LabelType extends FeatureType {
+import org.torqlang.klvm.Complete;
+
+public interface ValueAsType extends Type {
+    Complete typeValue();
 }

@@ -99,7 +99,7 @@ public class TestParserIfLang {
         // Test part -- ifClause body
         assertEquals(1, ifLang.ifClause.body.list.size());
         StmtOrExpr bodyExpr = ifLang.ifClause.body.list.get(0);
-        assertInstanceOf(IntAsExpr.class, bodyExpr);
+        assertInstanceOf(Int64AsExpr.class, bodyExpr);
         assertSourceSpan(bodyExpr, 13, 14);
         // Test part -- altIfClauses
         assertEquals(1, ifLang.altIfClauses.size());
@@ -111,7 +111,7 @@ public class TestParserIfLang {
         assertNotNull(ifLang.elseSeq);
         assertEquals(1, ifLang.elseSeq.list.size());
         StmtOrExpr elseExpr = ifLang.elseSeq.list.get(0);
-        assertInstanceOf(IntAsExpr.class, elseExpr);
+        assertInstanceOf(Int64AsExpr.class, elseExpr);
         assertSourceSpan(elseExpr, 40, 41);
     }
 

@@ -103,7 +103,7 @@ public class TestParserTupleExpr {
         assertEquals(1, tupleExpr.values().size());
         StmtOrExpr valueExpr = tupleExpr.values().get(0);
         assertSourceSpan(valueExpr, 1, 2);
-        assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(valueExpr).int64());
         // Test toString format
         String expectedFormat = "[0]";
         String actualFormat = tupleExpr.toString();
@@ -128,7 +128,7 @@ public class TestParserTupleExpr {
         assertEquals(1, tupleExpr.values().size());
         StmtOrExpr valueExpr = tupleExpr.values().get(0);
         assertSourceSpan(valueExpr, 12, 13);
-        assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(valueExpr).int64());
         // Test toString format
         String expectedFormat = "'my-label'#[0]";
         String actualFormat = tupleExpr.toString();
@@ -152,10 +152,10 @@ public class TestParserTupleExpr {
         assertEquals(2, tupleExpr.values().size());
         StmtOrExpr valueExpr = tupleExpr.values().get(0);
         assertSourceSpan(valueExpr, 1, 2);
-        assertEquals(Int32.I32_0, asIntAsExpr(valueExpr).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(valueExpr).int64());
         valueExpr = tupleExpr.values().get(1);
         assertSourceSpan(valueExpr, 4, 5);
-        assertEquals(Int32.I32_1, asIntAsExpr(valueExpr).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(valueExpr).int64());
         // Test toString format
         String expectedFormat = "[0, 1]";
         String actualFormat = tupleExpr.toString();

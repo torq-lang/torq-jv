@@ -103,7 +103,7 @@ public class TestParserRecExpr {
         FieldExpr fieldExpr = recExpr.fields().get(0);
         assertSourceSpan(fieldExpr, 1, 12);
         assertEquals(zeroFeat, asStrAsExpr(fieldExpr.feature).str);
-        assertEquals(Int32.I32_0, asIntAsExpr(fieldExpr.value).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(fieldExpr.value).int64());
         // Test toString format
         String expectedFormat = "{'0-feat': 0}";
         String actualFormat = recExpr.toString();
@@ -130,7 +130,7 @@ public class TestParserRecExpr {
         FieldExpr fieldExpr = recExpr.fields().get(0);
         assertSourceSpan(fieldExpr, 12, 23);
         assertEquals(zeroFeat, asStrAsExpr(fieldExpr.feature).str);
-        assertEquals(Int32.I32_0, asIntAsExpr(fieldExpr.value).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(fieldExpr.value).int64());
         // Test toString format
         String expectedFormat = "'my-label'#{'0-feat': 0}";
         String actualFormat = recExpr.toString();
@@ -158,11 +158,11 @@ public class TestParserRecExpr {
         FieldExpr fieldExpr = recExpr.fields().get(0);
         assertSourceSpan(fieldExpr, 1, 12);
         assertEquals(zeroFeat, asStrAsExpr(fieldExpr.feature).str);
-        assertEquals(Int32.I32_0, asIntAsExpr(fieldExpr.value).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(fieldExpr.value).int64());
         fieldExpr = recExpr.fields().get(1);
         assertSourceSpan(fieldExpr, 14, 25);
         assertEquals(oneFeat, asStrAsExpr(fieldExpr.feature).str);
-        assertEquals(Int32.I32_1, asIntAsExpr(fieldExpr.value).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(fieldExpr.value).int64());
         // Test toString format
         String expectedFormat = "{'0-feat': 0, '1-feat': 1}";
         String actualFormat = recExpr.toString();
@@ -187,7 +187,7 @@ public class TestParserRecExpr {
         // ValueAsExpr
         Parser p = new Parser("0");
         StmtOrExpr sox = p.parse();
-        IntAsExpr intAsExpr = CommonTools.asIntAsExpr(sox);
+        Int64AsExpr intAsExpr = CommonTools.asInt64AsExpr(sox);
         Complete complete = RecExpr.checkComplete(intAsExpr);
         assertInstanceOf(Int32.class, complete);
 

@@ -90,11 +90,11 @@ public class TestParserBeginLang {
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(a, CommonTools.asIdentAsExpr(list.get(0)).ident);
         assertSourceSpan(list.get(1), 8, 9);
-        assertEquals(Int32.I32_1, CommonTools.asIntAsExpr(list.get(1)).int64());
+        assertEquals(Int32.I32_1, CommonTools.asInt64AsExpr(list.get(1)).int64());
         assertSourceSpan(list.get(2), 10, 11);
         assertEquals(b, CommonTools.asIdentAsExpr(list.get(2)).ident);
         assertSourceSpan(list.get(3), 12, 13);
-        assertEquals(Int32.I32_2, CommonTools.asIntAsExpr(list.get(3)).int64());
+        assertEquals(Int32.I32_2, CommonTools.asInt64AsExpr(list.get(3)).int64());
     }
 
 }

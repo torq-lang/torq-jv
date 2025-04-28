@@ -32,7 +32,7 @@ public class TestEvalNegativeNums {
             .setSource("x = -1")
             .perform();
         assertEquals("x = -1", e.stmtOrExpr().toString());
-        assertEquals("$negate(1, x)", e.kernel().toString());
+        assertEquals("$bind(-1, x)", e.kernel().toString());
         assertEquals(Int32.of(-1), e.varAtName("x").valueOrVarSet());
 
         e = Evaluator.builder()
@@ -40,11 +40,7 @@ public class TestEvalNegativeNums {
             .setSource("x = --1")
             .perform();
         assertEquals("x = --1", e.stmtOrExpr().toString());
-        String expected = """
-            local $v0 in
-                $negate(1, $v0)
-                $negate($v0, x)
-            end""";
+        String expected = "$negate(-1, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Int32.I32_1, e.varAtName("x").valueOrVarSet());
 
@@ -55,10 +51,7 @@ public class TestEvalNegativeNums {
         assertEquals("x = ---1", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
-                local $v1 in
-                    $negate(1, $v1)
-                    $negate($v1, $v0)
-                end
+                $negate(-1, $v0)
                 $negate($v0, x)
             end""";
         assertEquals(expected, e.kernel().toString());
@@ -129,7 +122,7 @@ public class TestEvalNegativeNums {
             .setSource("x = -1L")
             .perform();
         assertEquals("x = -1L", e.stmtOrExpr().toString());
-        assertEquals("$negate(1L, x)", e.kernel().toString());
+        assertEquals("$bind(-1L, x)", e.kernel().toString());
         assertEquals(Int64.of(-1), e.varAtName("x").valueOrVarSet());
 
         e = Evaluator.builder()
@@ -137,11 +130,7 @@ public class TestEvalNegativeNums {
             .setSource("x = --1L")
             .perform();
         assertEquals("x = --1L", e.stmtOrExpr().toString());
-        String expected = """
-            local $v0 in
-                $negate(1L, $v0)
-                $negate($v0, x)
-            end""";
+        String expected = "$negate(-1L, x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Int64.I64_1, e.varAtName("x").valueOrVarSet());
 
@@ -152,10 +141,7 @@ public class TestEvalNegativeNums {
         assertEquals("x = ---1L", e.stmtOrExpr().toString());
         expected = """
             local $v0 in
-                local $v1 in
-                    $negate(1L, $v1)
-                    $negate($v1, $v0)
-                end
+                $negate(-1L, $v0)
                 $negate($v0, x)
             end""";
         assertEquals(expected, e.kernel().toString());

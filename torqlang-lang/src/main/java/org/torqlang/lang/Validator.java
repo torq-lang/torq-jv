@@ -357,7 +357,13 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     private MonoInfr resolveTypeAnno(Lang lang, Type type, TypeEnv typeEnv) {
         if (type != null) {
             // TODO: This must work with type expressions beyond identifiers
-            PolyInfr declaredType = typeEnv.get(((IdentAsExpr) type).ident);
+            PolyInfr declaredType;
+            if (type instanceof IdentAsType identAsType) {
+                declaredType = typeEnv.get(identAsType.typeIdent());
+            } else {
+                IdentAsExpr identAsExpr = (IdentAsExpr) type;
+                declaredType = typeEnv.get(identAsExpr.ident);
+            }
             if (declaredType == null) {
                 throw new TypeNotFoundError(lang);
             }
@@ -411,11 +417,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitApplyType(ApplyType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final TypeSubst visitAskStmt(AskStmt lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -447,6 +448,16 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitBoolAsPat(BoolAsPat lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitBoolAsType(BoolAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitBoolType(BoolType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -501,6 +512,16 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitEofAsType(EofAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitEofType(EofType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitFieldExpr(FieldExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -516,7 +537,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitFltAsExpr(FltAsExpr lang, TypeScope scope) {
+    public final TypeSubst visitFlt64AsExpr(Flt64AsExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -746,6 +767,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitIdentAsType(IdentAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitIdentVarDecl(IdentVarDecl lang, TypeScope scope) throws Exception {
         lang.setTypeScope(scope);
         VarInfr varType = suffixFactory.nextBetaVar();
@@ -849,7 +875,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitIntAsExpr(IntAsExpr lang, TypeScope scope) {
+    public final TypeSubst visitInt64AsExpr(Int64AsExpr lang, TypeScope scope) {
         return visitInt(lang, lang.int64(), scope);
     }
 
@@ -905,6 +931,16 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitNullAsPat(NullAsPat lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitNullAsType(NullAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitNullType(NullType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -1061,6 +1097,16 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         throw new NeedsImpl();
     }
 
+    @Override
+    public final TypeSubst visitStrAsType(StrAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitStrType(StrType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
     /*
      * [app]
      *     M(Γ, e1 e2, ρ) =
@@ -1105,6 +1151,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitTupleType(TupleType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitTypeApply(TypeApply lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 

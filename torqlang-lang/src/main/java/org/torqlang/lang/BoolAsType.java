@@ -7,29 +7,34 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Complete;
-import org.torqlang.klvm.Str;
+import org.torqlang.klvm.Bool;
+import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class StrAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, MetaFeature, MetaValue {
+public final class BoolAsType extends AbstractLang implements BoolType, ValueAsType, LabelType {
 
-    public final Str str;
+    public final Bool bool;
 
-    public StrAsExpr(Str str, SourceSpan sourceSpan) {
+    public BoolAsType(Bool bool, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.str = str;
+        this.bool = bool;
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitStrAsExpr(this, state);
+        return visitor.visitBoolAsType(this, state);
     }
 
     @Override
-    public final Complete value() {
-        return str;
+    public final Ident typeIdent() {
+        return BoolType.IDENT;
+    }
+
+    @Override
+    public final Bool typeValue() {
+        return bool;
     }
 
 }

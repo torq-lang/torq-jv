@@ -29,7 +29,7 @@ public class TestParserFuncLang {
         assertSourceSpan(funcExpr.body, 11, 12);
         assertEquals(0, funcExpr.params.size());
         assertEquals(1, funcExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func () in
@@ -53,7 +53,7 @@ public class TestParserFuncLang {
         Type returnType = asType(funcExpr.returnType);
         assertSourceSpan(returnType, 11, 16);
         assertEquals(1, funcExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func () -> Int32 in
@@ -76,7 +76,7 @@ public class TestParserFuncLang {
         assertEquals(1, funcExpr.params.size());
         assertEquals(Ident.create("a"), asIdentAsPat(funcExpr.params.get(0)).ident);
         assertEquals(1, funcExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func (a) in
@@ -100,7 +100,7 @@ public class TestParserFuncLang {
         assertEquals(Ident.create("a"), asIdentAsPat(funcExpr.params.get(0)).ident);
         assertEquals(Ident.create("b"), asIdentAsPat(funcExpr.params.get(1)).ident);
         assertEquals(1, funcExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func (a, b) in
@@ -123,7 +123,7 @@ public class TestParserFuncLang {
         assertSourceSpan(funcStmt.body, 17, 18);
         assertEquals(0, funcStmt.params.size());
         assertEquals(1, funcStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc() in
@@ -147,7 +147,7 @@ public class TestParserFuncLang {
         assertEquals(1, funcStmt.params.size());
         assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.params.get(0)).ident);
         assertEquals(1, funcStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc(a) in
@@ -172,7 +172,7 @@ public class TestParserFuncLang {
         assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.params.get(0)).ident);
         assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.params.get(1)).ident);
         assertEquals(1, funcStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc(a, b) in
@@ -197,7 +197,7 @@ public class TestParserFuncLang {
         assertEquals(Ident.create("a"), asIdentAsPat(funcStmt.params.get(0)).ident);
         assertEquals(Ident.create("b"), asIdentAsPat(funcStmt.params.get(1)).ident);
         assertEquals(1, funcStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(funcStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(funcStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             func MyFunc(a, b) -> Int32 in

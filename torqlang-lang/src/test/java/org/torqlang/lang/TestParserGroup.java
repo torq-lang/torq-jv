@@ -22,7 +22,7 @@ public class TestParserGroup {
         Parser p = new Parser("(1)");
         StmtOrExpr x = p.parse();
         assertSourceSpan(x, 0, 3);
-        assertEquals(Int32.I32_1, asIntAsExpr(asSingleExpr(x)).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(asSingleExpr(x)).int64());
         // Test toString format
         String expectedFormat = "(1)";
         String actualFormat = x.toString();
@@ -43,15 +43,14 @@ public class TestParserGroup {
         assertSourceSpan(beginLang, 0, 24);
 
         assertInstanceOf(GroupExpr.class, beginLang.body.list.get(0));
-        assertEquals(Int32.I32_1, asIntAsExpr(asSingleExpr(beginLang.body.list.get(0))).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(asSingleExpr(beginLang.body.list.get(0))).int64());
 
         assertInstanceOf(GroupExpr.class, beginLang.body.list.get(1));
-        assertEquals(Int32.I32_2, asIntAsExpr(asSingleExpr(beginLang.body.list.get(1))).int64());
+        assertEquals(Int32.I32_2, asInt64AsExpr(asSingleExpr(beginLang.body.list.get(1))).int64());
 
         assertInstanceOf(GroupExpr.class, beginLang.body.list.get(2));
-        UnaryExpr unaryExpr = asUnaryExpr(asSingleExpr(beginLang.body.list.get(2)));
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Int32.of(1), asIntAsExpr(unaryExpr.arg).int64());
+        Int64AsExpr intAsExpr = asInt64AsExpr(asSingleExpr(beginLang.body.list.get(2)));
+        assertEquals(Int32.of(-1), intAsExpr.int64());
 
         // Test format
         String expectedFormat = """

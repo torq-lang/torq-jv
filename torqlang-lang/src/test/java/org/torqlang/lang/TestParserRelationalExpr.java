@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.Int32;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.torqlang.lang.CommonTools.asIntAsExpr;
+import static org.torqlang.lang.CommonTools.asInt64AsExpr;
 
 public class TestParserRelationalExpr {
 
@@ -24,12 +24,12 @@ public class TestParserRelationalExpr {
         RelationalExpr relExpr = (RelationalExpr) sox;
         CommonTools.assertSourceSpan(relExpr, 0, 5);
         assertEquals("3 < 5", relExpr.toString());
-        assertInstanceOf(IntAsExpr.class, relExpr.arg1);
-        assertEquals(Int32.I32_3, asIntAsExpr(relExpr.arg1).int64());
-        CommonTools.assertSourceSpan(asIntAsExpr(relExpr.arg1), 0, 1);
+        assertInstanceOf(Int64AsExpr.class, relExpr.arg1);
+        assertEquals(Int32.I32_3, asInt64AsExpr(relExpr.arg1).int64());
+        CommonTools.assertSourceSpan(asInt64AsExpr(relExpr.arg1), 0, 1);
         assertEquals(RelationalOper.LESS_THAN, relExpr.oper);
-        assertEquals(Int32.I32_5, asIntAsExpr(relExpr.arg2).int64());
-        CommonTools.assertSourceSpan(asIntAsExpr(relExpr.arg2), 4, 5);
+        assertEquals(Int32.I32_5, asInt64AsExpr(relExpr.arg2).int64());
+        CommonTools.assertSourceSpan(asInt64AsExpr(relExpr.arg2), 4, 5);
     }
 
     @Test

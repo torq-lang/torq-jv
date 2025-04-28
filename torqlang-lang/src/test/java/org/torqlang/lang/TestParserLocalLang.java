@@ -67,7 +67,7 @@ public class TestParserLocalLang {
         assertSourceSpan(initVarDecl, 16, 21);
         assertEquals(Ident.create("y"), asIdentAsPat(initVarDecl.varPat).ident);
         assertSourceSpan(initVarDecl.varPat, 16, 17);
-        assertEquals(Int32.I32_1, asIntAsExpr(initVarDecl.valueExpr).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(initVarDecl.valueExpr).int64());
         assertSourceSpan(initVarDecl.valueExpr, 20, 21);
         // Test format
         String expectedFormat = """

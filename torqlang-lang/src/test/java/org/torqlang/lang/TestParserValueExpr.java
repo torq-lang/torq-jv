@@ -31,13 +31,13 @@ public class TestParserValueExpr {
         assertSourceSpan(list.get(0), 6, 7);
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
         assertSourceSpan(list.get(1), 8, 9);
-        assertEquals(Int32.I32_1, asIntAsExpr(list.get(1)).int64());
+        assertEquals(Int32.I32_1, asInt64AsExpr(list.get(1)).int64());
         assertSourceSpan(list.get(2), 10, 12);
-        assertEquals(Int64.I64_1, asIntAsExpr(list.get(2)).int64());
+        assertEquals(Int64.I64_1, asInt64AsExpr(list.get(2)).int64());
         assertSourceSpan(list.get(3), 13, 16);
-        assertEquals(Flt64.of(1.0), asFltAsExpr(list.get(3)).flt64());
+        assertEquals(Flt64.of(1.0), asFlt64AsExpr(list.get(3)).flt64());
         assertSourceSpan(list.get(4), 17, 21);
-        assertEquals(Flt32.of(1.0f), asFltAsExpr(list.get(4)).flt64());
+        assertEquals(Flt32.of(1.0f), asFlt64AsExpr(list.get(4)).flt64());
         assertSourceSpan(list.get(5), 22, 24);
         assertEquals(Dec128.of("1"), asDec128AsExpr(list.get(5)).dec128());
         assertSourceSpan(list.get(6), 25, 30);
@@ -87,32 +87,27 @@ public class TestParserValueExpr {
         assertEquals(Ident.create("a"), asIdentAsExpr(list.get(0)).ident);
 
         assertSourceSpan(list.get(1), 9, 11);
-        UnaryExpr unaryExpr = asUnaryExpr(list.get(1));
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Int32.of(1), asIntAsExpr(unaryExpr.arg).int64());
+        Int64AsExpr intAsExpr = asInt64AsExpr(list.get(1));
+        assertEquals(Int32.of(-1), intAsExpr.int64());
 
         assertSourceSpan(list.get(2), 13, 16);
-        unaryExpr = asUnaryExpr(list.get(2));
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Int64.of(1L), asIntAsExpr(unaryExpr.arg).int64());
+        intAsExpr = asInt64AsExpr(list.get(2));
+        assertEquals(Int64.of(-1L), intAsExpr.int64());
 
         assertSourceSpan(list.get(3), 18, 22);
-        unaryExpr = asUnaryExpr(list.get(3));
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Flt64.of(1.0), asFltAsExpr(unaryExpr.arg).flt64());
+        Flt64AsExpr fltAsExpr = asFlt64AsExpr(list.get(3));
+        assertEquals(Flt64.of(-1.0), fltAsExpr.flt64());
 
         assertSourceSpan(list.get(4), 24, 29);
-        unaryExpr = asUnaryExpr(list.get(4));
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Flt32.of(1.0f), asFltAsExpr(unaryExpr.arg).flt64());
+        fltAsExpr = asFlt64AsExpr(list.get(4));
+        assertEquals(Flt32.of(-1.0f), fltAsExpr.flt64());
 
         assertSourceSpan(list.get(5), 31, 34);
-        unaryExpr = asUnaryExpr(list.get(5));
-        assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
-        assertEquals(Dec128.of("1"), asDec128AsExpr(unaryExpr.arg).dec128());
+        Dec128AsExpr decAsExpr = asDec128AsExpr(list.get(5));
+        assertEquals(Dec128.of("-1"), decAsExpr.dec128());
 
         assertSourceSpan(list.get(6), 36, 41);
-        unaryExpr = asUnaryExpr(list.get(6));
+        UnaryExpr unaryExpr = asUnaryExpr(list.get(6));
         assertEquals(UnaryOper.NEGATE, unaryExpr.oper);
         assertEquals(Char.of('x'), asCharAsExpr(unaryExpr.arg).charNum());
 

@@ -34,9 +34,9 @@ public class TestParserTypeStmt {
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
             assertEquals("MyArray", typeStmt.name.ident.name);
             assertEquals(0, typeStmt.typeParams.size());
-            ApplyType applyType = (ApplyType) typeStmt.body;
-            assertEquals(1, applyType.typeArgs.size());
-            IdentAsExpr identAsExpr = (IdentAsExpr) applyType.typeArgs.get(0);
+            TypeApply typeApply = (TypeApply) typeStmt.body;
+            assertEquals(1, typeApply.typeArgs.size());
+            IdentAsExpr identAsExpr = (IdentAsExpr) typeApply.typeArgs.get(0);
             assertEquals("Int32", identAsExpr.ident.name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
@@ -89,10 +89,10 @@ public class TestParserTypeStmt {
             RecType recType = (RecType) typeStmt.body;
             assertNull(recType.label);
             assertEquals(2, recType.fields.size());
-            assertEquals(Str.of("email"), asStrAsExpr(recType.fields.get(0).feature).value());
-            assertEquals(Ident.create("Str"), asIdentAsExpr(recType.fields.get(0).value).ident);
-            assertEquals(Str.of("name"), asStrAsExpr(recType.fields.get(1).feature).value());
-            assertEquals(Ident.create("Str"), asIdentAsExpr(recType.fields.get(1).value).ident);
+            assertEquals(Str.of("email"), asStrAsType(recType.fields.get(0).feature).typeValue());
+            assertInstanceOf(StrType.class, recType.fields.get(0).value);
+            assertEquals(Str.of("name"), asStrAsType(recType.fields.get(1).feature).typeValue());
+            assertInstanceOf(StrType.class, recType.fields.get(1).value);
             VarStmt varStmt = getFromSeq(asBeginLang(sox).body, 1);
             assertEquals(1, varStmt.varDecls.size());
             IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
@@ -127,9 +127,9 @@ public class TestParserTypeStmt {
             TupleType tupleType = (TupleType) typeStmt.body;
             assertNull(tupleType.label);
             assertEquals(3, tupleType.values.size());
-            assertEquals(Ident.create("Str"), asIdentAsExpr(tupleType.values.get(0)).ident);
+            assertInstanceOf(StrType.class, tupleType.values.get(0));
             assertEquals(Ident.create("Int32"), asIdentAsExpr(tupleType.values.get(1)).ident);
-            assertEquals(Ident.create("Bool"), asIdentAsExpr(tupleType.values.get(2)).ident);
+            assertEquals(Ident.create("Bool"), asBoolType(tupleType.values.get(2)).typeIdent());
             VarStmt varStmt = getFromSeq(asBeginLang(sox).body, 1);
             assertEquals(1, varStmt.varDecls.size());
             IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);

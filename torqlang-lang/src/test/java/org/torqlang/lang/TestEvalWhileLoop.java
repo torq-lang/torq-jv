@@ -178,60 +178,57 @@ public class TestEvalWhileLoop {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local i, c in
-                local $v0 in
-                    $negate(1, $v0)
-                    $select_apply(Cell, ['new'], $v0, i)
-                end
+                $select_apply(Cell, ['new'], -1, i)
                 $select_apply(Cell, ['new'], 0, c)
                 local $guard, $while in
                     $create_proc(proc ($r) in
                         $bind(true, $r)
                     end, $guard)
                     $create_proc(proc () in // free vars: $guard, $while, c, i
-                        local $v1 in
-                            $guard($v1)
-                            if $v1 then
-                                local $v6, $v10, $v12 in
-                                    local $v2 in
-                                        local $v3 in
-                                            $get(i, $v3)
-                                            $add($v3, 1, $v2)
+                        local $v0 in
+                            $guard($v0)
+                            if $v0 then
+                                local $v5, $v9, $v11 in
+                                    local $v1 in
+                                        local $v2 in
+                                            $get(i, $v2)
+                                            $add($v2, 1, $v1)
                                         end
-                                        $set(i, $v2)
+                                        $set(i, $v1)
                                     end
-                                    local $v4 in
-                                        local $v5 in
-                                            $get(c, $v5)
-                                            $add($v5, 1, $v4)
+                                    local $v3 in
+                                        local $v4 in
+                                            $get(c, $v4)
+                                            $add($v4, 1, $v3)
                                         end
-                                        $set(c, $v4)
+                                        $set(c, $v3)
                                     end
-                                    local $v7 in
-                                        $get(i, $v7)
-                                        $eq($v7, 1, $v6)
+                                    local $v6 in
+                                        $get(i, $v6)
+                                        $eq($v6, 1, $v5)
                                     end
-                                    if $v6 then
-                                        local $v8 in
-                                            local $v9 in
-                                                $get(c, $v9)
-                                                $add($v9, 10, $v8)
+                                    if $v5 then
+                                        local $v7 in
+                                            local $v8 in
+                                                $get(c, $v8)
+                                                $add($v8, 10, $v7)
                                             end
-                                            $set(c, $v8)
+                                            $set(c, $v7)
                                         end
                                         $jump_throw(2)
                                     end
-                                    local $v11 in
-                                        $get(i, $v11)
-                                        $eq($v11, 1, $v10)
+                                    local $v10 in
+                                        $get(i, $v10)
+                                        $eq($v10, 1, $v9)
                                     end
-                                    if $v10 then
+                                    if $v9 then
                                         $jump_throw(1)
                                     end
-                                    local $v13 in
-                                        $get(i, $v13)
-                                        $eq($v13, 2, $v12)
+                                    local $v12 in
+                                        $get(i, $v12)
+                                        $eq($v12, 2, $v11)
                                     end
-                                    if $v12 then
+                                    if $v11 then
                                         $jump_throw(1)
                                     end
                                     $jump_catch(2)

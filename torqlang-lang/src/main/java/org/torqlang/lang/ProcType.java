@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class ProcType extends AbstractLang implements Type {
+public final class ProcType extends AbstractLang implements MethodType {
 
     public final List<TypeParam> typeParams;
     public final List<Pat> params;

@@ -7,5 +7,5 @@
 
 package org.torqlang.lang;
 
-public interface LabelType extends FeatureType {
+public interface MethodType extends Type {
 }

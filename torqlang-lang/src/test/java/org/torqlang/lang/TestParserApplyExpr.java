@@ -74,7 +74,7 @@ public class TestParserApplyExpr {
         assertEquals(2, applyLang.args.size());
         assertInstanceOf(IdentAsExpr.class, applyLang.args.get(0));
         assertSourceSpan(applyLang.args.get(0), 2, 3);
-        assertInstanceOf(IntAsExpr.class, applyLang.args.get(1));
+        assertInstanceOf(Int64AsExpr.class, applyLang.args.get(1));
         assertSourceSpan(applyLang.args.get(1), 5, 6);
         // Test toString format
         String expectedFormat = "x(a, 3)";

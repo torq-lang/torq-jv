@@ -29,7 +29,7 @@ public class TestParserProcLang {
         assertSourceSpan(procExpr.body, 11, 12);
         assertEquals(0, procExpr.params.size());
         assertEquals(1, procExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(procExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc () in
@@ -52,7 +52,7 @@ public class TestParserProcLang {
         assertEquals(1, procExpr.params.size());
         assertEquals(Ident.create("a"), asIdentAsPat(procExpr.params.get(0)).ident);
         assertEquals(1, procExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(procExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc (a) in
@@ -76,7 +76,7 @@ public class TestParserProcLang {
         assertEquals(Ident.create("a"), asIdentAsPat(procExpr.params.get(0)).ident);
         assertEquals(Ident.create("b"), asIdentAsPat(procExpr.params.get(1)).ident);
         assertEquals(1, procExpr.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procExpr.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(procExpr.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc (a, b) in
@@ -99,7 +99,7 @@ public class TestParserProcLang {
         assertSourceSpan(procStmt.body, 17, 18);
         assertEquals(0, procStmt.params.size());
         assertEquals(1, procStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(procStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc MyProc() in
@@ -123,7 +123,7 @@ public class TestParserProcLang {
         assertEquals(1, procStmt.params.size());
         assertEquals(Ident.create("a"), asIdentAsPat(procStmt.params.get(0)).ident);
         assertEquals(1, procStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(procStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc MyProc(a) in
@@ -148,7 +148,7 @@ public class TestParserProcLang {
         assertEquals(Ident.create("a"), asIdentAsPat(procStmt.params.get(0)).ident);
         assertEquals(Ident.create("b"), asIdentAsPat(procStmt.params.get(1)).ident);
         assertEquals(1, procStmt.body.list.size());
-        assertEquals(Int32.I32_0, asIntAsExpr(procStmt.body.list.get(0)).int64());
+        assertEquals(Int32.I32_0, asInt64AsExpr(procStmt.body.list.get(0)).int64());
         // Test format
         String expectedFormat = """
             proc MyProc(a, b) in

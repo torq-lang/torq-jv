@@ -10,18 +10,18 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Flt64;
 import org.torqlang.util.SourceSpan;
 
-public final class FltAsExpr extends AbstractLang implements NumAsExpr, MetaValue {
+public final class Flt64AsExpr extends AbstractLang implements NumAsExpr, MetaValue {
 
     private String fltText;
 
     private Flt64 flt64;
 
-    public FltAsExpr(Flt64 flt64, SourceSpan sourceSpan) {
+    public Flt64AsExpr(Flt64 flt64, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.flt64 = flt64;
     }
 
-    public FltAsExpr(String fltText, SourceSpan sourceSpan) {
+    public Flt64AsExpr(String fltText, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.fltText = fltText;
     }
@@ -30,7 +30,7 @@ public final class FltAsExpr extends AbstractLang implements NumAsExpr, MetaValu
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFltAsExpr(this, state);
+        return visitor.visitFlt64AsExpr(this, state);
     }
 
     public final Flt64 flt64() {

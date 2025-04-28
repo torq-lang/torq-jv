@@ -289,33 +289,6 @@ public final class Parser {
         return new ApplyProtocol(name, protocolArgs, identToken.adjoin(endApplyProtocol));
     }
 
-    private ApplyType parseApplyType() {
-        LexerToken identToken = currentToken;
-        nextToken(); // accept IDENT token
-        return parseApplyType(identToken);
-    }
-
-    private ApplyType parseApplyType(LexerToken identToken) {
-        Ident ident = tokenToIdent(identToken);
-        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
-        LexerToken current = currentToken;
-        List<Type> typeArgs;
-        LexerToken endApplyTypeToken = identToken;
-        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-            nextToken(); // accept '[' token
-            typeArgs = parseTypeArgList();
-            current = currentToken;
-            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
-                throw new ParserError(R_BRACKET_EXPECTED, current);
-            }
-            endApplyTypeToken = current;
-            nextToken(); // accept ']' token
-        } else {
-            typeArgs = List.of();
-        }
-        return new ApplyType(name, typeArgs, identToken.adjoin(endApplyTypeToken));
-    }
-
     private List<StmtOrExpr> parseArgList() {
         List<StmtOrExpr> args = new ArrayList<>();
         StmtOrExpr arg = parseStmtOrExpr();
@@ -591,7 +564,7 @@ public final class Parser {
             }
         } else {
             int nextFeature = nextImpliedFeature.getAndAdd(1);
-            featureExpr = new IntAsExpr(Int32.of(nextFeature), featureOrValueExpr.toSourceBegin());
+            featureExpr = new Int64AsExpr(Int32.of(nextFeature), featureOrValueExpr.toSourceBegin());
             valueExpr = featureOrValueExpr;
         }
         return new FieldExpr(featureExpr, valueExpr, featureExpr.adjoin(valueExpr));
@@ -643,7 +616,7 @@ public final class Parser {
             }
         } else {
             int nextFeature = nextImpliedFeature.getAndAdd(1);
-            featureType = new IntAsExpr(Int32.of(nextFeature), featureOrValueType.toSourceBegin());
+            featureType = new Int64AsExpr(Int32.of(nextFeature), featureOrValueType.toSourceBegin());
             valueType = featureOrValueType;
         }
         return new FieldType(featureType, valueType, featureType.adjoin(valueType));
@@ -893,7 +866,7 @@ public final class Parser {
             }
         } else {
             int nextFeature = nextImpliedFeature.getAndAdd(1);
-            feature = new IntAsExpr(Int32.of(nextFeature), featureOrValue.toSourceBegin());
+            feature = new Int64AsExpr(Int32.of(nextFeature), featureOrValue.toSourceBegin());
             value = featureOrValue;
         }
         return new MetaField(feature, value, feature.adjoin(value));
@@ -1009,12 +982,12 @@ public final class Parser {
         if (current.isInt()) {
             nextToken(); // accept Int token
             String symbolText = current.substring();
-            return new IntAsExpr(symbolText, current);
+            return new Int64AsExpr(symbolText, current);
         }
         if (current.isFlt()) {
             nextToken();  // accept Flt token
             String symbolText = current.substring();
-            return new FltAsExpr(symbolText, current);
+            return new Flt64AsExpr(symbolText, current);
         }
         if (current.isDec()) {
             nextToken();  // accept Dec token
@@ -1072,7 +1045,7 @@ public final class Parser {
         if (!current.isIdent()) {
             throw new ParserError(IDENT_EXPECTED, currentToken);
         }
-        ApplyType applyType = parseApplyType();
+        TypeApply typeApply = parseTypeApply();
         current = currentToken;
         if (!current.isOneCharSymbol(L_PAREN_CHAR)) {
             throw new ParserError(L_PAREN_EXPECTED, current);
@@ -1085,7 +1058,7 @@ public final class Parser {
         }
         LexerToken endNewToken = current;
         nextToken(); // accept ')' token
-        return new NewExpr(applyType, args, newToken.adjoin(endNewToken));
+        return new NewExpr(typeApply, args, newToken.adjoin(endNewToken));
     }
 
     private StmtOrExpr parseOr() {
@@ -1888,6 +1861,33 @@ public final class Parser {
         return new TypeStmt(name, typeParams, body, typeToken.adjoin(body));
     }
 
+    private TypeApply parseTypeApply() {
+        LexerToken identToken = currentToken;
+        nextToken(); // accept IDENT token
+        return parseTypeApply(identToken);
+    }
+
+    private TypeApply parseTypeApply(LexerToken identToken) {
+        Ident ident = tokenToIdent(identToken);
+        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
+        LexerToken current = currentToken;
+        List<Type> typeArgs;
+        LexerToken endTypeApplyToken = identToken;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            nextToken(); // accept '[' token
+            typeArgs = parseTypeArgList();
+            current = currentToken;
+            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
+                throw new ParserError(R_BRACKET_EXPECTED, current);
+            }
+            endTypeApplyToken = current;
+            nextToken(); // accept ']' token
+        } else {
+            typeArgs = List.of();
+        }
+        return new TypeApply(name, typeArgs, identToken.adjoin(endTypeApplyToken));
+    }
+
     private List<Type> parseTypeArgList() {
         List<Type> args = new ArrayList<>();
         Type arg = parseUnionType();
@@ -1909,14 +1909,18 @@ public final class Parser {
             LexerToken identToken = current;
             current = nextToken(); // accept IDENT token
             if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-                return parseApplyType(identToken);
+                return parseTypeApply(identToken);
             } else {
                 Ident name = tokenToIdent(identToken);
-                IdentAsExpr identAsExpr = new IdentAsExpr(name, identToken);
+                Type type = Type.fromIdent(name, identToken);
                 if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
-                    return parseStructType(identAsExpr);
+                    if (type instanceof LabelType labelType) {
+                        return parseStructType(labelType);
+                    } else {
+                        throw new ParserError(LABEL_TYPE_EXPECTED, type);
+                    }
                 } else {
-                    return identAsExpr;
+                    return type;
                 }
             }
         } else if (current.isKeyword() || current.isStr() || current.isInt()) {
@@ -1927,19 +1931,19 @@ public final class Parser {
             } else {
                 Type typeExpr;
                 if (current.isKeyword(TRUE_VALUE)) {
-                    typeExpr = new BoolAsExpr(Bool.TRUE, current);
+                    typeExpr = new BoolAsType(Bool.TRUE, current);
                 } else if (current.isKeyword(FALSE_VALUE)) {
-                    typeExpr = new BoolAsExpr(Bool.FALSE, current);
+                    typeExpr = new BoolAsType(Bool.FALSE, current);
                 } else if (current.isKeyword(NULL_VALUE)) {
-                    typeExpr = new NullAsExpr(current);
+                    typeExpr = new NullAsType(current);
                 } else if (current.isKeyword(EOF_VALUE)) {
-                    typeExpr = new EofAsExpr(current);
+                    typeExpr = new EofAsType(current);
                 } else if (current.isStr()) {
                     String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
-                    typeExpr = new StrAsExpr(Str.of(substring), current);
+                    typeExpr = new StrAsType(Str.of(substring), current);
                 } else if (current.isInt()) {
                     String symbolText = current.substring();
-                    typeExpr = new IntAsExpr(symbolText, current);
+                    typeExpr = new Int64AsExpr(symbolText, current);
                 } else {
                     throw new ParserError(TYPE_EXPECTED, current);
                 }
@@ -1996,7 +2000,20 @@ public final class Parser {
         if (right == null) {
             throw new ParserError(EXPR_EXPECTED, currentToken);
         }
-        return new UnaryExpr(unaryOper, right, operToken.adjoin(right));
+        // If the operator is '-' and the operand is an unsigned number, simplify the expression as a negative number.
+        if (unaryOper == UnaryOper.NEGATE && right instanceof NumAsExpr numAsExpr) {
+            if (numAsExpr instanceof Int64AsExpr intAsExpr && Character.isDigit(intAsExpr.intText().charAt(0))) {
+                return new Int64AsExpr("-" + intAsExpr.intText(), operToken.adjoin(intAsExpr));
+            } else if (numAsExpr instanceof Flt64AsExpr fltAsExpr && Character.isDigit(fltAsExpr.fltText().charAt(0))) {
+                return new Flt64AsExpr("-" + fltAsExpr.fltText(), operToken.adjoin(fltAsExpr));
+            } else if (numAsExpr instanceof Dec128AsExpr decAsExpr && Character.isDigit(decAsExpr.decText().charAt(0))) {
+                return new Dec128AsExpr("-" + decAsExpr.decText(), operToken.adjoin(decAsExpr));
+            } else {
+                return new UnaryExpr(unaryOper, right, operToken.adjoin(right));
+            }
+        } else {
+            return new UnaryExpr(unaryOper, right, operToken.adjoin(right));
+        }
     }
 
     private Type parseUnionType() {
@@ -2053,12 +2070,12 @@ public final class Parser {
         if (current.isInt()) {
             nextToken(); // accept Int token
             String symbolText = current.substring();
-            return new IntAsExpr(symbolText, current);
+            return new Int64AsExpr(symbolText, current);
         }
         if (current.isFlt()) {
             nextToken();  // accept Flt token
             String symbolText = current.substring();
-            return new FltAsExpr(symbolText, current);
+            return new Flt64AsExpr(symbolText, current);
         }
         if (current.isDec()) {
             nextToken();  // accept Dec token

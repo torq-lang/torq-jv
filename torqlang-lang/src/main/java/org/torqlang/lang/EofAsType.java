@@ -7,28 +7,31 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.klvm.Eof;
+import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-import java.util.List;
+public final class EofAsType extends AbstractLang implements EofType, ValueAsType, LabelType {
 
-import static org.torqlang.util.ListTools.nullSafeCopyOf;
-
-public final class TupleType extends AbstractLang implements StructType {
-
-    public final LabelType label;
-    public final List<Type> values;
-
-    public TupleType(LabelType label, List<Type> values, SourceSpan sourceSpan) {
+    public EofAsType(SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.label = label;
-        this.values = nullSafeCopyOf(values);
     }
 
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitTupleType(this, state);
+        return visitor.visitEofAsType(this, state);
+    }
+
+    @Override
+    public final Ident typeIdent() {
+        return EofType.IDENT;
+    }
+
+    @Override
+    public final Eof typeValue() {
+        return Eof.SINGLETON;
     }
 
 }
