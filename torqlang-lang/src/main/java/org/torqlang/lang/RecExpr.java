@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class RecExpr extends AbstractLang implements Expr {
+public final class RecExpr extends AbstractLang implements StructExpr {
 
     private final Expr label;
     private final List<FieldExpr> fields;
@@ -30,8 +30,8 @@ public final class RecExpr extends AbstractLang implements Expr {
     }
 
     public static Complete checkComplete(StmtOrExpr expr) {
-        if (expr instanceof ValueAsExpr valueAsExpr) {
-            return valueAsExpr.value();
+        if (expr instanceof ScalarAsExpr scalarAsExpr) {
+            return scalarAsExpr.value();
         }
         if (expr instanceof RecExpr recExpr) {
             return recExpr.checkComplete();

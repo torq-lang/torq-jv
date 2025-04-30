@@ -25,7 +25,7 @@ public class TestParserFuncType {
         assertInstanceOf(TypeStmt.class, sox);
         TypeStmt typeStmt = (TypeStmt) sox;
         assertSourceSpan(typeStmt, 0, 52);
-        assertEquals("addInt32s", typeStmt.name.ident.name);
+        assertEquals("addInt32s", typeStmt.name.typeIdent().name);
         assertSourceSpan(typeStmt.name, 5, 14);
         assertSourceSpan(typeStmt.body, 17, 52);
         assertInstanceOf(FuncType.class, typeStmt.body);

@@ -7,20 +7,21 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Int64;
 import org.torqlang.util.SourceSpan;
 
-public final class IntAsPat extends AbstractLang implements FeatureValueAsPat {
+public final class Int64AsType extends AbstractLang implements Int64Type, NumAsType {
 
     private String intText;
     private Int64 int64;
 
-    public IntAsPat(Int64 int64, SourceSpan sourceSpan) {
+    public Int64AsType(Int64 int64, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.int64 = int64;
     }
 
-    public IntAsPat(String intText, SourceSpan sourceSpan) {
+    public Int64AsType(String intText, SourceSpan sourceSpan) {
         super(sourceSpan);
         // We must hold intermediate integers as strings during parsing. We can't hold the absolute value
         // of `Long.MIN_VALUE`, it's too large.
@@ -31,28 +32,25 @@ public final class IntAsPat extends AbstractLang implements FeatureValueAsPat {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitIntAsPat(this, state);
-    }
-
-    public final Int64 int64() {
-        if (intText != null) {
-            int64 = NumAsExpr.parseAsInt32OrInt64(intText);
-            intText = null;
-        }
-        return int64;
+        return visitor.visitInt64AsType(this, state);
     }
 
     public final String intText() {
         return intText;
     }
 
-    public final boolean isNegative() {
-        return intText != null ? intText.charAt(0) == '-' : int64.longValue() < 0;
+    @Override
+    public final Ident typeIdent() {
+        return Int64Type.IDENT;
     }
 
     @Override
-    public final Int64 value() {
-        return int64();
+    public final Int64 typeValue() {
+        if (intText != null) {
+            int64 = NumAsExpr.parseAsInt32OrInt64(intText);
+            intText = null;
+        }
+        return int64;
     }
 
 }

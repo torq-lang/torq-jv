@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Int64;
 import org.torqlang.util.SourceSpan;
 
-public final class Int64AsExpr extends AbstractLang implements NumAsExpr, FeatureExpr, MetaFeature, MetaValue, FeatureType {
+public final class Int64AsExpr extends AbstractLang implements NumAsExpr, FeatureExpr, MetaFeature, MetaValue {
 
     private String intText;
     private Int64 int64;

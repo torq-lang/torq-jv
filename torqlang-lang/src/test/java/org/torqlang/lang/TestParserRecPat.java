@@ -63,7 +63,7 @@ public class TestParserRecPat {
         // Test features
         assertEquals(1, recPat.fields().size());
         FieldPat fieldPat = recPat.fields().get(0);
-        assertEquals(Int32.I32_0, asFeatureValueAsPat(fieldPat.feature).value());
+        assertEquals(Int32.I32_0, asFeatureAsPat(fieldPat.feature).value());
         assertEquals(Ident.create("a"), asIdentAsPat(fieldPat.value).ident);
         // Test toString format
         String expectedFormat = "var {0: a} = x";
@@ -96,7 +96,7 @@ public class TestParserRecPat {
         // Test features
         assertEquals(1, recPat.fields().size());
         FieldPat fieldPat = recPat.fields().get(0);
-        assertEquals(Int32.I32_0, asFeatureValueAsPat(fieldPat.feature).value());
+        assertEquals(Int32.I32_0, asFeatureAsPat(fieldPat.feature).value());
         assertEquals(Ident.create("a"), asIdentAsPat(fieldPat.value).ident);
         // Test toString format
         String expectedFormat = "var {0: a, ...} = x";
@@ -129,10 +129,10 @@ public class TestParserRecPat {
         // Test features
         assertEquals(2, recPat.fields().size());
         FieldPat fieldPat = recPat.fields().get(0);
-        assertEquals(Int32.I32_0, asFeatureValueAsPat(fieldPat.feature).value());
+        assertEquals(Int32.I32_0, asFeatureAsPat(fieldPat.feature).value());
         assertEquals(Ident.create("a"), asIdentAsPat(fieldPat.value).ident);
         fieldPat = recPat.fields().get(1);
-        assertEquals(Int32.I32_1, asFeatureValueAsPat(fieldPat.feature).value());
+        assertEquals(Int32.I32_1, asFeatureAsPat(fieldPat.feature).value());
         assertEquals(Ident.create("b"), asIdentAsPat(fieldPat.value).ident);
         // Test toString format
         String expectedFormat = "var {0: a, 1: b} = x";
@@ -165,10 +165,10 @@ public class TestParserRecPat {
         // Test features
         assertEquals(2, recPat.fields().size());
         FieldPat fieldPat = recPat.fields().get(0);
-        assertEquals(Int32.I32_0, asFeatureValueAsPat(fieldPat.feature).value());
+        assertEquals(Int32.I32_0, asFeatureAsPat(fieldPat.feature).value());
         assertEquals(Ident.create("a"), asIdentAsPat(fieldPat.value).ident);
         fieldPat = recPat.fields().get(1);
-        assertEquals(Int32.I32_1, asFeatureValueAsPat(fieldPat.feature).value());
+        assertEquals(Int32.I32_1, asFeatureAsPat(fieldPat.feature).value());
         IdentAsPat bPat = asIdentAsPat(fieldPat.value);
         assertTrue(bPat.escaped);
         assertEquals(Ident.create("b"), bPat.ident);

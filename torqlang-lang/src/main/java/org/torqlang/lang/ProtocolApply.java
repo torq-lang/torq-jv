@@ -13,12 +13,12 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class ApplyProtocol extends AbstractLang implements Protocol {
+public final class ProtocolApply extends AbstractLang implements Protocol {
 
     public final IdentAsExpr name;
     public final List<Protocol> protocolArgs;
 
-    public ApplyProtocol(IdentAsExpr name,
+    public ProtocolApply(IdentAsExpr name,
                          List<? extends Protocol> protocolArgs,
                          SourceSpan sourceSpan)
     {
@@ -31,7 +31,7 @@ public final class ApplyProtocol extends AbstractLang implements Protocol {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitApplyProtocol(this, state);
+        return visitor.visitProtocolApply(this, state);
     }
 
 }

@@ -27,6 +27,7 @@ public final class ParserText {
     public static final String LABEL_TYPE_EXPECTED = "Label type expected";
     public static final String META_FEATURE_EXPECTED = "Meta feature expected";
     public static final String META_VALUE_EXPECTED = "Meta value expected";
+    public static final String NUMBER_EXPECTED = "Number expected";
     public static final String OF_EXPECTED = "'of' expected";
     public static final String PACKAGE_EXPECTED = "'package' expected";
     public static final String PAT_EXPECTED = "Pattern expected";

@@ -361,8 +361,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             if (type instanceof IdentAsType identAsType) {
                 declaredType = typeEnv.get(identAsType.typeIdent());
             } else {
-                IdentAsExpr identAsExpr = (IdentAsExpr) type;
-                declaredType = typeEnv.get(identAsExpr.ident);
+                throw new NeedsImpl();
             }
             if (declaredType == null) {
                 throw new TypeNotFoundError(lang);
@@ -402,6 +401,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitAnyType(AnyType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitApplyLang(ApplyLang lang, TypeScope scope) throws Exception {
         lang.setTypeScope(scope);
         return visitFuncApp(lang, scope.typeEnv(),
@@ -412,7 +416,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitApplyProtocol(ApplyProtocol lang, TypeScope scope) {
+    public final TypeSubst visitArrayType(ArrayType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -487,12 +491,32 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitCharAsType(CharAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitCharType(CharType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitContinueStmt(ContinueStmt lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
     @Override
     public final TypeSubst visitDec128AsExpr(Dec128AsExpr lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitDec128AsType(Dec128AsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitDec128Type(Dec128Type lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -537,7 +561,27 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitFlt32AsType(Flt32AsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitFlt32Type(Flt32Type lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitFlt64AsExpr(Flt64AsExpr lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitFlt64AsType(Flt64AsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitFlt64Type(Flt64Type lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -767,6 +811,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitIdentAsProtocol(IdentAsProtocol lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitIdentAsType(IdentAsType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -875,13 +924,33 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitInt32AsType(Int32AsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitInt32Type(Int32Type lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitInt64AsExpr(Int64AsExpr lang, TypeScope scope) {
         return visitInt(lang, lang.int64(), scope);
     }
 
     @Override
-    public final TypeSubst visitIntAsPat(IntAsPat lang, TypeScope scope) {
+    public final TypeSubst visitInt64AsPat(Int64AsPat lang, TypeScope scope) {
         return visitInt(lang, lang.int64(), scope);
+    }
+
+    @Override
+    public final TypeSubst visitInt64AsType(Int64AsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitInt64Type(Int64Type lang, TypeScope scope) {
+        throw new NeedsImpl();
     }
 
     @Override
@@ -975,6 +1044,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitProtocolApply(ProtocolApply lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitProtocolAskHandler(ProtocolAskHandler lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -1019,6 +1093,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitRecType(RecType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitRecTypeExpr(RecTypeExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -1135,6 +1214,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitTokenType(TokenType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitTryLang(TryLang lang, TypeScope scope) {
         throw new NeedsImpl();
     }
@@ -1151,6 +1235,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitTupleType(TupleType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitTupleTypeExpr(TupleTypeExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-public final class TupleExpr extends AbstractLang implements Expr {
+public final class TupleExpr extends AbstractLang implements StructExpr {
 
     private final Expr label;
     private final List<StmtOrExpr> values;

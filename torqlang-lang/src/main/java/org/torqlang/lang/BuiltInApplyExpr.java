@@ -8,5 +8,4 @@
 package org.torqlang.lang;
 
 public interface BuiltInApplyExpr extends Expr {
-
 }

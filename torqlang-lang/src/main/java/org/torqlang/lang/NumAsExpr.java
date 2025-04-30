@@ -8,9 +8,8 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.*;
-import org.torqlang.util.SourceSpan;
 
-public interface NumAsExpr extends ValueAsExpr {
+public interface NumAsExpr extends ScalarAsExpr {
 
     static Num parseAsFlt32OrFlt64OrDec128(String symbolText) {
         if (symbolText.endsWith("F") || symbolText.endsWith("f")) {

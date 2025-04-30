@@ -11,7 +11,7 @@ import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Str;
 import org.torqlang.util.SourceSpan;
 
-public final class StrAsType extends AbstractLang implements StrType, ValueAsType, LabelType {
+public final class StrAsType extends AbstractLang implements StrType, ScalarAsType {
 
     public final Str str;
 

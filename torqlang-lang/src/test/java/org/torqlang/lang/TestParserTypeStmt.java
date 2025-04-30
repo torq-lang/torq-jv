@@ -32,12 +32,11 @@ public class TestParserTypeStmt {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.ident.name);
+            assertEquals("MyArray", typeStmt.name.typeIdent().name);
             assertEquals(0, typeStmt.typeParams.size());
             TypeApply typeApply = (TypeApply) typeStmt.body;
             assertEquals(1, typeApply.typeArgs.size());
-            IdentAsExpr identAsExpr = (IdentAsExpr) typeApply.typeArgs.get(0);
-            assertEquals("Int32", identAsExpr.ident.name);
+            assertEquals("Int32", asIdentAsType(typeApply.typeArgs.get(0)).typeIdent().name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }
@@ -83,10 +82,10 @@ public class TestParserTypeStmt {
             String actualFormat = sox.toString();
             assertEquals(expectedFormat, actualFormat);
             TypeStmt typeStmt = getFromSeq(asBeginLang(sox).body, 0);
-            assertEquals("Customer", typeStmt.name.ident.name);
+            assertEquals("Customer", typeStmt.name.typeIdent().name);
             assertEquals(0, typeStmt.typeParams.size());
-            assertInstanceOf(RecType.class, typeStmt.body);
-            RecType recType = (RecType) typeStmt.body;
+            assertInstanceOf(RecTypeExpr.class, typeStmt.body);
+            RecTypeExpr recType = (RecTypeExpr) typeStmt.body;
             assertNull(recType.label);
             assertEquals(2, recType.fields.size());
             assertEquals(Str.of("email"), asStrAsType(recType.fields.get(0).feature).typeValue());
@@ -97,7 +96,7 @@ public class TestParserTypeStmt {
             assertEquals(1, varStmt.varDecls.size());
             IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
             assertEquals("c", identVarDecl.identAsPat.ident.name);
-            assertEquals("Customer", asIdentAsExpr(identVarDecl.identAsPat.type).ident.name);
+            assertEquals("Customer", asIdentAsType(identVarDecl.identAsPat.type).typeIdent().name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }
@@ -121,20 +120,20 @@ public class TestParserTypeStmt {
             String actualFormat = sox.toString();
             assertEquals(expectedFormat, actualFormat);
             TypeStmt typeStmt = getFromSeq(asBeginLang(sox).body, 0);
-            assertEquals("Path", typeStmt.name.ident.name);
+            assertEquals("Path", typeStmt.name.typeIdent().name);
             assertEquals(0, typeStmt.typeParams.size());
-            assertInstanceOf(TupleType.class, typeStmt.body);
-            TupleType tupleType = (TupleType) typeStmt.body;
+            assertInstanceOf(TupleTypeExpr.class, typeStmt.body);
+            TupleTypeExpr tupleType = (TupleTypeExpr) typeStmt.body;
             assertNull(tupleType.label);
             assertEquals(3, tupleType.values.size());
             assertInstanceOf(StrType.class, tupleType.values.get(0));
-            assertEquals(Ident.create("Int32"), asIdentAsExpr(tupleType.values.get(1)).ident);
+            assertEquals(Ident.create("Int32"), asIdentAsType(tupleType.values.get(1)).typeIdent());
             assertEquals(Ident.create("Bool"), asBoolType(tupleType.values.get(2)).typeIdent());
             VarStmt varStmt = getFromSeq(asBeginLang(sox).body, 1);
             assertEquals(1, varStmt.varDecls.size());
             IdentVarDecl identVarDecl = (IdentVarDecl) varStmt.varDecls.get(0);
             assertEquals("p", identVarDecl.identAsPat.ident.name);
-            assertEquals("Path", asIdentAsExpr(identVarDecl.identAsPat.type).ident.name);
+            assertEquals("Path", asIdentAsType(identVarDecl.identAsPat.type).typeIdent().name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }

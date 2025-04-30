@@ -20,8 +20,6 @@ public interface NullType extends IdentAsType, ScalarType, LabelType {
     static NullType create(SourceSpan sourceSpan) {
         return new NullTypeImpl(sourceSpan);
     }
-
-    Ident typeIdent();
 }
 
 final class NullTypeImpl extends AbstractLang implements NullType {

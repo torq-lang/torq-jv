@@ -34,7 +34,7 @@ public class TestParserCaseLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- caseClause
         assertSourceSpan(caseLang.caseClause, 7, 21);
-        assertInstanceOf(IntAsPat.class, caseLang.caseClause.pat);
+        assertInstanceOf(Int64AsPat.class, caseLang.caseClause.pat);
         assertSourceSpan(caseLang.caseClause.pat, 10, 11);
         // Test part -- caseClause body
         assertEquals(1, caseLang.caseClause.body.list.size());
@@ -71,7 +71,7 @@ public class TestParserCaseLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- caseClause
         assertSourceSpan(caseLang.caseClause, 7, 21);
-        assertInstanceOf(IntAsPat.class, caseLang.caseClause.pat);
+        assertInstanceOf(Int64AsPat.class, caseLang.caseClause.pat);
         assertSourceSpan(caseLang.caseClause.pat, 10, 11);
         // Test part -- caseClause body
         assertEquals(1, caseLang.caseClause.body.list.size());
@@ -82,7 +82,7 @@ public class TestParserCaseLang {
         assertEquals(1, caseLang.altCaseClauses.size());
         CaseClause altCaseClause = caseLang.altCaseClauses.get(0);
         assertSourceSpan(altCaseClause, 22, 37);
-        assertInstanceOf(IntAsPat.class, altCaseClause.pat);
+        assertInstanceOf(Int64AsPat.class, altCaseClause.pat);
         assertSourceSpan(altCaseClause.pat, 25, 26);
         // Test part -- elseSeq
         assertNotNull(caseLang.elseSeq);
@@ -115,7 +115,7 @@ public class TestParserCaseLang {
         assertEquals(expectedFormat, actualFormat);
         // Test part -- caseClause
         assertSourceSpan(caseLang.caseClause, 7, 21);
-        assertInstanceOf(IntAsPat.class, caseLang.caseClause.pat);
+        assertInstanceOf(Int64AsPat.class, caseLang.caseClause.pat);
         assertSourceSpan(caseLang.caseClause.pat, 10, 11);
         // Test part -- caseClause body
         assertEquals(1, caseLang.caseClause.body.list.size());

@@ -43,8 +43,8 @@ public class TestParserPatExpr {
         // Test expected tuple values
         assertEquals(8, tp.values().size());
         assertEquals(Ident.create("a"), asIdentAsPat(tp.values().get(0)).ident);
-        assertEquals(Int32.I32_1, asIntAsPat(tp.values().get(1)).value());
-        assertEquals(Int64.I64_1, asIntAsPat(tp.values().get(2)).value());
+        assertEquals(Int32.I32_1, asInt64AsPat(tp.values().get(1)).value());
+        assertEquals(Int64.I64_1, asInt64AsPat(tp.values().get(2)).value());
         assertEquals(Bool.FALSE, asBoolAsPat(tp.values().get(3)).value());
         assertEquals(Bool.TRUE, asBoolAsPat(tp.values().get(4)).value());
         assertEquals(Null.SINGLETON, asNullAsPat(tp.values().get(5)).value());
@@ -80,8 +80,8 @@ public class TestParserPatExpr {
         // Test expected tuple values
         assertEquals(8, tp.values().size());
         assertEquals(Ident.create("a"), asIdentAsPat(tp.values().get(0)).ident);
-        assertEquals(Int32.I32_1, asIntAsPat(tp.values().get(1)).value());
-        assertEquals(Int64.I64_1, asIntAsPat(tp.values().get(2)).value());
+        assertEquals(Int32.I32_1, asInt64AsPat(tp.values().get(1)).value());
+        assertEquals(Int64.I64_1, asInt64AsPat(tp.values().get(2)).value());
         assertEquals(Bool.FALSE, asBoolAsPat(tp.values().get(3)).value());
         assertEquals(Bool.TRUE, asBoolAsPat(tp.values().get(4)).value());
         assertEquals(Null.SINGLETON, asNullAsPat(tp.values().get(5)).value());

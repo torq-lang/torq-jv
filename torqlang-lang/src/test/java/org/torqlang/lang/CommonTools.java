@@ -57,19 +57,14 @@ public class CommonTools {
         return (EofAsPat) value;
     }
 
-    static FeatureValueAsPat asFeatureValueAsPat(Object value) {
-        assertInstanceOf(FeatureValueAsPat.class, value);
-        return (FeatureValueAsPat) value;
+    static FeatureAsPat asFeatureAsPat(Object value) {
+        assertInstanceOf(FeatureAsPat.class, value);
+        return (FeatureAsPat) value;
     }
 
     static Flt64AsExpr asFlt64AsExpr(Object value) {
         assertInstanceOf(Flt64AsExpr.class, value);
         return (Flt64AsExpr) value;
-    }
-
-    static GroupExpr asGroupExpr(Object value) {
-        assertInstanceOf(GroupExpr.class, value);
-        return (GroupExpr) value;
     }
 
     static IdentAsExpr asIdentAsExpr(Object value) {
@@ -82,6 +77,11 @@ public class CommonTools {
         return (IdentAsPat) value;
     }
 
+    static IdentAsType asIdentAsType(Object value) {
+        assertInstanceOf(IdentAsType.class, value);
+        return (IdentAsType) value;
+    }
+
     static InitVarDecl asInitVarDecl(Object value) {
         assertInstanceOf(InitVarDecl.class, value);
         return (InitVarDecl) value;
@@ -92,9 +92,9 @@ public class CommonTools {
         return (Int64AsExpr) value;
     }
 
-    static IntAsPat asIntAsPat(Object value) {
-        assertInstanceOf(IntAsPat.class, value);
-        return (IntAsPat) value;
+    static Int64AsPat asInt64AsPat(Object value) {
+        assertInstanceOf(Int64AsPat.class, value);
+        return (Int64AsPat) value;
     }
 
     static NullAsExpr asNullAsExpr(Object value) {

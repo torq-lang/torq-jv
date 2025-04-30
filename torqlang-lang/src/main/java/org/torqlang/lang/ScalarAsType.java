@@ -9,8 +9,6 @@ package org.torqlang.lang;
 
 import org.torqlang.klvm.Complete;
 
-public interface ValueAsExpr extends Expr {
-
-    Complete value();
-
+public interface ScalarAsType extends Type {
+    Complete typeValue();
 }

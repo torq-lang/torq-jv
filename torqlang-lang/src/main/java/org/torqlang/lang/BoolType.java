@@ -20,8 +20,6 @@ public interface BoolType extends IdentAsType, ScalarType, LabelType {
     static BoolType create(SourceSpan sourceSpan) {
         return new BoolTypeImpl(sourceSpan);
     }
-
-    Ident typeIdent();
 }
 
 final class BoolTypeImpl extends AbstractLang implements BoolType {

@@ -20,8 +20,6 @@ public interface StrType extends IdentAsType, ScalarType, LabelType {
     static StrType create(SourceSpan sourceSpan) {
         return new StrTypeImpl(sourceSpan);
     }
-
-    Ident typeIdent();
 }
 
 final class StrTypeImpl extends AbstractLang implements StrType {

@@ -15,10 +15,10 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class TypeApply extends AbstractLang implements Type {
 
-    public final IdentAsExpr name;
+    public final IdentAsType name;
     public final List<Type> typeArgs;
 
-    public TypeApply(IdentAsExpr name,
+    public TypeApply(IdentAsType name,
                      List<? extends Type> typeArgs,
                      SourceSpan sourceSpan)
     {

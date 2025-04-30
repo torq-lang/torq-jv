@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Null;
 import org.torqlang.util.SourceSpan;
 
-public final class NullAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, MetaFeature, MetaValue {
+public final class NullAsExpr extends AbstractLang implements ScalarAsExpr, LabelExpr, MetaFeature, MetaValue {
 
     public NullAsExpr(SourceSpan sourceSpan) {
         super(sourceSpan);

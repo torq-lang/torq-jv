@@ -11,7 +11,7 @@ import org.torqlang.klvm.Complete;
 import org.torqlang.klvm.Str;
 import org.torqlang.util.SourceSpan;
 
-public final class StrAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, MetaFeature, MetaValue {
+public final class StrAsExpr extends AbstractLang implements ScalarAsExpr, LabelExpr, MetaFeature, MetaValue {
 
     public final Str str;
 

@@ -7,41 +7,33 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Feature;
-import org.torqlang.klvm.FeatureComparator;
+import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-import java.util.ArrayList;
-import java.util.List;
+public interface RecType extends StructType, IdentAsType {
+    String NAME = "Rec";
+    Ident IDENT = Ident.create(NAME);
 
-import static org.torqlang.util.ListTools.nullSafeCopyOf;
+    RecType SINGLETON = new RecTypeImpl(SourceSpan.emptySourceSpan());
 
-public final class RecType extends AbstractLang implements Type {
-
-    public final LabelType label;
-    public final List<FieldType> fields;
-
-    public RecType(LabelType label, List<FieldType> fields, SourceSpan sourceSpan) {
-        super(sourceSpan);
-        this.label = label;
-        this.fields = nullSafeCopyOf(sort(fields));
+    static RecType create(SourceSpan sourceSpan) {
+        return new RecTypeImpl(sourceSpan);
     }
+}
 
-    private static List<FieldType> sort(List<FieldType> fields) {
-        ArrayList<FieldType> answer = new ArrayList<>(fields);
-        answer.sort((a, b) -> {
-            ValueAsExpr ax = (ValueAsExpr) a.feature;
-            ValueAsExpr bx = (ValueAsExpr) b.feature;
-            return FeatureComparator.SINGLETON.compare((Feature) ax.value(), (Feature) bx.value());
-        });
-        return answer;
+final class RecTypeImpl extends AbstractLang implements RecType {
+
+    RecTypeImpl(SourceSpan sourceSpan) {
+        super(sourceSpan);
     }
 
     @Override
-    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
-        throws Exception
-    {
+    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
         return visitor.visitRecType(this, state);
     }
 
+    @Override
+    public final Ident typeIdent() {
+        return RecType.IDENT;
+    }
 }

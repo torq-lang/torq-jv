@@ -20,8 +20,6 @@ public interface EofType extends IdentAsType, ScalarType, LabelType {
     static EofType create(SourceSpan sourceSpan) {
         return new EofTypeImpl(sourceSpan);
     }
-
-    Ident typeIdent();
 }
 
 final class EofTypeImpl extends AbstractLang implements EofType {

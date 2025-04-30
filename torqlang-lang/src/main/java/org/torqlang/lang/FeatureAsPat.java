@@ -7,8 +7,10 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Complete;
+import org.torqlang.klvm.Feature;
 
-public interface ValueAsType extends Type {
-    Complete typeValue();
+public interface FeatureAsPat extends FeaturePat {
+
+    Feature value();
+
 }

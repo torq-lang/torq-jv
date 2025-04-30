@@ -268,27 +268,6 @@ public final class Parser {
         return answer;
     }
 
-    private ApplyProtocol parseApplyProtocol(LexerToken identToken) {
-        Ident ident = tokenToIdent(identToken);
-        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
-        LexerToken current = currentToken;
-        List<Protocol> protocolArgs;
-        LexerToken endApplyProtocol = identToken;
-        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-            nextToken(); // accept '[' token
-            protocolArgs = parseProtocolArgList();
-            current = currentToken;
-            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
-                throw new ParserError(R_BRACKET_EXPECTED, current);
-            }
-            endApplyProtocol = current;
-            nextToken(); // accept ']' token
-        } else {
-            protocolArgs = List.of();
-        }
-        return new ApplyProtocol(name, protocolArgs, identToken.adjoin(endApplyProtocol));
-    }
-
     private List<StmtOrExpr> parseArgList() {
         List<StmtOrExpr> args = new ArrayList<>();
         StmtOrExpr arg = parseStmtOrExpr();
@@ -590,7 +569,7 @@ public final class Parser {
             }
         } else {
             int nextFeature = nextImpliedFeature.getAndAdd(1);
-            featurePat = new IntAsPat(Int32.of(nextFeature), featureOrValuePat.toSourceBegin());
+            featurePat = new Int64AsPat(Int32.of(nextFeature), featureOrValuePat.toSourceBegin());
             valuePat = featureOrValuePat;
         }
         return new FieldPat(featurePat, valuePat, featurePat.adjoin(valuePat));
@@ -616,7 +595,7 @@ public final class Parser {
             }
         } else {
             int nextFeature = nextImpliedFeature.getAndAdd(1);
-            featureType = new Int64AsExpr(Int32.of(nextFeature), featureOrValueType.toSourceBegin());
+            featureType = new Int32AsType(Int32.of(nextFeature), featureOrValueType.toSourceBegin());
             valueType = featureOrValueType;
         }
         return new FieldType(featureType, valueType, featureType.adjoin(valueType));
@@ -872,6 +851,39 @@ public final class Parser {
         return new MetaField(feature, value, feature.adjoin(value));
     }
 
+    /*
+     * Note that parsing meta numbers differs from parsing number expressions. Meta numbers are simply unsigned or
+     * negative signed literals. In contrast, negative numer expressions are unary expressions such that `--1` is a
+     * valid number expression but not a valid meta number.
+     */
+    private MetaValue parseMetaNum(LexerToken current) {
+        boolean negative = false;
+        if (current.isOneCharSymbol(SUBTRACT_OPER_CHAR)) {
+            negative = true;
+            current = nextToken();
+        }
+        if (current.isInt()) {
+            nextToken(); // accept Int token
+            String symbolText = negative ? "-" + current.substring() : current.substring();
+            return new Int64AsExpr(symbolText, current);
+        }
+        if (current.isFlt()) {
+            nextToken();  // accept Flt token
+            String symbolText = negative ? "-" + current.substring() : current.substring();
+            return new Flt64AsExpr(symbolText, current);
+        }
+        if (current.isDec()) {
+            nextToken();  // accept Dec token
+            String symbolText = negative ? "-" + current.substring() : current.substring();
+            return new Dec128AsExpr(symbolText, current);
+        }
+        if (negative) {
+            throw new ParserError(ParserText.NUMBER_EXPECTED, current);
+        } else {
+            return null;
+        }
+    }
+
     private MetaRec parseMetaRec(LabelExpr label) {
         LexerToken recToken = currentToken;
         nextToken(); // accept '{' token
@@ -958,6 +970,9 @@ public final class Parser {
             if (current.firstCharEquals(L_BRACKET_CHAR)) {
                 return parseMetaTuple(null);
             }
+            if (current.firstCharEquals(SUBTRACT_OPER_CHAR)) {
+                return parseMetaNum(current);
+            }
             return null;
         }
         if (current.isStr()) {
@@ -979,20 +994,9 @@ public final class Parser {
                 throw new ParserError(META_VALUE_EXPECTED, current);
             }
         }
-        if (current.isInt()) {
-            nextToken(); // accept Int token
-            String symbolText = current.substring();
-            return new Int64AsExpr(symbolText, current);
-        }
-        if (current.isFlt()) {
-            nextToken();  // accept Flt token
-            String symbolText = current.substring();
-            return new Flt64AsExpr(symbolText, current);
-        }
-        if (current.isDec()) {
-            nextToken();  // accept Dec token
-            String symbolText = current.substring();
-            return new Dec128AsExpr(symbolText, current);
+        MetaValue metaNum = parseMetaNum(current);
+        if (metaNum != null) {
+            return metaNum;
         }
         if (current.isKeyword()) {
             if (current.substringEquals(TRUE_VALUE)) {
@@ -1157,7 +1161,7 @@ public final class Parser {
         if (current.isInt()) {
             nextToken(); // accept Int token
             String symbolText = current.substring();
-            return new IntAsPat(symbolText, current);
+            return new Int64AsPat(symbolText, current);
         }
         if (current.substringEquals(TRUE_VALUE)) {
             LexerToken next = nextToken();  // accept 'true' token
@@ -1304,6 +1308,27 @@ public final class Parser {
         return new ProtocolStmt(name, protocolParams, body, typeToken.adjoin(body));
     }
 
+    private ProtocolApply parseProtocolApply(LexerToken identToken) {
+        Ident ident = tokenToIdent(identToken);
+        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
+        LexerToken current = currentToken;
+        List<Protocol> protocolArgs;
+        LexerToken endProtocolApply = identToken;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            nextToken(); // accept '[' token
+            protocolArgs = parseProtocolArgList();
+            current = currentToken;
+            if (!current.isOneCharSymbol(R_BRACKET_CHAR)) {
+                throw new ParserError(R_BRACKET_EXPECTED, current);
+            }
+            endProtocolApply = current;
+            nextToken(); // accept ']' token
+        } else {
+            protocolArgs = List.of();
+        }
+        return new ProtocolApply(name, protocolArgs, identToken.adjoin(endProtocolApply));
+    }
+
     private List<Protocol> parseProtocolArgList() {
         List<Protocol> args = new ArrayList<>();
         Protocol arg = parseIntersectionProtocol();
@@ -1324,12 +1349,12 @@ public final class Parser {
         if (current.isIdent()) {
             LexerToken identToken = current;
             Ident name = tokenToIdent(current);
-            IdentAsExpr identAsExpr = new IdentAsExpr(name, identToken);
+            IdentAsProtocol identAsProtocol = IdentAsProtocol.create(name, identToken);
             current = nextToken(); // accept IDENT token
             if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-                return parseApplyProtocol(identToken);
+                return parseProtocolApply(identToken);
             } else {
-                return identAsExpr;
+                return identAsProtocol;
             }
         } else if (current.isOneCharSymbol(L_BRACE_CHAR)) {
             return parseProtocolStruct();
@@ -1472,7 +1497,7 @@ public final class Parser {
         return new RecPat(label, fieldPats, partialArity, recSpan);
     }
 
-    private Type parseRecType(LabelType label) {
+    private Type parseRecTypeExpr(LabelType label) {
         LexerToken recToken = currentToken;
         nextToken(); // accept '{' token
         IntegerCounter nextImpliedFeature = new IntegerCounter(0);
@@ -1497,7 +1522,7 @@ public final class Parser {
         }
         nextToken(); // accept '}' token
         SourceSpan recSpan = label == null ? recToken.adjoin(current) : label.adjoin(current);
-        return new RecType(label, fieldTypes, recSpan);
+        return new RecTypeExpr(label, fieldTypes, recSpan);
     }
 
     private StmtOrExpr parseRelational() {
@@ -1671,9 +1696,9 @@ public final class Parser {
         LexerToken current = nextToken(); // accept '#' token
         if (current.isOneCharSymbol()) {
             if (current.firstCharEquals(L_BRACE_CHAR)) {
-                return parseRecType(label);
+                return parseRecTypeExpr(label);
             } else if (current.firstCharEquals(L_BRACKET_CHAR)) {
-                return parseTupleType(label);
+                return parseTupleTypeExpr(label);
             }
         }
         throw new ParserError(L_BRACE_OR_L_BRACKET_EXPECTED, current);
@@ -1811,7 +1836,7 @@ public final class Parser {
         return new TuplePat(label, valuePats, partialArity, tupleSpan);
     }
 
-    private Type parseTupleType(LabelType label) {
+    private Type parseTupleTypeExpr(LabelType label) {
         LexerToken tupleToken = currentToken;
         nextToken(); // accept '[' token
         List<Type> values = new ArrayList<>();
@@ -1835,7 +1860,7 @@ public final class Parser {
         }
         nextToken(); // accept ']' token
         SourceSpan tupleSpan = label == null ? tupleToken.adjoin(current) : label.adjoin(current);
-        return new TupleType(label, values, tupleSpan);
+        return new TupleTypeExpr(label, values, tupleSpan);
     }
 
     private TypeStmt parseType() {
@@ -1844,7 +1869,7 @@ public final class Parser {
         if (!current.isIdent()) {
             throw new ParserError(IDENT_EXPECTED, current);
         }
-        IdentAsExpr name = new IdentAsExpr(tokenToIdent(current), current);
+        IdentAsType name = IdentAsType.create(tokenToIdent(current), current);
         current = nextToken(); // accept IDENT token
         List<TypeParam> typeParams;
         if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
@@ -1861,6 +1886,12 @@ public final class Parser {
         return new TypeStmt(name, typeParams, body, typeToken.adjoin(body));
     }
 
+    /*
+     * Type application occurs in two contexts:
+     *     - Direct type construction using the new operator, such as `var x = new Array[Int32]`
+     *     - Indirect type construction when the type constructor is used through a type alias, such
+     *       as `MyType = Array[Int32]`.
+     */
     private TypeApply parseTypeApply() {
         LexerToken identToken = currentToken;
         nextToken(); // accept IDENT token
@@ -1869,7 +1900,7 @@ public final class Parser {
 
     private TypeApply parseTypeApply(LexerToken identToken) {
         Ident ident = tokenToIdent(identToken);
-        IdentAsExpr name = new IdentAsExpr(ident, currentToken);
+        IdentAsType name = IdentAsType.create(ident, currentToken);
         LexerToken current = currentToken;
         List<Type> typeArgs;
         LexerToken endTypeApplyToken = identToken;
@@ -1943,7 +1974,7 @@ public final class Parser {
                     typeExpr = new StrAsType(Str.of(substring), current);
                 } else if (current.isInt()) {
                     String symbolText = current.substring();
-                    typeExpr = new Int64AsExpr(symbolText, current);
+                    typeExpr = new Int64AsType(symbolText, current);
                 } else {
                     throw new ParserError(TYPE_EXPECTED, current);
                 }
@@ -1959,9 +1990,9 @@ public final class Parser {
                 }
             }
         } else if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-            return parseTupleType(null);
+            return parseTupleTypeExpr(null);
         } else if (current.isOneCharSymbol(L_BRACE_CHAR)) {
-            return parseRecType(null);
+            return parseRecTypeExpr(null);
         }
         return null;
     }

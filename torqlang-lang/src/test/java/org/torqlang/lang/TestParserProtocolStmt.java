@@ -10,6 +10,7 @@ package org.torqlang.lang;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.torqlang.lang.CommonTools.asIdentAsType;
 import static org.torqlang.util.ErrorWithSourceSpan.printWithSourceAndRethrow;
 
 public class TestParserProtocolStmt {
@@ -114,9 +115,7 @@ public class TestParserProtocolStmt {
             IdentAsPat identPat = (IdentAsPat) fieldPat.value;
             assertEquals("sender", identPat.ident.name);
             assertFalse(identPat.escaped);
-            assertInstanceOf(IdentAsExpr.class, identPat.type);
-            IdentAsExpr typeIdentExpr = (IdentAsExpr) identPat.type;
-            assertEquals("T", typeIdentExpr.ident.name);
+            assertEquals("T", asIdentAsType(identPat.type).typeIdent().name);
             assertEquals(Cardinality.ONE, identPat.cardinality);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);

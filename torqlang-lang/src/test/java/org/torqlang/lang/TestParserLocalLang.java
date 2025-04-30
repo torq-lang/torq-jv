@@ -32,7 +32,7 @@ public class TestParserLocalLang {
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
         assertFalse(identVarDecl.identAsPat.escaped);
-        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.type).ident);
+        assertEquals(Ident.create("Int32"), asIdentAsType(identVarDecl.identAsPat.type).typeIdent());
         assertSourceSpan(identVarDecl.identAsPat.type, 9, 14);
         // Test format
         String expectedFormat = """
@@ -59,7 +59,7 @@ public class TestParserLocalLang {
         assertSourceSpan(identVarDecl.identAsPat, 6, 14);
         assertEquals(Ident.create("x"), identVarDecl.identAsPat.ident);
         assertFalse(identVarDecl.identAsPat.escaped);
-        assertEquals(Ident.create("Int32"), asIdentAsExpr(identVarDecl.identAsPat.type).ident);
+        assertEquals(Ident.create("Int32"), asIdentAsType(identVarDecl.identAsPat.type).typeIdent());
         assertSourceSpan(identVarDecl.identAsPat.type, 9, 14);
         assertInstanceOf(InitVarDecl.class, varStmt.varDecls.get(1));
         assertInstanceOf(InitVarDecl.class, varStmt.varDecls.get(1));

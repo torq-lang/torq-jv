@@ -11,7 +11,7 @@ import org.torqlang.klvm.Eof;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class EofAsType extends AbstractLang implements EofType, ValueAsType, LabelType {
+public final class EofAsType extends AbstractLang implements EofType, ScalarAsType {
 
     public EofAsType(SourceSpan sourceSpan) {
         super(sourceSpan);

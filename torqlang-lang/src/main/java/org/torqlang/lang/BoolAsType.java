@@ -11,7 +11,7 @@ import org.torqlang.klvm.Bool;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class BoolAsType extends AbstractLang implements BoolType, ValueAsType, LabelType {
+public final class BoolAsType extends AbstractLang implements BoolType, ScalarAsType {
 
     public final Bool bool;
 

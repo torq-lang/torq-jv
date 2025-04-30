@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Eof;
 import org.torqlang.util.SourceSpan;
 
-public final class EofAsExpr extends AbstractLang implements ValueAsExpr, LabelExpr, MetaFeature, MetaValue {
+public final class EofAsExpr extends AbstractLang implements ScalarAsExpr, LabelExpr, MetaFeature, MetaValue {
 
     public EofAsExpr(SourceSpan sourceSpan) {
         super(sourceSpan);

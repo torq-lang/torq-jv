@@ -7,10 +7,7 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Flt32;
-import org.torqlang.klvm.Ident;
-import org.torqlang.klvm.Int32;
-import org.torqlang.klvm.Str;
+import org.torqlang.klvm.*;
 import org.torqlang.util.FormatterState;
 import org.torqlang.util.NeedsImpl;
 
@@ -107,6 +104,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitAnyType(AnyType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
     public final Void visitApplyLang(ApplyLang lang, FormatterState state) throws Exception {
         lang.proc.accept(this, state.inline());
         state.write('(');
@@ -116,19 +120,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitApplyProtocol(ApplyProtocol lang, FormatterState state) throws Exception {
-        lang.name.accept(this, state.inline());
-        if (lang.protocolArgs != null && !lang.protocolArgs.isEmpty()) {
-            state.write('[');
-            for (int i = 0; i < lang.protocolArgs.size(); i++) {
-                if (i > 0) {
-                    state.write(", ");
-                }
-                Protocol arg = lang.protocolArgs.get(i);
-                arg.accept(this, state.inline());
-            }
-            state.write(']');
-        }
+    public final Void visitArrayType(ArrayType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
         return null;
     }
 
@@ -253,6 +247,20 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitCharAsType(CharAsType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeValue().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitCharType(CharType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
     public final Void visitContinueStmt(ContinueStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("continue");
@@ -264,6 +272,20 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         maybeWriteMeta(lang, state);
         state.write(lang.dec128().formatValue());
         state.write('m');
+        return null;
+    }
+
+    @Override
+    public final Void visitDec128AsType(Dec128AsType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeValue().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitDec128Type(Dec128Type lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
         return null;
     }
 
@@ -328,12 +350,40 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitFlt32AsType(Flt32AsType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeValue().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitFlt32Type(Flt32Type lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
     public final Void visitFlt64AsExpr(Flt64AsExpr lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write(lang.flt64().formatValue());
         if (lang.flt64() instanceof Flt32) {
             state.write('f');
         }
+        return null;
+    }
+
+    @Override
+    public final Void visitFlt64AsType(Flt64AsType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeValue().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitFlt64Type(Flt64Type lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
         return null;
     }
 
@@ -447,6 +497,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitIdentAsProtocol(IdentAsProtocol lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        visitIdent(lang.protocolIdent(), state);
+        return null;
+    }
+
+    @Override
     public final Void visitIdentAsType(IdentAsType lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         visitIdent(lang.typeIdent(), state);
@@ -544,6 +601,20 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitInt32AsType(Int32AsType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeValue().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitInt32Type(Int32Type lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
     public final Void visitInt64AsExpr(Int64AsExpr lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write(lang.int64().formatValue());
@@ -554,12 +625,26 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitIntAsPat(IntAsPat lang, FormatterState state) throws Exception {
+    public final Void visitInt64AsPat(Int64AsPat lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write(lang.int64().formatValue());
         if (!(lang.int64() instanceof Int32)) {
             state.write('L');
         }
+        return null;
+    }
+
+    @Override
+    public final Void visitInt64AsType(Int64AsType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeValue().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitInt64Type(Int64Type lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
         return null;
     }
 
@@ -766,6 +851,23 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitProtocolApply(ProtocolApply lang, FormatterState state) throws Exception {
+        lang.name.accept(this, state.inline());
+        if (lang.protocolArgs != null && !lang.protocolArgs.isEmpty()) {
+            state.write('[');
+            for (int i = 0; i < lang.protocolArgs.size(); i++) {
+                if (i > 0) {
+                    state.write(", ");
+                }
+                Protocol arg = lang.protocolArgs.get(i);
+                arg.accept(this, state.inline());
+            }
+            state.write(']');
+        }
+        return null;
+    }
+
+    @Override
     public final Void visitProtocolAskHandler(ProtocolAskHandler lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("ask ");
@@ -880,6 +982,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitRecType(RecType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitRecTypeExpr(RecTypeExpr lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         if (lang.label != null) {
             lang.label.accept(this, state.inline());
@@ -1034,6 +1143,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
+    public final Void visitTokenType(TokenType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
     public final Void visitTryLang(TryLang lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("try");
@@ -1097,6 +1213,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitTupleType(TupleType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitTupleTypeExpr(TupleTypeExpr lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         if (lang.label != null) {
             lang.label.accept(this, state.inline());

@@ -7,28 +7,33 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-import java.util.List;
+public interface TupleType extends StructType, IdentAsType {
+    String NAME = "Tuple";
+    Ident IDENT = Ident.create(NAME);
 
-import static org.torqlang.util.ListTools.nullSafeCopyOf;
+    TupleType SINGLETON = new TupleTypeImpl(SourceSpan.emptySourceSpan());
 
-public final class TupleType extends AbstractLang implements StructType {
+    static TupleType create(SourceSpan sourceSpan) {
+        return new TupleTypeImpl(sourceSpan);
+    }
+}
 
-    public final LabelType label;
-    public final List<Type> values;
+final class TupleTypeImpl extends AbstractLang implements TupleType {
 
-    public TupleType(LabelType label, List<Type> values, SourceSpan sourceSpan) {
+    TupleTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.label = label;
-        this.values = nullSafeCopyOf(values);
     }
 
     @Override
-    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
-        throws Exception
-    {
+    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
         return visitor.visitTupleType(this, state);
     }
 
+    @Override
+    public final Ident typeIdent() {
+        return TupleType.IDENT;
+    }
 }

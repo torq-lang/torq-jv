@@ -8,9 +8,13 @@
 package org.torqlang.lang;
 
 import org.junit.jupiter.api.Test;
-import org.torqlang.klvm.*;
+import org.torqlang.klvm.Bool;
+import org.torqlang.klvm.Flt32;
+import org.torqlang.klvm.Int32;
+import org.torqlang.klvm.Str;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.torqlang.lang.CommonTools.asIdentAsType;
 import static org.torqlang.util.ErrorWithSourceSpan.printWithSourceAndRethrow;
 
 public class TestParserMetaRec {
@@ -29,12 +33,12 @@ public class TestParserMetaRec {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.ident.name);
+            assertEquals("MyArray", typeStmt.name.typeIdent().name);
             assertEquals(0, typeStmt.typeParams.size());
             TypeApply typeApply = (TypeApply) typeStmt.body;
             assertEquals(1, typeApply.typeArgs.size());
-            IdentAsExpr identAsExpr = (IdentAsExpr) typeApply.typeArgs.get(0);
-            assertEquals("Int32", identAsExpr.ident.name);
+            IdentAsType identAsType = asIdentAsType(typeApply.typeArgs.get(0));
+            assertEquals("Int32", identAsType.typeIdent().name);
             assertNotNull(typeStmt.metaStruct());
             assertInstanceOf(MetaRec.class, typeStmt.metaStruct());
             MetaRec metaRec = (MetaRec) typeStmt.metaStruct();
@@ -63,12 +67,12 @@ public class TestParserMetaRec {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.ident.name);
+            assertEquals("MyArray", typeStmt.name.typeIdent().name);
             assertEquals(0, typeStmt.typeParams.size());
             TypeApply typeApply = (TypeApply) typeStmt.body;
             assertEquals(1, typeApply.typeArgs.size());
-            IdentAsExpr identAsExpr = (IdentAsExpr) typeApply.typeArgs.get(0);
-            assertEquals("Int32", identAsExpr.ident.name);
+            IdentAsType identAsType = asIdentAsType(typeApply.typeArgs.get(0));
+            assertEquals("Int32", identAsType.typeIdent().name);
             assertNotNull(typeStmt.metaStruct());
             assertInstanceOf(MetaRec.class, typeStmt.metaStruct());
             MetaRec metaRec = (MetaRec) typeStmt.metaStruct();
@@ -80,8 +84,8 @@ public class TestParserMetaRec {
             assertEquals(Bool.TRUE, boolAsExpr.value());
             field = metaRec.fields().get(1);
             assertEquals(Str.of("count"), field.feature.value());
-            assertInstanceOf(IntAsExpr.class, field.value);
-            IntAsExpr intAsExpr = (IntAsExpr) field.value;
+            assertInstanceOf(Int64AsExpr.class, field.value);
+            Int64AsExpr intAsExpr = (Int64AsExpr) field.value;
             assertEquals(Int32.I32_5, intAsExpr.value());
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
@@ -102,12 +106,12 @@ public class TestParserMetaRec {
             assertEquals(source, formatted);
             BeginLang begin = (BeginLang) sox;
             TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
-            assertEquals("MyArray", typeStmt.name.ident.name);
+            assertEquals("MyArray", typeStmt.name.typeIdent().name);
             assertEquals(0, typeStmt.typeParams.size());
             TypeApply typeApply = (TypeApply) typeStmt.body;
             assertEquals(1, typeApply.typeArgs.size());
-            IdentAsExpr identAsExpr = (IdentAsExpr) typeApply.typeArgs.get(0);
-            assertEquals("Int32", identAsExpr.ident.name);
+            IdentAsType identAsType = asIdentAsType(typeApply.typeArgs.get(0));
+            assertEquals("Int32", identAsType.typeIdent().name);
             assertNotNull(typeStmt.metaStruct());
             assertInstanceOf(MetaRec.class, typeStmt.metaStruct());
             MetaRec metaRec = (MetaRec) typeStmt.metaStruct();
@@ -122,8 +126,8 @@ public class TestParserMetaRec {
             assertInstanceOf(MetaTuple.class, field.value);
             MetaTuple metaTuple = (MetaTuple) field.value;
             assertEquals(2, metaTuple.values().size());
-            assertEquals(Int32.I32_0, ((IntAsExpr) metaTuple.values().get(0)).int64());
-            assertEquals(Int32.I32_1, ((IntAsExpr) metaTuple.values().get(1)).int64());
+            assertEquals(Int32.I32_0, ((Int64AsExpr) metaTuple.values().get(0)).int64());
+            assertEquals(Int32.I32_1, ((Int64AsExpr) metaTuple.values().get(1)).int64());
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }
@@ -171,8 +175,8 @@ public class TestParserMetaRec {
             assertNull(sumExpr.metaStruct());
             assertInstanceOf(GroupExpr.class, sumExpr.arg1);
             GroupExpr groupExpr = (GroupExpr) sumExpr.arg1;
-            assertInstanceOf(IntAsExpr.class, groupExpr.expr);
-            IntAsExpr intAsExpr = (IntAsExpr) groupExpr.expr;
+            assertInstanceOf(Int64AsExpr.class, groupExpr.expr);
+            Int64AsExpr intAsExpr = (Int64AsExpr) groupExpr.expr;
             assertInstanceOf(MetaTuple.class, intAsExpr.metaStruct());
             assertInstanceOf(MetaTuple.class, sumExpr.arg2.metaStruct());
         } catch (Exception exc) {
@@ -227,6 +231,44 @@ public class TestParserMetaRec {
             00003 end
                   ^__ Statement or expression expected""";
         assertEquals(expectedText, errorText);
+    }
+
+    @Test
+    public void test09() throws Exception {
+        String source = """
+            begin
+                meta#{'export': true, 'min-value': -5.0f}
+                type MyArray = Array[Int32]
+            end""";
+        Parser p = new Parser(source);
+        try {
+            StmtOrExpr sox = p.parse();
+            String formatted = sox.toString();
+            assertEquals(source, formatted);
+            BeginLang begin = (BeginLang) sox;
+            TypeStmt typeStmt = (TypeStmt) begin.body.list.get(0);
+            assertEquals("MyArray", typeStmt.name.typeIdent().name);
+            assertEquals(0, typeStmt.typeParams.size());
+            TypeApply typeApply = (TypeApply) typeStmt.body;
+            assertEquals(1, typeApply.typeArgs.size());
+            assertEquals("Int32", asIdentAsType(typeApply.typeArgs.get(0)).typeIdent().name);
+            assertNotNull(typeStmt.metaStruct());
+            assertInstanceOf(MetaRec.class, typeStmt.metaStruct());
+            MetaRec metaRec = (MetaRec) typeStmt.metaStruct();
+            assertEquals(2, metaRec.fields().size());
+            MetaField field = metaRec.fields().get(0);
+            assertEquals(Str.of("export"), field.feature.value());
+            assertInstanceOf(BoolAsExpr.class, field.value);
+            BoolAsExpr boolAsExpr = (BoolAsExpr) field.value;
+            assertEquals(Bool.TRUE, boolAsExpr.value());
+            field = metaRec.fields().get(1);
+            assertEquals(Str.of("min-value"), field.feature.value());
+            assertInstanceOf(Flt64AsExpr.class, field.value);
+            Flt64AsExpr fltAsExpr = (Flt64AsExpr) field.value;
+            assertEquals(Flt32.of(-5.0f), fltAsExpr.value());
+        } catch (Exception exc) {
+            printWithSourceAndRethrow(exc, 5, 50, 50);
+        }
     }
 
 }

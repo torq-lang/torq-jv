@@ -7,10 +7,5 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Feature;
-
-public interface FeatureValueAsPat extends FeaturePat {
-
-    Feature value();
-
+public interface CompositeExpr extends Expr {
 }

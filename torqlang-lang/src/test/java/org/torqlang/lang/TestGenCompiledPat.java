@@ -18,7 +18,7 @@ public class TestGenCompiledPat {
     @Test
     public void testFeatureAsPat() {
         Generator generator = new Generator();
-        IntAsPat intAsPat = new IntAsPat(Int32.I32_0, SourceSpan.emptySourceSpan());
+        Int64AsPat intAsPat = new Int64AsPat(Int32.I32_0, SourceSpan.emptySourceSpan());
         CompiledPat compiledPat = new CompiledPat(intAsPat, generator);
         assertEquals(intAsPat, compiledPat.source());
         compiledPat.compile();
@@ -156,7 +156,7 @@ public class TestGenCompiledPat {
         Generator generator = new Generator();
         RecPatBuilder builder = RecPatBuilder.builder();
         builder.addFieldPat(new IdentAsPat(Ident.create("x"), true, empty),
-            new IntAsPat(Int32.I32_0, empty));
+            new Int64AsPat(Int32.I32_0, empty));
         RecPat recPat = builder.build();
         assertEquals("{~x: 0}", recPat.toString());
 
@@ -177,7 +177,7 @@ public class TestGenCompiledPat {
         generator = new Generator();
         builder = RecPatBuilder.builder();
         builder.addFieldPat(new IdentAsPat(Ident.create("x"), false, empty),
-            new IntAsPat(Int32.I32_0, empty));
+            new Int64AsPat(Int32.I32_0, empty));
         recPat = builder.build();
         assertEquals("{x: 0}", recPat.toString());
 

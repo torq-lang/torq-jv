@@ -11,7 +11,7 @@ import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
-public final class ProcExpr extends ProcLang implements Expr {
+public final class ProcExpr extends ProcLang implements MethodExpr {
 
     public ProcExpr(List<Pat> params, SeqLang body, SourceSpan sourceSpan) {
         super(params, body, sourceSpan);

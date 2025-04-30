@@ -13,7 +13,6 @@ import org.torqlang.util.SourceSpan;
 public final class Flt64AsExpr extends AbstractLang implements NumAsExpr, MetaValue {
 
     private String fltText;
-
     private Flt64 flt64;
 
     public Flt64AsExpr(Flt64 flt64, SourceSpan sourceSpan) {

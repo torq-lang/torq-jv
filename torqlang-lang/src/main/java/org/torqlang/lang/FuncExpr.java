@@ -11,7 +11,7 @@ import org.torqlang.util.SourceSpan;
 
 import java.util.List;
 
-public final class FuncExpr extends FuncLang implements Expr {
+public final class FuncExpr extends FuncLang implements MethodExpr {
 
     public FuncExpr(List<Pat> params, Type returnType, SeqLang body, SourceSpan sourceSpan) {
         super(params, returnType, body, sourceSpan);
