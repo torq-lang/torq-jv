@@ -75,7 +75,7 @@ public final class NorthwindServer {
         LocalServer server = LocalServer.builder()
             .setPort(8080)
             .addContextHandler(new EchoHandler(), "/echo")
-            .addContextHandler(NorthwindHandlerFactoryForActors.createApiHandler(), "/api")
+            .addContextHandler(NorthwindHandlerFactoryForModules.createApiHandler(), "/api")
             .build();
         server.start();
         server.join();

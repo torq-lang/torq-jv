@@ -8,6 +8,6 @@
 package org.torqlang.util;
 
 public enum FileType {
-    DIRECTORY,
-    TORQ,
+    FOLDER,
+    SOURCE,
 }

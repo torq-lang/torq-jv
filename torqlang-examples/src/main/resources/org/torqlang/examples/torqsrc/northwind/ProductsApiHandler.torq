@@ -1,33 +1,65 @@
 package northwind
 
-actor ProductsApiHandler() in
+import system.util.Message
+
+meta#{'export'}
+type Product = {
+    'id': Int64,
+    'product_code': Str,
+    'product_name': Str,
+    'description': Str,
+    'standard_cost': Dec128,
+    'list_price': Dec128,
+    'reorder_level': Int64,
+    'target_level': Int64,
+    'quantity_per_unit': Str,
+    'discontinued': Bool,
+    'minimum_reorder_quantity': Int64,
+    'category': Str,
+}
+
+meta#{'export'}
+protocol ProductsApi = {
+    ask 'GET'#{'headers': headers, 'path': ['products'], 'query': query, 'context': context} -> Array[Product] | Message,
+    ask 'GET'#{'headers': headers, 'path': ['products', product_id], 'query': query, 'context': context} -> Product | Message,
+    ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} -> true | Message,
+}
+
+meta#{'export': 'api-handler'}
+actor ProductsApiHandler() implements ProductsApi in
 
     import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
-    handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+    meta#{'export'}
+    handle ask 'GET'#{'headers': headers, 'path': ['products'], 'query': query, 'context': context} ->
+        Array[Product] | Message
+    in
         var northwind_db = spawn(new NorthwindDb())
-        case path
-            of ['products'] then
-                northwind_db.ask(
-                    'findAll'#{
-                        'entity': 'products',
-                        'criteria': query
-                    }
-                )
-            of ['products', product_id] then
-                northwind_db.ask(
-                    'findByKey'#{
-                        'entity': 'products',
-                        'key': {'id': product_id}
-                    }
-                )
-            else
-                throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
-        end
+        northwind_db.ask(
+            'findAll'#{
+                'entity': 'products',
+                'criteria': query
+            }
+        )
     end
 
-    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
+    meta#{'export'}
+    handle ask 'GET'#{'headers': headers, 'path': ['products', product_id::Int64], 'query': query, 'context': context} ->
+        Product | Message
+    in
+        var northwind_db = spawn(new NorthwindDb())
+        northwind_db.ask(
+            'findByKey'#{
+                'entity': 'products',
+                'key': {'id': product_id}
+            }
+        )
+    end
+
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} ->
+        true | Message
+    in
         throw 'error'#{'message': 'PATCH needs impl', 'details': {'path': path}}
     end
 

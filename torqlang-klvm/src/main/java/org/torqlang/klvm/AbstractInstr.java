@@ -8,6 +8,7 @@
 package org.torqlang.klvm;
 
 import org.torqlang.util.SourceSpan;
+import org.torqlang.util.SourceString;
 
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public abstract class AbstractInstr implements Instr {
     }
 
     @Override
-    public final String source() {
+    public final SourceString source() {
         return sourceSpan.source();
     }
 

@@ -11,17 +11,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface FileBroker {
+public interface SourceFileBroker {
 
     /*
-     * Append name to the end of directory.
+     * Append fileName to the end of path.
      */
-    static List<FileName> append(List<FileName> directory, FileName file) {
-        if (!directory.isEmpty() && !ListTools.last(directory).type().equals(FileType.DIRECTORY)) {
-            throw new IllegalArgumentException("Not a directory");
+    static List<FileName> append(List<FileName> path, FileName fileName) {
+        if (!path.isEmpty() && !ListTools.last(path).type().equals(FileType.FOLDER)) {
+            throw new IllegalArgumentException("Not a path");
         }
-        ArrayList<FileName> answer = new ArrayList<>(directory);
-        answer.add(file);
+        ArrayList<FileName> answer = new ArrayList<>(path);
+        answer.add(fileName);
         return List.of(answer.toArray(new FileName[0]));
     }
 
@@ -42,7 +42,7 @@ public interface FileBroker {
                         }
                     }
                     if (same) {
-                        throw new IllegalArgumentException("Duplicate path");
+                        throw new IllegalArgumentException("Duplicate root path");
                     }
                 }
             }
@@ -71,13 +71,13 @@ public interface FileBroker {
     List<FileName> list(List<FileName> absolutePath);
 
     /*
-     * A file broker serves source from one or more root directories where Torq packages begin. Given the root
-     * directory `/Users/USER/project/torqsrc` and the absolute path `/Users/USER/project/torqsrc/my/package/Bar.torq`,
-     * we get the qualified Torq name `my.package.Bar.torq` having the package `my.package` and simple name `Bar.torq`.
+     * A file broker serves source from one or more root folders where Torq packages begin. Given the root directory
+     * `/Users/USER/project/torqsrc` and the absolute path `/Users/USER/project/torqsrc/my/package/Bar.torq`, we get
+     * the qualified Torq name `my.package.Bar.torq` having the package `my.package` and simple name `Bar.torq`.
      */
     List<List<FileName>> roots();
 
-    String source(List<FileName> path) throws IOException;
+    SourceFile source(List<FileName> path) throws IOException;
 
     /*
      * Trim the root from the given absolute path. Return null if the absolute path does not contain a root.

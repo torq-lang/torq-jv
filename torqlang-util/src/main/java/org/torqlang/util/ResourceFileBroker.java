@@ -13,18 +13,15 @@ import java.util.stream.Collectors;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
-/*
- * A resources file broker has just one root.
- */
-public final class ResourcesFileBroker implements FileBroker {
+public final class ResourceFileBroker implements SourceFileBroker {
 
     private final Class<?> reference;
     private final List<List<FileName>> roots;
     private final List<Entry> content;
 
-    public ResourcesFileBroker(Class<?> reference, List<List<FileName>> roots, List<Entry> content) {
+    public ResourceFileBroker(Class<?> reference, List<List<FileName>> roots, List<Entry> content) {
         this.reference = reference;
-        this.roots = FileBroker.checkForDuplicates(nullSafeCopyOf(roots.stream().map(ListTools::nullSafeCopyOf).toList()));
+        this.roots = SourceFileBroker.checkForDuplicates(nullSafeCopyOf(roots.stream().map(ListTools::nullSafeCopyOf).toList()));
         this.content = content;
     }
 
@@ -62,9 +59,10 @@ public final class ResourcesFileBroker implements FileBroker {
     }
 
     @Override
-    public final String source(List<FileName> path) throws IOException {
+    public final ResourceFile source(List<FileName> path) throws IOException {
         String absolutePath = "/" + path.stream().map(FileName::value).collect(Collectors.joining("/"));
-        return ReadTextFromResource.apply(reference, absolutePath);
+        String content = ReadTextFromResource.apply(reference, absolutePath);
+        return new ResourceFile(this, path, content);
     }
 
     public record Entry(FileName name, List<Entry> children) {

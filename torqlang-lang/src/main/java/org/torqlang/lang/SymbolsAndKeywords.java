@@ -7,6 +7,8 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.util.SourceString;
+
 import java.util.Arrays;
 
 public final class SymbolsAndKeywords {
@@ -130,7 +132,7 @@ public final class SymbolsAndKeywords {
     private SymbolsAndKeywords() {
     }
 
-    public static boolean isKeyword(String source, int begin, int end) {
+    public static boolean isKeyword(SourceString source, int begin, int end) {
         int length = end - begin;
         if (length >= KEYWORDS_BY_LENGTH.length) {
             return false;
@@ -200,7 +202,7 @@ public final class SymbolsAndKeywords {
         return false;
     }
 
-    public static boolean isWeakKeyword(String source, int begin, int end) {
+    public static boolean isWeakKeyword(SourceString source, int begin, int end) {
         return substringEquals(source, begin, end, ASK_VALUE) ||
             substringEquals(source, begin, end, TELL_VALUE) ||
             substringEquals(source, begin, end, HANDLE_VALUE) ||
@@ -211,7 +213,7 @@ public final class SymbolsAndKeywords {
             substringEquals(source, begin, end, AS_VALUE);
     }
 
-    private static boolean substringEquals(String source, int begin, int end, String value) {
+    private static boolean substringEquals(SourceString source, int begin, int end, String value) {
         if (end - begin != value.length()) {
             return false;
         }

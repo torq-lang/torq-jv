@@ -8,6 +8,7 @@
 package org.torqlang.lang;
 
 import org.junit.jupiter.api.Test;
+import org.torqlang.util.SourceString;
 
 import java.util.NoSuchElementException;
 
@@ -21,8 +22,8 @@ public class TestLexer {
         LexerToken next;
         //            1         2         3         4         5         6
         //  0123456789012345678901234567890123456789012345678901234567890
-        String source = """
-            [0, -1, 1.0, 1.23m, false, true, test, "my-string", ==, ...]""";
+        SourceString source = SourceString.of("""
+            [0, -1, 1.0, 1.23m, false, true, test, "my-string", ==, ...]""");
         Lexer lexer = new Lexer(source);
         assertEquals(source, lexer.source());
 
@@ -195,49 +196,49 @@ public class TestLexer {
     @Test
     public void testErrors() {
         {
-            String source = "1x";
+            SourceString source = SourceString.of("1x");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(INT_TOKEN, source, 0, 2), exc.token);
             assertEquals("Invalid integer", exc.getMessage());
         }
         {
-            String source = "1.";
+            SourceString source = SourceString.of("1.");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(FLT_TOKEN, source, 0, 2), exc.token);
             assertEquals("Invalid floating point number", exc.getMessage());
         }
         {
-            String source = "1.a";
+            SourceString source = SourceString.of("1.a");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(FLT_TOKEN, source, 0, 3), exc.token);
             assertEquals("Invalid floating point number", exc.getMessage());
         }
         {
-            String source = "1.0a";
+            SourceString source = SourceString.of("1.0a");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(FLT_TOKEN, source, 0, 4), exc.token);
             assertEquals("Floating point suffix must be one of [fFdDmM]", exc.getMessage());
         }
         {
-            String source = "1.0fa";
+            SourceString source = SourceString.of("1.0fa");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(FLT_TOKEN, source, 0, 5), exc.token);
             assertEquals("Invalid floating point number", exc.getMessage());
         }
         {
-            String source = "1.0ma";
+            SourceString source = SourceString.of("1.0ma");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(DEC_TOKEN, source, 0, 5), exc.token);
             assertEquals("Invalid decimal number", exc.getMessage());
         }
         {
-            String source = "\"oops";
+            SourceString source = SourceString.of("\"oops");
             Lexer lexer = new Lexer(source);
             LexerError exc = assertThrows(LexerError.class, lexer::nextToken);
             assertEquals(new LexerToken(STR_TOKEN, source, 0, 5), exc.token);
@@ -256,12 +257,12 @@ public class TestLexer {
     @Test
     public void testHashcode() {
 
-        LexerToken token1 = new LexerToken(STR_TOKEN, "[0, 1]", 0, 6);
+        LexerToken token1 = new LexerToken(STR_TOKEN, SourceString.of("[0, 1]"), 0, 6);
         assertTrue(token1.substringEquals("[0, 1]"));
 
-        LexerToken token2 = new LexerToken(STR_TOKEN, "[true, [0, 1], false]", 7, 13);
+        LexerToken token2 = new LexerToken(STR_TOKEN, SourceString.of("[true, [0, 1], false]"), 7, 13);
         assertTrue(token2.substringEquals("[0, 1]"));
-        assertEquals("[true, [0, 1], false]", token2.source());
+        assertEquals(SourceString.of("[true, [0, 1], false]"), token2.source());
         assertEquals(7, token2.sourceBegin());
         assertEquals(13, token2.sourceEnd());
         assertEquals('[', token2.substringCharAt(0));
@@ -278,8 +279,8 @@ public class TestLexer {
 
     @Test
     public void testNotEquals() {
-        LexerToken token1 = new LexerToken(STR_TOKEN, "[0, 1]", 0, 6);
-        LexerToken token2 = new LexerToken(STR_TOKEN, "[1, 2]", 0, 6);
+        LexerToken token1 = new LexerToken(STR_TOKEN, SourceString.of("[0, 1]"), 0, 6);
+        LexerToken token2 = new LexerToken(STR_TOKEN, SourceString.of("[1, 2]"), 0, 6);
         assertNotEquals(token1, token2);
 
         assertTrue(token1.substringEquals("[0, 1]"));
@@ -293,7 +294,7 @@ public class TestLexer {
     @Test
     public void testWhitespace() {
         LexerToken next;
-        String source = "[0,\n1,\r2,\t3,\f4]";
+        SourceString source = SourceString.of("[0,\n1,\r2,\t3,\f4]");
         Lexer lexer = new Lexer(source);
         next = lexer.nextToken();
         assertTrue(next.substringEquals("["));

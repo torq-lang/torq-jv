@@ -7,17 +7,23 @@
 
 package org.torqlang.lang;
 
+import org.torqlang.util.SourceString;
+
 import static org.torqlang.lang.LexerText.*;
 import static org.torqlang.lang.SymbolsAndKeywords.*;
 
 public final class Lexer {
 
-    private final String source;
+    private final SourceString source;
 
     private int charPos = 0;
 
-    public Lexer(String source) {
+    public Lexer(SourceString source) {
         this.source = source;
+    }
+
+    public Lexer(String source) {
+        this.source = SourceString.of(source);
     }
 
     public final int charPos() {
@@ -37,19 +43,19 @@ public final class Lexer {
     }
 
     private boolean isOneCharSymbolAt(int index) {
-        return index < source.length() && isOneCharSymbol(source.charAt(index));
+        return source.containsIndex(index) && isOneCharSymbol(source.charAt(index));
     }
 
     private boolean isThreeCharSymbolAt(int index) {
         int index2 = index + 1;
         int index3 = index + 2;
-        return index3 < source.length() &&
+        return source.containsIndex(index3) &&
             isThreeCharSymbol(source.charAt(index), source.charAt(index2), source.charAt(index3));
     }
 
     private boolean isTwoCharSymbolAt(int index) {
         int index2 = index + 1;
-        return index2 < source.length() &&
+        return source.containsIndex(index2) &&
             isTwoCharSymbol(source.charAt(index), source.charAt(index2));
     }
 
@@ -80,7 +86,7 @@ public final class Lexer {
     }
 
     private boolean isWhiteSpaceAt(int index) {
-        return index < source.length() && isWhiteSpace(source.charAt(index));
+        return source.containsIndex(index) && isWhiteSpace(source.charAt(index));
     }
 
     public final LexerToken nextToken() {
@@ -102,7 +108,7 @@ public final class Lexer {
     private LexerToken parseDoubleQuotedString() {
         int start = charPos;
         charPos++;
-        while (charPos < source.length()) {
+        while (source.containsIndex(charPos)) {
             if (source.charAt(charPos) == '"') {
                 if (source.charAt(charPos - 1) != '\\') {
                     break;
@@ -110,7 +116,7 @@ public final class Lexer {
             }
             charPos++;
         }
-        if (charPos == source.length()) {
+        if (!source.containsIndex(charPos)) {
             LexerToken invalidToken = new LexerToken(LexerTokenType.STR_TOKEN, source, start, charPos);
             throw new LexerError(invalidToken, STR_IS_MISSING_CLOSING_DOUBLE_QUOTE);
         }
@@ -124,7 +130,7 @@ public final class Lexer {
      */
     private void parseEscSeq() {
         // Verify there is a character following the escape '\\'
-        if (charPos == source.length()) {
+        if (!source.containsIndex(charPos)) {
             LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, charPos - 1, charPos);
             throw new LexerError(invalidToken, INVALID_CHARACTER_LITERAL);
         }
@@ -135,7 +141,7 @@ public final class Lexer {
             // We need a start position in case of an error
             int start = charPos - 3;
             for (int i = 0; i < 4; i++) {
-                if (charPos == source.length()) {
+                if (!source.containsIndex(charPos)) {
                     LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
                     throw new LexerError(invalidToken, INVALID_UNICODE_LITERAL);
                 }
@@ -155,7 +161,7 @@ public final class Lexer {
      */
     private LexerToken parseExponentSuffix(int start, int stop) {
         stop++; // accept 'e' or 'E'
-        if (stop == source.length()) {
+        if (!source.containsIndex(stop)) {
             charPos = stop;
             LexerToken invalidToken = new LexerToken(LexerTokenType.FLT_TOKEN, source, start, stop);
             throw new LexerError(invalidToken, INVALID_FLOATING_POINT_NUMBER);
@@ -163,7 +169,7 @@ public final class Lexer {
         char c = source.charAt(stop);
         if (c == '-' || c == '+') {
             stop++; // accept sign '-' or '+'
-            if (stop == source.length()) {
+            if (!source.containsIndex(stop)) {
                 charPos = stop;
                 LexerToken invalidToken = new LexerToken(LexerTokenType.FLT_TOKEN, source, start, stop);
                 throw new LexerError(invalidToken, INVALID_FLOATING_POINT_NUMBER);
@@ -175,12 +181,12 @@ public final class Lexer {
             LexerToken invalidToken = new LexerToken(LexerTokenType.FLT_TOKEN, source, start, stop);
             throw new LexerError(invalidToken, INVALID_FLOATING_POINT_NUMBER);
         }
-        while (++stop < source.length()) {
+        while (source.containsIndex(++stop)) {
             if (!isDigit(source.charAt(stop))) {
                 break;
             }
         }
-        if (stop == source.length() || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
+        if (!source.containsIndex(stop) || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
             charPos = stop;
             return new LexerToken(LexerTokenType.FLT_TOKEN, source, start, stop);
         }
@@ -200,12 +206,12 @@ public final class Lexer {
      */
     private LexerToken parseFractionalPart(int start, int stop) {
         // Accept first digit [0-9] and continue accepting digits until a non-digit is found
-        while (++stop < source.length()) {
+        while (source.containsIndex(++stop)) {
             if (!isDigit(source.charAt(stop))) {
                 break;
             }
         }
-        if (stop == source.length() || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
+        if (!source.containsIndex(stop) || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
             charPos = stop;
             return new LexerToken(LexerTokenType.FLT_TOKEN, source, start, stop);
         }
@@ -225,7 +231,7 @@ public final class Lexer {
             LexerToken invalidToken = new LexerToken(LexerTokenType.FLT_TOKEN, source, start, stop);
             throw new LexerError(invalidToken, "Floating point suffix must be one of [fFdDmM]");
         }
-        if (stop == source.length() || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
+        if (!source.containsIndex(stop) || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
             charPos = stop;
             return new LexerToken(tokenType, source, start, stop);
         }
@@ -244,7 +250,7 @@ public final class Lexer {
     private LexerToken parseHexInteger() {
         int start = charPos;
         charPos = charPos + 2; // accept '0x' or '0X'
-        while (charPos < source.length() && isHexDigit(source.charAt(charPos))) {
+        while (source.containsIndex(charPos) && isHexDigit(source.charAt(charPos))) {
             charPos++;
         }
         int hexCount = charPos - start - 2;
@@ -259,7 +265,7 @@ public final class Lexer {
      * Precondition: start is beginning of digits and stop is one past string of digits
      */
     private LexerToken parseIntegerSuffix(int start, int stop) {
-        if (stop == source.length()) {
+        if (!source.containsIndex(stop)) {
             // End of File
             charPos = stop;
             return new LexerToken(LexerTokenType.INT_TOKEN, source, start, stop);
@@ -275,7 +281,7 @@ public final class Lexer {
         } else {
             tokenType = LexerTokenType.INT_TOKEN;
         }
-        if (stop == source.length() || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
+        if (!source.containsIndex(stop) || isWhiteSpaceAt(stop) || isDelimiterAt(stop)) {
             charPos = stop;
             return new LexerToken(tokenType, source, start, charPos);
         } else {
@@ -292,7 +298,7 @@ public final class Lexer {
     private LexerToken parseKeywordOrIdent() {
         int start = charPos;
         int stop = charPos;
-        while (stop < source.length() && !isWhiteSpaceAt(stop) && !isDelimiterAt(stop)) {
+        while (source.containsIndex(stop) && !isWhiteSpaceAt(stop) && !isDelimiterAt(stop)) {
             stop++;
         }
         charPos = stop;
@@ -310,12 +316,12 @@ public final class Lexer {
     private LexerToken parseNonHexNumber() {
         int start = charPos;
         int stop = start + 1;
-        while (stop < source.length() && isDigit(source.charAt(stop))) {
+        while (source.containsIndex(stop) && isDigit(source.charAt(stop))) {
             stop++;
         }
-        if (stop < source.length() && source.charAt(stop) == '.') {
+        if (source.containsIndex(stop) && source.charAt(stop) == '.') {
             stop++; // accept the '.' char
-            if (stop == source.length()) {
+            if (!source.containsIndex(stop)) {
                 // We have a nonsensical token at end-of-file: digits followed by a period
                 charPos = stop;
                 LexerToken invalidToken = new LexerToken(LexerTokenType.FLT_TOKEN, source, start, charPos);
@@ -339,7 +345,7 @@ public final class Lexer {
     public final LexerToken parseNumber() {
         int start = charPos;
         int stop = charPos + 1;
-        if (stop == source.length()) {
+        if (!source.containsIndex(stop)) {
             // Accept a single digit integer token as the last token in the stream
             charPos = stop;
             return new LexerToken(LexerTokenType.INT_TOKEN, source, start, stop);
@@ -360,7 +366,7 @@ public final class Lexer {
     private LexerToken parseQuotedIdentifier() {
         int start = charPos;
         charPos++;
-        while (charPos < source.length()) {
+        while (source.containsIndex(charPos)) {
             if (source.charAt(charPos) == '`') {
                 if (source.charAt(charPos - 1) != '\\') {
                     break;
@@ -368,7 +374,7 @@ public final class Lexer {
             }
             charPos++;
         }
-        if (charPos == source.length()) {
+        if (!source.containsIndex(charPos)) {
             LexerToken invalidToken = new LexerToken(LexerTokenType.STR_TOKEN, source, start, charPos);
             throw new LexerError(invalidToken, IDENT_IS_MISSING_CLOSING_BACKTICK);
         }
@@ -382,7 +388,7 @@ public final class Lexer {
     private LexerToken parseSingleQuotedString() {
         int start = charPos;
         charPos++;
-        while (charPos < source.length()) {
+        while (source.containsIndex(charPos)) {
             if (source.charAt(charPos) == '\'') {
                 if (source.charAt(charPos - 1) != '\\') {
                     break;
@@ -390,7 +396,7 @@ public final class Lexer {
             }
             charPos++;
         }
-        if (charPos == source.length()) {
+        if (!source.containsIndex(charPos)) {
             LexerToken invalidToken = new LexerToken(LexerTokenType.STR_TOKEN, source, start, charPos);
             throw new LexerError(invalidToken, STR_IS_MISSING_CLOSING_SINGLE_QUOTE);
         }
@@ -399,7 +405,7 @@ public final class Lexer {
     }
 
     private LexerToken parseToken() {
-        if (charPos == source.length()) {
+        if (!source.containsIndex(charPos)) {
             return new LexerToken(LexerTokenType.EOF_TOKEN, source, charPos, charPos);
         }
         char c = source.charAt(charPos);
@@ -418,21 +424,21 @@ public final class Lexer {
         int start = charPos;
         if (c == '/') {
             int c2i = start + 1;
-            if (c2i < source.length()) {
+            if (source.containsIndex(c2i)) {
                 char c2 = source.charAt(c2i);
                 if (c2 == '/') {
                     charPos = c2i + 1; // accept '//' string
-                    while (charPos < source.length() && source.charAt(charPos) != '\n') {
+                    while (source.containsIndex(charPos) && source.charAt(charPos) != '\n') {
                         charPos++;
                     }
                     return new LexerToken(LexerTokenType.COMMENT_TOKEN, source, start, charPos);
                 }
                 if (c2 == '*') {
                     charPos = c2i + 1; // accept '/*' string
-                    while (charPos < source.length()) {
+                    while (source.containsIndex(charPos)) {
                         c = source.charAt(charPos);
                         charPos++; // accept a possible '*' char
-                        if (c == '*' && charPos < source.length()) {
+                        if (c == '*' && source.containsIndex(charPos)) {
                             c2 = source.charAt(charPos);
                             charPos++; // accept a possible '/' char
                             if (c2 == '/') {
@@ -461,7 +467,7 @@ public final class Lexer {
         // We must check its use as an escape character before processing single character symbols.
         if (c == '&') {
             charPos += 1; // accept '&'
-            if (charPos == source.length()) {
+            if (!source.containsIndex(charPos)) {
                 return new LexerToken(LexerTokenType.ONE_CHAR_TOKEN, source, start, charPos);
             }
             char nextChar = source.charAt(charPos);
@@ -471,7 +477,7 @@ public final class Lexer {
                 return new LexerToken(LexerTokenType.ONE_CHAR_TOKEN, source, start, charPos);
             }
             charPos += 1; // accept single quote
-            if (charPos == source.length()) {
+            if (!source.containsIndex(charPos)) {
                 LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
                 throw new LexerError(invalidToken, INVALID_CHARACTER_LITERAL);
             }
@@ -480,7 +486,7 @@ public final class Lexer {
             if (charOrEsc == '\\') {
                 parseEscSeq();
             }
-            if (charPos == source.length()) {
+            if (!source.containsIndex(charPos)) {
                 LexerToken invalidToken = new LexerToken(LexerTokenType.CHAR_TOKEN, source, start, charPos);
                 throw new LexerError(invalidToken, CHAR_IS_MISSING_CLOSING_QUOTE);
             }
@@ -501,12 +507,12 @@ public final class Lexer {
     }
 
     public final void skipWhitespace() {
-        while (charPos < source.length() && isWhiteSpace(source.charAt(charPos))) {
+        while (source.containsIndex(charPos) && isWhiteSpace(source.charAt(charPos))) {
             charPos++;
         }
     }
 
-    public final String source() {
+    public final SourceString source() {
         return source;
     }
 

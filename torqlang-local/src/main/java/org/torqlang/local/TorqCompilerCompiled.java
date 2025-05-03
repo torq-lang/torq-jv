@@ -7,8 +7,6 @@
 
 package org.torqlang.local;
 
-/*
- * A union of value descriptions with no discriminating feature.
- */
-public final class ValuesUnionDesc implements UnionDesc {
+public interface TorqCompilerCompiled {
+    TorqCompilerBundled bundle() throws Exception;
 }

@@ -8,6 +8,7 @@
 package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
+import org.torqlang.util.SourceString;
 
 public abstract class AbstractLang implements Lang {
 
@@ -36,7 +37,7 @@ public abstract class AbstractLang implements Lang {
     }
 
     @Override
-    public final String source() {
+    public final SourceString source() {
         return sourceSpan.source();
     }
 

@@ -7,8 +7,6 @@
 
 package org.torqlang.local;
 
-/*
- * A union of records with a common, discriminating feature.
- */
-public final class RecsUnionDesc implements UnionDesc {
+public interface TorqCompilerBundled {
+
 }

@@ -1,33 +1,70 @@
 package northwind
 
+import system.util.Message
+
+meta#{'export'}
+type Supplier = {
+    'id': Int64,
+    'company': Str,
+    'last_name': Str,
+    'first_name': Str,
+    'email_address': Str,
+    'job_title': Str,
+    'business_phone': Str,
+    'home_phone': Str,
+    'mobile_phone': Str,
+    'fax_number': Str,
+    'address': Str,
+    'city': Str,
+    'state_province': Str,
+    'zip_postal_code': Str,
+    'country_region': Str,
+    'web_page': Str,
+    'notes': Str,
+}
+
+meta#{'export'}
+protocol SuppliersApi = {
+    ask 'GET'#{'headers': headers, 'path': ['suppliers'], 'query': query, 'context': context} -> Array[Supplier] | Message,
+    ask 'GET'#{'headers': headers, 'path': ['suppliers', supplier_id::Int64], 'query': query, 'context': context} -> Supplier | Message,
+    ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} -> true | Message,
+}
+
+meta#{'export': 'api-handler'}
 actor SuppliersApiHandler() in
 
     import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
-    handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in
+    meta#{'export'}
+    handle ask 'GET'#{'headers': headers, 'path': ['suppliers'], 'query': query, 'context': context} ->
+        Array[Supplier] | Message
+    in
         var northwind_db = spawn(new NorthwindDb())
-        case path
-            of ['suppliers'] then
-                northwind_db.ask(
-                    'findAll'#{
-                        'entity': 'suppliers',
-                        'criteria': query
-                    }
-                )
-            of ['suppliers', supplier_id] then
-                northwind_db.ask(
-                    'findByKey'#{
-                        'entity': 'suppliers',
-                        'key': {'id': supplier_id}
-                    }
-                )
-            else
-                throw 'error'#{'message': 'Invalid request', 'details': {'path': path}}
-        end
+        northwind_db.ask(
+            'findAll'#{
+                'entity': 'suppliers',
+                'criteria': query
+            }
+        )
     end
 
-    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
+    meta#{'export'}
+    handle ask 'GET'#{'headers': headers, 'path': ['suppliers', supplier_id::Int64], 'query': query, 'context': context} ->
+        Supplier | Message
+    in
+        var northwind_db = spawn(new NorthwindDb())
+        northwind_db.ask(
+            'findByKey'#{
+                'entity': 'suppliers',
+                'key': {'id': supplier_id}
+            }
+        )
+    end
+
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} ->
+        true | Message
+    in
         throw 'error'#{'message': 'PATCH needs impl', 'details': {'path': path}}
     end
 

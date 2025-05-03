@@ -13,9 +13,7 @@ import org.torqlang.klvm.CompleteTuple;
 import org.torqlang.klvm.Rec;
 import org.torqlang.klvm.Str;
 import org.torqlang.local.*;
-import org.torqlang.util.FileBroker;
-import org.torqlang.util.FileName;
-import org.torqlang.util.FileType;
+import org.torqlang.util.*;
 
 import static org.torqlang.examples.BenchTools.printTimingResults;
 import static org.torqlang.examples.ExamplesSourceBroker.EXAMPLES_ROOT;
@@ -55,13 +53,13 @@ public final class BenchNorthwindCustomers {
             .addDefaultModules()
             .addModule("examples", examplesMod)
             .build();
-        FileBroker sourceBroker = ExamplesSourceBroker.createResourcesBrokerForActors();
-        String customersHandlerSource = sourceBroker.source(
-            FileBroker.append(FileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.TORQ, "CustomersHandler.torq"))
+        SourceFileBroker broker = ExamplesSourceBroker.createResourcesBrokerForActors();
+        SourceFile customersHandlerSource = broker.source(
+            SourceFileBroker.append(SourceFileBroker.append(EXAMPLES_ROOT, NORTHWIND), new FileName(FileType.SOURCE, "CustomersHandler.torq"))
         );
         ActorImage actorImage = Actor.builder()
             .setSystem(system)
-            .actorImage(customersHandlerSource);
+            .actorImage(customersHandlerSource.content());
         int iterCount = 10_000;
         // WARMUP
         for (int i = 0; i < iterCount; i++) {

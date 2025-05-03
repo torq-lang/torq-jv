@@ -1,0 +1,10 @@
+package system.util
+
+meta#{'export'}
+type Message = {
+    'name': Str,
+    'type': 'ERROR' | 'INFO' | 'WARN',
+    'message': Str,
+    'details': Str,
+    'trace_id': Str,
+}

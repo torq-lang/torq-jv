@@ -8,9 +8,7 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.*;
-import org.torqlang.util.IntegerCounter;
-import org.torqlang.util.NeedsImpl;
-import org.torqlang.util.SourceSpan;
+import org.torqlang.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +23,28 @@ public final class Parser {
 
     private LexerToken currentToken;
 
+    public Parser(SourceString source) {
+        this.lexer = new Lexer(source);
+    }
+
     public Parser(String source) {
         this.lexer = new Lexer(source);
     }
 
-    public static Lang parse(String source) {
+    public static Lang parse(SourceString source) {
         Parser p = new Parser(source);
         return p.parse();
+    }
+
+    public static Lang parse(String source) {
+        return parse(SourceString.of(source));
     }
 
     private static SourceSpan sourceSpanForSeq(List<? extends StmtOrExpr> seq) {
         return seq.get(0).adjoin(last(seq));
     }
 
-    private static String unquoteString(String source, int begin, int end) {
+    private static String unquoteString(SourceString source, int begin, int end) {
         begin = begin + 1;
         end = end - 1;
         StringBuilder sb = new StringBuilder((end - begin) * 2);
@@ -99,10 +105,10 @@ public final class Parser {
     }
 
     private boolean includesLineBreakBetween(SourceSpan first, LexerToken second) {
-        String source = first.source();
+        SourceString source = source();
         int start = first.sourceEnd() - 1;
-        int stop = Math.min(second.sourceBegin(), source.length());
-        for (int i = start; i < stop; i++) {
+        int stop = second.sourceBegin();
+        for (int i = start; i < stop && source.containsIndex(i); i++) {
             if (source.charAt(i) == '\n') {
                 return true;
             }
@@ -589,7 +595,7 @@ public final class Parser {
                 throw new ParserError(FEATURE_TYPE_EXPECTED, current);
             }
             featureType = featureTypeParsed;
-            valueType = parseTypeExpr();
+            valueType = parseUnionType();
             if (valueType == null) {
                 throw new ParserError(VALUE_TYPE_EXPECTED, current);
             }
@@ -2270,7 +2276,7 @@ public final class Parser {
         return null;
     }
 
-    public final String source() {
+    public final SourceString source() {
         return lexer.source();
     }
 
@@ -2293,7 +2299,7 @@ public final class Parser {
         }
         int begin = token.sourceBegin() + 1;
         int end = token.sourceEnd() - 1;
-        String source = token.source();
+        SourceString source = source();
         StringBuilder sb = new StringBuilder((end - begin) * 2);
         int i = begin;
         while (i < end) {

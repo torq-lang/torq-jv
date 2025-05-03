@@ -7,6 +7,6 @@
 
 package org.torqlang.local;
 
-public interface TorqCompilerParsed {
-    TorqCompilerCollected collect() throws Exception;
+public interface TorqCompilerCollected {
+    TorqCompilerCompiled compile() throws Exception;
 }

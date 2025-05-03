@@ -17,7 +17,7 @@ public class TestEmptySourceSpan {
     public void test() {
         assertEquals(0, SourceSpan.emptySourceSpan().sourceBegin());
         assertEquals(0, SourceSpan.emptySourceSpan().sourceEnd());
-        assertEquals("", SourceSpan.emptySourceSpan().source());
+        assertEquals(SourceString.of(""), SourceSpan.emptySourceSpan().source());
         assertEquals(SourceSpan.emptySourceSpan(), SourceSpan.emptySourceSpan().toSourceBegin());
         assertEquals(SourceSpan.emptySourceSpan(), SourceSpan.emptySourceSpan().toSourceEnd());
     }

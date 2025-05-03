@@ -15,8 +15,8 @@ public final class EmptySourceSpan implements SourceSpan {
     }
 
     @Override
-    public final String source() {
-        return "";
+    public final SourceString source() {
+        return SourceString.EMPTY_SOURCE_STRING;
     }
 
     @Override

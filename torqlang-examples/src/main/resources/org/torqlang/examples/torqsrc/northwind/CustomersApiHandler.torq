@@ -1,5 +1,7 @@
 package northwind
 
+import system.util.Message
+
 meta#{'export'}
 type Customer = {
     'id': Int64,
@@ -22,14 +24,23 @@ type Customer = {
     'attachments': Str
 }
 
+meta#{'export'}
+protocol CustomersApi = {
+    ask 'GET'#{'headers': headers, 'path': ['customers'], 'query': query, 'context': context} -> Array[Customer],
+    ask 'GET'#{'headers': headers, 'path': ['customers', customer_id::Int64], 'query': query, 'context': context} -> Customer,
+    ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} -> true | Message,
+}
+
 meta#{'export': 'api-handler'}
-actor CustomersApiHandler() in
+actor CustomersApiHandler() implements CustomersApi in
 
     import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import northwind.NorthwindDb
 
     meta#{'export'}
-    handle ask 'GET'#{'headers': headers, 'path': ['customers'], 'query': query, 'context': context} -> Array[Customer] in
+    handle ask 'GET'#{'headers': headers, 'path': ['customers'], 'query': query, 'context': context} ->
+        Array[Customer] | Message
+    in
         var northwind_db = spawn(new NorthwindDb())
         northwind_db.ask(
             'findAll'#{
@@ -40,7 +51,9 @@ actor CustomersApiHandler() in
     end
 
     meta#{'export'}
-    handle ask 'GET'#{'headers': headers, 'path': ['customers', customer_id::Int64], 'query': query, 'context': context} -> Customer in
+    handle ask 'GET'#{'headers': headers, 'path': ['customers', customer_id::Int64], 'query': query, 'context': context} ->
+        Customer | Message
+    in
         var northwind_db = spawn(new NorthwindDb())
         northwind_db.ask(
             'findByKey'#{
@@ -50,7 +63,9 @@ actor CustomersApiHandler() in
         )
     end
 
-    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} in
+    handle ask 'PATCH'#{'headers': headers, 'path': path, 'query': query, 'body': body, 'context': context} ->
+        true | Message
+    in
         throw 'error'#{'message': 'PATCH needs impl', 'details': {'path': path}}
     end
 

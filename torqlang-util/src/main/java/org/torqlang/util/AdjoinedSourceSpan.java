@@ -9,11 +9,18 @@ package org.torqlang.util;
 
 public final class AdjoinedSourceSpan implements SourceSpan {
 
+    public final SourceString source;
     public final SourceSpan beginSpan;
     public final SourceSpan endSpan;
-    public int hash = -1;
 
     public AdjoinedSourceSpan(SourceSpan span1, SourceSpan span2) {
+        if (span1.source().equals(span2.source())) {
+            this.source = span1.source();
+        } else {
+            // TODO: This is not yet a requirement but could be if we support "include" statements, which would join
+            //       sources together end-to-end. Maybe with an "AdjoinedSourceString".
+            throw new NeedsImpl("AdjoinedSourceFile");
+        }
         if (span1.sourceBegin() < span2.sourceBegin()) {
             beginSpan = span1;
         } else {
@@ -27,8 +34,8 @@ public final class AdjoinedSourceSpan implements SourceSpan {
     }
 
     @Override
-    public final String source() {
-        return beginSpan.source();
+    public final SourceString source() {
+        return source;
     }
 
     @Override

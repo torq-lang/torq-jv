@@ -36,7 +36,7 @@ public interface SourceSpan {
         int lineNr = baseLineNr;
         int charNr = baseCharNr;
         int i = 0;
-        while (i < sourceSpan.source().length() && i < sourceSpan.sourceBegin()) {
+        while (sourceSpan.source().containsIndex(i) && i < sourceSpan.sourceBegin()) {
             char c = sourceSpan.source().charAt(i);
             if (c == '\n') {
                 lineNr++;
@@ -54,10 +54,11 @@ public interface SourceSpan {
     }
 
     default String formatSource(String message, int lineNrWidth, int showBefore, int showAfter) {
+        String sourceAsString = source().content();
         LineAndChar location = toLineAndChar(this, 0, 0);
         StringBuilder answerBuf = new StringBuilder();
         int lineIndex = location.lineNr;
-        List<String> sourceLines = StringTools.toSourceLines(source(), 1, lineNrWidth);
+        List<String> sourceLines = StringTools.toSourceLines(sourceAsString, 1, lineNrWidth);
         boolean lineAppended = false;
         for (int i = 0; i < sourceLines.size(); i++) {
             String line = sourceLines.get(i);
@@ -86,7 +87,7 @@ public interface SourceSpan {
         return answerBuf.toString();
     }
 
-    String source();
+    SourceString source();
 
     int sourceBegin();
 

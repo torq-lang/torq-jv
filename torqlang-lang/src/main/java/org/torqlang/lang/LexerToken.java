@@ -8,19 +8,20 @@
 package org.torqlang.lang;
 
 import org.torqlang.util.SourceSpan;
+import org.torqlang.util.SourceString;
 
 import java.util.NoSuchElementException;
 
 public final class LexerToken implements SourceSpan {
 
     private final LexerTokenType type;
-    private final String source;
+    private final SourceString source;
     private final int begin;
     private final int end;
 
     private int hash = 0;
 
-    public LexerToken(LexerTokenType type, String source, int begin, int end) {
+    public LexerToken(LexerTokenType type, SourceString source, int begin, int end) {
         this.type = type;
         this.source = source;
         this.begin = begin;
@@ -45,7 +46,7 @@ public final class LexerToken implements SourceSpan {
     }
 
     public final char firstChar() {
-        if (begin == source.length()) {
+        if (!source.containsIndex(begin)) {
             throw new NoSuchElementException(Integer.toString(begin));
         }
         return source.charAt(begin);
@@ -168,7 +169,7 @@ public final class LexerToken implements SourceSpan {
     }
 
     @Override
-    public final String source() {
+    public final SourceString source() {
         return source;
     }
 
@@ -183,12 +184,12 @@ public final class LexerToken implements SourceSpan {
     }
 
     public final String substring() {
-        return source.substring(begin, end);
+        return source.content().substring(begin, end);
     }
 
     public final char substringCharAt(int index) {
         int sourceIndex = begin + index;
-        if (sourceIndex >= source.length()) {
+        if (!source.containsIndex(sourceIndex)) {
             throw new NoSuchElementException(Integer.toString(sourceIndex));
         }
         return source.charAt(sourceIndex);

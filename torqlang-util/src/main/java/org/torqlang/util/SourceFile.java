@@ -5,8 +5,12 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.util;
 
-public interface TorqCompilerParsed {
-    TorqCompilerCollected collect() throws Exception;
+import java.util.List;
+
+public interface SourceFile extends SourceString {
+    SourceFileBroker broker();
+
+    List<FileName> path();
 }

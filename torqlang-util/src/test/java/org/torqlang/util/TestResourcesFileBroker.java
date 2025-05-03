@@ -20,12 +20,12 @@ public class TestResourcesFileBroker {
     @Test
     public void test01() {
         Class<?> reference = MethodHandles.lookup().lookupClass();
-        List<FileName> root1 = List.of(new FileName(FileType.DIRECTORY, "a"), new FileName(FileType.DIRECTORY, "b"));
-        List<FileName> root2 = List.of(new FileName(FileType.DIRECTORY, "a"), new FileName(FileType.DIRECTORY, "b"));
+        List<FileName> root1 = List.of(new FileName(FileType.FOLDER, "a"), new FileName(FileType.FOLDER, "b"));
+        List<FileName> root2 = List.of(new FileName(FileType.FOLDER, "a"), new FileName(FileType.FOLDER, "b"));
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> {
-            new ResourcesFileBroker(reference, List.of(root1, root2), List.of());
+            new ResourceFileBroker(reference, List.of(root1, root2), List.of());
         });
-        assertEquals("Duplicate path", e.getMessage());
+        assertEquals("Duplicate root path", e.getMessage());
     }
 
 }

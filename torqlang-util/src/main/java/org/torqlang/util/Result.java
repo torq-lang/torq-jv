@@ -25,11 +25,12 @@ public interface Result<V, E> {
 
     boolean isValue();
 
+    @SuppressWarnings("ClassCanBeRecord")
     final class Error<V, E> implements Result<V, E> {
-        private final E left;
+        private final E error;
 
-        public Error(E left) {
-            this.left = left;
+        public Error(E error) {
+            this.error = error;
         }
 
         public boolean isError() {
@@ -42,7 +43,7 @@ public interface Result<V, E> {
 
         @Override
         public E error() {
-            return left;
+            return error;
         }
 
         public V value() {
@@ -50,11 +51,12 @@ public interface Result<V, E> {
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     final class Value<V, E> implements Result<V, E> {
-        private final V right;
+        private final V value;
 
-        public Value(V right) {
-            this.right = right;
+        public Value(V value) {
+            this.value = value;
         }
 
         public boolean isError() {
@@ -71,8 +73,7 @@ public interface Result<V, E> {
         }
 
         public V value() {
-            return right;
+            return value;
         }
     }
 }
-

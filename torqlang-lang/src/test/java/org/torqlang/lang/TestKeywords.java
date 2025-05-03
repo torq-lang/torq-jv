@@ -8,6 +8,7 @@
 package org.torqlang.lang;
 
 import org.junit.jupiter.api.Test;
+import org.torqlang.util.SourceString;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,9 +18,9 @@ public class TestKeywords {
     @Test
     public void test01() {
 
-        String source = """
+        SourceString source = SourceString.of("""
             /*start*/ act actor begin break case catch continue do else elseif end eof false finally for func if
-            import in local null of proc return self skip spawn then throw true try var when while /*stop*/""";
+            import in local null of proc return self skip spawn then throw true try var when while /*stop*/""");
         int begin, end;
 
         assertFalse(SymbolsAndKeywords.isKeyword(source, 0, 50)); // Invalid size test
