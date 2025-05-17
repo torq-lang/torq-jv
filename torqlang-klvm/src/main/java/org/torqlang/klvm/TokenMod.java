@@ -9,13 +9,29 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class TokenMod {
+public final class TokenMod implements KernelModule {
 
-    public static final Ident TOKEN_IDENT = Ident.create("Token");
-    public static final CompleteObj TOKEN_CLS = TokenCls.SINGLETON;
+    public static final Str TOKEN_STR = Str.of("Token");
+    public static final Ident TOKEN_IDENT = Ident.create(TOKEN_STR.value);
+
+    private final CompleteRec exports;
+
+    private TokenMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(Str.of(TOKEN_IDENT.name), TokenCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete tokenCls() {
+        return singleton().exports.findValue(TOKEN_STR);
+    }
+
+    public static TokenMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
-    //     Token.new() -> Token
+    //     new Token -> Token
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 1;
         if (ys.size() != expectedArgCount) {
@@ -24,6 +40,15 @@ public final class TokenMod {
         Token token = new Token();
         ValueOrVar target = ys.get(0).resolveValueOrVar(env);
         target.bindToValue(token, null);
+    }
+
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final TokenMod SINGLETON = new TokenMod();
     }
 
     static final class TokenCls implements CompleteObj {

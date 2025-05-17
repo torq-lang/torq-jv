@@ -13,12 +13,26 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-final class LocalDateMod {
-    public static final Ident LOCAL_DATE_IDENT = Ident.create("LocalDate");
-    public static final CompleteObj LOCAL_DATE_CLS = LocalDateCls.SINGLETON;
+final class LocalDateMod implements KernelModule {
 
-    private static final ObjProcTable<LocalDateObj> objProcTable = ObjProcTable.<LocalDateObj>builder()
-        .build();
+    public static final Str LOCAL_DATE_STR = Str.of("LocalDate");
+    public static final Ident LOCAL_DATE_IDENT = Ident.create(LOCAL_DATE_STR.value);
+
+    private final CompleteRec exports;
+
+    private LocalDateMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(LOCAL_DATE_STR, LocalDateCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete localDateCls() {
+        return LocalDateCls.SINGLETON;
+    }
+
+    public static LocalDateMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     static LocalDateObj newObj(LocalDate date) {
         return new LocalDateObj(date);
@@ -37,7 +51,16 @@ final class LocalDateMod {
         target.bindToValue(localDateObj, null);
     }
 
-    static class LocalDateCls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final LocalDateMod SINGLETON = new LocalDateMod();
+    }
+
+    static final class LocalDateCls implements CompleteObj {
         private static final LocalDateCls SINGLETON = new LocalDateCls();
         private static final CompleteProc LOCAL_DATE_CLS_PARSE = LocalDateMod::clsParse;
 
@@ -59,7 +82,11 @@ final class LocalDateMod {
     }
 
     @SuppressWarnings("ClassCanBeRecord")
-    static class LocalDateObj implements CompleteObj {
+    static final class LocalDateObj implements CompleteObj {
+
+        private static final ObjProcTable<LocalDateObj> objProcTable = ObjProcTable.<LocalDateObj>builder()
+            .build();
+
         private final LocalDate state;
 
         public LocalDateObj(LocalDate state) {

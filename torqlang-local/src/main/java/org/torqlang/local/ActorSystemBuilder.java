@@ -9,72 +9,59 @@ package org.torqlang.local;
 
 import org.torqlang.klvm.CompleteRec;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
 public final class ActorSystemBuilder {
 
-    private static final Map<String, CompleteRec> DEFAULT_MODULES_MAP;
-
-    static {
-        DEFAULT_MODULES_MAP = new HashMap<>();
-        DEFAULT_MODULES_MAP.put("system", SystemPack.packageRec);
-        DEFAULT_MODULES_MAP.put("system.Procs", SystemProcsMod.moduleRec);
-    }
-
-    private final Map<String, CompleteRec> modulesMap = new HashMap<>();
-    private final Map<Address, ActorRefObj> actorsMap = new HashMap<>();
+    private final Map<Address, ActorRefObj> actorsByAddress = new HashMap<>();
+    private final Map<String, CompleteRec> packagesByPath = new HashMap<>();
     private String name;
     private Executor executor;
 
     public ActorSystemBuilder addActor(String path, ActorRefObj actorRefObj) {
         LocalAddress address = LocalAddress.create(path);
-        if (actorsMap.containsKey(address)) {
+        if (actorsByAddress.containsKey(address)) {
             throw new IllegalArgumentException("Actor already exists:" + path);
         }
-        actorsMap.put(address, actorRefObj);
+        actorsByAddress.put(address, actorRefObj);
         return this;
     }
 
-    public final ActorSystemBuilder addDefaultModules() {
-        modulesMap.putAll(DEFAULT_MODULES_MAP);
+    public final ActorSystemBuilder addDefaultPackages() {
+        packagesByPath.putAll(DefaultPackages.singleton().packagesByPath());
         return this;
     }
 
-    public ActorSystemBuilder addModule(String path, CompleteRec module) {
-        if (modulesMap.containsKey(path)) {
-            throw new IllegalArgumentException("Module already exists:" + path);
+    public ActorSystemBuilder addPackage(String path, CompleteRec packageRec) {
+        if (packagesByPath.containsKey(path)) {
+            throw new IllegalArgumentException("Package already exists:" + path);
         }
-        modulesMap.put(path, module);
+        packagesByPath.put(path, packageRec);
         return this;
     }
 
     public final ActorSystem build() {
-        List<ActorEntry> actors = new ArrayList<>(actorsMap.size());
-        for (Map.Entry<Address, ActorRefObj> entry : actorsMap.entrySet()) {
-            actors.add(new ActorEntry(entry.getKey(), entry.getValue()));
+        Map<String, CompleteRec> effectivePackagesByPath;
+        if (packagesByPath.isEmpty()) {
+            effectivePackagesByPath = DefaultPackages.singleton().packagesByPath();
+        } else {
+            effectivePackagesByPath = packagesByPath;
         }
-        Map<String, CompleteRec> effectiveModulesMap = modulesMap.isEmpty() ? DEFAULT_MODULES_MAP : modulesMap;
-        List<ModuleEntry> modules = new ArrayList<>(effectiveModulesMap.size());
-        for (Map.Entry<String, CompleteRec> entry : effectiveModulesMap.entrySet()) {
-            modules.add(new ModuleEntry(entry.getKey(), entry.getValue()));
-        }
-        return new BasicActorSystem(name, executor, actors, modules);
+        return new BasicActorSystem(name, executor, actorsByAddress, effectivePackagesByPath);
     }
 
     public final Executor executor() {
         return executor;
     }
 
-    public final Map<String, CompleteRec> modules() {
-        return Map.copyOf(modulesMap);
-    }
-
     public final String name() {
         return name;
+    }
+
+    public final Map<String, CompleteRec> packagesByPath() {
+        return Map.copyOf(packagesByPath);
     }
 
     public final ActorSystemBuilder setExecutor(Executor executor) {

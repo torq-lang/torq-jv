@@ -46,12 +46,12 @@ public final class BenchNorthwindCustomers {
 
     private void perform() throws Exception {
         // SETUP
-        CompleteRec examplesMod = Rec.completeRecBuilder()
-            .addField(Str.of("NorthwindDb"), NorthwindDbMod.NORTHWIND_DB_ACTOR)
+        CompleteRec examplesPack = Rec.completeRecBuilder()
+            .addField(Str.of("NorthwindDb"), NorthwindDbMod.northwindDbCls())
             .build();
         ActorSystem system = ActorSystem.builder()
-            .addDefaultModules()
-            .addModule("examples", examplesMod)
+            .addDefaultPackages()
+            .addPackage("examples", examplesPack)
             .build();
         SourceFileBroker broker = ExamplesSourceBroker.createResourcesBrokerForActors();
         SourceFile customersHandlerSource = broker.source(

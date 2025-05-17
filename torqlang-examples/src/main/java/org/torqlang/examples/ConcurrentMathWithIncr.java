@@ -19,7 +19,7 @@ public final class ConcurrentMathWithIncr {
 
     public static final String SOURCE = """
         actor ConcurrentMath() in
-            import system.Cell
+            import system.lang.Cell
             actor Number(n) in
                 var value = new Cell(n)
                 handle ask 'get' in

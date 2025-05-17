@@ -14,7 +14,7 @@ import java.util.Set;
 public final class Ident implements Decl, LiteralOrIdent {
 
     public static final Ident $ACT = new Ident("$act");
-    public static final Ident $ACTOR_CFGTR = new Ident("$actor_cfgtr");
+    public static final Ident $ACTOR_CTOR = new Ident("$actor_ctor");
     public static final Ident $ELSE = new Ident("$else");
     public static final Ident $FINALLY = new Ident("$finally");
     public static final Ident $FOR = new Ident("$for");

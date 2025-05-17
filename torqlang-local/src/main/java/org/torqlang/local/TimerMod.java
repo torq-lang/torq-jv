@@ -24,25 +24,46 @@ import static org.torqlang.local.Envelope.createResponse;
  * - Timers are a single-producer, single-consumer design.
  * - A timer can be reused after it reaches end-of-file.
  */
-final class TimerMod {
+final class TimerMod implements KernelModule {
 
-    public static final Ident TIMER_IDENT = Ident.create("Timer");
-    private static final int TIMER_CFGTR_ARG_COUNT = 3;
-    private static final CompleteProc TIMER_CFGTR = TimerMod::timerCfgtr;
-    public static final CompleteRec TIMER_ACTOR = createTimerActor();
+    public static final Str TIMER_STR = Str.of("Timer");
+    public static final Ident TIMER_IDENT = Ident.create(TIMER_STR.value);
 
-    private static CompleteRec createTimerActor() {
-        return CompleteRec.singleton(Actor.NEW, TIMER_CFGTR);
+    private static final int TIMER_CTOR_ARG_COUNT = 3;
+
+    private final CompleteRec exports;
+
+    private TimerMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(TIMER_STR, TimerCls.SINGLETON)
+            .build();
     }
 
-    private static void timerCfgtr(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
-        if (ys.size() != TIMER_CFGTR_ARG_COUNT) {
-            throw new InvalidArgCountError(TIMER_CFGTR_ARG_COUNT, ys, "timerCfgtr");
+    public static TimerCls timerCls() {
+        return TimerCls.SINGLETON;
+    }
+
+    public static TimerMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
+
+    static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
+        if (ys.size() != TIMER_CTOR_ARG_COUNT) {
+            throw new InvalidArgCountError(TIMER_CTOR_ARG_COUNT, ys, "timerCtor");
         }
         Num period = (Num) ys.get(0).resolveValue(env);
         Str timeUnit = (Str) ys.get(1).resolveValue(env);
         TimerCfg config = new TimerCfg(period, timeUnit);
         ys.get(2).resolveValueOrVar(env).bindToValue(config, null);
+    }
+
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final TimerMod SINGLETON = new TimerMod();
     }
 
     private static final class Timer extends AbstractActor {
@@ -172,6 +193,27 @@ final class TimerMod {
         @Override
         public final ActorRef spawn(Address address, ActorSystem system) {
             return new Timer(address, system, periodNum, timeUnitStr);
+        }
+    }
+
+    static final class TimerCls implements CompleteObj {
+        private static final TimerCls SINGLETON = new TimerCls();
+        private static final CompleteProc TIMER_CLS_NEW = TimerMod::clsNew;
+
+        private TimerCls() {
+        }
+
+        @Override
+        public final Value select(Feature feature) {
+            if (feature.equals(CommonFeatures.NEW)) {
+                return TIMER_CLS_NEW;
+            }
+            throw new FeatureNotFoundError(this, feature);
+        }
+
+        @Override
+        public final String toString() {
+            return toKernelString();
         }
     }
 

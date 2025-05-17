@@ -33,7 +33,8 @@ protocol SuppliersApi = {
 meta#{'export': 'api-handler'}
 actor SuppliersApiHandler() in
 
-    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
+    import system.lang.{Int64, Rec, ValueIter}
+    import system.util.{ArrayList, LocalDate}
     import examples.NorthwindDb
 
     meta#{'export'}

@@ -30,8 +30,8 @@ public class TestAskSingleAct {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $act, $respond
                     local $v0, $v4 in
                         $create_proc(proc ($m) in // free vars: $act, $respond
                             local $else in
@@ -67,8 +67,8 @@ public class TestAskSingleAct {
                         end, $v4)
                         $create_tuple('handlers'#[$v0, $v4], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('SingleAct'#{'new': $actor_cfgtr}, SingleAct)
+                end, $actor_ctor)
+                $create_rec('SingleAct'#{'new': $actor_ctor}, SingleAct)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

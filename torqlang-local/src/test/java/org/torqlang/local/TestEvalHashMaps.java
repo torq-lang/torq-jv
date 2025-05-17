@@ -27,7 +27,7 @@ public class TestEvalHashMaps {
                 y = ['one', 'two']
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.hashMapCls()))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .setSource(source)
@@ -58,7 +58,7 @@ public class TestEvalHashMaps {
                 x.put(a, 'My key is circular!')
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.hashMapCls()))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("b"))
@@ -102,8 +102,8 @@ public class TestEvalHashMaps {
                 z = value_iter()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
-            .addVar(ValueIterMod.VALUE_ITER_IDENT, new Var(ValueIterMod.VALUE_ITER_CLS))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.hashMapCls()))
+            .addVar(ValueIterMod.VALUE_ITER_IDENT, new Var(ValueIterMod.valueIterCls()))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .addVar(Ident.create("z"))

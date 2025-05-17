@@ -9,12 +9,12 @@ package org.torqlang.local;
 
 import org.torqlang.klvm.MachineError;
 
-public class ModuleNotFoundError extends MachineError {
-    public static final String MODULE_NOT_FOUND = "Module not found";
+public class PackageNotFoundError extends MachineError {
+    public static final String PACKAGE_NOT_FOUND = "Package not found";
     public final String path;
 
-    public ModuleNotFoundError(String path) {
-        super(MODULE_NOT_FOUND);
+    public PackageNotFoundError(String path) {
+        super(PACKAGE_NOT_FOUND);
         this.path = path;
     }
 }

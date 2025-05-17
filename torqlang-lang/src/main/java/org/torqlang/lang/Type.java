@@ -12,7 +12,7 @@ import org.torqlang.util.SourceSpan;
 
 public interface Type extends Lang {
 
-    String ACTOR_CFGTR = "ActorCfgtr";
+    String ACTOR_CTOR = "ActorCtor";
     String ACTOR_CFG = "ActorCfg";
     String ACTOR_REF = "ActorRef";
 

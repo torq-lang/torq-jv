@@ -48,10 +48,10 @@ Before we can complete `Timer`, we must enhance the stream protocol.
 ### Timer Before
 
 ```
-var timer_pub = spawn(Timer.cfg(1, 'seconds'))
-var tick_count = Cell.new(0)
-var timer_stream = Stream.new(timer_pub, 'request'#{'ticks': 5})
-for tick in Iter.new(timer_stream) do
+var timer_pub = spawn(new Timer(1, 'seconds'))
+var tick_count = new Cell(0)
+var timer_stream = new Stream(timer_pub, 'request'#{'ticks': 5})
+for tick in new Iter(timer_stream) do
     tick_count := @tick_count + 1
 end
 @tick_count
@@ -65,10 +65,10 @@ Note:
 3) A `StreamRefObj` is a `ValueIterSource`
 
 ```
-var timer_pub = spawn(Timer.cfg(1, 'seconds'))
-var tick_count = Cell.new(0)
+var timer_pub = spawn(new Timer(1, 'seconds'))
+var tick_count = new Cell(0)
 var timer_stream = timer_pub.stream('request'#{'ticks': 5})
-for tick in ValueIter.new(timer_stream) do
+for tick in new ValueIter(timer_stream) do
     tick_count := @tick_count + 1
 end    
 @tick_count
@@ -80,13 +80,13 @@ end
 actor IntPublisher(first, last, incr) in
     import system[ArrayList, Cell]
     import system.Procs.respond
-    var next_int = Cell.new(first)
+    var next_int = new Cell(first)
     handle stream 'request'#{'count': n} -> Int32[] | eof#{'more': Bool} in
         func calculate_to() in
             var to = @next_int + (n - 1) * incr
             if to < last then to else last end
         end
-        var response = ArrayList.new()
+        var response = new ArrayList()
         var to = calculate_to()
         while @next_int <= to do
             response.add(@next_int)
@@ -111,10 +111,10 @@ actor SumOddIntsStream() in
     import system[Cell, Stream, ValueIter]
     import examples.IntPublisher
     handle ask 'sum'#{'first': first, 'last': last} in
-        var sum = Cell.new(0)
-        var int_pub = spawn(IntPublisher.cfg(first, last, 1))
-        var int_stream = Stream.new(int_pub, 'request'#{'count': 3})
-        for i in ValueIter.new(int_stream) do
+        var sum = new Cell(0)
+        var int_pub = spawn(new IntPublisher(first, last, 1))
+        var int_stream = new Stream(int_pub, 'request'#{'count': 3})
+        for i in new ValueIter(int_stream) do
             if i % 2 != 0 then sum := @sum + i end
         end
         @sum
@@ -131,9 +131,9 @@ actor SumOddIntsStream() in
     import system[Cell, StreamIter]
     import examples.IntPublisher
     handle ask 'sum'#{'first': first, 'last': last} in
-        var sum = Cell.new(0)
-        var int_pub = spawn(IntPublisher.cfg(first, last, 1))
-        for i in StreamIter.new(int_pub, 'request'#{'count': 3}) do
+        var sum = new Cell(0)
+        var int_pub = spawn(new IntPublisher(first, last, 1))
+        for i in new StreamIter(int_pub, 'request'#{'count': 3}) do
             if i % 2 != 0 then sum := @sum + i end
         end
         @sum

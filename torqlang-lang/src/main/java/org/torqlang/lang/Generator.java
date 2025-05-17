@@ -191,10 +191,10 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
         SourceSpan endOfActorSpan = lang.toSourceEnd();
 
-        target.addIdentDef(new IdentDef(Ident.$ACTOR_CFGTR));
+        target.addIdentDef(new IdentDef(Ident.$ACTOR_CTOR));
         LocalTarget childTarget = target.asStmtTargetWithNewScope();
 
-        // --- Build the configurator
+        // --- Build the constructor
         List<Pat> params = lang.params;
         List<Ident> xs = new ArrayList<>(params.size() + 1);
         compileParamsToIdents(params, xs);
@@ -239,11 +239,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         actorBodyTarget.addInstr(new CreateTupleInstr(Ident.$R, handlersDef, endOfActorSpan));
         // --- Build body containing initializer, ask handlers, and tell handlers
         Instr bodyInstr = actorBodyTarget.build();
-        ProcDef actorCfgtrDef = new ProcDef(xs, bodyInstr, lang);
-        childTarget.addInstr(new CreateActorCfgtrInstr(Ident.$ACTOR_CFGTR, actorCfgtrDef, lang));
+        ProcDef actorCtorDef = new ProcDef(xs, bodyInstr, lang);
+        childTarget.addInstr(new CreateActorCtorInstr(Ident.$ACTOR_CTOR, actorCtorDef, lang));
 
         // Build the actor record
-        FieldDef configDef = new FieldDef(NEW, Ident.$ACTOR_CFGTR, endOfActorSpan);
+        FieldDef configDef = new FieldDef(NEW, Ident.$ACTOR_CTOR, endOfActorSpan);
         RecDef actorRecDef = new RecDef(Str.of(exprIdent.name), List.of(configDef), endOfActorSpan);
         childTarget.addInstr(new CreateRecInstr(exprIdent, actorRecDef, endOfActorSpan));
 

@@ -8,36 +8,37 @@
 package org.torqlang.local;
 
 import org.torqlang.klvm.CompleteRec;
-import org.torqlang.util.BinarySearchTools;
+import org.torqlang.util.MapTools;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
-public class BasicActorSystem implements ActorSystem {
+public final class BasicActorSystem implements ActorSystem {
 
     private final String name;
     private final Executor executor;
-    private final ActorEntry[] actors;
-    private final ModuleEntry[] modules;
+    private final Map<Address, ActorRefObj> actorsByAddress;
+    private final Map<String, CompleteRec> packagesByPath;
 
-    BasicActorSystem(String name, Executor executor, List<ActorEntry> actors, List<ModuleEntry> modules) {
+    BasicActorSystem(String name,
+                     Executor executor,
+                     Map<Address, ActorRefObj> actorsByAddress,
+                     Map<String, CompleteRec> packagesByPath)
+    {
         this.name = name;
         this.executor = executor != null ?
             executor : ActorSystemDefaults.executor();
-        this.actors = actors.toArray(new ActorEntry[0]);
-        Arrays.sort(this.actors);
-        this.modules = modules.toArray(new ModuleEntry[0]);
-        Arrays.sort(this.modules);
+        this.actorsByAddress = MapTools.nullSafeCopyOf(actorsByAddress);
+        this.packagesByPath = MapTools.nullSafeCopyOf(packagesByPath);
     }
 
     @Override
     public final ActorRefObj actorAt(Address address) {
-        int i = BinarySearchTools.search(actors, (a) -> address.compareTo(a.address));
-        if (i < 0) {
+        ActorRefObj actorRefObj = actorsByAddress.get(address);
+        if (actorRefObj == null) {
             throw new ActorNotFoundError(address);
         }
-        return actors[i].actorRefObj;
+        return actorRefObj;
     }
 
     @Override
@@ -56,12 +57,12 @@ public class BasicActorSystem implements ActorSystem {
     }
 
     @Override
-    public final CompleteRec moduleAt(String path) {
-        int i = BinarySearchTools.search(modules, (m) -> path.compareTo(m.path));
-        if (i < 0) {
-            throw new ModuleNotFoundError(path);
+    public final CompleteRec packageAt(String path) {
+        CompleteRec pack = packagesByPath.get(path);
+        if (pack == null) {
+            throw new PackageNotFoundError(path);
         }
-        return modules[i].moduleRec;
+        return pack;
     }
 
     @Override

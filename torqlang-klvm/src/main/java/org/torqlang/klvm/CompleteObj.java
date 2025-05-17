@@ -8,11 +8,11 @@
 package org.torqlang.klvm;
 
 /*
- * When CompleteObj is used as a functional interface, the function is inheriting:
- *     - entails from Value, which compares on identity using `==`
- *     - equals from Object, which compares on identity using `==`
- *     - hashCode from Object, which is an native method returning identity
- *     - isValidKey from CompleteObj, which returns true
+ * When an implementation inherits from CompleteObj, it is inheriting:
+ * - entails from Value, which compares on identity using `==`
+ * - equals from Object, which compares on identity using `==`
+ * - hashCode from Object, which is a native method returning system identity
+ * - isValidKey from CompleteObj, which returns true
  */
 public interface CompleteObj extends Complete, Obj {
     @Override

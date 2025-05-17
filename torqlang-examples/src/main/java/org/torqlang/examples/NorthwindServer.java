@@ -60,7 +60,7 @@ public final class NorthwindServer {
 
         ConsoleLogger.SINGLETON.info("Process ID: " + ProcessHandle.current().pid());
         ConsoleLogger.SINGLETON.info("System executor: " + ActorSystem.defaultExecutor());
-        ConsoleLogger.SINGLETON.info("NorthwindDb executor: " + NorthwindDbMod.NORTHWIND_DB_EXECUTOR);
+        ConsoleLogger.SINGLETON.info("NorthwindDb executor: " + NorthwindDbMod.northwindDbExecutor());
 
         List<String> argsList = Arrays.asList(args);
 

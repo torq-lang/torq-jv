@@ -21,7 +21,8 @@ public class TestAskSumArrayList {
     public void test() throws Exception {
         String source = """
             actor SumArrayList() in
-                import system.{ArrayList, Cell, ValueIter}
+                import system.lang.{Cell, ValueIter}
+                import system.util.{ArrayList}
                 var one_thru_five = new ArrayList[Int32]([1, 2, 3, 4, 5])
                 handle ask 'perform' in
                     var sum = new Cell(0)
@@ -36,10 +37,11 @@ public class TestAskSumArrayList {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond
-                    local ArrayList, Cell, ValueIter, one_thru_five, $v1, $v8 in
-                        $import('system', ['ArrayList', 'Cell', 'ValueIter'])
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $import, $respond
+                    local Cell, ValueIter, ArrayList, one_thru_five, $v1, $v8 in
+                        $import('system.lang', ['Cell', 'ValueIter'])
+                        $import('system.util', ['ArrayList'])
                         local $v0 in
                             $bind([1, 2, 3, 4, 5], $v0)
                             $select_apply(ArrayList, ['new'], $v0, one_thru_five)
@@ -97,8 +99,8 @@ public class TestAskSumArrayList {
                         end, $v8)
                         $create_tuple('handlers'#[$v1, $v8], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('SumArrayList'#{'new': $actor_cfgtr}, SumArrayList)
+                end, $actor_ctor)
+                $create_rec('SumArrayList'#{'new': $actor_ctor}, SumArrayList)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

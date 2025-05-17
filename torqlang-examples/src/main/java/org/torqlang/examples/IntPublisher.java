@@ -21,8 +21,8 @@ public final class IntPublisher {
 
     public static final String SOURCE = """
         actor IntPublisher(first, last, incr) in
-            import system.{ArrayList, Cell}
-            import system.Procs.respond
+            import system.lang.{Cell, respond}
+            import system.util.ArrayList
             var next_int = new Cell(first)
             handle ask 'request'#{'count': n} in
                 func calculate_to() in

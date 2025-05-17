@@ -37,8 +37,8 @@ public class TestAskConcurrentFeatures {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $act, $respond
                     local $v0, $v6 in
                         $create_proc(proc ($m) in // free vars: $act, $respond
                             local $else in
@@ -87,8 +87,8 @@ public class TestAskConcurrentFeatures {
                         end, $v6)
                         $create_tuple('handlers'#[$v0, $v6], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('ConcurrentFeatures'#{'new': $actor_cfgtr}, ConcurrentFeatures)
+                end, $actor_ctor)
+                $create_rec('ConcurrentFeatures'#{'new': $actor_ctor}, ConcurrentFeatures)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -136,7 +136,7 @@ public class TestAskConcurrentFeatures {
          */
         String source = """
             actor ConcurrentFeatures() in
-                import system.RangeIter
+                import system.lang.RangeIter
                 proc spin_wait(n) in
                     for i in new RangeIter(0, n) do
                         skip

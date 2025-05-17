@@ -9,9 +9,26 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public class Int64Mod {
+public final class Int64Mod implements KernelModule {
 
-    public static final CompleteObj INT64_CLS = Int64Cls.SINGLETON;
+    public static final Str INT64_STR = Str.of("Int64");
+    public static final Ident INT64_IDENT = Ident.create(INT64_STR.value);
+
+    private final CompleteRec exports;
+
+    private Int64Mod() {
+        exports = Rec.completeRecBuilder()
+            .addField(INT64_STR, Int64Cls.SINGLETON)
+            .build();
+    }
+
+    public static Complete int64Cls() {
+        return Int64Cls.SINGLETON;
+    }
+
+    public static Int64Mod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
     //     Int64.parse(num::Str) -> Int64
@@ -26,7 +43,12 @@ public class Int64Mod {
         target.bindToValue(int64, null);
     }
 
-    static class Int64Cls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    static final class Int64Cls implements CompleteObj {
         private static final Int64Cls SINGLETON = new Int64Cls();
         private static final CompleteProc INT64_CLS_PARSE = Int64Mod::clsParse;
 
@@ -45,6 +67,10 @@ public class Int64Mod {
         public final String toString() {
             return toKernelString();
         }
+    }
+
+    private static final class LazySingleton {
+        private static final Int64Mod SINGLETON = new Int64Mod();
     }
 
 }

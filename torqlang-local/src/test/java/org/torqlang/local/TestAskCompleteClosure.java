@@ -37,8 +37,8 @@ public class TestAskCompleteClosure {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $act, $respond
                     local echo, $v0, $v7 in
                         $create_proc(proc (m, $r) in
                             $bind(m, $r)
@@ -86,8 +86,8 @@ public class TestAskCompleteClosure {
                         end, $v7)
                         $create_tuple('handlers'#[$v0, $v7], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
+                end, $actor_ctor)
+                $create_rec('ConcurrentData'#{'new': $actor_ctor}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -110,7 +110,7 @@ public class TestAskCompleteClosure {
     public void test02() throws Exception {
         String source = """
             actor ConcurrentData() in
-                import system.Cell
+                import system.lang.Cell
                 var next_value = new Cell(0)
                 func next() in
                     var answer = @next_value
@@ -130,10 +130,10 @@ public class TestAskCompleteClosure {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $act, $import, $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $act, $import, $respond
                     local Cell, next_value, next, $v2, $v9 in
-                        $import('system', ['Cell'])
+                        $import('system.lang', ['Cell'])
                         $select_apply(Cell, ['new'], 0, next_value)
                         $create_proc(proc ($r) in // free vars: next_value
                             local answer in
@@ -191,8 +191,8 @@ public class TestAskCompleteClosure {
                         end, $v9)
                         $create_tuple('handlers'#[$v2, $v9], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
+                end, $actor_ctor)
+                $create_rec('ConcurrentData'#{'new': $actor_ctor}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

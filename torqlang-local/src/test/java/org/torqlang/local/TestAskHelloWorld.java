@@ -41,8 +41,8 @@ public class TestAskHelloWorld {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $respond
                     local fact, $v3, $v10 in
                         $create_proc(proc (x, $r) in
                             local fact_cps in
@@ -102,8 +102,8 @@ public class TestAskHelloWorld {
                         end, $v10)
                         $create_tuple('handlers'#[$v3, $v10], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('HelloFactorial'#{'new': $actor_cfgtr}, HelloFactorial)
+                end, $actor_ctor)
+                $create_rec('HelloFactorial'#{'new': $actor_ctor}, HelloFactorial)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -128,8 +128,8 @@ public class TestAskHelloWorld {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $respond
                     local $v0, $v4 in
                         $create_proc(proc ($m) in // free vars: $respond
                             local $else in
@@ -163,8 +163,8 @@ public class TestAskHelloWorld {
                         end, $v4)
                         $create_tuple('handlers'#[$v0, $v4], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('HelloWorld'#{'new': $actor_cfgtr}, HelloWorld)
+                end, $actor_ctor)
+                $create_rec('HelloWorld'#{'new': $actor_ctor}, HelloWorld)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

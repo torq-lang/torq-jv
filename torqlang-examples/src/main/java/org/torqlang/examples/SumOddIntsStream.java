@@ -19,7 +19,7 @@ public final class SumOddIntsStream {
 
     public static final String SOURCE = """
         actor SumOddIntsStream() in
-            import system.{Cell, Stream, ValueIter}
+            import system.lang.{Cell, Stream, ValueIter}
             import examples.IntPublisher
             handle ask 'sum'#{'first': first, 'last': last} in
                 var sum = new Cell(0)
@@ -40,8 +40,8 @@ public final class SumOddIntsStream {
     public final void perform() throws Exception {
 
         ActorSystem system = ActorSystem.builder()
-            .addDefaultModules()
-            .addModule("examples", IntPublisherMod.moduleRec())
+            .addDefaultPackages()
+            .addPackage("examples", IntPublisherMod.singleton().exports())
             .build();
 
         ActorRef actorRef = Actor.builder()

@@ -14,6 +14,7 @@ import java.util.List;
 import static org.torqlang.local.Envelope.createNotify;
 import static org.torqlang.local.Envelope.createRequest;
 
+// TODO: Bundle this into an ActorRefMod to be consistent with others, such as ArrayListMod?
 public final class ActorRefObj implements CompleteObj {
 
     private final ActorRef referent;

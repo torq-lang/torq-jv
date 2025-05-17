@@ -10,7 +10,10 @@ package org.torqlang.util;
 import java.util.List;
 import java.util.function.Function;
 
-public class BinarySearchTools {
+/*
+ * These search tools only work if the comparing function compares on the sorted property.
+ */
+public final class BinarySearchTools {
 
     public static <T> int search(T[] array, Function<T, Integer> comparing) {
         int low = 0;

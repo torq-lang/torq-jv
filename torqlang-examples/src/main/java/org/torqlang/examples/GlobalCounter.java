@@ -17,7 +17,7 @@ public final class GlobalCounter {
 
     public static final String GLOBAL_COUNTER = """
         actor Counter() in
-            import system.Cell
+            import system.lang.Cell
             var c = new Cell(0)
             handle ask 'get' in
                 @c
@@ -29,7 +29,7 @@ public final class GlobalCounter {
 
     public static final String TEST_CLIENT = """
         actor Client() in
-            import system.Procs.actor_at
+            import system.lang.actor_at
             var global_counter = actor_at('examples.Counter.global')
             handle ask 'get' in
                 global_counter.ask('get')
@@ -49,7 +49,7 @@ public final class GlobalCounter {
         ActorRefObj globalCounterRefObj = new ActorRefObj(Actor.builder().spawn(GLOBAL_COUNTER).actorRef());
 
         ActorSystem system = ActorSystem.builder()
-            .addDefaultModules()
+            .addDefaultPackages()
             .addActor("examples.Counter.global", globalCounterRefObj)
             .build();
 

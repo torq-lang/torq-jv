@@ -126,7 +126,7 @@ final class LocalActor extends AbstractActor {
             throw new IllegalArgumentException("Not a Str: " + qualifierRes);
         }
         String qualifier = qualifierStr.value;
-        CompleteRec moduleRec = owner.system.moduleAt(qualifier);
+        CompleteRec packageRec = owner.system.packageAt(qualifier);
         Value namesRes = ys.get(1).resolveValue(env);
         if (!(namesRes instanceof CompleteTuple namesTuple)) {
             throw new IllegalArgumentException("Not a CompleteTuple: " + namesRes);
@@ -142,12 +142,12 @@ final class LocalActor extends AbstractActor {
                 nameStr = (Str) nameValue;
                 aliasStr = nameStr;
             }
-            Complete component = moduleRec.findValue(nameStr);
-            if (component == null) {
-                throw new IllegalArgumentException("Component not found: " + nameStr);
+            Complete member = packageRec.findValue(nameStr);
+            if (member == null) {
+                throw new IllegalArgumentException("Member not found: " + nameStr);
             }
             Ident aliasIdent = Ident.create(aliasStr.value);
-            env.get(aliasIdent).bindToValue(component, null);
+            env.get(aliasIdent).bindToValue(member, null);
         }
     }
 

@@ -38,7 +38,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     private static final String $ADD = "$add";
     private static final String $BIND = "$bind";
-    private static final String $CREATE_ACTOR_CFGTR = "$create_actor_cfgtr";
+    private static final String $CREATE_ACTOR_CTOR = "$create_actor_ctor";
     private static final String $CREATE_PROC = "$create_proc";
     private static final String $CREATE_REC = "$create_rec";
     private static final String $CREATE_TUPLE = "$create_tuple";
@@ -155,7 +155,7 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitActorCfgtr(ActorCfgtr value, FormatterState state) throws Exception {
+    public final Void visitActorCtor(ActorCtor value, FormatterState state) throws Exception {
         return visitClosure(value.handlersCtor(), state);
     }
 
@@ -264,8 +264,8 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitCreateActorCfgtrInstr(CreateActorCfgtrInstr instr, FormatterState state) throws Exception {
-        state.write($CREATE_ACTOR_CFGTR);
+    public final Void visitCreateActorCtorInstr(CreateActorCtorInstr instr, FormatterState state) throws Exception {
+        state.write($CREATE_ACTOR_CTOR);
         state.write('(');
         visitProcDef(instr.procDef, state);
         state.write(", ");

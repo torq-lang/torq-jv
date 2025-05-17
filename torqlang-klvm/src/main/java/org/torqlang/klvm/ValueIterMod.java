@@ -9,10 +9,26 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class ValueIterMod {
+public final class ValueIterMod implements KernelModule {
 
-    public static final Ident VALUE_ITER_IDENT = Ident.create("ValueIter");
-    public static final CompleteObj VALUE_ITER_CLS = ValueIterCls.SINGLETON;
+    public static final Str VALUE_ITER_STR = Str.of("ValueIter");
+    public static final Ident VALUE_ITER_IDENT = Ident.create(VALUE_ITER_STR.value);
+
+    private final CompleteRec exports;
+
+    private ValueIterMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(VALUE_ITER_STR, ValueIterCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete valueIterCls() {
+        return ValueIterCls.SINGLETON;
+    }
+
+    public static ValueIterMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 2;
@@ -27,6 +43,15 @@ public final class ValueIterMod {
         ValueOrVar iter = iterable.valueIter();
         ValueOrVar target = ys.get(1).resolveValueOrVar(env);
         target.bindToValueOrVar(iter, null);
+    }
+
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final ValueIterMod SINGLETON = new ValueIterMod();
     }
 
     static final class ValueIterCls implements CompleteObj {

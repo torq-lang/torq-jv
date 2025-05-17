@@ -24,7 +24,7 @@ actor HelloWorld() implements Self as Hello in
     end 
 end
 
-var HelloWorld::ActorCfgtr[Hello] = actor () implements Hello in
+var HelloWorld::ActorCtor[Hello] = actor () implements Hello in
     handle ask 'hello' -> Str in
         'Hello, World!'
     end 

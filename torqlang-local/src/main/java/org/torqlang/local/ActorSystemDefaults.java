@@ -11,21 +11,29 @@ import java.util.concurrent.Executor;
 
 final class ActorSystemDefaults {
 
-    static final ActorSystem DEFAULT_SYSTEM;
-    static final AffinityExecutor DEFAULT_EXECUTOR;
+    private final AffinityExecutor executor;
+    private final ActorSystem system;
 
-    static {
+    private ActorSystemDefaults() {
         final String systemName = "System";
         int concurrency = Runtime.getRuntime().availableProcessors();
-        DEFAULT_EXECUTOR = new AffinityExecutor(systemName, concurrency);
-        DEFAULT_SYSTEM = ActorSystem.builder()
+        executor = new AffinityExecutor(systemName, concurrency);
+        system = ActorSystem.builder()
             .setName(systemName)
-            .setExecutor(DEFAULT_EXECUTOR)
+            .setExecutor(executor)
             .build();
     }
 
     static Executor executor() {
-        return DEFAULT_EXECUTOR;
+        return LazySingleton.SINGLETON.executor;
+    }
+
+    static ActorSystem system() {
+        return LazySingleton.SINGLETON.system;
+    }
+
+    private static final class LazySingleton {
+        private static final ActorSystemDefaults SINGLETON = new ActorSystemDefaults();
     }
 
 }

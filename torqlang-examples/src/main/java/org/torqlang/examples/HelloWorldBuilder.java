@@ -20,7 +20,7 @@ public final class HelloWorldBuilder {
 
     public static final String SOURCE_1 = """
         actor HelloWorld(init_name) in
-            import system.Cell
+            import system.lang.Cell
             var my_name = new Cell(init_name)
             handle tell {'name': name} in
                 my_name := name
@@ -33,7 +33,7 @@ public final class HelloWorldBuilder {
     public static final String SOURCE_2 = """
         actor PerformHelloWorld() in
             actor HelloWorld(init_name) in
-                import system.Cell
+                import system.lang.Cell
                 var my_name = new Cell(init_name)
                 handle tell {'name': name} in
                     my_name := name

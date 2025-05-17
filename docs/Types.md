@@ -45,14 +45,14 @@ Type-only names (there are never instances of these):
 - Value
     - Composite
         - Obj
-            - ActorCfg[T<:Protocol]
-            - ActorRef[T<:Protocol]
+            - ActorCfg[P<:Protocol]
+            - ActorRef[P<:Protocol]
     - Feat
         - Int32
         - Literal
     - Method
         - Func
-            - ActorCfgtr[T<:Protocol]
+            - ActorCtor[P<:Protocol]
 ```
 
 ### Polymorphic types in the Torq grammar

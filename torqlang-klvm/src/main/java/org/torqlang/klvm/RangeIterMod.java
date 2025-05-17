@@ -9,10 +9,26 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class RangeIterMod {
+public final class RangeIterMod implements KernelModule {
 
-    public static final Ident RANGE_ITER_IDENT = Ident.create("RangeIter");
-    public static final CompleteObj RANGE_ITER_CLS = RangeIterCls.SINGLETON;
+    public static final Str RANGE_ITER_STR = Str.of("RangeIter");
+    public static final Ident RANGE_ITER_IDENT = Ident.create(RANGE_ITER_STR.value);
+
+    private final CompleteRec exports;
+
+    private RangeIterMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(RANGE_ITER_STR, RangeIterCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete rangeIterCls() {
+        return RangeIterCls.SINGLETON;
+    }
+
+    public static RangeIterMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
     //     RangeIter.new(from::Int32, to::Int32) -> RangeIter
@@ -24,9 +40,18 @@ public final class RangeIterMod {
         // RangeIter is not suspendable. Therefore, its arguments must be bound before we construct it.
         Int64 fromInt = (Int64) ys.get(0).resolveValue(env);
         Int64 toInt = (Int64) ys.get(1).resolveValue(env);
-        RangeIter rangeIter = new RangeIter(fromInt, toInt);
+        RangeIterObj rangeIter = new RangeIterObj(fromInt, toInt);
         ValueOrVar target = ys.get(2).resolveValueOrVar(env);
         target.bindToValue(rangeIter, null);
+    }
+
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final RangeIterMod SINGLETON = new RangeIterMod();
     }
 
     static final class RangeIterCls implements CompleteObj {
@@ -50,7 +75,7 @@ public final class RangeIterMod {
         }
     }
 
-    static final class RangeIter implements Proc {
+    static final class RangeIterObj implements Proc {
 
         private final static int RANGE_ITER_ARG_COUNT = 1;
 
@@ -58,7 +83,7 @@ public final class RangeIterMod {
         private final Int64 toInt;
         private Int64 nextInt;
 
-        public RangeIter(Int64 fromInt, Int64 toInt) {
+        public RangeIterObj(Int64 fromInt, Int64 toInt) {
             this.fromInt = fromInt;
             this.toInt = toInt;
             this.nextInt = fromInt;

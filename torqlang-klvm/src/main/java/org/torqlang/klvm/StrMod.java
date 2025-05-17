@@ -9,7 +9,21 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public class StrMod {
+public final class StrMod implements KernelModule {
+
+    public static final Str STR_STR = Str.of("Str");
+    public static final Ident STR_IDENT = Ident.create(STR_STR.value);
+
+    private final CompleteRec exports;
+
+    private StrMod() {
+        exports = Rec.completeRecBuilder()
+            .build();
+    }
+
+    public static StrMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
     //     str.substring(start::Int32) -> Str
@@ -31,6 +45,15 @@ public class StrMod {
             target = ys.get(2).resolveValueOrVar(env);
         }
         target.bindToValueOrVar(subStr, null);
+    }
+
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final StrMod SINGLETON = new StrMod();
     }
 
 }

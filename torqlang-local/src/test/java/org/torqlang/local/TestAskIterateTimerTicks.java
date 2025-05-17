@@ -22,7 +22,8 @@ public class TestAskIterateTimerTicks {
     public void test() throws Exception {
         String source = """
             actor IterateTimerTicks() in
-                import system.{Cell, Stream, Timer, ValueIter}
+                import system.lang.{Cell, Stream, ValueIter}
+                import system.util.Timer
                 handle ask 'iterate' in
                     var tick_count = new Cell(0)
                     var timer_stream = new Stream(spawn(new Timer(1, 'microseconds')),
@@ -38,10 +39,11 @@ public class TestAskIterateTimerTicks {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond, $spawn
-                    local Cell, Stream, Timer, ValueIter, $v0, $v10 in
-                        $import('system', ['Cell', 'Stream', 'Timer', 'ValueIter'])
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $import, $respond, $spawn
+                    local Cell, Stream, ValueIter, Timer, $v0, $v10 in
+                        $import('system.lang', ['Cell', 'Stream', 'ValueIter'])
+                        $import('system.util', ['Timer'])
                         $create_proc(proc ($m) in // free vars: $respond, $spawn, Cell, Stream, Timer, ValueIter
                             local $else in
                                 $create_proc(proc () in // free vars: $m
@@ -103,8 +105,8 @@ public class TestAskIterateTimerTicks {
                         end, $v10)
                         $create_tuple('handlers'#[$v0, $v10], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('IterateTimerTicks'#{'new': $actor_cfgtr}, IterateTimerTicks)
+                end, $actor_ctor)
+                $create_rec('IterateTimerTicks'#{'new': $actor_ctor}, IterateTimerTicks)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

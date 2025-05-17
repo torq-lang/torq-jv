@@ -35,12 +35,12 @@ public final class NorthwindHandlerFactoryForActors {
         SourceFileBroker sourceBroker = ExamplesSourceBroker.createResourcesBrokerForActors();
 
         CompleteRec examplesMod = Rec.completeRecBuilder()
-            .addField(Str.of("NorthwindDb"), NorthwindDbMod.NORTHWIND_DB_ACTOR)
+            .addField(NorthwindDbMod.NORTHWIND_DB_STR, NorthwindDbMod.northwindDbCls())
             .build();
 
         ActorSystem system = ActorSystem.builder()
-            .addDefaultModules()
-            .addModule("examples", examplesMod)
+            .addDefaultPackages()
+            .addPackage("examples", examplesMod)
             .build();
 
         ApiDesc customerApiDesc = ApiDesc.builder()

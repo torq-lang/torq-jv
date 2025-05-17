@@ -27,7 +27,7 @@ public class TestEvalArrayLists {
                 x.add(1)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.arrayListCls()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -58,7 +58,7 @@ public class TestEvalArrayLists {
                 x.add(0)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.arrayListCls()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -86,7 +86,7 @@ public class TestEvalArrayLists {
                 x = b.to_array()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.arrayListCls()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

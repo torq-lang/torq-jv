@@ -12,8 +12,6 @@ import org.torqlang.local.*;
 
 import java.util.Map;
 
-import static org.torqlang.examples.NorthwindDbMod.NORTHWIND_DB;
-
 /*
  * Example data:
  *     Northwind example data must be copied from the project directory
@@ -51,14 +49,14 @@ public final class BenchNorthwindDb {
         int iterCount = 100_000;
         // WARMUP
         for (int i = 0; i < iterCount; i++) {
-            performSampling(NORTHWIND_DB);
+            performSampling(NorthwindDbMod.northwindDb());
         }
         // SAMPLES
         int readCount = 0;
         long start = System.currentTimeMillis();
         for (int i = 0; i < iterCount; i++) {
             // Take 31 samples per iteration
-            readCount += performSampling(NORTHWIND_DB);
+            readCount += performSampling(NorthwindDbMod.northwindDb());
         }
         long stop = System.currentTimeMillis();
         // REPORTING

@@ -1,4 +1,4 @@
-package system.util
+package system.lang
 
 meta#{'export', 'native': 'org.torqlang.klvm.ValueIterMod'}
 type ValueIter[T] = Obj & {

@@ -33,8 +33,8 @@ public class TestAskConcurrentData {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $act, $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $act, $respond
                     local $v0, $v6 in
                         $create_proc(proc ($m) in // free vars: $act, $respond
                             local $else in
@@ -76,8 +76,8 @@ public class TestAskConcurrentData {
                         end, $v6)
                         $create_tuple('handlers'#[$v0, $v6], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
+                end, $actor_ctor)
+                $create_rec('ConcurrentData'#{'new': $actor_ctor}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -96,7 +96,7 @@ public class TestAskConcurrentData {
     public void test02() throws Exception {
         String source = """
             actor ConcurrentData() in
-                import system.ArrayList
+                import system.util.ArrayList
                 handle ask 'perform' in
                     var list = new ArrayList()
                     list.add({'customer': act 'Alice and Bob' end, 'order': act '20 pounds of Sugar' end})
@@ -109,10 +109,10 @@ public class TestAskConcurrentData {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $act, $import, $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $act, $import, $respond
                     local ArrayList, $v0, $v10 in
-                        $import('system', ['ArrayList'])
+                        $import('system.util', ['ArrayList'])
                         $create_proc(proc ($m) in // free vars: $act, $respond, ArrayList
                             local $else in
                                 $create_proc(proc () in // free vars: $m
@@ -170,8 +170,8 @@ public class TestAskConcurrentData {
                         end, $v10)
                         $create_tuple('handlers'#[$v0, $v10], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('ConcurrentData'#{'new': $actor_cfgtr}, ConcurrentData)
+                end, $actor_ctor)
+                $create_rec('ConcurrentData'#{'new': $actor_ctor}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -217,10 +217,10 @@ public class TestAskConcurrentData {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $respond, $spawn
-                    local Number, $actor_cfgtr, n1, n2, n3, $v10, $v17 in
-                        $create_actor_cfgtr(proc (n, $r) in // free vars: $respond
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $respond, $spawn
+                    local Number, $actor_ctor, n1, n2, n3, $v10, $v17 in
+                        $create_actor_ctor(proc (n, $r) in // free vars: $respond
                             local $v0, $v4 in
                                 $create_proc(proc ($m) in // free vars: $respond, n
                                     local $else in
@@ -254,8 +254,8 @@ public class TestAskConcurrentData {
                                 end, $v4)
                                 $create_tuple('handlers'#[$v0, $v4], $r)
                             end
-                        end, $actor_cfgtr)
-                        $create_rec('Number'#{'new': $actor_cfgtr}, Number)
+                        end, $actor_ctor)
+                        $create_rec('Number'#{'new': $actor_ctor}, Number)
                         local $v7 in
                             $select_apply(Number, ['new'], 1, $v7)
                             $spawn($v7, n1)
@@ -305,8 +305,8 @@ public class TestAskConcurrentData {
                         end, $v17)
                         $create_tuple('handlers'#[$v10, $v17], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('ConcurrentMathTuple'#{'new': $actor_cfgtr}, ConcurrentMathTuple)
+                end, $actor_ctor)
+                $create_rec('ConcurrentMathTuple'#{'new': $actor_ctor}, ConcurrentMathTuple)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

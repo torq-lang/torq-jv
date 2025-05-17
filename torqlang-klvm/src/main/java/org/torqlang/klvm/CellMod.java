@@ -9,16 +9,29 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class CellMod {
+public final class CellMod implements KernelModule {
 
-    public static final Ident CELL_IDENT = Ident.create("Cell");
-    public static final CompleteObj CELL_CLS = CellCls.SINGLETON;
+    public static final Str CELL_STR = Str.of("Cell");
+    public static final Ident CELL_IDENT = Ident.create(CELL_STR.value);
 
-    private static final ObjProcTable<CellObj> objProcTable = ObjProcTable.<CellObj>builder()
-        .build();
+    private final CompleteRec exports;
+
+    private CellMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(CELL_STR, CellCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete cellCls() {
+        return CellCls.SINGLETON;
+    }
+
+    public static CellMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
-    //     Cell.new(initial::Value) -> Cell
+    //     new Cell(initial::Value) -> Cell
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedArgCount = 2;
         if (ys.size() != expectedArgCount) {
@@ -30,7 +43,12 @@ public final class CellMod {
         target.bindToValue(cellObj, null);
     }
 
-    static class CellCls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    static final class CellCls implements CompleteObj {
         private static final CellCls SINGLETON = new CellCls();
         private static final CompleteProc CELL_CLS_NEW = CellMod::clsNew;
 
@@ -51,7 +69,10 @@ public final class CellMod {
         }
     }
 
-    static class CellObj implements Obj {
+    static final class CellObj implements Obj {
+
+        private static final ObjProcTable<CellObj> objProcTable = ObjProcTable.<CellObj>builder()
+            .build();
 
         private ValueOrVar valueOrVar;
 
@@ -83,6 +104,10 @@ public final class CellMod {
         public final String toString() {
             return toKernelString();
         }
+    }
+
+    private static final class LazySingleton {
+        private static final CellMod SINGLETON = new CellMod();
     }
 
 }

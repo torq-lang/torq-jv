@@ -17,7 +17,8 @@ public final class MergeIntStreams {
 
     public static final String SOURCE = """
         actor MergeIntStreams() in
-            import system.{ArrayList, Cell, Stream, ValueIter}
+            import system.lang.{Cell, Stream, ValueIter}
+            import system.util.ArrayList
             import examples.IntPublisher
             handle ask 'merge' in
                 var odd_iter = new ValueIter(new Stream(spawn(new IntPublisher(1, 10, 2)), 'request'#{'count': 3})),
@@ -54,8 +55,8 @@ public final class MergeIntStreams {
     public final void perform() throws Exception {
 
         ActorSystem system = ActorSystem.builder()
-            .addDefaultModules()
-            .addModule("examples", IntPublisherMod.moduleRec())
+            .addDefaultPackages()
+            .addPackage("examples", IntPublisherMod.singleton().exports())
             .build();
 
         ActorRef actorRef = Actor.builder()

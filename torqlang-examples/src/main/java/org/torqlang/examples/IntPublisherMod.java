@@ -8,17 +8,18 @@
 package org.torqlang.examples;
 
 import org.torqlang.klvm.CompleteRec;
+import org.torqlang.klvm.KernelModule;
 import org.torqlang.klvm.Rec;
 import org.torqlang.klvm.Str;
 import org.torqlang.local.Actor;
 
-final class IntPublisherMod {
+final class IntPublisherMod implements KernelModule {
 
-    private final CompleteRec moduleRec;
+    private final CompleteRec exportsRec;
 
     private IntPublisherMod() {
         try {
-            moduleRec = Rec.completeRecBuilder()
+            exportsRec = Rec.completeRecBuilder()
                 .addField(Str.of("IntPublisher"), Actor.compileForImport(IntPublisher.SOURCE))
                 .build();
         } catch (Exception exc) {
@@ -26,11 +27,16 @@ final class IntPublisherMod {
         }
     }
 
-    public static CompleteRec moduleRec() {
-        return LazySingleton.SINGLETON.moduleRec;
+    public static IntPublisherMod singleton() {
+        return LazySingleton.SINGLETON;
     }
 
-    private static class LazySingleton {
+    @Override
+    public final CompleteRec exports() {
+        return exportsRec;
+    }
+
+    private static final class LazySingleton {
         private static final IntPublisherMod SINGLETON = new IntPublisherMod();
     }
 

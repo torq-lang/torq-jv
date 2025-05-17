@@ -22,7 +22,8 @@ public final class OrderDao {
 
     public static final String SOURCE = """
         actor OrderDao() in
-            import system.{ArrayList, HashMap, LocalDate, Rec, ValueIter}
+            import system.lang.{Rec, ValueIter}
+            import system.util.{ArrayList, HashMap, LocalDate}
             var orders = new HashMap()
             var order_lines = new HashMap()
             orders.put('ORDER-001', {

@@ -25,8 +25,8 @@ import java.util.Set;
  * potentially complete, a stateful value will never be complete because it can change indefinitely. A java HashMap
  * wrapped as an Obj, for example, is a Stateful value.
  *
- * Valid Key -- A valid key has equals and hash code methods based on consistent and immutable state, which may or may
- * not be its content. For example, a Cell is a valid key because its equals and hash code methods do not depend on its
+ * Valid Key -- A valid key has equals and hashcode methods based on consistent and immutable state, which may or may
+ * not be its content. For example, a Cell is a valid key because its equals and hashcode methods do not depend on its
  * contained value, they depend on its identity. In contrast, a Flt64 seems to be a valid key, but it is not because
  * there is no guarantee that a == (a/b) * b. Valid keys can be used for lookups, such as a key in a java HashMap.
  *
@@ -38,43 +38,16 @@ import java.util.Set;
  * Concrete Complete
  * =================
  *
- * Subtypes of the `Complete` interface are immutable, and if a type is a composite, it only contains `Complete` types.
- * Only `Complete` types are shared between actors. When an actor sends a message or spawns a new actor, the controller
- * calls `checkComplete()` to assert or convert arguments to one of the `Complete` values.
+ * Subtypes of the Complete interface are immutable, and if a subtype of Complete is a composite, then it only contains
+ * Complete types. Only Complete types are shared between actors. When an actor sends a message or spawns a new actor,
+ * the controller calls checkComplete() to assert or convert arguments to one of the Complete types.
  *
- * Complete values hierarchy:
- *   - Complete
- *     - CompleteActorCfgtr
- *     - CompleteObj
- *     - CompleteProc
- *     - CompleteRec
- *       - CompleteTuple
- *     - FailedValue
- *     - Feature
- *       - Int64
- *         - Int32
- *           - Char
- *       - Literal
- *         - Token
- *         - Nothing
- *         - Eof
- *         - Bool
- *         - Str
- *     - Num
- *       - Flt64
- *         - Flt32
- *       - Int64
- *         - Int32
- *           - Char
- *     - OpaqueValue
- *     - RequestId
+ * EQUALS AND HASHCODE
+ * ===================
  *
- * The `CompleteActorCfgtr` exists for modularity. An actor system can contain modules, and a module can export an
- * actor construct as a `Rec` containing a `CompleteActorCfgtr`.
- *
- * There is one exception to all of the above. When an actor spawns another actor, we delay verifying the actor
- * configuration for as long as possible to opportunistically increase concurrency. During the spawn callback, we
- * dynamically verify that the `ActorCfg` is effectively complete by verifying that its free variables are complete.
+ * By default, KLVM values default to the system equals and hashcode methods. Specifically, the equals and hashcode
+ * methods are overridden for scalar values, complete records, and complete structures. Scalar values override equals
+ * as you would expect. Complete records and structures override equals to use entailment.
  */
 public interface Value extends ValueOrIdent, ValueOrVar, ValueOrVarSet, ValueOrIdentPtn, ValueOrResolvedPtn {
 

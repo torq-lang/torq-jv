@@ -11,15 +11,26 @@ import org.torqlang.klvm.*;
 
 import java.util.*;
 
-final class HashMapMod {
+final class HashMapMod implements KernelModule {
 
-    public static final Ident HASH_MAP_IDENT = Ident.create("HashMap");
-    public static final CompleteObj HASH_MAP_CLS = HashMapCls.SINGLETON;
+    public static final Str HASH_MAP_STR = Str.of("HashMap");
+    public static final Ident HASH_MAP_IDENT = Ident.create(HASH_MAP_STR.value);
 
-    private static final ObjProcTable<HashMapObj> objProcTable = ObjProcTable.<HashMapObj>builder()
-        .addEntry(CommonFeatures.GET, HashMapMod::objGet)
-        .addEntry(CommonFeatures.PUT, HashMapMod::objPut)
-        .build();
+    private final CompleteRec exports;
+
+    private HashMapMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(HASH_MAP_STR, HashMapCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete hashMapCls() {
+        return HashMapCls.SINGLETON;
+    }
+
+    public static HashMapMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
     //     new HashMap() -> HashMap
@@ -70,7 +81,12 @@ final class HashMapMod {
         obj.state.put(key, elem);
     }
 
-    static class HashMapCls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    static final class HashMapCls implements CompleteObj {
         private static final HashMapCls SINGLETON = new HashMapCls();
         private static final CompleteProc HASH_MAP_CLS_NEW = HashMapMod::clsNew;
 
@@ -91,7 +107,13 @@ final class HashMapMod {
         }
     }
 
-    static class HashMapObj implements Obj, FieldIterSource, ValueIterSource {
+    static final class HashMapObj implements Obj, FieldIterSource, ValueIterSource {
+
+        private static final ObjProcTable<HashMapObj> objProcTable = ObjProcTable.<HashMapObj>builder()
+            .addEntry(CommonFeatures.GET, HashMapMod::objGet)
+            .addEntry(CommonFeatures.PUT, HashMapMod::objPut)
+            .build();
+
         private final HashMap<Complete, ValueOrVar> state;
 
         HashMapObj() {
@@ -163,6 +185,10 @@ final class HashMapMod {
                 super(hashMap.values());
             }
         }
+    }
+
+    private static final class LazySingleton {
+        private static final HashMapMod SINGLETON = new HashMapMod();
     }
 
 }

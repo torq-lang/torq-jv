@@ -12,10 +12,9 @@ import org.torqlang.klvm.CompleteRec;
 import java.util.concurrent.Executor;
 
 /*
- TODO: How can we structure systems such that child systems inherit
-       access to modules and can override executors?
-       The DEFAULT system becomes the ROOT system.
- TODO: How can we use meta tags to assign actors to actor systems?
+ TODO: Can we structure systems such that child systems use their parent system to access packages not found in
+       the child, recursively?
+ TODO: Can we use meta tags to assign actors to actor systems?
  */
 public interface ActorSystem {
 
@@ -24,11 +23,11 @@ public interface ActorSystem {
     }
 
     static Executor defaultExecutor() {
-        return ActorSystemDefaults.DEFAULT_EXECUTOR;
+        return ActorSystemDefaults.executor();
     }
 
     static ActorSystem defaultSystem() {
-        return ActorSystemDefaults.DEFAULT_SYSTEM;
+        return ActorSystemDefaults.system();
     }
 
     ActorRefObj actorAt(Address address);
@@ -39,13 +38,7 @@ public interface ActorSystem {
 
     Executor executor();
 
-    /*
-        TODO: Rename to `assemblyAt`.
-              Packages are directories that contain modules.
-              Modules are files that contain members.
-              Assemblies are records that contain exported members.
-     */
-    CompleteRec moduleAt(String path);
-
     String name();
+
+    CompleteRec packageAt(String path);
 }

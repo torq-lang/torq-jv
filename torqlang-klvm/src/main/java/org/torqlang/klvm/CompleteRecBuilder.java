@@ -24,6 +24,14 @@ public final class CompleteRecBuilder {
         this.fields = new ArrayList<>(fields);
     }
 
+    public final CompleteRecBuilder addAllFields(CompleteRec rec) {
+        for (int i = 0; i < rec.fieldCount(); i++) {
+            CompleteField field = rec.fieldAt(i);
+            addField(field);
+        }
+        return this;
+    }
+
     public final CompleteRecBuilder addField(CompleteField field) {
         fields.add(field);
         return this;

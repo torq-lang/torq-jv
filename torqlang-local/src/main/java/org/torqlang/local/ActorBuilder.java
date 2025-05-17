@@ -188,19 +188,19 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     public final ActorBuilderConfigured configure() throws Exception {
         parseRewriteGenerateConstruct();
         if (state != State.CONSTRUCTED) {
-            throw new IllegalStateException("Cannot spawn at state: " + state);
+            throw new IllegalStateException("Cannot configure at state: " + state);
         }
-        // The actor record will contain values (not vars). Therefore, we can access the ActorCfgtr directly.
-        ActorCfgtr actorCfgtr = (ActorCfgtr) actorRec.findValue(Actor.NEW);
+        // The actor record will contain values (not vars). Therefore, we can access the ActorCtor directly.
+        ActorCtor actorCtor = (ActorCtor) actorRec.findValue(Actor.NEW);
         Env env = Env.create(LocalActor.rootEnv(),
             List.of(
-                new EnvEntry(Ident.$ACTOR_CFGTR, new Var(actorCfgtr)),
+                new EnvEntry(Ident.$ACTOR_CTOR, new Var(actorCtor)),
                 new EnvEntry(Ident.$R, new Var())
             )
         );
         List<CompleteOrIdent> argsWithTarget = ListTools.append(CompleteOrIdent.class, args, Ident.$R);
         List<Instr> localInstrs = new ArrayList<>();
-        localInstrs.add(new ApplyInstr(Ident.$ACTOR_CFGTR, argsWithTarget, SourceSpan.emptySourceSpan()));
+        localInstrs.add(new ApplyInstr(Ident.$ACTOR_CTOR, argsWithTarget, SourceSpan.emptySourceSpan()));
         SeqInstr seqInstr = new SeqInstr(localInstrs, SourceSpan.emptySourceSpan());
         computeInstr(seqInstr, env);
         try {
@@ -235,7 +235,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
     public final ActorBuilderConstructed construct() throws Exception {
         parseRewriteGenerate();
         if (state != State.GENERATED) {
-            throw new IllegalStateException("Cannot createActorRec at state: " + state);
+            throw new IllegalStateException("Cannot construct at state: " + state);
         }
         Env env = Env.create(LocalActor.rootEnv(), new EnvEntry(actorIdent, new Var()));
         computeInstr(createActorRecInstr, env);

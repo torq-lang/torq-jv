@@ -10,11 +10,11 @@ package org.torqlang.klvm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActorCfgtr implements Proc {
+public class ActorCtor implements Proc {
 
     private final Closure handlersCtor;
 
-    public ActorCfgtr(Closure handlersCtor) {
+    public ActorCtor(Closure handlersCtor) {
         this.handlersCtor = handlersCtor;
     }
 
@@ -22,12 +22,12 @@ public class ActorCfgtr implements Proc {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitActorCfgtr(this, state);
+        return visitor.visitActorCtor(this, state);
     }
 
     @Override
     public final void apply(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
-        // NOTE: An ActorCfgtr requires all arguments to be Complete. The last argument is not checked because it is
+        // NOTE: An ActorCtor requires all arguments to be Complete. The last argument is not checked because it is
         // the return argument.
         List<Complete> resArgs = new ArrayList<>(ys.size());
         for (int i = 0; i < ys.size() - 1; i++) {
@@ -41,11 +41,11 @@ public class ActorCfgtr implements Proc {
         targetRes.bindToValue(actorCfg, null);
     }
 
-    public CompleteActorCfgtr checkComplete() throws WaitVarException {
+    public CompleteActorCtor checkComplete() throws WaitVarException {
         for (EnvEntry envEntry : handlersCtor.capturedEnv()) {
             envEntry.var.resolveValue().checkComplete();
         }
-        return new CompleteActorCfgtr(handlersCtor);
+        return new CompleteActorCtor(handlersCtor);
     }
 
     public final Closure handlersCtor() {

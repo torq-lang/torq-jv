@@ -4,7 +4,8 @@ actor OrdersHandler() in
     // TODO: change `shipping_fee` in JSON files to be a decimal string
     // TODO: change `taxes` in JSON files to be a decimal string
 
-    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
+    import system.lang.{Int64, Rec, ValueIter}
+    import system.util.{ArrayList, LocalDate}
     import examples.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': path, 'query': query, 'context': context} in

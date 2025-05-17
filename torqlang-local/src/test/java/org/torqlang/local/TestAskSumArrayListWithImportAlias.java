@@ -21,7 +21,8 @@ public class TestAskSumArrayListWithImportAlias {
     public void test() throws Exception {
         String source = """
             actor SumArrayList() in
-                import system.{ArrayList as JavaArrayList, Cell, ValueIter}
+                import system.lang.{Cell, ValueIter}
+                import system.util.{ArrayList as JavaArrayList}
                 var one_thru_five = new JavaArrayList([1, 2, 3, 4, 5])
                 handle ask 'perform' in
                     var sum = new Cell(0)
@@ -36,10 +37,11 @@ public class TestAskSumArrayListWithImportAlias {
             .setSource(source)
             .generate();
         String expected = """
-            local $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $import, $respond
-                    local JavaArrayList, Cell, ValueIter, one_thru_five, $v1, $v8 in
-                        $import('system', [['ArrayList', 'JavaArrayList'], 'Cell', 'ValueIter'])
+            local $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $import, $respond
+                    local Cell, ValueIter, JavaArrayList, one_thru_five, $v1, $v8 in
+                        $import('system.lang', ['Cell', 'ValueIter'])
+                        $import('system.util', [['ArrayList', 'JavaArrayList']])
                         local $v0 in
                             $bind([1, 2, 3, 4, 5], $v0)
                             $select_apply(JavaArrayList, ['new'], $v0, one_thru_five)
@@ -97,8 +99,8 @@ public class TestAskSumArrayListWithImportAlias {
                         end, $v8)
                         $create_tuple('handlers'#[$v1, $v8], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('SumArrayList'#{'new': $actor_cfgtr}, SumArrayList)
+                end, $actor_ctor)
+                $create_rec('SumArrayList'#{'new': $actor_ctor}, SumArrayList)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

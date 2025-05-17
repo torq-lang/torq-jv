@@ -25,7 +25,7 @@ public class TestEvalTokens {
                 x = new Token()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(TokenMod.TOKEN_IDENT, new Var(TokenMod.TOKEN_CLS))
+            .addVar(TokenMod.TOKEN_IDENT, new Var(TokenMod.tokenCls()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

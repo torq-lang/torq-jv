@@ -172,7 +172,7 @@ var_type_anno: '::' type_expr;
 
 result_type_anno: '->' type_expr;
 
-type_expr: union_type | actor_cfgtr_type | actor_cfg_type | actor_ref_type;
+type_expr: union_type | actor_ctor_type | actor_cfg_type | actor_ref_type;
 
 bool: 'true' | 'false';
 
@@ -244,7 +244,7 @@ protocol_ask_handler: 'ask' pat result_type_anno;
 
 protocol_stream_handler: 'stream' pat result_type_anno;
 
-actor_cfgtr_type: 'ActorCfgtr' ('[' intersection_protocol ']')?;
+actor_ctor_type: 'ActorCtor' ('[' intersection_protocol ']')?;
 
 actor_cfg_type: 'ActorCfg' ('[' intersection_protocol ']')?;
 

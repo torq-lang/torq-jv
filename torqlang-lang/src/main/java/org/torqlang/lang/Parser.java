@@ -1989,7 +1989,7 @@ public final class Parser {
         } else if (current.isIdent(Type.ACTOR_CFG)) {
             // TODO
             throw new NeedsImpl();
-        } else if (current.isIdent(Type.ACTOR_CFGTR)) {
+        } else if (current.isIdent(Type.ACTOR_CTOR)) {
             // TODO
             throw new NeedsImpl();
         } else {

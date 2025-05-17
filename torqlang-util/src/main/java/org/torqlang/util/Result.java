@@ -7,6 +7,17 @@
 
 package org.torqlang.util;
 
+/*
+ * This result class is inspired by the Rust `Result` type, but instead of `Ok` and `Error`, we
+ * use `Value` and `Error`.
+ *
+ * ```
+ * pub enum Result<T, E> {
+ *   Ok(T),
+ *   Err(E),
+ * }
+ * ```
+ */
 public interface Result<V, E> {
 
     static <V, E> Result<V, E> error(E left) {

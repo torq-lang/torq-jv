@@ -15,58 +15,6 @@ import static org.torqlang.util.ErrorWithSourceSpan.printWithSourceAndRethrow;
 
 public class TestParserModule {
 
-    /*
-        ApiDesc orderApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
-            .build();
-        ApiDesc ordersApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.ORDER_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
-            .build();
-        ApiDesc orderDetailsApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC, StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.ORDER_DETAILS_DESC)
-            .setContextProvider(NorthwindHandlerFactory::emptyContextProvider)
-            .build();
-        String ordersHandlerSource = NorthwindJson.readTextFromResource(
-            NorthwindJson.TORQ_DIR + "OrdersHandler.torq");
-        ActorImage ordersHandlerImage = Actor.builder()
-            .setSystem(system)
-            .actorImage(ordersHandlerSource);
-
-     */
-
-    /*
-        return ApiHandler.builder()
-            .setRouter(ApiRouter.staticBuilder()
-                .addRoute("/orders", ordersHandlerImage, ordersApiDesc)
-                .addRoute("/orders/{id}", ordersHandlerImage, orderApiDesc)
-                .addRoute("/orders/{id}/details", ordersHandlerImage, orderDetailsApiDesc)
-                .build())
-            .build();
-     */
-    /*
-            actor OrdersHandler() in
-                import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
-                import examples.NorthwindDb
-                handle ask 'GET'#{'headers': headers, 'path': ['orders'], 'query': query, 'context': context} in
-                    // handle GET /orders
-                end
-                handle ask 'GET'#{'headers': headers, 'path': ['orders', order_id::Int64], 'query': query, 'context': context} in
-                    // handle GET /orders/{order_id}
-                end
-                handle ask 'GET'#{'headers': headers, 'path': ['orders', order_id::Int64, 'details'], 'query': query, 'context': context} in
-                    // handle GET /orders/{order_id}/details
-                end
-                handle ask 'PATCH'#{'headers': headers, 'path': ['orders', order_id::Int64], 'query': query, 'body': body, 'context': context} in
-                    // handle PATCH /orders/{order_id}
-                end
-            end
-     */
-
-
     @Test
     public void test01() throws Exception {
         String source = """

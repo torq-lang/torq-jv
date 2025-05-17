@@ -9,15 +9,26 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class RecMod {
+public final class RecMod implements KernelModule {
 
-    public static final Ident REC_IDENT = Ident.create("Rec");
-    public static final CompleteObj REC_CLS = RecCls.SINGLETON;
+    public static final Str REC_STR = Str.of("Rec");
+    public static final Ident REC_IDENT = Ident.create(REC_STR.value);
 
-    private static final ObjProcTable<RecCls> clsProcTable = ObjProcTable.<RecCls>builder()
-        .addEntry(CommonFeatures.ASSIGN, RecMod::clsAssign)
-        .addEntry(CommonFeatures.SIZE, RecMod::clsSize)
-        .build();
+    private final CompleteRec exports;
+
+    private RecMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(REC_STR, RecCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete recCls() {
+        return RecCls.SINGLETON;
+    }
+
+    public static RecMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     /*
      * Rec.assign(from::Rec, to::Rec) -> Rec
@@ -67,9 +78,23 @@ public final class RecMod {
         target.bindToValue(Int32.of(rec0.fieldCount()), null);
     }
 
-    static final class RecCls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class LazySingleton {
+        private static final RecMod SINGLETON = new RecMod();
+    }
+
+    private static final class RecCls implements CompleteObj {
 
         private static final RecCls SINGLETON = new RecCls();
+
+        private static final ObjProcTable<RecCls> clsProcTable = ObjProcTable.<RecCls>builder()
+            .addEntry(CommonFeatures.ASSIGN, RecMod::clsAssign)
+            .addEntry(CommonFeatures.SIZE, RecMod::clsSize)
+            .build();
 
         private RecCls() {
         }

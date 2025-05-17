@@ -25,7 +25,7 @@ public class TestEvalAccessNums {
                 x = @a
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -48,7 +48,7 @@ public class TestEvalAccessNums {
                 x = @a + 3
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("x"))
             .setSource(source)

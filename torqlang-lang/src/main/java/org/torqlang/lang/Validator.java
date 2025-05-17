@@ -303,7 +303,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     private static final Set<Ident> ILLEGAL_IDENTS = Set.of(
         Ident.create("ActorCfg"),
-        Ident.create("ActorCfgtr"),
+        Ident.create("ActorCtor"),
         Ident.create("Array"),
         Ident.create("Bool"),
         Ident.create("Char"),

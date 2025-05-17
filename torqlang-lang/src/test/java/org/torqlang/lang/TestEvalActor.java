@@ -46,8 +46,8 @@ public class TestEvalActor {
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
-            local HelloFactorial, $actor_cfgtr in
-                $create_actor_cfgtr(proc ($r) in // free vars: $respond
+            local HelloFactorial, $actor_ctor in
+                $create_actor_ctor(proc ($r) in // free vars: $respond
                     local fact, $v3, $v10 in
                         $create_proc(proc (x, $r) in
                             local fact_cps in
@@ -107,8 +107,8 @@ public class TestEvalActor {
                         end, $v10)
                         $create_tuple('handlers'#[$v3, $v10], $r)
                     end
-                end, $actor_cfgtr)
-                $create_rec('HelloFactorial'#{'new': $actor_cfgtr}, HelloFactorial)
+                end, $actor_ctor)
+                $create_rec('HelloFactorial'#{'new': $actor_ctor}, HelloFactorial)
                 $select_apply(HelloFactorial, ['new'], hello_factorial_cfg)
             end""";
         assertEquals(expected, e.kernel().toString());

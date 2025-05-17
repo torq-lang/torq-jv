@@ -9,9 +9,26 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public class Int32Mod {
+public final class Int32Mod implements KernelModule {
 
-    public static final CompleteObj INT32_CLS = Int32Cls.SINGLETON;
+    public static final Str INT32_STR = Str.of("Int32");
+    public static final Ident INT32_IDENT = Ident.create(INT32_STR.value);
+
+    private final CompleteRec exports;
+
+    private Int32Mod() {
+        exports = Rec.completeRecBuilder()
+            .addField(INT32_STR, Int32Cls.SINGLETON)
+            .build();
+    }
+
+    public static Complete int32Cls() {
+        return Int32Cls.SINGLETON;
+    }
+
+    public static Int32Mod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
     //     Int32.parse(num::Str) -> Int32
@@ -26,7 +43,12 @@ public class Int32Mod {
         target.bindToValue(int32, null);
     }
 
-    static class Int32Cls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    private static final class Int32Cls implements CompleteObj {
         private static final Int32Cls SINGLETON = new Int32Cls();
         private static final CompleteProc INT32_CLS_PARSE = Int32Mod::clsParse;
 
@@ -45,6 +67,10 @@ public class Int32Mod {
         public final String toString() {
             return toKernelString();
         }
+    }
+
+    private static final class LazySingleton {
+        private static final Int32Mod SINGLETON = new Int32Mod();
     }
 
 }

@@ -28,7 +28,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -69,7 +69,7 @@ public class TestEvalWhileLoop {
         // a = 3
 
         e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
             .addVar(Ident.create("a"), new Var(Int32.of(3)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -94,7 +94,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -171,7 +171,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

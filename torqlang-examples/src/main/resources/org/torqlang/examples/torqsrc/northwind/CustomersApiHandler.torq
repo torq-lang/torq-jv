@@ -34,7 +34,8 @@ protocol CustomersApi = {
 meta#{'export': 'api-handler'}
 actor CustomersApiHandler() implements CustomersApi in
 
-    import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
+    import system.lang.{Int64, Rec, ValueIter}
+    import system.util.{ArrayList, LocalDate}
     import northwind.NorthwindDb
 
     meta#{'export'}

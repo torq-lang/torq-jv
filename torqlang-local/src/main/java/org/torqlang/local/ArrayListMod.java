@@ -13,16 +13,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-final class ArrayListMod {
-    public static final Ident ARRAY_LIST_IDENT = Ident.create("ArrayList");
-    public static final CompleteObj ARRAY_LIST_CLS = ArrayListCls.SINGLETON;
+final class ArrayListMod implements KernelModule {
 
-    private static final ObjProcTable<ArrayListObj> objProcTable = ObjProcTable.<ArrayListObj>builder()
-        .addEntry(CommonFeatures.ADD, ArrayListMod::objAdd)
-        .addEntry(CommonFeatures.CLEAR, ArrayListMod::objClear)
-        .addEntry(CommonFeatures.SIZE, ArrayListMod::objSize)
-        .addEntry(CommonFeatures.TO_ARRAY, ArrayListMod::objToArray)
-        .build();
+    public static final Str ARRAY_LIST_STR = Str.of("ArrayList");
+    public static final Ident ARRAY_LIST_IDENT = Ident.create(ARRAY_LIST_STR.value);
+
+    private final CompleteRec exports;
+
+    private ArrayListMod() {
+        exports = Rec.completeRecBuilder()
+            .addField(ARRAY_LIST_STR, ArrayListCls.SINGLETON)
+            .build();
+    }
+
+    public static Complete arrayListCls() {
+        return ArrayListCls.SINGLETON;
+    }
+
+    public static ArrayListMod singleton() {
+        return LazySingleton.SINGLETON;
+    }
 
     // Signatures:
     //     new ArrayList() -> ArrayList
@@ -110,7 +120,12 @@ final class ArrayListMod {
         target.bindToValueOrVar(tuple, null);
     }
 
-    static class ArrayListCls implements CompleteObj {
+    @Override
+    public final CompleteRec exports() {
+        return exports;
+    }
+
+    static final class ArrayListCls implements CompleteObj {
         private static final ArrayListCls SINGLETON = new ArrayListCls();
         private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListMod::clsNew;
 
@@ -131,7 +146,15 @@ final class ArrayListMod {
         }
     }
 
-    static class ArrayListObj implements Obj, ValueIterSource {
+    static final class ArrayListObj implements Obj, ValueIterSource {
+
+        private static final ObjProcTable<ArrayListObj> objProcTable = ObjProcTable.<ArrayListObj>builder()
+            .addEntry(CommonFeatures.ADD, ArrayListMod::objAdd)
+            .addEntry(CommonFeatures.CLEAR, ArrayListMod::objClear)
+            .addEntry(CommonFeatures.SIZE, ArrayListMod::objSize)
+            .addEntry(CommonFeatures.TO_ARRAY, ArrayListMod::objToArray)
+            .build();
+
         final ArrayList<ValueOrVar> state;
 
         public ArrayListObj() {
@@ -193,6 +216,10 @@ final class ArrayListMod {
                 super(values);
             }
         }
+    }
+
+    private static final class LazySingleton {
+        private static final ArrayListMod SINGLETON = new ArrayListMod();
     }
 
 }
