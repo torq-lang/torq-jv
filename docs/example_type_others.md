@@ -10,17 +10,15 @@ type MyTuple = Tuple[Int64, Str | Bool]
 
 type MyArray = Array[Int64]
 
-var x... = [0, 1, 2, 3]
+var x = [0, 1, 2, 3]
 
 var y
 
-// This is a "rest" syntax for a variable number of arguments
-func untypedFunc(params::Any...) -> Any in
+func untypedFunc(params::Array[Any]) -> Any in
     skip
 end
 
-// This is an untyped "rest" syntax for a variable number of arguments
-func untypedFunc(params...) -> Any in
+func untypedFunc(params::Array) -> Any in
     skip
 end
 
@@ -40,13 +38,11 @@ func funcThatTakesOnePattern[T]({'name': name, 'age': age, 'address': T, ...}) -
     skip
 end
 
-// This is an untyped "rest" syntax for a variable number of record fields
-func funcThatTakesOnePattern[T]({'name': name, 'age': age, 'address': T, rest...}) -> Any in
+func funcThatTakesOnePattern[T]({'name': name, 'age': age, 'address': T, ...}) -> Any in
     skip
 end
 
-// This is an untyped "rest" syntax for a variable number of tuple fields
-func funcThatTakesOnePattern[T]([a, b, c, rest...]) -> Any in
+func funcThatTakesOnePattern[T]([a, b, c, ...]) -> Any in
     skip
 end
 ```

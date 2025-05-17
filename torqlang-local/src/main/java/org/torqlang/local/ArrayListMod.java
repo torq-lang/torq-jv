@@ -13,20 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-final class ArrayListPack {
+final class ArrayListMod {
     public static final Ident ARRAY_LIST_IDENT = Ident.create("ArrayList");
     public static final CompleteObj ARRAY_LIST_CLS = ArrayListCls.SINGLETON;
 
     private static final ObjProcTable<ArrayListObj> objProcTable = ObjProcTable.<ArrayListObj>builder()
-        .addEntry(CommonFeatures.ADD, ArrayListPack::objAdd)
-        .addEntry(CommonFeatures.CLEAR, ArrayListPack::objClear)
-        .addEntry(CommonFeatures.SIZE, ArrayListPack::objSize)
-        .addEntry(CommonFeatures.TO_ARRAY, ArrayListPack::objToArray)
+        .addEntry(CommonFeatures.ADD, ArrayListMod::objAdd)
+        .addEntry(CommonFeatures.CLEAR, ArrayListMod::objClear)
+        .addEntry(CommonFeatures.SIZE, ArrayListMod::objSize)
+        .addEntry(CommonFeatures.TO_ARRAY, ArrayListMod::objToArray)
         .build();
 
     // Signatures:
-    //     ArrayList.new() -> ArrayList
-    //     ArrayList.new(values::Array) -> ArrayList
+    //     new ArrayList() -> ArrayList
+    //     new ArrayList(values::Array) -> ArrayList
     static void clsNew(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         int argCount = ys.size();
         if (argCount < 1 || argCount > 2) {
@@ -112,7 +112,7 @@ final class ArrayListPack {
 
     static class ArrayListCls implements CompleteObj {
         private static final ArrayListCls SINGLETON = new ArrayListCls();
-        private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListPack::clsNew;
+        private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListMod::clsNew;
 
         private ArrayListCls() {
         }

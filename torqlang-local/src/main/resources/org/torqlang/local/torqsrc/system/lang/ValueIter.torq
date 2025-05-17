@@ -1,6 +1,6 @@
 package system.util
 
-meta#{'export', 'native': 'org.torqlang.klvm.ValueIterPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.ValueIterMod'}
 type ValueIter[T] = Obj & {
     // TODO
 }

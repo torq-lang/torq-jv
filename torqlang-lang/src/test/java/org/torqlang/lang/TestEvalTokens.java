@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Token;
-import org.torqlang.klvm.TokenPack;
+import org.torqlang.klvm.TokenMod;
 import org.torqlang.klvm.Var;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +25,7 @@ public class TestEvalTokens {
                 x = new Token()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(TokenPack.TOKEN_IDENT, new Var(TokenPack.TOKEN_CLS))
+            .addVar(TokenMod.TOKEN_IDENT, new Var(TokenMod.TOKEN_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

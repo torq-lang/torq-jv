@@ -15,8 +15,8 @@ public final class ActorStmt extends ActorLang implements Stmt {
 
     public final IdentAsExpr name;
 
-    public ActorStmt(IdentAsExpr name, List<Pat> params, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
-        super(params, protocol, body, sourceSpan);
+    public ActorStmt(IdentAsExpr name, List<Pat> params, Protocol protocol, IdentAsProtocol protocolName, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+        super(params, protocol, protocolName, body, sourceSpan);
         this.name = name;
     }
 

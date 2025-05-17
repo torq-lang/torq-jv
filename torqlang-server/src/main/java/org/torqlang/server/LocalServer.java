@@ -33,7 +33,9 @@ public class LocalServer {
     public final void start() throws Exception {
         LOGGER.info("Starting server on port " + port);
         server.start();
-        LOGGER.info("Started server on port " + port);
+        LOGGER.info("Done starting server");
+        LOGGER.info("  Port: " + port);
+        LOGGER.info("  Invocation type: " + server.getInvocationType());
     }
 
     public final void stop() throws Exception {

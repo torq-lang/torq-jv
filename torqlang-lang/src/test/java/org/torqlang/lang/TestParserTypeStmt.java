@@ -139,4 +139,90 @@ public class TestParserTypeStmt {
         }
     }
 
+    @Test
+    public void test05() throws Exception {
+        String source = """
+            begin
+                type MyStr = {
+                    func Str(chars::Array[Char]) -> Str,
+                    func char_at(index::Int32) -> Bool,
+                    func chars() -> Array[Char],
+                }
+                var s::MyStr
+            end""";
+        String expectedFormat = """
+            begin
+                type MyStr = {func Str(chars::Array[Char]) -> Str, func char_at(index::Int32) -> Bool, func chars() -> Array[Char]}
+                var s::MyStr
+            end""";
+        Parser p = new Parser(source);
+        try {
+            StmtOrExpr sox = p.parse();
+            String actualFormat = sox.toString();
+            assertEquals(expectedFormat, actualFormat);
+        } catch (Exception exc) {
+            printWithSourceAndRethrow(exc, 5, 50, 50);
+        }
+    }
+
+    @Test
+    public void test06() throws Exception {
+        String source = """
+            begin
+                type MyStr = {
+                    static {
+                        func join(delimiter::Str, values::ValueIter[Str]) -> Str,
+                        func format(format::Str, args::Array[Str]) -> Str,
+                    }
+                    func Str(chars::Array[Char]) -> Str,
+                    func char_at(index::Int32) -> Bool,
+                    func chars() -> Array[Char],
+                }
+                var s::MyStr
+            end""";
+        String expectedFormat = """
+            begin
+                type MyStr = {static {func format(format::Str, args::Array[Str]) -> Str, func join(delimiter::Str, values::ValueIter[Str]) -> Str} func Str(chars::Array[Char]) -> Str, func char_at(index::Int32) -> Bool, func chars() -> Array[Char]}
+                var s::MyStr
+            end""";
+        Parser p = new Parser(source);
+        try {
+            StmtOrExpr sox = p.parse();
+            String actualFormat = sox.toString();
+            assertEquals(expectedFormat, actualFormat);
+        } catch (Exception exc) {
+            printWithSourceAndRethrow(exc, 5, 50, 50);
+        }
+    }
+
+    @Test
+    public void test07() throws Exception {
+        String source = """
+            begin
+                type MyTupleOfMethods = [
+                    static {
+                        func join(delimiter::Str, values::ValueIter[Str]) -> Str,
+                        func format(format::Str, args::Array[Str]) -> Str,
+                    }
+                    func Str(chars::Array[Char]) -> Str,
+                    func char_at(index::Int32) -> Bool,
+                    func chars() -> Array[Char],
+                ]
+                var s::MyTupleOfMethods
+            end""";
+        String expectedFormat = """
+            begin
+                type MyTupleOfMethods = [static {func format(format::Str, args::Array[Str]) -> Str, func join(delimiter::Str, values::ValueIter[Str]) -> Str} func Str(chars::Array[Char]) -> Str, func char_at(index::Int32) -> Bool, func chars() -> Array[Char]]
+                var s::MyTupleOfMethods
+            end""";
+        Parser p = new Parser(source);
+        try {
+            StmtOrExpr sox = p.parse();
+            String actualFormat = sox.toString();
+            assertEquals(expectedFormat, actualFormat);
+        } catch (Exception exc) {
+            printWithSourceAndRethrow(exc, 5, 50, 50);
+        }
+    }
+
 }

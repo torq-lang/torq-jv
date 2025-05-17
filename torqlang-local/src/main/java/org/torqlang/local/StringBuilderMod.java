@@ -7,5 +7,5 @@
 
 package org.torqlang.local;
 
-final class StringBuilderPack {
+final class StringBuilderMod {
 }

@@ -168,11 +168,11 @@ public class TestValueTools {
 
         // Convert a string to a LocalDate
         v = ValueTools.toKernelValue("2024-11-03", DateDesc.BASIC);
-        assertEquals(LocalDatePack.newObj(LocalDate.parse("2024-11-03")), v);
+        assertEquals(LocalDateMod.newObj(LocalDate.parse("2024-11-03")), v);
 
         // Convert a string to a LocalDate while ignoring the time
         v = ValueTools.toKernelValue("2024-11-03T08:10:30Z", DateDesc.BASIC);
-        assertEquals(LocalDatePack.newObj(LocalDate.parse("2024-11-03")), v);
+        assertEquals(LocalDateMod.newObj(LocalDate.parse("2024-11-03")), v);
     }
 
     @Test

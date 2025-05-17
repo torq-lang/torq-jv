@@ -15,12 +15,14 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class FuncType extends AbstractLang implements MethodType {
 
+    public final IdentAsExpr name;
     public final List<TypeParam> typeParams;
     public final List<Pat> params;
     public final Type returnType;
 
-    public FuncType(List<TypeParam> typeParams, List<Pat> params, Type returnType, SourceSpan sourceSpan) {
+    public FuncType(IdentAsExpr name, List<TypeParam> typeParams, List<Pat> params, Type returnType, SourceSpan sourceSpan) {
         super(sourceSpan);
+        this.name = name;
         this.typeParams = nullSafeCopyOf(typeParams);
         this.params = nullSafeCopyOf(params);
         this.returnType = returnType;
@@ -33,4 +35,8 @@ public final class FuncType extends AbstractLang implements MethodType {
         return visitor.visitFuncType(this, state);
     }
 
+    @Override
+    public final IdentAsExpr name() {
+        return name;
+    }
 }

@@ -7,12 +7,9 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Feature;
-import org.torqlang.klvm.FeatureComparator;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.torqlang.util.ListTools.nullSafeCopyOf;
@@ -20,22 +17,14 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 public final class RecTypeExpr extends AbstractLang implements RecType {
 
     public final LabelType label;
+    public final List<FieldType> staticFields;
     public final List<FieldType> fields;
 
-    public RecTypeExpr(LabelType label, List<FieldType> fields, SourceSpan sourceSpan) {
+    public RecTypeExpr(LabelType label, List<FieldType> staticFields, List<FieldType> fields, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.label = label;
-        this.fields = nullSafeCopyOf(sort(fields));
-    }
-
-    private static List<FieldType> sort(List<FieldType> fields) {
-        ArrayList<FieldType> answer = new ArrayList<>(fields);
-        answer.sort((a, b) -> {
-            ScalarAsType at = (ScalarAsType) a.feature;
-            ScalarAsType bt = (ScalarAsType) b.feature;
-            return FeatureComparator.SINGLETON.compare((Feature) at.typeValue(), (Feature) bt.typeValue());
-        });
-        return answer;
+        this.staticFields = nullSafeCopyOf(FieldType.nullSafeSort(staticFields));
+        this.fields = nullSafeCopyOf(FieldType.nullSafeSort(fields));
     }
 
     @Override

@@ -47,7 +47,7 @@ public class TestParserProtocolStmt {
             BeginLang begin = (BeginLang) sox;
             ProtocolStmt protocolStmt = (ProtocolStmt) begin.body.list.get(0);
             assertEquals("HelloWorld", protocolStmt.name.ident.name);
-            assertEquals(0, protocolStmt.protocolParams.size());
+            assertEquals(0, protocolStmt.typeParams.size());
             assertInstanceOf(ProtocolStruct.class, protocolStmt.body);
             ProtocolStruct protocolStruct = (ProtocolStruct) protocolStmt.body;
             assertEquals(1, protocolStruct.handlers.size());
@@ -93,9 +93,9 @@ public class TestParserProtocolStmt {
             BeginLang begin = (BeginLang) sox;
             ProtocolStmt protocolStmt = (ProtocolStmt) begin.body.list.get(0);
             assertEquals("HelloWorld", protocolStmt.name.ident.name);
-            assertEquals(1, protocolStmt.protocolParams.size());
-            ProtocolParam protocolParam = protocolStmt.protocolParams.get(0);
-            assertEquals("T", protocolParam.ident.name);
+            assertEquals(1, protocolStmt.typeParams.size());
+            TypeParam typeParam = protocolStmt.typeParams.get(0);
+            assertEquals("T", typeParam.ident.name);
             assertInstanceOf(ProtocolStruct.class, protocolStmt.body);
             ProtocolStruct protocolStruct = (ProtocolStruct) protocolStmt.body;
             assertEquals(1, protocolStruct.handlers.size());
@@ -116,7 +116,6 @@ public class TestParserProtocolStmt {
             assertEquals("sender", identPat.ident.name);
             assertFalse(identPat.escaped);
             assertEquals("T", asIdentAsType(identPat.type).typeIdent().name);
-            assertEquals(Cardinality.ONE, identPat.cardinality);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }

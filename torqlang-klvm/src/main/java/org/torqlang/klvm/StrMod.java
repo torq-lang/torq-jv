@@ -9,7 +9,7 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public class StrPack {
+public class StrMod {
 
     // Signatures:
     //     str.substring(start::Int32) -> Str

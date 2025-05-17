@@ -61,7 +61,7 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
             throw new IllegalStateException("Cannot parse at state: " + state);
         }
         notifyMessageListener("Bundling packages");
-        // TODO -- bundle exports into importable bundles
+        // TODO -- bundle exports into importable packages
         notifyMessageListener("Done bundling packages");
         this.state = State.BUNDLED;
         return this;
@@ -115,7 +115,7 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         for (Module module : modules.values()) {
             String qualifier = formatFileNamesAsPath(module.absolutePath);
             notifyMessageListener("Collecting from " + qualifier);
-            Consumer<Lang> consumer = lang -> {
+            LangConsumer.consume(module.moduleStmt(), lang -> {
                 if (lang instanceof ImportStmt importStmt) {
                     collectImports(importStmt, module);
                 }
@@ -123,9 +123,7 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
                 if (details != null) {
                     collectExport(lang, module, details);
                 }
-            };
-            LangConsumer langMapper = new LangConsumer();
-            module.moduleStmt.accept(langMapper, consumer);
+            });
         }
         notifyMessageListener("Done collecting imports and exports from each parsed module");
         notifyMessageListener("TODO: Validate imports and exports");
@@ -136,8 +134,9 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
     }
 
     private void collectImports(ImportStmt importStmt, Module module) {
+        String formattedQualifier = formatIdentsAsQualifier(importStmt.qualifier);
         for (ImportName in : importStmt.names) {
-            String qualifiedName = formatIdentsAsQualifier(importStmt.qualifier) + "." + in.name.ident.name;
+            String qualifiedName = formattedQualifier + "." + in.name.ident.name;
             notifyMessageListener("    Collecting import: " + qualifiedName);
             List<Module> existing = imports.computeIfAbsent(qualifiedName, k -> new ArrayList<>());
             if (existing.contains(module)) {
@@ -162,7 +161,9 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         } else if (lang instanceof ProtocolStmt protocolStmt) {
             notifyMessageListener("    Collecting export: (Protocol) " + qualifier + "." + protocolStmt.name);
         } else {
-            notifyMessageListener("    Collecting export: TODO " + lang.getClass().getSimpleName());
+            if (!(lang instanceof HandleStmt)) {
+                throw new IllegalArgumentException("Invalid export: " + lang);
+            }
         }
     }
 

@@ -47,7 +47,7 @@ public final class BenchNorthwindCustomers {
     private void perform() throws Exception {
         // SETUP
         CompleteRec examplesMod = Rec.completeRecBuilder()
-            .addField(Str.of("NorthwindDb"), NorthwindDbPack.NORTHWIND_DB_ACTOR)
+            .addField(Str.of("NorthwindDb"), NorthwindDbMod.NORTHWIND_DB_ACTOR)
             .build();
         ActorSystem system = ActorSystem.builder()
             .addDefaultModules()

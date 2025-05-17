@@ -10,9 +10,9 @@ package org.torqlang.lang;
 import java.util.Set;
 
 /*
- *  The PolyType hierarchy below corresponds to the Hindley-Milner type grammar for monotypes and polytypes.
+ *  The PolyInfr hierarchy below corresponds to the Hindley-Milner type grammar for monotypes and polytypes.
  *
- *  - PolyType
+ *  - PolyInfr
  *      - MonoType
  *          - AppType
  *          - VarType
@@ -36,7 +36,7 @@ public interface PolyInfr {
                0-n parameters
            CompType - with 'Rec' or 'Obj' name
                1-n parameters, first is label type, rest are field types
-               Field types are in cardinality order
+               Field types are in arity order
                With structural type compatibility
            FieldType - with 'Field' name
                2 parameters, a DiscreteType feature parameter and value parameter

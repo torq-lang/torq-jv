@@ -7,7 +7,7 @@
 
 package org.torqlang.klvm;
 
-import org.torqlang.klvm.CellPack.CellObj;
+import org.torqlang.klvm.CellMod.CellObj;
 import org.torqlang.util.SourceSpan;
 
 import java.util.Set;

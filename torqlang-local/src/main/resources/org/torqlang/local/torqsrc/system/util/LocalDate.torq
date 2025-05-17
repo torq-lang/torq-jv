@@ -1,6 +1,6 @@
 package system.util
 
-meta#{'export', 'native': 'org.torqlang.local.LocalDatePack'}
+meta#{'export', 'native': 'org.torqlang.local.LocalDateMod'}
 type LocalDate = Obj & {
     // TODO
 }

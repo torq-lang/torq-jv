@@ -7,8 +7,8 @@
 
 package org.torqlang.lang;
 
-public enum Cardinality {
-    ONE,
-    MANY,
-    REST,
+public enum TypeOper {
+    TYPE,
+    SUBTYPE,
+    SUPERTYPE,
 }

@@ -15,11 +15,13 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class ProcType extends AbstractLang implements MethodType {
 
+    public final IdentAsExpr name;
     public final List<TypeParam> typeParams;
     public final List<Pat> params;
 
-    public ProcType(List<TypeParam> typeParams, List<Pat> params, SourceSpan sourceSpan) {
+    public ProcType(IdentAsExpr name, List<TypeParam> typeParams, List<Pat> params, SourceSpan sourceSpan) {
         super(sourceSpan);
+        this.name = name;
         this.typeParams = nullSafeCopyOf(typeParams);
         this.params = nullSafeCopyOf(params);
     }
@@ -31,4 +33,8 @@ public final class ProcType extends AbstractLang implements MethodType {
         return visitor.visitProcType(this, state);
     }
 
+    @Override
+    public final IdentAsExpr name() {
+        return name;
+    }
 }

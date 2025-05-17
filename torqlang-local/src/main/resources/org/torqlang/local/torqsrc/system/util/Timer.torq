@@ -1,6 +1,6 @@
 package system.util
 
-meta#{'export', 'native': 'org.torqlang.local.TimerPack'}
+meta#{'export', 'native': 'org.torqlang.local.TimerMod'}
 actor Timer() in
     // TODO
 end

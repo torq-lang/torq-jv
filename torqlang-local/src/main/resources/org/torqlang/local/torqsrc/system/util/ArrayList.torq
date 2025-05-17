@@ -1,20 +1,18 @@
 package system.util
 
-meta#{'export', 'native': 'org.torqlang.local.ArrayListPack'}
+meta#{'export', 'native': 'org.torqlang.local.ArrayListMod'}
 type ArrayList[T] = Obj & {
-    // Factory methods
-    'factory': {
-        'new': func [T]() -> ArrayList[T],
-        'of_array': func [T](array::ArrayList[T]) -> ArrayList[T],
-        'of_size': func [T](size::Int32) -> ArrayList[T],
-        'of_tuple': func [T](tuple::Tuple) -> ArrayList[T],
-    },
-    // Object methods
-    'equals': func (other::Any) -> Bool,
-    'hash_code': func () -> Int32,
-    // Other methods
-    'add': proc (elem::T),
-    'clear': proc (),
-    'size': func() -> Int32,
-    'to_array': func() -> Array[T],
+    static {
+        func of_array[T](array::Array[T]) -> ArrayList[T],
+        func of_size[T](size::Int32) -> ArrayList[T],
+        func of_tuple[T](tuple::Tuple) -> ArrayList[T],
+    }
+    // A type can have one constructor, other constructions must be static methods
+    func ArrayList[T]() -> ArrayList[T],
+    proc add(elem::T),
+    proc clear(),
+    func equals(other::Any) -> Bool,
+    func hash_code() -> Int32,
+    func size() -> Int32,
+    func to_array() -> Array[T],
 }

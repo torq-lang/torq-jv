@@ -24,11 +24,11 @@ import static org.torqlang.local.Envelope.createResponse;
  * - Timers are a single-producer, single-consumer design.
  * - A timer can be reused after it reaches end-of-file.
  */
-final class TimerPack {
+final class TimerMod {
 
     public static final Ident TIMER_IDENT = Ident.create("Timer");
     private static final int TIMER_CFGTR_ARG_COUNT = 3;
-    private static final CompleteProc TIMER_CFGTR = TimerPack::timerCfgtr;
+    private static final CompleteProc TIMER_CFGTR = TimerMod::timerCfgtr;
     public static final CompleteRec TIMER_ACTOR = createTimerActor();
 
     private static CompleteRec createTimerActor() {

@@ -21,7 +21,7 @@ public final class ActorSystemBuilder {
 
     static {
         DEFAULT_MODULES_MAP = new HashMap<>();
-        DEFAULT_MODULES_MAP.put("system", SystemMod.moduleRec);
+        DEFAULT_MODULES_MAP.put("system", SystemPack.packageRec);
         DEFAULT_MODULES_MAP.put("system.Procs", SystemProcsMod.moduleRec);
     }
 

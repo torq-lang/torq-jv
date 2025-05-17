@@ -1054,11 +1054,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitProtocolParam(ProtocolParam lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final TypeSubst visitProtocolStmt(ProtocolStmt lang, TypeScope scope) {
         throw new NeedsImpl();
     }

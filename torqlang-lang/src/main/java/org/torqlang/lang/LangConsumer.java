@@ -11,6 +11,11 @@ import java.util.function.Consumer;
 
 public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
 
+    public static void consume(Lang lang, Consumer<Lang> consumer) throws Exception {
+        LangConsumer visitor = new LangConsumer();
+        lang.accept(visitor, consumer);
+    }
+
     @Override
     public final Void visitActExpr(ActExpr lang, Consumer<Lang> state) throws Exception {
         lang.seq.accept(this, state);
@@ -603,8 +608,8 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     @Override
     public final Void visitProtocolApply(ProtocolApply lang, Consumer<Lang> state) throws Exception {
         lang.name.accept(this, state);
-        for (Protocol p : lang.protocolArgs) {
-            p.accept(this, state);
+        for (Type arg : lang.typeArgs) {
+            arg.accept(this, state);
         }
         state.accept(lang);
         return null;
@@ -619,15 +624,9 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
-    public final Void visitProtocolParam(ProtocolParam lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
     public final Void visitProtocolStmt(ProtocolStmt lang, Consumer<Lang> state) throws Exception {
         lang.name.accept(this, state);
-        for (ProtocolParam p : lang.protocolParams) {
+        for (TypeParam p : lang.typeParams) {
             p.accept(this, state);
         }
         lang.body.accept(this, state);

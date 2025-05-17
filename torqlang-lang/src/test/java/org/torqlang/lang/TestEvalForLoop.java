@@ -28,8 +28,8 @@ public class TestEvalForLoop {
                 x = @counter
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
-            .addVar(RangeIterPack.RANGE_ITER_IDENT, new Var(RangeIterPack.RANGE_ITER_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.RANGE_ITER_CLS))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -81,8 +81,8 @@ public class TestEvalForLoop {
                 x = @counter
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
-            .addVar(RangeIterPack.RANGE_ITER_IDENT, new Var(RangeIterPack.RANGE_ITER_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.RANGE_ITER_CLS))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -152,8 +152,8 @@ public class TestEvalForLoop {
                 z = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
-            .addVar(RangeIterPack.RANGE_ITER_IDENT, new Var(RangeIterPack.RANGE_ITER_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
+            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.RANGE_ITER_CLS))
             .addVar(Ident.create("k"), new Var(Int32.of(5)))
             .addVar(Ident.create("z"))
             .setSource(source)

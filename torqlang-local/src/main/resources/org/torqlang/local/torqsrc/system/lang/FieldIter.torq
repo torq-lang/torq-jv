@@ -1,6 +1,6 @@
 package system.util
 
-meta#{'export', 'native': 'org.torqlang.klvm.FieldIterPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.FieldIterMod'}
 type FieldIter[Field[K, V]] = Obj & {
     // TODO
 }

@@ -17,7 +17,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 public final class LocalServerBuilder {
 
     private int port;
-    private final ContextHandlerCollection contextHandlers = new ContextHandlerCollection();
+    private final ContextHandlerCollection contextHandlers = new ContextHandlerCollection(false);
 
     LocalServerBuilder() {
     }

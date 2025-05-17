@@ -20,8 +20,10 @@ public final class ParserText {
     public static final String FEATURE_EXPR_EXPECTED = "Feature expression expected";
     public static final String FEATURE_PAT_EXPECTED = "Feature pattern expected";
     public static final String FEATURE_TYPE_EXPECTED = "Feature type expected";
+    public static final String FUNC_NAME_REQUIRED = "Function name required";
     public static final String IDENT_EXPECTED = "Identifier expected";
     public static final String IN_EXPECTED = "'in' expected";
+    public static final String L_BRACE_EXPECTED = "'{' expected";
     public static final String L_BRACE_OR_L_BRACKET_EXPECTED = "'{' or '[' expected";
     public static final String L_PAREN_EXPECTED = "'(' expected";
     public static final String LABEL_TYPE_EXPECTED = "Label type expected";

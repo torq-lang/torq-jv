@@ -90,6 +90,7 @@ public final class SymbolsAndKeywords {
     static final String SELF_VALUE = "self";
     static final String SKIP_VALUE = "skip";
     static final String SPAWN_VALUE = "spawn";
+    static final String STATIC_VALUE = "static";
     static final String STREAM_VALUE = "stream";
     static final String TELL_VALUE = "tell";
     static final String THEN_VALUE = "then";
@@ -210,6 +211,7 @@ public final class SymbolsAndKeywords {
             substringEquals(source, begin, end, STREAM_VALUE) ||
             substringEquals(source, begin, end, META_VALUE) ||
             substringEquals(source, begin, end, NATIVE_VALUE) ||
+            substringEquals(source, begin, end, STATIC_VALUE) ||
             substringEquals(source, begin, end, AS_VALUE);
     }
 

@@ -18,16 +18,18 @@ public abstract class ActorLang extends AbstractLang implements StmtOrExpr {
 
     public final List<Pat> params;
     public final Protocol protocol;
+    public IdentAsProtocol protocolName;
     public final List<StmtOrExpr> body;
 
     private List<StmtOrExpr> initializer;
     private List<AskStmt> askHandlers;
     private List<TellStmt> tellHandlers;
 
-    public ActorLang(List<Pat> params, Protocol protocol, List<StmtOrExpr> body, SourceSpan sourceSpan) {
+    public ActorLang(List<Pat> params, Protocol protocol, IdentAsProtocol protocolName, List<StmtOrExpr> body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.params = nullSafeCopyOf(params);
         this.protocol = protocol;
+        this.protocolName = protocolName;
         this.body = nullSafeCopyOf(body);
     }
 

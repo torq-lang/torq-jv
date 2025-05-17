@@ -1,4 +1,24 @@
-package system.lang
+
+## Type record with static methods
+
+```
+package example
+
+meta#{'export', 'native': 'org.torqlang.local.ArrayListMod'}
+type ArrayList[T] = Obj & {
+    static {
+        func of_array[T](array::Array[T]) -> ArrayList[T],
+        func of_size[T](size::Int32) -> ArrayList[T],
+        func of_tuple[T](tuple::Tuple) -> ArrayList[T],
+    }
+    func ArrayList[T]() -> ArrayList[T],
+    func equals(other::Any) -> Bool,
+    func hash_code() -> Int32,
+    proc add(elem::T),
+    proc clear(),
+    func size() -> Int32,
+    func to_array() -> Array[T],
+}
 
 meta#{'export', 'native': 'org.torqlang.klvm.StrMod'}
 type Str = Obj & {
@@ -41,3 +61,4 @@ type Str = Obj & {
     func to_upper_case() -> Str,
     func trim() -> Str,
 }
+```

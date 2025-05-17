@@ -9,7 +9,7 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class TokenPack {
+public final class TokenMod {
 
     public static final Ident TOKEN_IDENT = Ident.create("Token");
     public static final CompleteObj TOKEN_CLS = TokenCls.SINGLETON;
@@ -29,7 +29,7 @@ public final class TokenPack {
     static final class TokenCls implements CompleteObj {
 
         private static final TokenCls SINGLETON = new TokenCls();
-        private static final CompleteProc TOKEN_CLS_NEW = TokenPack::clsNew;
+        private static final CompleteProc TOKEN_CLS_NEW = TokenMod::clsNew;
 
         private TokenCls() {
         }

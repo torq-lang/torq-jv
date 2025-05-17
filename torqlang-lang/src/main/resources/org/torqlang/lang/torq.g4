@@ -60,8 +60,7 @@ access: '@' access | cast;
 
 cast: construct ('::' construct)*;
 
-// The '...' is used in spread expressions
-construct: keyword | ident '...'? | value;
+construct: keyword | ident | value;
 
 keyword: act | actor | begin | 'break' | case | 'continue' |
          for | func | group | if | import_ | local | new |
@@ -71,7 +70,7 @@ keyword: act | actor | begin | 'break' | case | 'continue' |
 act: 'act' stmt_or_expr+ 'end';
 
 actor: 'actor' ident? type_param_list? '(' pat_list? ')'
-       ('implements' intersection_protocol)? 'in'
+       ('implements' intersection_protocol ('as' ident)?)? 'in'
        (stmt_or_expr | handler)+ 'end';
 
 handler: 'handle' (tell_handler | ask_handler | stream_handler);
@@ -145,11 +144,9 @@ pat: rec_pat | tuple_pat |
 
 label_pat: ('~' ident) | bool | STR_LITERAL | 'eof' | 'null';
 
-// The '...' is used to capture the "rest" of fields
-rec_pat: '{' (field_pat (',' field_pat)* (',' ident? '...')?)? '}';
+rec_pat: '{' (field_pat (',' field_pat)* (',' '...')?)? '}';
 
-// The '...' is used to capture the "rest" of values
-tuple_pat: '[' (pat (',' pat)* (',' ident? '...')?)? ']';
+tuple_pat: '[' (pat (',' pat)* (',' '...')?)? ']';
 
 field_pat: (feat_pat ':')? pat;
 
@@ -171,63 +168,68 @@ field_value: (feat_value ':')? stmt_or_expr;
 feat_value: ident | bool | INT_LITERAL | STR_LITERAL |
             'eof' | 'null';
 
-// The '...' is used to declare a variable argument
-// parameter in method declarations
-var_type_anno: '::' union_type '...'? | '...';
+var_type_anno: '::' type_expr;
 
-result_type_anno: '->' union_type;
+result_type_anno: '->' type_expr;
+
+type_expr: union_type | actor_cfgtr_type | actor_cfg_type | actor_ref_type;
 
 bool: 'true' | 'false';
 
 // Weak keywords: 'as' | 'ask' | ... | 'tell'
 ident: IDENT | 'as' | 'ask' | 'handle' | 'implements' |
-       'meta' | 'native' | 'protocol' | 'stream' | 'tell';
+       'meta' | 'native' | 'protocol' | 'static' |
+       'stream' | 'tell';
 
 // - - - - - - //
 // Type System //
 // - - - - - - //
 
-type: 'type' ident type_param_list? '=' union_type;
+type: 'type' ident type_param_list? '=' type_expr;
 
 type_param_list: '[' type_param (',' type_param)* ']';
 
-type_param: ident (('<:' | '>:') union_type)?;
+type_param: ident (('<:' | '>:') type_expr)?;
 
-type_arg_list: '[' union_type (',' union_type)* ']';
+type_arg_list: '[' type_expr (',' type_expr)* ']';
 
 union_type: intersection_type ('|' intersection_type)*;
 
-intersection_type: type_expr ('&' type_expr)*;
+intersection_type: type_term ('&' type_term)*;
 
 // The following grammar relies on the next token being one of:
 //     ident | bool | STR_LITERAL | 'eof' | 'null' | INT_LITERAL | '{' | '[' | 'proc' | 'func'
-type_expr: ident (type_arg_list | '#' (rec_type_body | tuple_type_body))? |
+type_term: ident (type_arg_list | '#' (rec_type_body | tuple_type_body))? |
            (bool | STR_LITERAL | 'eof' | 'null') ('#' (rec_type_body | tuple_type_body))? |
            INT_LITERAL | rec_type_body | tuple_type_body | proc_type | func_type;
 
-rec_type_body: '{' (field_type (',' field_type)* ','?)? '}';
+rec_type_body: '{' (type_static field_type_list? | field_type_list)? '}';
 
-tuple_type_body: '[' (union_type (',' union_type)* ','?)? ']';
+tuple_type_body: '[' (type_static value_type_list? | value_type_list)? ']';
 
-field_type: (feat_type ':')? union_type;
+field_type: (feat_type ':')? type_expr;
 
 feat_type: bool | INT_LITERAL | STR_LITERAL | 'eof' | 'null';
 
-func_type: 'func' type_param_list? '(' pat_list? ')' result_type_anno;
+type_static: 'static' '{' field_type_list? '}';
 
-proc_type: 'proc' type_param_list? '(' pat_list? ')';
+field_type_list: field_type (',' field_type)* ','?;
 
-protocol: 'protocol' ident protocol_param_list? '=' intersection_protocol;
+value_type_list: type_expr (',' type_expr)* ','?;
 
-protocol_param_list: '[' protocol_param (',' protocol_param)* ']';
+// The IDENT symbol is only valid when a func type appears in a type
+// structure where IDENT is a feature string.
+func_type: 'func' ident? type_param_list? '(' pat_list? ')' result_type_anno;
 
-protocol_param: ident (('<:' | '>:') intersection_protocol)?;
+// The IDENT symbol is only valid when a proc type appears in a type
+// structure where IDENT is a feature string.
+proc_type: 'proc' ident? type_param_list? '(' pat_list? ')';
 
-protocol_arg_list: '[' intersection_protocol (',' intersection_protocol)* ']';
+protocol: 'protocol' ident type_param_list? '=' intersection_protocol;
 
-intersection_protocol: protocol_expr ('&' protocol_expr)*;
+intersection_protocol: protocol_term ('&' protocol_term)*;
 
-protocol_expr: ident protocol_arg_list? | protocol_struct;
+protocol_term: ident type_arg_list? | protocol_struct;
 
 protocol_struct: '{' protocol_handler
                  (',' protocol_handler)* ','? '}';
@@ -241,6 +243,12 @@ protocol_tell_handler: 'tell' pat;
 protocol_ask_handler: 'ask' pat result_type_anno;
 
 protocol_stream_handler: 'stream' pat result_type_anno;
+
+actor_cfgtr_type: 'ActorCfgtr' ('[' intersection_protocol ']')?;
+
+actor_cfg_type: 'ActorCfg' ('[' intersection_protocol ']')?;
+
+actor_ref_type: 'ActorRef' ('[' intersection_protocol ']')?;
 
 //*************//
 // LEXER RULES //

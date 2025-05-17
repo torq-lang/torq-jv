@@ -184,7 +184,7 @@ public final class LexerToken implements SourceSpan {
     }
 
     public final String substring() {
-        return source.content().substring(begin, end);
+        return source.substring(begin, end);
     }
 
     public final char substringCharAt(int index) {

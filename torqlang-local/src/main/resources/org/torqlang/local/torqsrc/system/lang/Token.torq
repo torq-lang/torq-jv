@@ -1,6 +1,6 @@
 package system.lang
 
-meta#{'export', 'native': 'org.torqlang.klvm.TokenPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.TokenMod'}
 type Token = Obj & {
     // TODO
 }

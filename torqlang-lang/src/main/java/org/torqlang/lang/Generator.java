@@ -1205,11 +1205,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitProtocolParam(ProtocolParam lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitProtocolStmt(ProtocolStmt lang, LocalTarget target) {
         throw new NeedsImpl();
     }

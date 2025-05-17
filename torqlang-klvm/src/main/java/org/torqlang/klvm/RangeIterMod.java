@@ -9,7 +9,7 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public final class RangeIterPack {
+public final class RangeIterMod {
 
     public static final Ident RANGE_ITER_IDENT = Ident.create("RangeIter");
     public static final CompleteObj RANGE_ITER_CLS = RangeIterCls.SINGLETON;
@@ -31,7 +31,7 @@ public final class RangeIterPack {
 
     static final class RangeIterCls implements CompleteObj {
         private static final RangeIterCls SINGLETON = new RangeIterCls();
-        private static final CompleteProc RANGE_ITER_CLS_NEW = RangeIterPack::clsNew;
+        private static final CompleteProc RANGE_ITER_CLS_NEW = RangeIterMod::clsNew;
 
         private RangeIterCls() {
         }

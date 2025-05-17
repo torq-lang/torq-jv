@@ -15,18 +15,16 @@ public final class IdentAsPat extends AbstractLang implements LabelPat {
     public final Ident ident;
     public final boolean escaped;
     public final Type type;
-    public final Cardinality cardinality;
 
     public IdentAsPat(Ident ident, boolean escaped, SourceSpan sourceSpan) {
-        this(ident, escaped, null, Cardinality.ONE, sourceSpan);
+        this(ident, escaped, null, sourceSpan);
     }
 
-    public IdentAsPat(Ident ident, boolean escaped, Type type, Cardinality cardinality, SourceSpan sourceSpan) {
+    public IdentAsPat(Ident ident, boolean escaped, Type type, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.ident = ident;
         this.escaped = escaped;
         this.type = type;
-        this.cardinality = cardinality;
     }
 
     @Override

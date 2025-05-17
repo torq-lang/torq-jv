@@ -68,7 +68,7 @@ public final class ValueTools {
                 } else {
                     localDate = DateTimeFormatter.ISO_DATE.parse(string, LocalDate::from);
                 }
-                return LocalDatePack.newObj(localDate);
+                return LocalDateMod.newObj(localDate);
             } else if (valueDesc instanceof Int32Desc) {
                 return Int32.decode(string);
             } else if (valueDesc instanceof Int64Desc) {

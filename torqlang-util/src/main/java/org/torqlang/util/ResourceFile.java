@@ -41,6 +41,11 @@ public final class ResourceFile implements SourceFile {
     }
 
     @Override
+    public final String content() {
+        return content;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == null || getClass() != other.getClass()) {
             return false;
@@ -66,7 +71,7 @@ public final class ResourceFile implements SourceFile {
     }
 
     @Override
-    public final String content() {
-        return content;
+    public final String substring(int beginIndex, int endIndex) {
+        return content.substring(beginIndex, endIndex);
     }
 }

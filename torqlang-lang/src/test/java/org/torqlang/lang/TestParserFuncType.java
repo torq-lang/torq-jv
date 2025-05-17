@@ -17,17 +17,17 @@ public class TestParserFuncType {
 
     @Test
     public void test01() {
-        //                         1         2         3         4         5
-        //               01234567890123456789012345678901234567890123456789012
-        String source = "type addInt32s = func (a::Str, b::Int32...) -> Int64";
+        //                         1         2         3         4
+        //               01234567890123456789012345678901234567890123456789
+        String source = "type addInt32s = func (a::Str, b::Int32) -> Int64";
         Parser p = new Parser(source);
         StmtOrExpr sox = p.parse();
         assertInstanceOf(TypeStmt.class, sox);
         TypeStmt typeStmt = (TypeStmt) sox;
-        assertSourceSpan(typeStmt, 0, 52);
+        assertSourceSpan(typeStmt, 0, 49);
         assertEquals("addInt32s", typeStmt.name.typeIdent().name);
         assertSourceSpan(typeStmt.name, 5, 14);
-        assertSourceSpan(typeStmt.body, 17, 52);
+        assertSourceSpan(typeStmt.body, 17, 49);
         assertInstanceOf(FuncType.class, typeStmt.body);
         FuncType funcType = (FuncType) typeStmt.body;
         assertEquals(0, funcType.typeParams.size());
@@ -39,7 +39,7 @@ public class TestParserFuncType {
         assertInstanceOf(IdentAsPat.class, funcType.params.get(1));
         IdentAsPat param1 = (IdentAsPat) funcType.params.get(1);
         assertEquals("b", param1.ident.name);
-        assertSourceSpan(funcType.params.get(1), 31, 42);
+        assertSourceSpan(funcType.params.get(1), 31, 39);
         String actualFormat = typeStmt.toString();
         assertEquals(source, actualFormat);
     }

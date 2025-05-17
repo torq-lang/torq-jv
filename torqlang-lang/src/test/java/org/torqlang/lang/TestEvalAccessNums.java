@@ -8,7 +8,7 @@
 package org.torqlang.lang;
 
 import org.junit.jupiter.api.Test;
-import org.torqlang.klvm.CellPack;
+import org.torqlang.klvm.CellMod;
 import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Int32;
 import org.torqlang.klvm.Var;
@@ -25,7 +25,7 @@ public class TestEvalAccessNums {
                 x = @a
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -48,7 +48,7 @@ public class TestEvalAccessNums {
                 x = @a + 3
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellPack.CELL_IDENT, new Var(CellPack.CELL_CLS))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.CELL_CLS))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("x"))
             .setSource(source)

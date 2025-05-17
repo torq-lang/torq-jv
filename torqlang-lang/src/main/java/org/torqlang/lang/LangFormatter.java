@@ -37,6 +37,21 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         arg2.accept(this, state.inline());
     }
 
+    private boolean formatAsMethodType(FieldType fieldType) {
+        if (!(fieldType.value instanceof MethodType methodType)) {
+            return false;
+        }
+        if (methodType.name() == null) {
+            return false;
+        }
+        if (!(fieldType.feature instanceof StrAsType featureStrAsType)) {
+            return false;
+        }
+        String methodName = methodType.name().ident.name;
+        String featureName = featureStrAsType.str.value;
+        return methodName.equals(featureName);
+    }
+
     private void maybeWriteMeta(Lang lang, FormatterState state) throws Exception {
         if (lang.metaStruct() != null) {
             lang.metaStruct().accept(this, state.inline());
@@ -70,6 +85,10 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         if (lang.protocol != null) {
             state.write(" implements ");
             lang.protocol.accept(this, state.inline());
+            if (lang.protocolName != null) {
+                state.write(" as ");
+                lang.protocolName.accept(this, state.inline());
+            }
         }
         state.write(" in");
         FormatterState nextLevelState = state.nextLevel();
@@ -343,9 +362,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitFieldType(FieldType lang, FormatterState state) throws Exception {
-        lang.feature.accept(this, state);
-        state.write(": ");
-        lang.value.accept(this, state);
+        if (formatAsMethodType(lang)) {
+            lang.value.accept(this, state);
+        } else {
+            lang.feature.accept(this, state);
+            state.write(": ");
+            lang.value.accept(this, state);
+        }
         return null;
     }
 
@@ -448,6 +471,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitFuncType(FuncType lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("func ");
+        if (lang.name != null) {
+            lang.name.accept(this, state.inline());
+        }
         state.write('(');
         visitParams(lang.params, state.inline());
         state.write(')');
@@ -489,9 +515,6 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         if (lang.type != null) {
             state.write(SymbolsAndKeywords.TYPE_OPER);
             lang.type.accept(this, state.inline());
-        }
-        if (lang.cardinality != Cardinality.ONE) {
-            state.write(SymbolsAndKeywords.ARITY_OPER);
         }
         return null;
     }
@@ -837,6 +860,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     public final Void visitProcType(ProcType lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("func ");
+        if (lang.name != null) {
+            lang.name.accept(this, state.inline());
+        }
         state.write('(');
         visitParams(lang.params, state.inline());
         state.write(')');
@@ -852,18 +878,9 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitProtocolApply(ProtocolApply lang, FormatterState state) throws Exception {
-        lang.name.accept(this, state.inline());
-        if (lang.protocolArgs != null && !lang.protocolArgs.isEmpty()) {
-            state.write('[');
-            for (int i = 0; i < lang.protocolArgs.size(); i++) {
-                if (i > 0) {
-                    state.write(", ");
-                }
-                Protocol arg = lang.protocolArgs.get(i);
-                arg.accept(this, state.inline());
-            }
-            state.write(']');
-        }
+        FormatterState inlineState = state.inline();
+        lang.name.accept(this, inlineState);
+        visitTypeArgs(lang.typeArgs, inlineState);
         return null;
     }
 
@@ -880,23 +897,11 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
     }
 
     @Override
-    public final Void visitProtocolParam(ProtocolParam lang, FormatterState state) throws Exception {
-        visitIdent(lang.ident, state);
-        return null;
-    }
-
-    @Override
     public final Void visitProtocolStmt(ProtocolStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("protocol ");
         lang.name.accept(this, state.inline());
-        if (!lang.protocolParams.isEmpty()) {
-            state.write("[");
-            for (ProtocolParam param : lang.protocolParams) {
-                param.accept(this, state.inline());
-            }
-            state.write("]");
-        }
+        visitTypeParams(lang.typeParams, state.inline());
         state.write(" = ");
         lang.body.accept(this, state);
         return null;
@@ -995,6 +1000,21 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
             state.write('#');
         }
         state.write('{');
+        if (!lang.staticFields.isEmpty()) {
+            state.write("static {");
+            List<FieldType> list = lang.staticFields;
+            for (int i = 0; i < list.size(); i++) {
+                FieldType next = list.get(i);
+                if (i > 0) {
+                    state.write(", ");
+                }
+                next.accept(this, state.inline());
+            }
+            state.write('}');
+            if (!lang.fields.isEmpty()) {
+                state.write(' ');
+            }
+        }
         List<FieldType> list = lang.fields;
         for (int i = 0; i < list.size(); i++) {
             FieldType next = list.get(i);
@@ -1226,6 +1246,21 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
             state.write('#');
         }
         state.write("[");
+        if (!lang.staticFields.isEmpty()) {
+            state.write("static {");
+            List<FieldType> list = lang.staticFields;
+            for (int i = 0; i < list.size(); i++) {
+                FieldType next = list.get(i);
+                if (i > 0) {
+                    state.write(", ");
+                }
+                next.accept(this, state.inline());
+            }
+            state.write('}');
+            if (!lang.values.isEmpty()) {
+                state.write(' ');
+            }
+        }
         List<Type> list = lang.values;
         for (int i = 0; i < list.size(); i++) {
             Type next = list.get(i);
@@ -1240,19 +1275,24 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitTypeApply(TypeApply lang, FormatterState state) throws Exception {
-        lang.name.accept(this, state.inline());
-        if (lang.typeArgs != null && !lang.typeArgs.isEmpty()) {
+        FormatterState inlineState = state.inline();
+        lang.name.accept(this, inlineState);
+        visitTypeArgs(lang.typeArgs, inlineState);
+        return null;
+    }
+
+    private void visitTypeArgs(List<Type> typeArgs, FormatterState state) throws Exception {
+        if (typeArgs != null && !typeArgs.isEmpty()) {
             state.write('[');
-            for (int i = 0; i < lang.typeArgs.size(); i++) {
+            for (int i = 0; i < typeArgs.size(); i++) {
                 if (i > 0) {
                     state.write(", ");
                 }
-                Type arg = lang.typeArgs.get(i);
+                Type arg = typeArgs.get(i);
                 arg.accept(this, state.inline());
             }
             state.write(']');
         }
-        return null;
     }
 
     @Override
@@ -1261,18 +1301,22 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
         return null;
     }
 
+    private void visitTypeParams(List<TypeParam> typeParams, FormatterState state) throws Exception {
+        if (!typeParams.isEmpty()) {
+            state.write("[");
+            for (TypeParam param : typeParams) {
+                param.accept(this, state.inline());
+            }
+            state.write("]");
+        }
+    }
+
     @Override
     public final Void visitTypeStmt(TypeStmt lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write("type ");
         lang.name.accept(this, state.inline());
-        if (!lang.typeParams.isEmpty()) {
-            state.write("[");
-            for (TypeParam param : lang.typeParams) {
-                param.accept(this, state.inline());
-            }
-            state.write("]");
-        }
+        visitTypeParams(lang.typeParams, state);
         state.write(" = ");
         lang.body.accept(this, state);
         return null;

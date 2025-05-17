@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.*;
 import org.torqlang.lang.Evaluator;
 import org.torqlang.lang.EvaluatorPerformed;
-import org.torqlang.local.HashMapPack.HashMapObj;
+import org.torqlang.local.HashMapMod.HashMapObj;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.local.CommonTools.stripCircularSpecifics;
@@ -27,7 +27,7 @@ public class TestEvalHashMaps {
                 y = ['one', 'two']
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapPack.HASH_MAP_IDENT, new Var(HashMapPack.HASH_MAP_CLS))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .setSource(source)
@@ -58,7 +58,7 @@ public class TestEvalHashMaps {
                 x.put(a, 'My key is circular!')
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapPack.HASH_MAP_IDENT, new Var(HashMapPack.HASH_MAP_CLS))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("b"))
@@ -102,8 +102,8 @@ public class TestEvalHashMaps {
                 z = value_iter()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapPack.HASH_MAP_IDENT, new Var(HashMapPack.HASH_MAP_CLS))
-            .addVar(ValueIterPack.VALUE_ITER_IDENT, new Var(ValueIterPack.VALUE_ITER_CLS))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.HASH_MAP_CLS))
+            .addVar(ValueIterMod.VALUE_ITER_IDENT, new Var(ValueIterMod.VALUE_ITER_CLS))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .addVar(Ident.create("z"))

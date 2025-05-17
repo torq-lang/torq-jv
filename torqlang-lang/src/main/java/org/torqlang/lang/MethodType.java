@@ -8,4 +8,5 @@
 package org.torqlang.lang;
 
 public interface MethodType extends Type {
+    IdentAsExpr name();
 }

@@ -24,9 +24,11 @@ public interface SourceString {
 
     boolean containsIndex(int index);
 
+    String content();
+
     boolean isEmpty();
 
-    String content();
+    String substring(int beginIndex, int endIndex);
 }
 
 @SuppressWarnings("ClassCanBeRecord")
@@ -49,6 +51,11 @@ final class SourceStringImpl implements SourceString {
     }
 
     @Override
+    public final String content() {
+        return content;
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == null || getClass() != other.getClass()) {
             return false;
@@ -68,7 +75,7 @@ final class SourceStringImpl implements SourceString {
     }
 
     @Override
-    public final String content() {
-        return content;
+    public final String substring(int beginIndex, int endIndex) {
+        return content.substring(beginIndex, endIndex);
     }
 }

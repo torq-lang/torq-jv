@@ -6,7 +6,7 @@ package orderentry.customers
 
 type QueryWithOverloads = Obj & {
     // Essentially, this is an untyped method
-    'query': func(params::Any...) -> Any,
+    'query': func(params::Array[Any]) -> Any,
 }
 
 // Used to add features {'equals': func (other: Any) -> Bool, 'hash_code': () -> Int32}

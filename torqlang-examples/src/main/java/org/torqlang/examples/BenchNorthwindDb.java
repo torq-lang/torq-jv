@@ -12,7 +12,7 @@ import org.torqlang.local.*;
 
 import java.util.Map;
 
-import static org.torqlang.examples.NorthwindDbPack.NORTHWIND_DB;
+import static org.torqlang.examples.NorthwindDbMod.NORTHWIND_DB;
 
 /*
  * Example data:

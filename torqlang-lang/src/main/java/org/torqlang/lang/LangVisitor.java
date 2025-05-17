@@ -167,8 +167,6 @@ public interface LangVisitor<T, R> {
 
     R visitProtocolAskHandler(ProtocolAskHandler lang, T state) throws Exception;
 
-    R visitProtocolParam(ProtocolParam lang, T state) throws Exception;
-
     R visitProtocolStmt(ProtocolStmt lang, T state) throws Exception;
 
     R visitProtocolStreamHandler(ProtocolStreamHandler lang, T state) throws Exception;

@@ -16,13 +16,13 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 public class ProtocolStmt extends AbstractLang implements Stmt {
 
     public final IdentAsExpr name;
-    public final List<ProtocolParam> protocolParams;
+    public final List<TypeParam> typeParams;
     public final Protocol body;
 
-    public ProtocolStmt(IdentAsExpr name, List<ProtocolParam> protocolParams, Protocol body, SourceSpan sourceSpan) {
+    public ProtocolStmt(IdentAsExpr name, List<TypeParam> typeParams, Protocol body, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.name = name;
-        this.protocolParams = nullSafeCopyOf(protocolParams);
+        this.typeParams = nullSafeCopyOf(typeParams);
         this.body = body;
     }
 

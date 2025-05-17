@@ -336,7 +336,12 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot rewrite at state: " + state);
         }
         actorIdent = actorStmt.name.ident;
-        actorExpr = new ActorExpr(actorStmt.params, actorStmt.protocol, actorStmt.body, actorStmt);
+        actorExpr = new ActorExpr(
+            actorStmt.params,
+            actorStmt.protocol,
+            actorStmt.protocolName,
+            actorStmt.body,
+            actorStmt);
         state = State.REWRITTEN;
         return this;
     }

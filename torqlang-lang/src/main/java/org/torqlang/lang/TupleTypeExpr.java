@@ -17,11 +17,13 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 public final class TupleTypeExpr extends AbstractLang implements TupleType {
 
     public final LabelType label;
+    public final List<FieldType> staticFields;
     public final List<Type> values;
 
-    public TupleTypeExpr(LabelType label, List<Type> values, SourceSpan sourceSpan) {
+    public TupleTypeExpr(LabelType label, List<FieldType> staticFields, List<Type> values, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.label = label;
+        this.staticFields = nullSafeCopyOf(FieldType.nullSafeSort(staticFields));
         this.values = nullSafeCopyOf(values);
     }
 

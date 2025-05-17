@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-public class NorthwindDbPack {
+public class NorthwindDbMod {
 
     public static final Str CRITERIA_STR = Str.of("criteria");
     public static final Str ENTITY_STR = Str.of("entity");
@@ -24,7 +24,7 @@ public class NorthwindDbPack {
 
     public static final Ident NORTHWIND_DB_IDENT = Ident.create("NorthwindDb");
     private static final int NORTHWIND_DB_CFGTR_ARG_COUNT = 1;
-    private static final CompleteProc NORTHWIND_DB_CFGTR = NorthwindDbPack::northwindDbCfgtr;
+    private static final CompleteProc NORTHWIND_DB_CFGTR = NorthwindDbMod::northwindDbCfgtr;
     public static final CompleteRec NORTHWIND_DB_ACTOR = createNorthwindDbActor();
 
     static final Executor NORTHWIND_DB_EXECUTOR = new AffinityExecutor("NorthwindDb", 4);
@@ -81,14 +81,14 @@ public class NorthwindDbPack {
                         criteriaValue = (Map<String, Object>) ValueTools.toNativeValue(criteria);
                     }
                     NorthwindDb.FindAll findAll = new NorthwindDb.FindAll(entity.value, criteriaValue);
-                    NorthwindDbPack.NORTHWIND_DB.send(Envelope.createRequest(findAll,
+                    NorthwindDbMod.NORTHWIND_DB.send(Envelope.createRequest(findAll,
                         this, new NorthwindDbAdapterId(message, envelope.requester(), envelope.requestId())));
                 } else if (message.label().equals(FIND_BY_KEY_STR)) {
                     Str entity = (Str) message.findValue(ENTITY_STR);
                     CompleteRec key = (CompleteRec) message.findValue(KEY_STR);
                     NorthwindDb.FindByKey findByKey = new NorthwindDb.FindByKey(entity.value,
                         (Map<String, Object>) ValueTools.toNativeValue(key));
-                    NorthwindDbPack.NORTHWIND_DB.send(Envelope.createRequest(findByKey,
+                    NorthwindDbMod.NORTHWIND_DB.send(Envelope.createRequest(findByKey,
                         this, new NorthwindDbAdapterId(message, envelope.requester(), envelope.requestId())));
                 } else {
                     throw new IllegalArgumentException("Invalid request:" + envelope);

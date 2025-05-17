@@ -63,8 +63,8 @@ var customer = {
     'account': '987654321',
 }
 
-// This is a "spread" syntax
-var person_customer = {person..., customer...}
+// TODO: How can we use Rec.assign() to accomplish spread operations?
+// var person_customer = {person..., customer...}
 
 func create_acme() -> PersonOrCompany in
     if usePerson then

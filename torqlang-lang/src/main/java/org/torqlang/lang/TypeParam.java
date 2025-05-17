@@ -12,10 +12,14 @@ import org.torqlang.util.SourceSpan;
 
 public final class TypeParam extends AbstractLang {
     public final Ident ident;
+    public final TypeOper constraintOper;
+    public final Type constraintArg;
 
-    public TypeParam(Ident ident, SourceSpan sourceSpan) {
+    public TypeParam(Ident ident, TypeOper constraintOper, Type constraintArg, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.ident = ident;
+        this.constraintOper = constraintOper;
+        this.constraintArg = constraintArg;
     }
 
     @Override

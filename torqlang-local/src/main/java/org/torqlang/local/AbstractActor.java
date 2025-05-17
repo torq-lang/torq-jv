@@ -36,26 +36,25 @@ import static org.torqlang.local.OnMessageResult.NOT_FINISHED;
  *         ActorRef requester();
  *     }
  *
- * EQUALITY AND HASH-CODES
- * =======================
+ * AFFINITY IDS
+ * ============
  *
- * Because actor objects do not have a practical use for identity or equality, we overload the implementation of
- * "equals" and "hashCode" to operate on an optional "affinityId" to determine a virtual thread ID for scheduling.
+ * Affinity IDs are used to calculate virtual thread IDs for scheduling.
  *
  * Actors are typically run in one of two strategies:
  *     1. An actor per core
  *     2. Many actors per core
  *
- * An actor per core -- Explicit affinity IDs are provided in an actor-per-core strategy. Consider a runtime consisting
- * of four cores. To implement the actor-per-core strategy, create four actors with affinity IDs 0-3, and an
+ * Consider the following two scenarios executing on four cores:
+ *
+ * An actor per core -- Explicit affinity IDs are provided. Create four actors with affinity IDs 0-3, and an
  * AffinityExecutor with a size of 4. The explicit IDs create a perfect distribution across the 4 threads contained
  * within the AffinityExecutor.
  *
- * Many actors per core -- Explicit affinity IDs are not provided in a many-actors-per-core strategy. Instead, the
- * actors default their ID to their identity hash code. Consider a runtime consisting of four cores for running
- * thousands of actors. To implement the many-actors-per-core strategy, create an AffinityExecutor with a size of 4.
- * The identity hash codes approximate an even distribution across the 4 threads contained within the AffinityExecutor,
- * dynamically partitioning the actors across the available threads.
+ * Many actors per core -- Explicit affinity IDs are not provided. Each actor defaults its affinity ID to its identity
+ * hash code. Simply create an AffinityExecutor with a size of 4. As actors are created, executed, and destroyed, the
+ * system dynamically partitions the actors across the available threads based on a modulus of their identity hash
+ * codes.
  *
  * The actor-per-core strategy is typically used to implement long-running actors, such as I/O services.
  * The many-actors-per-core strategy is typically used to implement short-lived actors, such as REST handlers.
@@ -93,23 +92,6 @@ public abstract class AbstractActor implements ActorRef {
 
     public final Address address() {
         return address;
-    }
-
-    @Override
-    public final boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null || getClass() != other.getClass()) {
-            return false;
-        }
-        AbstractActor that = (AbstractActor) other;
-        return affinityId == that.affinityId;
-    }
-
-    @Override
-    public final int hashCode() {
-        return affinityId;
     }
 
     /**

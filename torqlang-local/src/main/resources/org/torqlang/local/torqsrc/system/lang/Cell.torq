@@ -1,6 +1,6 @@
 package system.lang
 
-meta#{'export', 'native': 'org.torqlang.klvm.CellPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.CellMod'}
 type Cell = Obj & {
     // TODO
 }

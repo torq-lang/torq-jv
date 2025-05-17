@@ -22,6 +22,8 @@ A path can contain multiple nested package names, a module name, and end with a 
 ## Examples
 
 ```
+package example
+
 import package1.package2.member
 import package1.{member1, member2 as X}
 import package1.{member1}

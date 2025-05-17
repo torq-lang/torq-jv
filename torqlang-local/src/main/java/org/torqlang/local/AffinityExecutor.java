@@ -11,10 +11,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 /*
- * An AffinityExecutor is a thread-per-core design containing a pool of single-thread executors. When dispatched
- * to an AffinityExecutor, a runnable is mapped to a single-thread executor using its `hashCode()`. The idea is to
- * reduce CPU cache misses by executing a runnable on the same thread each time it is dispatched. At this time, there
- * is no ability to pin a Java thread to a hardware core.
+ * An AffinityExecutor is a thread-per-core design containing a pool of single thread executors. When dispatched
+ * to an AffinityExecutor, a runnable is mapped to a single thread executor using its hash code. The idea is to reduce
+ * CPU cache misses by executing a runnable on the same Java thread each time it is dispatched. At this time, there is
+ * no ability to pin a Java thread to a hardware core.
  */
 public final class AffinityExecutor implements Executor {
 

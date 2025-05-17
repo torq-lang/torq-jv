@@ -11,9 +11,9 @@
 - NorthwindServer
   - Change to use modules
   - Change to use `Compiler` and `SourceBroker`
-- Packs
+- Modules
   - `Str`, `ArrayList`, `Timer`, etc.
-  - Create Torq native references
+  - Create native Java references
 - CommonTools
   - Are they useful enough to keep?
 - Benchmark tests
@@ -145,17 +145,17 @@ You can handle all demand details by using `ValueIter`:
 
 ```
 actor SumOddIntsStream() in
-    import system[Cell, ValueIter]
+    import system.lang.{Cell, ValueIter}
     import examples.IntPublisher
     handle ask 'sum'#{'first': first, 'last': last} in
-        var sum = Cell.new(0)
-        var int_pub = spawn(IntPublisher.cfg(first, last, 1))
-        var int_stream = int_pub.stream('request'#{'count': 3})
-        while int_stream.has_more() do
-            for i in ValueIter.new(int_stream) do
+        var sum = new Cell(0)
+        var int_pub = spawn(new IntPublisher(first, last, 1))
+        var int_stream = new Cell(int_pub.stream('request'#{'count': 3}))
+        while @int_stream.has_more() do
+            for i in new ValueIter(int_stream) do
                 if i % 2 != 0 then sum := @sum + i end
             end
-            int_pub.stream('request'#{'count': 3})
+            int_stream := int_pub.stream('request'#{'count': 3})
         end
         @sum
     end

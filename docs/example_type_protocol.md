@@ -60,4 +60,29 @@ in
         skip
     end
 end
+
+
+protocol EntityStreamApi[T] = {
+    ask 'openOrdersStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token,
+    stream 'nextOrders'#{'id': Token, 'count': Int32} -> StreamResponse[T],
+    ask 'closeOrdersStream'#{'id': Token} -> Bool
+}
+
+actor EntityStreamApiHandler[T]() implements EntityStreamApi[T] in
+    handle ask 'openEntityStream'#{'fromInclusive': Date, 'toInclusive': Date} -> Token in
+        skip
+    end
+    handle stream 'nextEntities'#{'id': Token, 'count': Int32} -> StreamResponse[T] in
+        skip
+    end
+    handle ask 'closeEntityStream'#{'id': Token} -> Bool in
+        skip
+    end
+    handle ask 'findById'#{'id': Str} -> T in
+        skip
+    end
+    handle tell 'notify'#{'message': Str} in
+        skip
+    end
+end
 ```

@@ -10,34 +10,11 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-/*
- * There are two categories of type names:
- *   1. Built-in - these are the base types provided by Torq, such as `Str` and `Bool`.
- *   2. User-defined - these are defined using the `type` statement.
- *
- * The method `fromIdent` will return an instance of the built-in type or an instance
- * of `IdentAsType` if it is defined by the user.
- *
- * Because we are structurally typed, the type statement actually defines an alias for a
- * type expression.
- *
- * // A type alias with no parameters
- * type MyRec = {
- *     'field': Int32
- * }
- *
- * // A type alias for a record expression that accepts 1 parameter
- * type MyRec[T] = {
- *     'field': T
- * }
- *
- * // A type alias for another type alias that accepts 1 parameter
- * type OtherRec[T] = MyRec[T]
- *
- * // A type alias with no parameters that instantiates another type alias that accepts 1 parameter
- * type OtherRec = MyRec[Int32]
- */
 public interface Type extends Lang {
+
+    String ACTOR_CFGTR = "ActorCfgtr";
+    String ACTOR_CFG = "ActorCfg";
+    String ACTOR_REF = "ActorRef";
 
     static Type fromIdent(Ident ident, SourceSpan sourceSpan) {
         return switch (ident.name) {

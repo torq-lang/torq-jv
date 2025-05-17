@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.*;
 import org.torqlang.lang.Evaluator;
 import org.torqlang.lang.EvaluatorPerformed;
-import org.torqlang.local.ArrayListPack.ArrayListObj;
+import org.torqlang.local.ArrayListMod.ArrayListObj;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +27,7 @@ public class TestEvalArrayLists {
                 x.add(1)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -58,7 +58,7 @@ public class TestEvalArrayLists {
                 x.add(0)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -86,7 +86,7 @@ public class TestEvalArrayLists {
                 x = b.to_array()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListPack.ARRAY_LIST_IDENT, new Var(ArrayListPack.ARRAY_LIST_CLS))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.ARRAY_LIST_CLS))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

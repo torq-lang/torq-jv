@@ -10,8 +10,7 @@ package org.torqlang.lang;
 import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.Ident;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.torqlang.lang.CommonTools.assertSourceSpan;
 
 public class TestParserActorStmt {
@@ -81,7 +80,7 @@ public class TestParserActorStmt {
     }
 
     @Test
-    public void testWithRespondType() {
+    public void testWithResponseType() {
         //                                      1         2         3         4         5
         //                            0123456789012345678901234567890123456789012345678901234567
         Parser p = new Parser("actor MyActor() in handle ask 'get' -> Int32 in a end end");
@@ -103,6 +102,38 @@ public class TestParserActorStmt {
         // Test handlers
         assertEquals(1, actorStmt.askHandlers().size());
         assertSourceSpan(actorStmt.askHandlers().get(0), 19, 53);
+    }
+
+    @Test
+    public void testWithSelfProtocol() {
+        //                                      1         2         3         4         5         6         7         8
+        //                            012345678901234567890123456789012345678901234567890123456789012345678901234567890123
+        Parser p = new Parser("actor MyActor() implements Self as GetInt in handle ask 'get' -> Int32 in a end end");
+        StmtOrExpr sox = p.parse();
+        ActorStmt actorStmt = (ActorStmt) sox;
+        assertSourceSpan(actorStmt, 0, 83);
+        assertEquals(Ident.create("MyActor"), actorStmt.name.ident);
+        // Test format
+        String expectedFormat = """
+            actor MyActor() implements Self as GetInt in
+                handle ask 'get' -> Int32 in
+                    a
+                end
+            end""";
+        String actualFormat = actorStmt.toString();
+        assertEquals(expectedFormat, actualFormat);
+        // Test initializer
+        assertEquals(0, actorStmt.initializer().size());
+        // Test protocol and protocol name
+        assertInstanceOf(IdentAsProtocol.class, actorStmt.protocol);
+        IdentAsProtocol protocol = (IdentAsProtocol) actorStmt.protocol;
+        assertEquals("Self", protocol.protocolIdent().name);
+        assertInstanceOf(IdentAsProtocol.class, actorStmt.protocolName);
+        assertNotNull(actorStmt.protocolName);
+        assertEquals("GetInt", actorStmt.protocolName.protocolIdent().name);
+        // Test handlers
+        assertEquals(1, actorStmt.askHandlers().size());
+        assertSourceSpan(actorStmt.askHandlers().get(0), 45, 79);
     }
 
 }

@@ -9,34 +9,34 @@ package org.torqlang.klvm;
 
 import java.util.List;
 
-public class Int64Pack {
+public class Int32Mod {
 
-    public static final CompleteObj INT64_CLS = Int64Cls.SINGLETON;
+    public static final CompleteObj INT32_CLS = Int32Cls.SINGLETON;
 
     // Signatures:
-    //     Int64.parse(num::Str) -> Int64
+    //     Int32.parse(num::Str) -> Int32
     static void clsParse(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitException {
         final int expectedCount = 2;
         if (ys.size() != expectedCount) {
-            throw new InvalidArgCountError(expectedCount, ys, "Int64.parse");
+            throw new InvalidArgCountError(expectedCount, ys, "Int32.parse");
         }
         Str num = (Str) ys.get(0).resolveValue(env);
-        Int64 int64 = Int64.of(Long.parseLong(num.value));
+        Int32 int32 = Int32.of(Integer.parseInt(num.value));
         ValueOrVar target = ys.get(1).resolveValueOrVar(env);
-        target.bindToValue(int64, null);
+        target.bindToValue(int32, null);
     }
 
-    static class Int64Cls implements CompleteObj {
-        private static final Int64Cls SINGLETON = new Int64Cls();
-        private static final CompleteProc INT64_CLS_PARSE = Int64Pack::clsParse;
+    static class Int32Cls implements CompleteObj {
+        private static final Int32Cls SINGLETON = new Int32Cls();
+        private static final CompleteProc INT32_CLS_PARSE = Int32Mod::clsParse;
 
-        private Int64Cls() {
+        private Int32Cls() {
         }
 
         @Override
         public final Value select(Feature feature) {
             if (feature.equals(CommonFeatures.PARSE)) {
-                return INT64_CLS_PARSE;
+                return INT32_CLS_PARSE;
             }
             throw new FeatureNotFoundError(this, feature);
         }

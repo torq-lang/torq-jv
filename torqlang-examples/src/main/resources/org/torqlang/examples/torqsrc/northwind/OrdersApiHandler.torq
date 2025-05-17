@@ -57,6 +57,7 @@ type ProductWithSuppliers = Product & {'suppliers': Array[Supplier]}
 meta#{'export'}
 type OrderDetailsWithProductWithSuppliers = OrderDetails & {'product': ProductWithSuppliers}
 
+meta#{'export'}
 protocol OrdersApi = {
     ask 'GET'#{'headers': headers, 'path': ['orders'], 'query': query, 'context': context, ...} -> Array[OrderWithCustomerAndEmployee] | Message,
     ask 'GET'#{'headers': headers, 'path': ['orders', order_id::Int64], 'query': query, 'context': context, ...} -> OrderWithDetails | Message,
@@ -68,7 +69,7 @@ actor OrdersApiHandler() implements OrdersApi in
     import system.{ArrayList, Int64, LocalDate, Rec, ValueIter}
     import examples.NorthwindDb
 
-    meta#{'export', 'return-codes': {'Array[OrderWithCustomerAndEmployee]': 200, 'Message': 400}}
+    meta#{'export', 'response-codes': {'Array[OrderWithCustomerAndEmployee]': 200, 'Message': 400}}
     handle ask 'GET'#{'headers': headers, 'path': ['orders'], 'query': query, 'context': context, ...} ->
         Array[OrderWithCustomerAndEmployee] | Message
     in

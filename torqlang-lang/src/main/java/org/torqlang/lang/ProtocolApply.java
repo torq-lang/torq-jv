@@ -15,16 +15,16 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 public final class ProtocolApply extends AbstractLang implements Protocol {
 
-    public final IdentAsExpr name;
-    public final List<Protocol> protocolArgs;
+    public final IdentAsProtocol name;
+    public final List<Type> typeArgs;
 
-    public ProtocolApply(IdentAsExpr name,
-                         List<? extends Protocol> protocolArgs,
+    public ProtocolApply(IdentAsProtocol name,
+                         List<? extends Type> typeArgs,
                          SourceSpan sourceSpan)
     {
         super(sourceSpan);
         this.name = name;
-        this.protocolArgs = nullSafeCopyOf(protocolArgs);
+        this.typeArgs = nullSafeCopyOf(typeArgs);
     }
 
     @Override

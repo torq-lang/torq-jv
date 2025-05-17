@@ -1,10 +1,9 @@
 package system.lang
 
-meta#{'export', 'native': 'org.torqlang.klvm.RecPack'}
+meta#{'export', 'native': 'org.torqlang.klvm.RecMod'}
 type Rec = {
-    // Factory methods
-    'factory': {
-        'assign': func [A, B, C](source::A, target::B) -> C,
-        'size': func (rec::Rec) -> Int32,
-    },
+    static {
+        func assign[A, B](source::A, target::B) -> A & B,
+        func size(rec::Rec) -> Int32,
+    }
 }

@@ -15,9 +15,9 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
 
 /*
  * A type statement defines a type constructor. The `name` property is the name used in your code to create instances
- * of the type, and the body defines the concrete type constructed when the type constructor is applied. The
- * `typeParams` property defines 0 or more parameters that will be accepted within square brackets when the type
- * constructor is applied.
+ * of the type, and the body defines the type instance created when the type constructor is applied. The `typeParams`
+ * property defines 0 or more parameters that will be accepted within square brackets when the type constructor is
+ * applied.
  */
 public class TypeStmt extends AbstractLang implements Stmt {
 
