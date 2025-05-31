@@ -12,52 +12,48 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.Fields;
 import org.torqlang.klvm.*;
-import org.torqlang.lang.JsonFormatter;
-import org.torqlang.lang.JsonParser;
-import org.torqlang.local.RecDesc;
-import org.torqlang.local.TupleDesc;
-import org.torqlang.local.ValueDesc;
+import org.torqlang.lang.*;
 import org.torqlang.local.ValueTools;
 
 final class DefaultApiDesc implements ApiDesc {
 
-    private final ValueDesc inputDesc;
-    private final ValueDesc outputDesc;
-    private final TupleDesc pathDesc;
-    private final RecDesc queryDesc;
+    private final Type inputType;
+    private final Type outputType;
+    private final TupleType pathType;
+    private final RecType queryType;
     private final ContextProvider contextProvider;
 
-    DefaultApiDesc(TupleDesc pathDesc,
-                   RecDesc queryDesc,
-                   ValueDesc inputDesc,
-                   ValueDesc outputDesc,
+    DefaultApiDesc(TupleType pathType,
+                   RecType queryType,
+                   Type inputType,
+                   Type outputDesc,
                    ContextProvider contextProvider)
     {
-        this.pathDesc = pathDesc;
-        this.queryDesc = queryDesc;
-        this.inputDesc = inputDesc;
-        this.outputDesc = outputDesc;
+        this.pathType = pathType;
+        this.queryType = queryType;
+        this.inputType = inputType;
+        this.outputType = outputDesc;
         this.contextProvider = contextProvider;
     }
 
     @Override
-    public final ValueDesc inputDesc() {
-        return inputDesc;
+    public final Type inputType() {
+        return inputType;
     }
 
     @Override
-    public final ValueDesc outputDesc() {
-        return outputDesc;
+    public final Type outputType() {
+        return outputType;
     }
 
     @Override
-    public final TupleDesc pathDesc() {
-        return pathDesc;
+    public final TupleType pathType() {
+        return pathType;
     }
 
     @Override
-    public final RecDesc queryDesc() {
-        return queryDesc;
+    public final RecType queryType() {
+        return queryType;
     }
 
     @Override
@@ -76,17 +72,22 @@ final class DefaultApiDesc implements ApiDesc {
 
     @Override
     public final CompleteTuple toPathTuple(ApiPath path) {
-        if (pathDesc == null) {
+        if (pathType == null) {
             throw new IllegalArgumentException("Path description is null");
         }
-        if (path.segs.size() != pathDesc.descs().size()) {
-            throw new IllegalArgumentException("Path size does not equal path description size");
+        TupleTypeExpr pathTypeExpr = null;
+        if (pathType instanceof TupleTypeExpr pathTypeExprFound) {
+            pathTypeExpr = pathTypeExprFound;
+            if (path.segs.size() != pathTypeExpr.values.size()) {
+                throw new IllegalArgumentException("Path size does not match API description");
+            }
         }
         CompleteTupleBuilder tupleBuilder = Rec.completeTupleBuilder();
         for (int i = 0; i < path.segs.size(); i++) {
             String seg = path.segs.get(i);
+            Type segType = pathTypeExpr != null ? pathTypeExpr.values.get(i) : null;
             tupleBuilder.addValue(
-                ValueTools.toKernelValue(seg, pathDesc.descs().get(i))
+                ValueTools.toKernelValue(seg, segType)
             );
         }
         return tupleBuilder.build();
@@ -98,23 +99,24 @@ final class DefaultApiDesc implements ApiDesc {
         CompleteRecBuilder queryRecBuilder = Rec.completeRecBuilder();
         for (Fields.Field f : queryFields) {
             Feature feature = Str.of(f.getName());
-            String unquotedValue = f.getValue();
-            if (unquotedValue.charAt(0) == '"') {
-                unquotedValue = unquotedValue.substring(1, unquotedValue.length() - 1);
-                unquotedValue = unquotedValue.replace("\\\"", "\"");
+            String queryValue = f.getValue();
+            if (queryValue.charAt(0) == '"') {
+                queryValue = queryValue.substring(1, queryValue.length() - 1);
+                queryValue = queryValue.replace("\\\"", "\"");
             }
             Complete value;
-            if (queryDesc != null) {
-                // TODO: Support multiple values per query field.
-                //       The queryDesc would map to an ArrayDesc if multiple values are supported.
-                ValueDesc inputValueDesc = queryDesc.map.get(feature);
-                if (inputValueDesc != null) {
-                    value = ValueTools.toKernelValue(unquotedValue, inputValueDesc);
+            if (queryType instanceof RecTypeExpr queryTypeExpr) {
+                // TODO: Support multiple values per query field. The queryType will map to an ArrayType when multiple
+                //       values are allowed.
+                FeatureAsType featureAsType = FeatureAsType.create(feature);
+                Type queryValueType = queryTypeExpr.findValue(featureAsType);
+                if (queryValueType != null) {
+                    value = ValueTools.toKernelValue(queryValue, queryValueType);
                 } else {
-                    value = Str.of(unquotedValue);
+                    value = Str.of(queryValue);
                 }
             } else {
-                value = Str.of(unquotedValue);
+                value = Str.of(queryValue);
             }
             queryRecBuilder.addField(feature, value);
         }
@@ -136,7 +138,7 @@ final class DefaultApiDesc implements ApiDesc {
                 bodyValue = Null.SINGLETON;
             } else {
                 // TODO: Optimize with a text-to-kernel instead of text-to-native-to-kernel
-                bodyValue = ValueTools.toKernelValue(new JsonParser(requestText).parse(), inputDesc);
+                bodyValue = ValueTools.toKernelValue(new JsonParser(requestText).parse(), inputType);
             }
             requestRecBuilder.addField(Str.of("body"), bodyValue);
         }

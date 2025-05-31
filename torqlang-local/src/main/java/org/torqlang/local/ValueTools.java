@@ -8,49 +8,24 @@
 package org.torqlang.local;
 
 import org.torqlang.klvm.*;
-import org.torqlang.lang.JsonNull;
+import org.torqlang.lang.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/*
- * Callers can provide an optional value description. A mapping to the Java `null` is an unspecified mapping.
- *
- * Currently, the following scalar types can be mapped:
- *
- * - String -> Dec128
- * - String -> Int32
- * - String -> Int64
- * - String -> LocalDate
- * - Long -> Int64
- *
- * Note that mappings are not necessary for labels and features. The label types are `Str`, `Bool`, `Eof`, `Null`,
- * and `Token`. However, a `Token` cannot be reconstructed, and therefore, cannot cross process boundaries. The feature
- * types are the same as the label types with the addition of `Int32`. Features received as a `Long` are downgraded to
- * an `Int23` automatically.
- */
 public final class ValueTools {
-
-    private static final Str $REC_STR = Str.of(Rec.$REC);
 
     public static Object toNativeValue(Complete value) {
         return value.toNativeValue();
     }
 
     public static Complete toKernelValue(Object value) {
-        return toKernelValue(null, value, null);
+        return toKernelValue(value, null);
     }
 
-    public static Complete toKernelValue(Object value, ValueDesc valueDesc) {
-        return toKernelValue(null, value, valueDesc);
-    }
-
-    private static Complete toKernelValue(Object label, Object value, ValueDesc valueDesc) {
+    public static Complete toKernelValue(Object value, Type type) {
         if (value == null || value == JsonNull.SINGLETON) {
             return Null.SINGLETON;
         }
@@ -58,132 +33,178 @@ public final class ValueTools {
             return (Complete) value;
         }
         if (value instanceof String string) {
-            if (Eof.NATIVE_VALUE.equals(string)) {
-                return Eof.SINGLETON;
-            } else if (valueDesc instanceof DateDesc) {
-                LocalDate localDate;
-                if (string.length() > 10) {
-                    LocalDateTime localDateTime = DateTimeFormatter.ISO_DATE_TIME.parse(string, LocalDateTime::from);
-                    localDate = localDateTime.toLocalDate();
+            if (type == null) {
+                if (Eof.NATIVE_VALUE.equals(string)) {
+                    return Eof.SINGLETON;
                 } else {
-                    localDate = DateTimeFormatter.ISO_DATE.parse(string, LocalDate::from);
+                    return Str.of(string);
                 }
-                return LocalDateMod.newObj(localDate);
-            } else if (valueDesc instanceof Int32Desc) {
-                return Int32.decode(string);
-            } else if (valueDesc instanceof Int64Desc) {
-                return Int64.decode(string);
-            } else if (valueDesc instanceof Dec128Desc) {
-                return Dec128.of(string);
-            } else {
+            } else if (type instanceof StrType) {
                 return Str.of(string);
+            } else if (type instanceof Int32Type) {
+                return Int32.decode(string);
+            } else if (type instanceof Int64Type) {
+                return Int64.decode(string);
+            } else if (type instanceof Dec128Type) {
+                return Dec128.decode(string);
+            } else if (type instanceof EofType && string.equals(Eof.NATIVE_VALUE)) {
+                return Eof.SINGLETON;
+            } else if (type instanceof ValueTool valueTool) {
+                return valueTool.toKernelValue(value);
             }
-        }
-        if (value instanceof Integer integer) {
-            return Int32.of(integer);
-        }
-        if (value instanceof Long longValue) {
-            if (valueDesc instanceof Int32Desc) {
-                return Int32.of(longValue.intValue());
-            } else {
-                return Int64.of(longValue);
-            }
+            throw new IllegalArgumentException("Cannot convert String to " + type);
         }
         if (value instanceof Boolean booleanValue) {
+            if (type != null && type != BoolType.SINGLETON) {
+                throw new IllegalArgumentException("Cannot convert Boolean to " + type);
+            }
             return Bool.of(booleanValue);
         }
         if (value instanceof Character characterValue) {
+            if (type != null && type != CharType.SINGLETON) {
+                throw new IllegalArgumentException("Cannot convert Character to " + type);
+            }
             return Char.of(characterValue);
         }
+        if (value instanceof Integer integer) {
+            if (type != null && type != Int32Type.SINGLETON) {
+                throw new IllegalArgumentException("Cannot convert Integer to " + type);
+            }
+            return Int32.of(integer);
+        }
+        if (value instanceof Long longValue) {
+            if (type instanceof Int32Type) {
+                return Int32.of(longValue.intValue());
+            } else if (type == null || type instanceof Int64Type) {
+                return Int64.of(longValue.intValue());
+            } else {
+                throw new IllegalArgumentException("Cannot convert Long to " + type);
+            }
+        }
         if (value instanceof Float floatValue) {
+            if (type != null && type != Flt32Type.SINGLETON) {
+                throw new IllegalArgumentException("Cannot convert Float to " + type);
+            }
             return Flt32.of(floatValue);
         }
         if (value instanceof Double doubleValue) {
+            if (type != null && type != Flt64Type.SINGLETON) {
+                throw new IllegalArgumentException("Cannot convert Double to " + type);
+            }
             return Flt64.of(doubleValue);
         }
         if (value instanceof BigDecimal bigDecimal) {
+            if (type != null && type != Dec128Type.SINGLETON) {
+                throw new IllegalArgumentException("Cannot convert BigDecimal to " + type);
+            }
             return Dec128.of(bigDecimal);
         }
-        if (value instanceof Map<?, ?> m) {
-            // A map of size 2 may indicate a "labeled" record as a mapping of $label->value, $rec->map/list
-            if (m.size() == 2) {
-                Object foundLabel = m.get(Rec.$LABEL);
-                // We definitely have a labeled record
-                if (foundLabel != null) {
-                    // If we are already within a labeled record, a new label is nonsensical
-                    if (label != null) {
-                        throw new IllegalArgumentException("Label cannot follow a label");
-                    }
-                    Object foundValue = m.get(Rec.$REC);
-                    if (foundValue != null) {
-                        // We have a label, so now we must have a record or tuple
-                        if (!(foundValue instanceof Map) && !(foundValue instanceof List)) {
-                            throw new IllegalArgumentException("Label must precede a Map or List");
-                        }
-                        if (valueDesc instanceof RecDesc recSpec) {
-                            ValueDesc foundSpecRec = recSpec.map.get($REC_STR);
-                            if (foundSpecRec != null) {
-                                valueDesc = foundSpecRec;
-                            }
-                        }
-                        return toKernelValue(foundLabel, foundValue, valueDesc);
-                    }
-                }
-            }
-            // At this point we do not have a label, or we were called recursively with a label parameter
-            List<CompleteField> fs = new ArrayList<>();
-            for (Map.Entry<?, ?> e : m.entrySet()) {
-                // `Long` features are automatically downcast to `Integer` features
-                Object key = e.getKey();
-                if (key.getClass() == Long.class) {
-                    key = ((Long) key).intValue();
-                }
-                Complete k = toKernelValue(null, key, null);
-                if (!(k instanceof Feature f)) {
-                    throw new IllegalArgumentException("Map key must be a Feature: " + key);
-                }
-                ValueDesc nestedValueSpec = valueDesc != null ?
-                    ((RecDesc) valueDesc).map.get(k) : null;
-                Complete v = toKernelValue(null, e.getValue(), nestedValueSpec);
-                fs.add(new CompleteField(f, v));
-            }
-            Literal kernelLabel = null;
-            if (label != null) {
-                // Convert the label as a value (don't pass it as the first argument)
-                kernelLabel = (Literal) toKernelValue(null, label, null);
-            }
-            return CompleteRec.create(kernelLabel, fs);
+        if (value instanceof Map<?, ?> map) {
+            return toKernelStruct(map, type);
         }
-        if (value instanceof List<?> l) {
-            List<ValueDesc> tupleDescs = null;
-            ValueDesc arrayDesc = null;
-            if (valueDesc != null) {
-                if (valueDesc instanceof TupleDesc tupleDesc) {
-                    tupleDescs = tupleDesc.descs();
-                } else {
-                    arrayDesc = ((ArrayDesc) valueDesc).componentSpec();
-                }
-            }
-            List<Complete> es = new ArrayList<>();
-            for (int i = 0; i < l.size(); i++) {
-                Object e = l.get(i);
-                if (valueDesc == null) {
-                    es.add(toKernelValue(null, e, null));
-                } else if (tupleDescs != null) {
-                    ValueDesc nestedValueSpec = tupleDescs.get(i);
-                    es.add(toKernelValue(null, e, nestedValueSpec));
-                } else {
-                    es.add(toKernelValue(null, e, arrayDesc));
-                }
-            }
-            Literal kernelLabel = null;
-            if (label != null) {
-                // Convert the label as a value (don't pass it as the first argument)
-                kernelLabel = (Literal) toKernelValue(null, label, null);
-            }
-            return CompleteTuple.create(kernelLabel, es);
+        if (value instanceof List<?> list) {
+            return toKernelTuple(null, list, type);
         }
         throw new IllegalArgumentException("Cannot convert to kernel value: " + value);
+    }
+
+    /*
+     * Map the following to an Array, Rec, or Tuple
+     *     {
+     *         "$LABEL": <<label>>,
+     *         "$FIELDS": <<fields>>
+     *     }
+     */
+    private static Complete toKernelStruct(Map<?, ?> map, Type type) {
+        if (map.size() == 2) {
+            Object labelFound = map.get(Rec.$LABEL);
+            if (labelFound != null) {
+                Object valueFound = map.get(Rec.$FIELDS);
+                if (valueFound != null) {
+                    if (valueFound instanceof Map<?, ?> mapContent) {
+                        return toKernelRec(labelFound, mapContent, type);
+                    } else if (valueFound instanceof List<?> listContent) {
+                        return toKernelTuple(labelFound, listContent, type);
+                    } else {
+                        throw new IllegalArgumentException("A label must precede a structure");
+                    }
+                }
+            }
+        }
+        return toKernelRec(null, map, type);
+    }
+
+    private static CompleteRec toKernelRec(Object label, Map<?, ?> fields, Type type) {
+        RecTypeExpr recTypeExpr;
+        if (type == null) {
+            recTypeExpr = null;
+        } else if (type instanceof RecTypeExpr recTypeExprFound) {
+            recTypeExpr = recTypeExprFound;
+        } else if (type instanceof RecType) {
+            recTypeExpr = null;
+        } else {
+            throw new IllegalArgumentException("Cannot convert to kernel value: " + fields);
+        }
+        Literal kernelLabel;
+        if (label != null && recTypeExpr != null) {
+            kernelLabel = (Literal) toKernelValue(label, recTypeExpr.label);
+        } else {
+            kernelLabel = (Literal) toKernelValue(label, null);
+        }
+        List<CompleteField> kernelFields = new ArrayList<>();
+        for (Map.Entry<?, ?> e : fields.entrySet()) {
+            // `Long` features are automatically downcast to `Integer` features
+            Object key = e.getKey();
+            if (key.getClass() == Long.class) {
+                key = ((Long) key).intValue();
+            }
+            Complete completeKey = toKernelValue(key, null);
+            if (!(completeKey instanceof Feature kernelFeature)) {
+                throw new IllegalArgumentException("Map key must be a Feature: " + key);
+            }
+            FeatureAsType kernelFeatureAsType = FeatureAsType.create(kernelFeature);
+            Type valueType = recTypeExpr != null ? recTypeExpr.findValue(kernelFeatureAsType) : null;
+            Complete kernelValue = toKernelValue(e.getValue(), valueType);
+            kernelFields.add(new CompleteField(kernelFeature, kernelValue));
+        }
+        return CompleteRec.create(kernelLabel, kernelFields);
+    }
+
+    private static CompleteTuple toKernelTuple(Object label, List<?> values, Type type) {
+        Type arrayElementType = null;
+        TupleTypeExpr tupleTypeExpr = null;
+        if (type != null) {
+            if (type instanceof TypeApply typeApply) {
+                if (typeApply.name.typeIdent().equals(ArrayType.IDENT)) {
+                    arrayElementType = typeApply.typeArgs.get(0);
+                } else {
+                    throw new IllegalArgumentException("Cannot convert to kernel value: " + values);
+                }
+            } else if (type instanceof TupleTypeExpr tupleTypeExprFound) {
+                tupleTypeExpr = tupleTypeExprFound;
+            } else if (!(type instanceof ArrayType)) {
+                throw new IllegalArgumentException("Cannot convert to kernel value: " + values);
+            }
+        }
+        Literal kernelLabel;
+        if (label != null && tupleTypeExpr != null) {
+            kernelLabel = (Literal) toKernelValue(label, tupleTypeExpr.label);
+        } else {
+            kernelLabel = (Literal) toKernelValue(label, null);
+        }
+        List<Complete> kernelValues = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            Object e = values.get(i);
+            if (type == null) {
+                kernelValues.add(toKernelValue(e, null));
+            } else if (tupleTypeExpr != null) {
+                Type valueType = tupleTypeExpr.values.get(i);
+                kernelValues.add(toKernelValue(e, valueType));
+            } else {
+                kernelValues.add(toKernelValue(e, arrayElementType));
+            }
+        }
+        return CompleteTuple.create(kernelLabel, kernelValues);
     }
 
 }

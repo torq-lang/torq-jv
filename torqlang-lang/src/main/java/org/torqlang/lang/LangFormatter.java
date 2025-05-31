@@ -7,7 +7,10 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.*;
+import org.torqlang.klvm.Flt32;
+import org.torqlang.klvm.Ident;
+import org.torqlang.klvm.Int32;
+import org.torqlang.klvm.Str;
 import org.torqlang.util.FormatterState;
 import org.torqlang.util.NeedsImpl;
 
@@ -806,6 +809,13 @@ public final class LangFormatter implements LangVisitor<FormatterState, Void> {
 
     @Override
     public final Void visitNullType(NullType lang, FormatterState state) throws Exception {
+        maybeWriteMeta(lang, state);
+        state.write(lang.typeIdent().formatValue());
+        return null;
+    }
+
+    @Override
+    public final Void visitObjType(ObjType lang, FormatterState state) throws Exception {
         maybeWriteMeta(lang, state);
         state.write(lang.typeIdent().formatValue());
         return null;

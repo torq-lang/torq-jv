@@ -5,8 +5,7 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.lang;
 
-public final class Int64Desc implements ScalarDesc {
-    public static final Int64Desc BASIC = new Int64Desc();
+public interface LabelAsType extends FeatureAsType {
 }

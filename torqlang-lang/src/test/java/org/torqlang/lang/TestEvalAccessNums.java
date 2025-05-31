@@ -25,7 +25,7 @@ public class TestEvalAccessNums {
                 x = @a
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -33,7 +33,7 @@ public class TestEvalAccessNums {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a in
-                $select_apply(Cell, ['new'], 5, a)
+                $select_apply(Cell, ['$new'], 5, a)
                 $get(a, x)
             end""";
         assertEquals(expected, e.kernel().toString());
@@ -48,7 +48,7 @@ public class TestEvalAccessNums {
                 x = @a + 3
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -56,7 +56,7 @@ public class TestEvalAccessNums {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local a in
-                $select_apply(Cell, ['new'], 5, a)
+                $select_apply(Cell, ['$new'], 5, a)
                 local $v0 in
                     $get(a, $v0)
                     $add($v0, 3, x)

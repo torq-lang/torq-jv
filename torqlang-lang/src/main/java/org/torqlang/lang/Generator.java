@@ -14,6 +14,8 @@ import org.torqlang.util.SourceSpan;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.torqlang.klvm.CommonFeatures.$NEW;
+
 /*
  * Generator transforms statements and expression into kernel instructions using the visitor pattern.
  *
@@ -64,7 +66,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     public static final int CONTINUE_ID = 2;
     public static final int RETURN_ID = 3;
 
-    public static final Str NEW = Str.of("new");
     public static final Str ERROR = Str.of("error");
     public static final Str NAME = Str.of("name");
     public static final Str MESSAGE = Str.of("message");
@@ -243,7 +244,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(new CreateActorCtorInstr(Ident.$ACTOR_CTOR, actorCtorDef, lang));
 
         // Build the actor record
-        FieldDef configDef = new FieldDef(NEW, Ident.$ACTOR_CTOR, endOfActorSpan);
+        FieldDef configDef = new FieldDef($NEW, Ident.$ACTOR_CTOR, endOfActorSpan);
         RecDef actorRecDef = new RecDef(Str.of(exprIdent.name), List.of(configDef), endOfActorSpan);
         childTarget.addInstr(new CreateRecInstr(exprIdent, actorRecDef, endOfActorSpan));
 
@@ -1075,7 +1076,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
         LocalTarget childTarget = target.asExprTargetWithNewScope();
         CompleteOrIdent cls = typeApply.name.typeIdent();
-        List<FeatureOrIdent> path = List.of(Str.of("new"));
+        List<FeatureOrIdent> path = List.of($NEW);
         List<CompleteOrIdent> ys = new ArrayList<>();
         for (StmtOrExpr arg : lang.args) {
             ys.add(arg.accept(this, childTarget));
@@ -1108,6 +1109,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitNullType(NullType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitObjType(ObjType lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 

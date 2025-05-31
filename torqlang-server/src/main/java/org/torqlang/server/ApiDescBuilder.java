@@ -7,16 +7,17 @@
 
 package org.torqlang.server;
 
-import org.torqlang.local.RecDesc;
-import org.torqlang.local.TupleDesc;
-import org.torqlang.local.ValueDesc;
+import org.torqlang.lang.RecType;
+import org.torqlang.lang.TupleType;
+import org.torqlang.lang.Type;
 
 public final class ApiDescBuilder {
 
-    private TupleDesc pathDesc;
-    private RecDesc queryDesc;
-    private ValueDesc inputDesc;
-    private ValueDesc outputDesc;
+    private Type inputType;
+    private Type outputType;
+    private TupleType pathType;
+    private RecType queryType;
+
     private ContextProvider contextProvider;
 
     public final ApiDescBuilder setContextProvider(ContextProvider contextProvider) {
@@ -24,28 +25,28 @@ public final class ApiDescBuilder {
         return this;
     }
 
-    public final ApiDescBuilder setInputDesc(ValueDesc inputDesc) {
-        this.inputDesc = inputDesc;
+    public final ApiDescBuilder setInputType(Type inputType) {
+        this.inputType = inputType;
         return this;
     }
 
-    public final ApiDescBuilder setOutputDesc(ValueDesc outputDesc) {
-        this.outputDesc = outputDesc;
+    public final ApiDescBuilder setOutputType(Type outputType) {
+        this.outputType = outputType;
         return this;
     }
 
-    public final ApiDescBuilder setPathDesc(TupleDesc pathDesc) {
-        this.pathDesc = pathDesc;
+    public final ApiDescBuilder setPathType(TupleType pathType) {
+        this.pathType = pathType;
         return this;
     }
 
-    public final ApiDescBuilder setQueryDesc(RecDesc queryDesc) {
-        this.queryDesc = queryDesc;
+    public final ApiDescBuilder setQueryType(RecType queryType) {
+        this.queryType = queryType;
         return this;
     }
 
     public ApiDesc build() {
-        return new DefaultApiDesc(pathDesc, queryDesc, inputDesc, outputDesc, contextProvider);
+        return new DefaultApiDesc(pathType, queryType, inputType, outputType, contextProvider);
     }
 
 }

@@ -20,6 +20,10 @@ public final class Flt32AsType extends AbstractLang implements Flt32Type, NumAsT
         this.flt32 = flt32;
     }
 
+    public static Flt32AsType create(Flt32 flt32) {
+        return new Flt32AsType(flt32, SourceSpan.emptySourceSpan());
+    }
+
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception

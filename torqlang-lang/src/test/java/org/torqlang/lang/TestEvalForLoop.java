@@ -28,8 +28,8 @@ public class TestEvalForLoop {
                 x = @counter
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
-            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.rangeIterCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
+            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.singleton().namesake()))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -37,9 +37,9 @@ public class TestEvalForLoop {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local counter in
-                $select_apply(Cell, ['new'], 0, counter)
+                $select_apply(Cell, ['$new'], 0, counter)
                 local $iter, $for in
-                    $select_apply(RangeIter, ['new'], 0, a, $iter)
+                    $select_apply(RangeIter, ['$new'], 0, a, $iter)
                     $create_proc(proc () in // free vars: $for, $iter, counter
                         local i, $v0 in
                             $iter(i)
@@ -81,8 +81,8 @@ public class TestEvalForLoop {
                 x = @counter
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
-            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.rangeIterCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
+            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.singleton().namesake()))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -90,9 +90,9 @@ public class TestEvalForLoop {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local counter in
-                $select_apply(Cell, ['new'], 0, counter)
+                $select_apply(Cell, ['$new'], 0, counter)
                 local $iter, $for in
-                    $select_apply(RangeIter, ['new'], 0, a, $iter)
+                    $select_apply(RangeIter, ['$new'], 0, a, $iter)
                     $create_proc(proc () in // free vars: $for, $iter, counter
                         local i, $v0 in
                             $iter(i)
@@ -152,8 +152,8 @@ public class TestEvalForLoop {
                 z = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
-            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.rangeIterCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
+            .addVar(RangeIterMod.RANGE_ITER_IDENT, new Var(RangeIterMod.singleton().namesake()))
             .addVar(Ident.create("k"), new Var(Int32.of(5)))
             .addVar(Ident.create("z"))
             .setSource(source)
@@ -161,9 +161,9 @@ public class TestEvalForLoop {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local c in
-                $select_apply(Cell, ['new'], 0, c)
+                $select_apply(Cell, ['$new'], 0, c)
                 local $iter, $for in
-                    $select_apply(RangeIter, ['new'], 0, k, $iter)
+                    $select_apply(RangeIter, ['$new'], 0, k, $iter)
                     $create_proc(proc () in // free vars: $for, $iter, c
                         local i, $v0 in
                             $iter(i)

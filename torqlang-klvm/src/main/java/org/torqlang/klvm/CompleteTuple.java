@@ -35,7 +35,7 @@ public interface CompleteTuple extends CompleteRec, Tuple {
             memos = new IdentityHashMap<>();
         }
         memos.put(this, Value.PRESENT);
-        List<Object> list = new ArrayList<>(fieldCount());
+        List<Object> values = new ArrayList<>(fieldCount());
         for (int i = 0; i < fieldCount(); i++) {
             Complete e = valueAt(i);
             Object v;
@@ -44,12 +44,12 @@ public interface CompleteTuple extends CompleteRec, Tuple {
             } else {
                 v = e.toNativeValue();
             }
-            list.add(v);
+            values.add(v);
         }
         if (label().equals(Rec.DEFAULT_LABEL)) {
-            return list;
+            return values;
         }
-        return Map.of($LABEL, label().toNativeValue(), $REC, list);
+        return Map.of($LABEL, label().toNativeValue(), $FIELDS, values);
     }
 
 }

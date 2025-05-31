@@ -11,7 +11,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.Rec;
-import org.torqlang.klvm.Str;
+import org.torqlang.lang.*;
 import org.torqlang.local.*;
 import org.torqlang.server.ApiDesc;
 import org.torqlang.server.ApiHandler;
@@ -20,6 +20,8 @@ import org.torqlang.util.FileName;
 import org.torqlang.util.FileType;
 import org.torqlang.util.SourceFileBroker;
 import org.torqlang.util.SourceString;
+
+import java.util.List;
 
 import static org.torqlang.examples.ExamplesSourceBroker.EXAMPLES_ROOT;
 import static org.torqlang.examples.ExamplesSourceBroker.NORTHWIND;
@@ -35,7 +37,7 @@ public final class NorthwindHandlerFactoryForActors {
         SourceFileBroker sourceBroker = ExamplesSourceBroker.createResourcesBrokerForActors();
 
         CompleteRec examplesMod = Rec.completeRecBuilder()
-            .addField(NorthwindDbMod.NORTHWIND_DB_STR, NorthwindDbMod.northwindDbCls())
+            .addField(NorthwindDbMod.NORTHWIND_DB_STR, NorthwindDbMod.singleton().namesake())
             .build();
 
         ActorSystem system = ActorSystem.builder()
@@ -44,12 +46,12 @@ public final class NorthwindHandlerFactoryForActors {
             .build();
 
         ApiDesc customerApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc customersApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.CUSTOMER_DESC)
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON)))
+            .setQueryType(NorthwindTypes.CUSTOMER_TYPE)
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         SourceString customersHandlerSource = sourceBroker.source(
@@ -60,12 +62,12 @@ public final class NorthwindHandlerFactoryForActors {
             .actorImage(customersHandlerSource.content());
 
         ApiDesc employeeApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc employeesApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.EMPLOYEE_DESC)
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON)))
+            .setQueryType(NorthwindTypes.EMPLOYEE_TYPE)
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         SourceString employeesHandlerSource = sourceBroker.source(
@@ -76,17 +78,17 @@ public final class NorthwindHandlerFactoryForActors {
             .actorImage(employeesHandlerSource.content());
 
         ApiDesc orderApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc ordersApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.ORDER_DESC)
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON)))
+            .setQueryType(NorthwindTypes.ORDER_TYPE)
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc orderDetailsApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC, StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.ORDER_DETAILS_DESC)
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON, StrType.SINGLETON)))
+            .setQueryType(NorthwindTypes.ORDER_DETAILS_TYPE)
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         SourceString ordersHandlerSource = sourceBroker.source(
@@ -97,12 +99,12 @@ public final class NorthwindHandlerFactoryForActors {
             .actorImage(ordersHandlerSource.content());
 
         ApiDesc productApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc productsApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON)))
+            .setQueryType(NorthwindTypes.PRODUCT_TYPE)
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         SourceString productsHandlerSource = sourceBroker.source(
@@ -113,12 +115,12 @@ public final class NorthwindHandlerFactoryForActors {
             .actorImage(productsHandlerSource.content());
 
         ApiDesc supplierApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC, Int64Desc.BASIC))
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         ApiDesc suppliersApiDesc = ApiDesc.builder()
-            .setPathDesc(TupleDesc.of(StrDesc.BASIC))
-            .setQueryDesc(NorthwindDescs.PRODUCT_DESC)
+            .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON)))
+            .setQueryType(NorthwindTypes.PRODUCT_TYPE)
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
             .build();
         SourceString suppliersHandlerSource = sourceBroker.source(

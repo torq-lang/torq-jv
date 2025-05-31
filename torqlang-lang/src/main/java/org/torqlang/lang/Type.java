@@ -16,7 +16,11 @@ public interface Type extends Lang {
     String ACTOR_CFG = "ActorCfg";
     String ACTOR_REF = "ActorRef";
 
-    static Type fromIdent(Ident ident, SourceSpan sourceSpan) {
+    static IdentAsType fromIdent(Ident ident) {
+        return fromIdent(ident, SourceSpan.emptySourceSpan());
+    }
+
+    static IdentAsType fromIdent(Ident ident, SourceSpan sourceSpan) {
         return switch (ident.name) {
             case StrType.NAME -> StrType.create(sourceSpan);
             case BoolType.NAME -> BoolType.create(sourceSpan);

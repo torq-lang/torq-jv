@@ -28,7 +28,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -36,7 +36,7 @@ public class TestEvalWhileLoop {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local c in
-                $select_apply(Cell, ['new'], 0, c)
+                $select_apply(Cell, ['$new'], 0, c)
                 local $guard, $while in
                     $create_proc(proc ($r) in // free vars: a, c
                         local $v0 in
@@ -69,7 +69,7 @@ public class TestEvalWhileLoop {
         // a = 3
 
         e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
             .addVar(Ident.create("a"), new Var(Int32.of(3)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -94,7 +94,7 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
             .addVar(Ident.create("a"), new Var(Int32.of(5)))
             .addVar(Ident.create("x"))
             .setSource(source)
@@ -102,7 +102,7 @@ public class TestEvalWhileLoop {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local c in
-                $select_apply(Cell, ['new'], 0, c)
+                $select_apply(Cell, ['$new'], 0, c)
                 local $guard, $while in
                     $create_proc(proc ($r) in
                         $bind(true, $r)
@@ -171,15 +171,15 @@ public class TestEvalWhileLoop {
                 x = @c
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(CellMod.CELL_IDENT, new Var(CellMod.cellCls()))
+            .addVar(CellMod.CELL_IDENT, new Var(CellMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local i, c in
-                $select_apply(Cell, ['new'], -1, i)
-                $select_apply(Cell, ['new'], 0, c)
+                $select_apply(Cell, ['$new'], -1, i)
+                $select_apply(Cell, ['$new'], 0, c)
                 local $guard, $while in
                     $create_proc(proc ($r) in
                         $bind(true, $r)

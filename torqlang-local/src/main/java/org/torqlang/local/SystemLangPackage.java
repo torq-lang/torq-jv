@@ -37,7 +37,7 @@ final class SystemLangPackage implements KernelPackage {
     }
 
     @Override
-    public final CompleteRec packageRec() {
+    public final CompleteRec members() {
         return packageRec;
     }
 

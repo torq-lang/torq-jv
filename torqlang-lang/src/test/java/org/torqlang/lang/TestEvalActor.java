@@ -108,8 +108,8 @@ public class TestEvalActor {
                         $create_tuple('handlers'#[$v3, $v10], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('HelloFactorial'#{'new': $actor_ctor}, HelloFactorial)
-                $select_apply(HelloFactorial, ['new'], hello_factorial_cfg)
+                $create_rec('HelloFactorial'#{'$new': $actor_ctor}, HelloFactorial)
+                $select_apply(HelloFactorial, ['$new'], hello_factorial_cfg)
             end""";
         assertEquals(expected, e.kernel().toString());
         assertInstanceOf(ActorCfg.class, e.varAtName(configCtorIdent.name).valueOrVarSet());

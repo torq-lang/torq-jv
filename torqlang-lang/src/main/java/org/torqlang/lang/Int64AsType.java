@@ -28,6 +28,14 @@ public final class Int64AsType extends AbstractLang implements Int64Type, NumAsT
         this.intText = intText;
     }
 
+    public static Int64AsType create(Int64 int64) {
+        return new Int64AsType(int64, SourceSpan.emptySourceSpan());
+    }
+
+    public static Int64AsType create(String intText) {
+        return new Int64AsType(intText, SourceSpan.emptySourceSpan());
+    }
+
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception

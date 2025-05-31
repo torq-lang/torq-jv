@@ -622,34 +622,34 @@ public final class Parser {
         if (featureOrValueType == null) {
             return null;
         }
-        FeatureType featureType;
+        FeatureAsType featureAsType;
         Type valueType;
         if (featureOrValueType instanceof MethodType methodType) {
             IdentAsExpr name = methodType.name();
             if (name == null) {
                 throw new ParserError(FUNC_NAME_REQUIRED, methodType);
             }
-            featureType = new StrAsType(Str.of(name.ident.name), name);
+            featureAsType = new StrAsType(Str.of(name.ident.name), name);
             valueType = methodType;
         } else {
             LexerToken current = currentToken;
             if (current.isOneCharSymbol(COLON_CHAR)) {
                 current = nextToken(); // accept ':' token
-                if (!(featureOrValueType instanceof FeatureType featureTypeParsed)) {
+                if (!(featureOrValueType instanceof FeatureAsType featureAsTypeFound)) {
                     throw new ParserError(FEATURE_TYPE_EXPECTED, current);
                 }
-                featureType = featureTypeParsed;
+                featureAsType = featureAsTypeFound;
                 valueType = parseTypeExpr();
                 if (valueType == null) {
                     throw new ParserError(VALUE_TYPE_EXPECTED, current);
                 }
             } else {
                 int nextFeature = nextImpliedFeature.getAndAdd(1);
-                featureType = new Int32AsType(Int32.of(nextFeature), featureOrValueType.toSourceBegin());
+                featureAsType = new Int32AsType(Int32.of(nextFeature), featureOrValueType.toSourceBegin());
                 valueType = featureOrValueType;
             }
         }
-        return new FieldType(featureType, valueType, featureType.adjoin(valueType));
+        return new FieldType(featureAsType, valueType, featureAsType.adjoin(valueType));
     }
 
     private List<FieldType> parseFieldTypes() {
@@ -1536,7 +1536,7 @@ public final class Parser {
         return new RecPat(label, fieldPats, partialArity, recSpan);
     }
 
-    private Type parseRecTypeExpr(LabelType label) {
+    private Type parseRecTypeExpr(LabelAsType label) {
         LexerToken recToken = currentToken;
         LexerToken current = nextToken(); // accept '{' token
         List<FieldType> staticFields = null;
@@ -1735,7 +1735,7 @@ public final class Parser {
         throw new ParserError(L_BRACE_OR_L_BRACKET_EXPECTED, current);
     }
 
-    private Type parseStructType(LabelType label) {
+    private Type parseStructType(LabelAsType label) {
         LexerToken current = nextToken(); // accept '#' token
         if (current.isOneCharSymbol()) {
             if (current.firstCharEquals(L_BRACE_CHAR)) {
@@ -1879,7 +1879,7 @@ public final class Parser {
         return new TuplePat(label, valuePats, partialArity, tupleSpan);
     }
 
-    private Type parseTupleTypeExpr(LabelType label) {
+    private Type parseTupleTypeExpr(LabelAsType label) {
         LexerToken tupleToken = currentToken;
         LexerToken current = nextToken(); // accept '[' token
         List<FieldType> staticFields = null;
@@ -2039,7 +2039,7 @@ public final class Parser {
                 Ident name = tokenToIdent(identToken);
                 Type type = Type.fromIdent(name, identToken);
                 if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
-                    if (type instanceof LabelType labelType) {
+                    if (type instanceof LabelAsType labelType) {
                         return parseStructType(labelType);
                     } else {
                         throw new ParserError(LABEL_TYPE_EXPECTED, type);
@@ -2074,7 +2074,7 @@ public final class Parser {
                 }
                 nextToken(); // accept label token
                 if (current.isOneCharSymbol(HASH_TAG_CHAR)) {
-                    if (typeExpr instanceof LabelType labelType) {
+                    if (typeExpr instanceof LabelAsType labelType) {
                         return parseStructType(labelType);
                     } else {
                         throw new ParserError(LABEL_TYPE_EXPECTED, current);

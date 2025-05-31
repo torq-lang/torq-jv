@@ -12,7 +12,7 @@ public final class Eof implements Literal {
     public static final Eof SINGLETON = new Eof();
 
     public static final String EOF_NAME = "eof";
-    public static final String NATIVE_VALUE = Eof.class.getName() + ".CAFE0F0E";
+    public static final String NATIVE_VALUE = Eof.class.getName() + ".CAFE0E0F";
 
     private Eof() {
     }

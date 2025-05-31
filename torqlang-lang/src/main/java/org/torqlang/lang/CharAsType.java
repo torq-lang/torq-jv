@@ -20,6 +20,10 @@ public final class CharAsType extends AbstractLang implements CharType, NumAsTyp
         this.charNum = charNum;
     }
 
+    public static CharAsType create(Char charNum) {
+        return new CharAsType(charNum, SourceSpan.emptySourceSpan());
+    }
+
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception

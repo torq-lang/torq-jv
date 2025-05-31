@@ -14,16 +14,14 @@ public final class Int64Mod implements KernelModule {
     public static final Str INT64_STR = Str.of("Int64");
     public static final Ident INT64_IDENT = Ident.create(INT64_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private Int64Mod() {
+        namesake = new Int64Cls();
         exports = Rec.completeRecBuilder()
-            .addField(INT64_STR, Int64Cls.SINGLETON)
+            .addField(INT64_STR, namesake)
             .build();
-    }
-
-    public static Complete int64Cls() {
-        return Int64Cls.SINGLETON;
     }
 
     public static Int64Mod singleton() {
@@ -48,8 +46,13 @@ public final class Int64Mod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     static final class Int64Cls implements CompleteObj {
-        private static final Int64Cls SINGLETON = new Int64Cls();
+
         private static final CompleteProc INT64_CLS_PARSE = Int64Mod::clsParse;
 
         private Int64Cls() {

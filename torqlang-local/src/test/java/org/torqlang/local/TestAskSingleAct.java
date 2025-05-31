@@ -68,7 +68,7 @@ public class TestAskSingleAct {
                         $create_tuple('handlers'#[$v0, $v4], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('SingleAct'#{'new': $actor_ctor}, SingleAct)
+                $create_rec('SingleAct'#{'$new': $actor_ctor}, SingleAct)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

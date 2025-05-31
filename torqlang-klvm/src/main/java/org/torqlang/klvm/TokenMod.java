@@ -14,16 +14,14 @@ public final class TokenMod implements KernelModule {
     public static final Str TOKEN_STR = Str.of("Token");
     public static final Ident TOKEN_IDENT = Ident.create(TOKEN_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private TokenMod() {
+        namesake = new TokenCls();
         exports = Rec.completeRecBuilder()
-            .addField(Str.of(TOKEN_IDENT.name), TokenCls.SINGLETON)
+            .addField(Str.of(TOKEN_IDENT.name), namesake)
             .build();
-    }
-
-    public static Complete tokenCls() {
-        return singleton().exports.findValue(TOKEN_STR);
     }
 
     public static TokenMod singleton() {
@@ -47,13 +45,17 @@ public final class TokenMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final TokenMod SINGLETON = new TokenMod();
     }
 
     static final class TokenCls implements CompleteObj {
 
-        private static final TokenCls SINGLETON = new TokenCls();
         private static final CompleteProc TOKEN_CLS_NEW = TokenMod::clsNew;
 
         private TokenCls() {
@@ -61,7 +63,7 @@ public final class TokenMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return TOKEN_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

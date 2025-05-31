@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public interface StrType extends IdentAsType, ScalarType, LabelType {
+public interface StrType extends IdentAsType, ScalarType {
 
     String NAME = "Str";
     Ident IDENT = Ident.create(NAME);

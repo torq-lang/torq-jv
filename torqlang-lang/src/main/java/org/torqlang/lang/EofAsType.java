@@ -11,7 +11,9 @@ import org.torqlang.klvm.Eof;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class EofAsType extends AbstractLang implements EofType, ScalarAsType {
+public final class EofAsType extends AbstractLang implements EofType, LabelAsType {
+
+    public static final EofAsType SINGLETON = new EofAsType(SourceSpan.emptySourceSpan());
 
     public EofAsType(SourceSpan sourceSpan) {
         super(sourceSpan);

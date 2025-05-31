@@ -554,6 +554,12 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
+    public final Void visitObjType(ObjType lang, Consumer<Lang> state) {
+        state.accept(lang);
+        return null;
+    }
+
+    @Override
     public final Void visitOrExpr(OrExpr lang, Consumer<Lang> state) throws Exception {
         lang.arg1.accept(this, state);
         lang.arg2.accept(this, state);

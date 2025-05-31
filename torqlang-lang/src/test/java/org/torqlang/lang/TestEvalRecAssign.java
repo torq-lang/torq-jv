@@ -24,7 +24,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.recCls()))
+            .addVar(RecMod.REC_IDENT, new Var(RecMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -52,7 +52,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.recCls()))
+            .addVar(RecMod.REC_IDENT, new Var(RecMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -81,7 +81,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.recCls()))
+            .addVar(RecMod.REC_IDENT, new Var(RecMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -110,7 +110,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.recCls()))
+            .addVar(RecMod.REC_IDENT, new Var(RecMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -139,7 +139,7 @@ public class TestEvalRecAssign {
                 Rec.assign(r1, r2, x)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.recCls()))
+            .addVar(RecMod.REC_IDENT, new Var(RecMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -170,7 +170,7 @@ public class TestEvalRecAssign {
                 x = Rec.assign(r1, r2)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(RecMod.REC_IDENT, new Var(RecMod.recCls()))
+            .addVar(RecMod.REC_IDENT, new Var(RecMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();

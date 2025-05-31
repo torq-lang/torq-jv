@@ -14,16 +14,14 @@ public final class ValueIterMod implements KernelModule {
     public static final Str VALUE_ITER_STR = Str.of("ValueIter");
     public static final Ident VALUE_ITER_IDENT = Ident.create(VALUE_ITER_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private ValueIterMod() {
+        namesake = new ValueIterCls();
         exports = Rec.completeRecBuilder()
-            .addField(VALUE_ITER_STR, ValueIterCls.SINGLETON)
+            .addField(VALUE_ITER_STR, namesake)
             .build();
-    }
-
-    public static Complete valueIterCls() {
-        return ValueIterCls.SINGLETON;
     }
 
     public static ValueIterMod singleton() {
@@ -50,12 +48,17 @@ public final class ValueIterMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final ValueIterMod SINGLETON = new ValueIterMod();
     }
 
     static final class ValueIterCls implements CompleteObj {
-        private static final ValueIterCls SINGLETON = new ValueIterCls();
+
         private static final CompleteProc VALUE_ITER_CLS_NEW = ValueIterMod::clsNew;
 
         private ValueIterCls() {
@@ -63,7 +66,7 @@ public final class ValueIterMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return VALUE_ITER_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

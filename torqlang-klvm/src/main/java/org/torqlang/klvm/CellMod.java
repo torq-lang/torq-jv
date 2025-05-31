@@ -14,16 +14,14 @@ public final class CellMod implements KernelModule {
     public static final Str CELL_STR = Str.of("Cell");
     public static final Ident CELL_IDENT = Ident.create(CELL_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private CellMod() {
+        namesake = new CellCls();
         exports = Rec.completeRecBuilder()
-            .addField(CELL_STR, CellCls.SINGLETON)
+            .addField(CELL_STR, namesake)
             .build();
-    }
-
-    public static Complete cellCls() {
-        return CellCls.SINGLETON;
     }
 
     public static CellMod singleton() {
@@ -48,8 +46,13 @@ public final class CellMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     static final class CellCls implements CompleteObj {
-        private static final CellCls SINGLETON = new CellCls();
+
         private static final CompleteProc CELL_CLS_NEW = CellMod::clsNew;
 
         private CellCls() {
@@ -57,7 +60,7 @@ public final class CellMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return CELL_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

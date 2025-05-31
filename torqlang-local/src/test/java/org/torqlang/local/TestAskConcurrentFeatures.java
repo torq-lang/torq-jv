@@ -88,7 +88,7 @@ public class TestAskConcurrentFeatures {
                         $create_tuple('handlers'#[$v0, $v6], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('ConcurrentFeatures'#{'new': $actor_ctor}, ConcurrentFeatures)
+                $create_rec('ConcurrentFeatures'#{'$new': $actor_ctor}, ConcurrentFeatures)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

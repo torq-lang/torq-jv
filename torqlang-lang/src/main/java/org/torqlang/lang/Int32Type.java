@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public interface Int32Type extends IdentAsType, NumType, FeatureType {
+public interface Int32Type extends IdentAsType, NumType {
 
     String NAME = "Int32";
     Ident IDENT = Ident.create(NAME);

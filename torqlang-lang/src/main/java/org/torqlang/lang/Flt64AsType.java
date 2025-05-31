@@ -26,6 +26,14 @@ public final class Flt64AsType extends AbstractLang implements Flt64Type, NumAsT
         this.fltText = fltText;
     }
 
+    public static Flt64AsType create(Flt64 flt64) {
+        return new Flt64AsType(flt64, SourceSpan.emptySourceSpan());
+    }
+
+    public static Flt64AsType create(String fltText) {
+        return new Flt64AsType(fltText, SourceSpan.emptySourceSpan());
+    }
+
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception

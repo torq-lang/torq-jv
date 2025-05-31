@@ -11,13 +11,17 @@ import org.torqlang.klvm.Bool;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public final class BoolAsType extends AbstractLang implements BoolType, ScalarAsType {
+public final class BoolAsType extends AbstractLang implements BoolType, LabelAsType {
 
     public final Bool bool;
 
     public BoolAsType(Bool bool, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.bool = bool;
+    }
+
+    public static BoolAsType create(Bool bool) {
+        return new BoolAsType(bool, SourceSpan.emptySourceSpan());
     }
 
     @Override

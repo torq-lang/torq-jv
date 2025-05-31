@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Feature;
 import org.torqlang.klvm.FeatureComparator;
 import org.torqlang.util.SourceSpan;
 
@@ -16,25 +15,29 @@ import java.util.List;
 
 public final class FieldType extends AbstractLang {
 
-    public final FeatureType feature;
+    public final FeatureAsType feature;
     public final Type value;
 
-    public FieldType(FeatureType feature, Type value, SourceSpan sourceSpan) {
+    public FieldType(FeatureAsType feature, Type value, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.feature = feature;
         this.value = value;
     }
 
-    static List<FieldType> nullSafeSort(List<FieldType> fields) {
+    public static FieldType create(FeatureAsType feature, Type value) {
+        return new FieldType(feature, value, SourceSpan.emptySourceSpan());
+    }
+
+    public static int compareFeatures(FieldType a, FieldType b) {
+        return FeatureComparator.SINGLETON.compare(a.feature.typeValue(), b.feature.typeValue());
+    }
+
+    public static List<FieldType> nullSafeSort(List<FieldType> fields) {
         if (fields == null) {
             return List.of();
         }
         ArrayList<FieldType> answer = new ArrayList<>(fields);
-        answer.sort((a, b) -> {
-            ScalarAsType at = (ScalarAsType) a.feature;
-            ScalarAsType bt = (ScalarAsType) b.feature;
-            return FeatureComparator.SINGLETON.compare((Feature) at.typeValue(), (Feature) bt.typeValue());
-        });
+        answer.sort(FieldType::compareFeatures);
         return answer;
     }
 

@@ -27,6 +27,14 @@ public final class TypeApply extends AbstractLang implements Type {
         this.typeArgs = nullSafeCopyOf(typeArgs);
     }
 
+    public static TypeApply arrayOf(Type elementType) {
+        return TypeApply.create(Type.fromIdent(ArrayType.IDENT), List.of(elementType));
+    }
+
+    public static TypeApply create(IdentAsType name, List<? extends Type> typeArgs) {
+        return new TypeApply(name, typeArgs, SourceSpan.emptySourceSpan());
+    }
+
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception

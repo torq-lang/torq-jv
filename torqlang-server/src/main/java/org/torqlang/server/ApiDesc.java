@@ -13,13 +13,12 @@ import org.eclipse.jetty.util.Fields;
 import org.torqlang.klvm.Complete;
 import org.torqlang.klvm.CompleteRec;
 import org.torqlang.klvm.CompleteTuple;
-import org.torqlang.local.RecDesc;
-import org.torqlang.local.TupleDesc;
-import org.torqlang.local.ValueDesc;
+import org.torqlang.lang.RecType;
+import org.torqlang.lang.TupleType;
+import org.torqlang.lang.Type;
 
 /*
- * An API description bundles several value descriptions with behavior for transforming HTTP text to and from kernel
- * values.
+ * An API description bundles together types and methods for transforming HTTP text to and from kernel values.
  */
 public interface ApiDesc {
 
@@ -27,13 +26,13 @@ public interface ApiDesc {
         return new ApiDescBuilder();
     }
 
-    ValueDesc inputDesc();
+    Type inputType();
 
-    ValueDesc outputDesc();
+    Type outputType();
 
-    TupleDesc pathDesc();
+    TupleType pathType();
 
-    RecDesc queryDesc();
+    RecType queryType();
 
     CompleteRec toContextRec(Request request);
 

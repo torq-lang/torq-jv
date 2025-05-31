@@ -14,16 +14,14 @@ final class StringBuilderMod implements KernelModule {
     public static final Str STRING_BUILDER_STR = Str.of("StringBuilder");
     public static final Ident STRING_BUILDER_IDENT = Ident.create(STRING_BUILDER_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private StringBuilderMod() {
+        namesake = new StringBuilderCls();
         exports = Rec.completeRecBuilder()
-            .addField(STRING_BUILDER_STR, StringBuilderCls.SINGLETON)
+            .addField(STRING_BUILDER_STR, namesake)
             .build();
-    }
-
-    public static StringBuilderCls stringBuilderCls() {
-        return StringBuilderCls.SINGLETON;
     }
 
     public static StringBuilderMod singleton() {
@@ -35,12 +33,16 @@ final class StringBuilderMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final StringBuilderMod SINGLETON = new StringBuilderMod();
     }
 
     static final class StringBuilderCls implements CompleteObj {
-        private static final StringBuilderCls SINGLETON = new StringBuilderCls();
 
         private StringBuilderCls() {
         }

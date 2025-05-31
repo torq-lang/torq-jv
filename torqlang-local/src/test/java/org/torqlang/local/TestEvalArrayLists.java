@@ -27,13 +27,13 @@ public class TestEvalArrayLists {
                 x.add(1)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.arrayListCls()))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
-            $select_apply(ArrayList, ['new'], x)
+            $select_apply(ArrayList, ['$new'], x)
             $select_apply(x, ['add'], 3)
             $select_apply(x, ['add'], 2)
             $select_apply(x, ['add'], 1)""";
@@ -58,13 +58,13 @@ public class TestEvalArrayLists {
                 x.add(0)
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.arrayListCls()))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
-            $select_apply(ArrayList, ['new'], x)
+            $select_apply(ArrayList, ['$new'], x)
             $select_apply(x, ['add'], 3)
             $select_apply(x, ['add'], 2)
             $select_apply(x, ['add'], 1)
@@ -86,7 +86,7 @@ public class TestEvalArrayLists {
                 x = b.to_array()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.arrayListCls()))
+            .addVar(ArrayListMod.ARRAY_LIST_IDENT, new Var(ArrayListMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
@@ -94,7 +94,7 @@ public class TestEvalArrayLists {
         String expected = """
             local a, b in
                 $bind([3, 2, 1], a)
-                $select_apply(ArrayList, ['new'], a, b)
+                $select_apply(ArrayList, ['$new'], a, b)
                 $select_apply(b, ['to_array'], x)
             end""";
         assertEquals(expected, e.kernel().toString());

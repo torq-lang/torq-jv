@@ -44,9 +44,12 @@ public final class NorthwindServer {
         } catch (Exception e) {
             String message;
             if (e instanceof ErrorWithSourceSpan errorWithSourceSpan) {
-                message = "Failed to parse source\n" + errorWithSourceSpan.formatWithSource(5, 50, 50);
+                message = "Failed to parse source\n" +
+                    errorWithSourceSpan.formatWithSource(5, 50, 50) +
+                    GetStackTrace.apply(e, true);
             } else {
-                message = "Failed to start server\n" + GetStackTrace.apply(e, true);
+                message = "Failed to start server\n" +
+                    GetStackTrace.apply(e, true);
             }
             System.err.println(message);
             System.exit(-1);
@@ -75,7 +78,7 @@ public final class NorthwindServer {
         LocalServer server = LocalServer.builder()
             .setPort(8080)
             .addContextHandler(new EchoHandler(), "/echo")
-            .addContextHandler(NorthwindHandlerFactoryForModules.createApiHandler(), "/api")
+            .addContextHandler(NorthwindHandlerFactoryForActors.createApiHandler(), "/api")
             .build();
         server.start();
         server.join();

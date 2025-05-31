@@ -1,0 +1,101 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Value Schema",
+    "version": "1.0"
+  },
+  "paths": {
+  },
+  "components": {
+    "schemas": {
+      "Value": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Decimal"
+          },
+          {
+            "$ref": "#/components/schemas/BigInteger"
+          },
+          {
+            "$ref": "#/components/schemas/Boolean"
+          },
+          {
+            "$ref": "#/components/schemas/Date"
+          },
+          {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          {
+            "$ref": "#/components/schemas/Double"
+          },
+          {
+            "$ref": "#/components/schemas/Eof"
+          },
+          {
+            "$ref": "#/components/schemas/Float"
+          },
+          {
+            "$ref": "#/components/schemas/Integer"
+          },
+          {
+            "$ref": "#/components/schemas/Long"
+          },
+          {
+            "$ref": "#/components/schemas/String"
+          },
+          {
+            "$ref": "#/components/schemas/Time"
+          }
+        ]
+      },
+      "Decimal": {
+        "type": "string",
+        "format": "decimal"
+      },
+      "BigInteger": {
+        "type": "string",
+        "format": "big-integer"
+      },
+      "Boolean": {
+        "type": "boolean"
+      },
+      "Date": {
+        "type": "string",
+        "format": "date"
+      },
+      "DateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "Double": {
+        "type": "number",
+        "format": "double"
+      },
+      "Eof": {
+        "type": "string",
+        "enum": [
+          "com.torqlang.klvm.Eof.CAFE0E0F"
+        ]
+      },
+      "Float": {
+        "type": "number",
+        "format": "float"
+      },
+      "Integer": {
+        "type": "number",
+        "format": "int32"
+      },
+      "Long": {
+        "type": "number",
+        "format": "int64"
+      },
+      "String": {
+        "type": "string"
+      },
+      "Time": {
+        "type": "string",
+        "format": "time"
+      }
+    }
+  }
+}

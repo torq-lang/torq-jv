@@ -14,9 +14,11 @@ public final class StrMod implements KernelModule {
     public static final Str STR_STR = Str.of("Str");
     public static final Ident STR_IDENT = Ident.create(STR_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private StrMod() {
+        namesake = new StrCls();
         exports = Rec.completeRecBuilder()
             .build();
     }
@@ -52,8 +54,29 @@ public final class StrMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final StrMod SINGLETON = new StrMod();
+    }
+
+    static final class StrCls implements CompleteObj {
+
+        private StrCls() {
+        }
+
+        @Override
+        public final Value select(Feature feature) {
+            throw new FeatureNotFoundError(this, feature);
+        }
+
+        @Override
+        public final String toString() {
+            return toKernelString();
+        }
     }
 
 }

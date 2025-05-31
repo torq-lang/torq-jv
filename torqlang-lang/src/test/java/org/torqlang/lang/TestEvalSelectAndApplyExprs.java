@@ -153,7 +153,7 @@ public class TestEvalSelectAndApplyExprs {
             local r in
                 local $v0 in
                     local $v1 in
-                        $select_apply(SomeActor, ['new'], 1, 'two', $v1)
+                        $select_apply(SomeActor, ['$new'], 1, 'two', $v1)
                         some_proc($v1, $v0)
                     end
                     $select_apply(SomeObj, ['method'], $v0, r)

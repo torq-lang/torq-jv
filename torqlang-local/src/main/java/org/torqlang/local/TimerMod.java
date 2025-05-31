@@ -31,16 +31,14 @@ final class TimerMod implements KernelModule {
 
     private static final int TIMER_CTOR_ARG_COUNT = 3;
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private TimerMod() {
+        namesake = new TimerCls();
         exports = Rec.completeRecBuilder()
-            .addField(TIMER_STR, TimerCls.SINGLETON)
+            .addField(TIMER_STR, namesake)
             .build();
-    }
-
-    public static TimerCls timerCls() {
-        return TimerCls.SINGLETON;
     }
 
     public static TimerMod singleton() {
@@ -60,6 +58,11 @@ final class TimerMod implements KernelModule {
     @Override
     public final CompleteRec exports() {
         return exports;
+    }
+
+    @Override
+    public final Complete namesake() {
+        return namesake;
     }
 
     private static final class LazySingleton {
@@ -205,7 +208,7 @@ final class TimerMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return TIMER_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

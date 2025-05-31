@@ -11,13 +11,17 @@ import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Int32;
 import org.torqlang.util.SourceSpan;
 
-public final class Int32AsType extends AbstractLang implements Int32Type, NumAsType {
+public final class Int32AsType extends AbstractLang implements Int32Type, NumAsType, FeatureAsType {
 
     public final Int32 int32;
 
     public Int32AsType(Int32 int32, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.int32 = int32;
+    }
+
+    public static Int32AsType create(Int32 int32) {
+        return new Int32AsType(int32, SourceSpan.emptySourceSpan());
     }
 
     @Override

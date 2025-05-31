@@ -10,7 +10,7 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
-public interface EofType extends IdentAsType, ScalarType, LabelType {
+public interface EofType extends IdentAsType, ScalarType {
 
     String NAME = "Eof";
     Ident IDENT = Ident.create(NAME);

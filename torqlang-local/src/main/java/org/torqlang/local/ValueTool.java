@@ -7,6 +7,10 @@
 
 package org.torqlang.local;
 
-public final class BoolDesc implements ScalarDesc {
-    public static final BoolDesc BASIC = new BoolDesc();
+import org.torqlang.klvm.Complete;
+
+public interface ValueTool {
+    Object toNativeValue(Complete value);
+
+    Complete toKernelValue(Object value);
 }

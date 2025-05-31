@@ -25,12 +25,12 @@ public class TestEvalTokens {
                 x = new Token()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(TokenMod.TOKEN_IDENT, new Var(TokenMod.tokenCls()))
+            .addVar(TokenMod.TOKEN_IDENT, new Var(TokenMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .setSource(source)
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
-        String expected = "$select_apply(Token, ['new'], x)";
+        String expected = "$select_apply(Token, ['$new'], x)";
         assertEquals(expected, e.kernel().toString());
         assertInstanceOf(Token.class, e.varAtName("x").valueOrVarSet());
     }

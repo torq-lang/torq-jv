@@ -18,8 +18,8 @@ public final class DefaultPackages {
 
     private DefaultPackages() {
         Map<String, CompleteRec> workingMap = new HashMap<>();
-        workingMap.put(SystemLangPackage.singleton().path(), SystemLangPackage.singleton().packageRec());
-        workingMap.put(SystemUtilPackage.singleton().path(), SystemUtilPackage.singleton().packageRec());
+        workingMap.put(SystemLangPackage.singleton().path(), SystemLangPackage.singleton().members());
+        workingMap.put(SystemUtilPackage.singleton().path(), SystemUtilPackage.singleton().members());
         this.packagesByPath = Map.copyOf(workingMap);
     }
 

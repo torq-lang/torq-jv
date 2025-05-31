@@ -35,8 +35,8 @@ public class TestEof {
         Map<Value, String> hm = new HashMap<>();
         hm.put(Eof.SINGLETON, "eof");
         assertEquals(1, hm.size());
-        assertEquals(hm.get(Eof.SINGLETON), "eof");
-        assertEquals(hm.remove(Eof.SINGLETON), "eof");
+        assertEquals("eof", hm.get(Eof.SINGLETON));
+        assertEquals("eof", hm.remove(Eof.SINGLETON));
         assertEquals(0, hm.size());
     }
 
@@ -62,7 +62,7 @@ public class TestEof {
     public void testToValues() {
         assertEquals("eof", Eof.SINGLETON.toString());
         assertEquals("eof", Eof.SINGLETON.formatValue());
-        assertEquals("org.torqlang.klvm.Eof.CAFE0F0E", Eof.SINGLETON.toNativeValue());
+        assertEquals("org.torqlang.klvm.Eof.CAFE0E0F", Eof.SINGLETON.toNativeValue());
         assertEquals("eof", Eof.SINGLETON.toKernelString());
     }
 

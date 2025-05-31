@@ -13,10 +13,7 @@ import org.torqlang.util.FileType;
 import org.torqlang.util.SourceFileBroker;
 import org.torqlang.util.SourceString;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -41,9 +38,9 @@ import static org.torqlang.util.ListTools.nullSafeCopyOf;
  */
 public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, TorqCompilerCollected, TorqCompilerCompiled, TorqCompilerBundled {
 
-    private final Map<String, Module> modules = new HashMap<>();
-    private final Map<String, List<Module>> imports = new HashMap<>();
-    private final Map<String, List<String>> exports = new HashMap<>();
+    private final Map<String, ModuleDetails> modulesByAbsolutePath = new HashMap<>();
+    private final Map<String, List<ModuleDetails>> importsByQualifiedName = new HashMap<>();
+    private final Map<String, LangExport> exportsByQualifiedName = new HashMap<>();
     private State state = State.READY;
     private List<SourceFileBroker> workspace;
     private Consumer<String> messageListener;
@@ -56,7 +53,7 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
     }
 
     @Override
-    public final TorqCompilerBundled bundle() throws Exception {
+    public final TorqCompilerBundled bundle() {
         if (state != State.COMPILED) {
             throw new IllegalStateException("Cannot parse at state: " + state);
         }
@@ -67,7 +64,7 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         return this;
     }
 
-    private ExportDetails checkForExport(Lang lang) {
+    private ExportResult checkForExport(Lang lang) {
         if (lang.metaStruct() == null) {
             return null;
         }
@@ -75,21 +72,21 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         if (metaStruct instanceof MetaTuple metaTuple) {
             for (MetaValue v : metaTuple.values()) {
                 if (isExportValue(v)) {
-                    return new ExportDetails(null);
+                    return new ExportResult(lang, null);
                 }
             }
         } else if (metaStruct instanceof MetaRec metaRec) {
             for (MetaField metaField : metaRec.fields()) {
                 // Handle the case where an export is a simple tag: meta#{'export'}
                 if (metaField.feature instanceof Int64AsExpr && isExportValue(metaField.value)) {
-                    return new ExportDetails(null);
+                    return new ExportResult(lang, null);
                 } else if (metaField.feature instanceof MetaValue metaValue && isExportValue(metaValue)) {
                     // Handle the case where an export is a feature-value pair: meta#{'export': true} or  meta#{'export': 'stereotype'}
                     if (metaField.value instanceof StrAsExpr stereotype) {
-                        return new ExportDetails(stereotype.str.value);
+                        return new ExportResult(lang, stereotype.str.value);
                     } else if (metaField.value instanceof BoolAsExpr boolAsExpr) {
                         if (boolAsExpr.bool.value) {
-                            return new ExportDetails(null);
+                            return new ExportResult(lang, null);
                         } else {
                             return null;
                         }
@@ -112,16 +109,16 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
             throw new IllegalStateException("Cannot parse at state: " + state);
         }
         notifyMessageListener("Collecting imports and exports from each parsed module");
-        for (Module module : modules.values()) {
+        for (ModuleDetails module : modulesByAbsolutePath.values()) {
             String qualifier = formatFileNamesAsPath(module.absolutePath);
             notifyMessageListener("Collecting from " + qualifier);
             LangConsumer.consume(module.moduleStmt(), lang -> {
                 if (lang instanceof ImportStmt importStmt) {
                     collectImports(importStmt, module);
                 }
-                ExportDetails details = checkForExport(lang);
-                if (details != null) {
-                    collectExport(lang, module, details);
+                ExportResult langExport = checkForExport(lang);
+                if (langExport != null) {
+                    collectExport(langExport, module);
                 }
             });
         }
@@ -133,12 +130,44 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         return this;
     }
 
-    private void collectImports(ImportStmt importStmt, Module module) {
+    /*
+     * Cross-reference each qualified export with the module that supplies the export.
+     */
+    private void collectExport(ExportResult exportResult, ModuleDetails module) {
+        String formattedQualifier = formatFileNamesAsQualifier(module.torqPackage);
+        LangExport langExport;
+        if (exportResult.lang instanceof ActorStmt actorStmt) {
+            langExport = new ActorExport(actorStmt, exportResult.stereotype, module);
+        } else if (exportResult.lang instanceof TypeStmt typeStmt) {
+            langExport = new TypeExport(typeStmt, module);
+        } else if (exportResult.lang instanceof ProtocolStmt protocolStmt) {
+            langExport = new ProtocolExport(protocolStmt, module);
+        } else {
+            if (!(exportResult.lang instanceof HandleStmt)) {
+                throw new IllegalArgumentException("Invalid export: " + exportResult.lang);
+            }
+            // At this time, we only process actor exports and not their handlers
+            langExport = null;
+        }
+        if (langExport != null) {
+            String qualifiedName = formattedQualifier + "." + langExport.name();
+            notifyMessageListener("    Collecting export: " + qualifiedName);
+            if (exportsByQualifiedName.containsKey(qualifiedName)) {
+                throw new IllegalStateException("Duplicate export name: " + qualifiedName);
+            }
+            exportsByQualifiedName.put(qualifiedName, langExport);
+        }
+    }
+
+    /*
+     * Cross-reference each qualified import with the modules that depend on the import.
+     */
+    private void collectImports(ImportStmt importStmt, ModuleDetails module) {
         String formattedQualifier = formatIdentsAsQualifier(importStmt.qualifier);
         for (ImportName in : importStmt.names) {
             String qualifiedName = formattedQualifier + "." + in.name.ident.name;
             notifyMessageListener("    Collecting import: " + qualifiedName);
-            List<Module> existing = imports.computeIfAbsent(qualifiedName, k -> new ArrayList<>());
+            List<ModuleDetails> existing = importsByQualifiedName.computeIfAbsent(qualifiedName, k -> new ArrayList<>());
             if (existing.contains(module)) {
                 throw new IllegalArgumentException("Duplicate import: " + qualifiedName);
             }
@@ -146,28 +175,7 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         }
     }
 
-    private void collectExport(Lang lang, Module module, ExportDetails details) {
-        String qualifier = formatFileNamesAsQualifier(module.torqPackage);
-        if (lang instanceof ActorStmt actorStmt) {
-            String label;
-            if (details != null) {
-                label = "(Actor as " + details.stereotype + ")";
-            } else {
-                label = "(Actor)";
-            }
-            notifyMessageListener("    Collecting export: " + label + " " + qualifier + "." + actorStmt.name);
-        } else if (lang instanceof TypeStmt typeStmt) {
-            notifyMessageListener("    Collecting export: (Type) " + qualifier + "." + typeStmt.name);
-        } else if (lang instanceof ProtocolStmt protocolStmt) {
-            notifyMessageListener("    Collecting export: (Protocol) " + qualifier + "." + protocolStmt.name);
-        } else {
-            if (!(lang instanceof HandleStmt)) {
-                throw new IllegalArgumentException("Invalid export: " + lang);
-            }
-        }
-    }
-
-    public final TorqCompilerCompiled compile() throws Exception {
+    public final TorqCompilerCompiled compile() {
         if (state != State.COLLECTED) {
             throw new IllegalStateException("Cannot compile at state: " + state);
         }
@@ -241,21 +249,23 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
             }
         } else if (file.type() == FileType.SOURCE) {
             if (isTorqSourceFile(file.value())) {
-                List<FileName> modulePath = SourceFileBroker.append(folder, file);
-                SourceString source = fileBroker.source(modulePath);
-                String absolutePathFormatted = formatFileNamesAsPath(modulePath);
+                List<FileName> absolutePath = SourceFileBroker.append(folder, file);
+                SourceString source = fileBroker.source(absolutePath);
+                String absolutePathFormatted = formatFileNamesAsPath(absolutePath);
                 notifyMessageListener("Parsing source module: " + absolutePathFormatted);
                 Parser parser = new Parser(source);
-                List<FileName> qualifiedTorqName = fileBroker.trimRoot(modulePath);
-                if (qualifiedTorqName.size() < 2) {
+                List<FileName> qualifiedTorqFile = fileBroker.trimRoot(absolutePath);
+                if (qualifiedTorqFile.size() < 2) {
                     throw new IllegalArgumentException("Missing package");
                 }
-                List<FileName> torqPackage = qualifiedTorqName.subList(0, qualifiedTorqName.size() - 1);
+                List<FileName> torqPackage = qualifiedTorqFile.subList(0, qualifiedTorqFile.size() - 1);
                 ModuleStmt moduleStmt = parser.parseModule();
                 if (!equalsPackageStmt(torqPackage, moduleStmt.packageStmt)) {
                     throw new IllegalArgumentException("Package folder does not match package statement");
                 }
-                modules.put(absolutePathFormatted, new Module(modulePath, qualifiedTorqName, torqPackage, file, moduleStmt));
+                String id = formatFileNamesAsQualifier(qualifiedTorqFile);
+                modulesByAbsolutePath.put(absolutePathFormatted,
+                    new ModuleDetails(id, absolutePath, qualifiedTorqFile, torqPackage, file, moduleStmt));
             } else {
                 notifyMessageListener("Skipping unknown file type: " + file.value());
             }
@@ -292,15 +302,63 @@ public class TorqCompiler implements TorqCompilerReady, TorqCompilerParsed, Torq
         BUNDLED,
     }
 
-    private record ExportDetails(String stereotype) {
+    private interface LangExport {
+        String name();
+        ModuleDetails module();
     }
 
-    private record Module(List<FileName> absolutePath,
-                          List<FileName> qualifiedTorqName,
-                          List<FileName> torqPackage,
-                          FileName simpleTorqName,
-                          ModuleStmt moduleStmt)
+    private record ExportResult(Lang lang, String stereotype) {
+    }
+
+    private record ActorExport(ActorStmt actorStmt, String stereotype, ModuleDetails module) implements LangExport {
+        @Override
+        public final String name() {
+            return actorStmt.name.ident.name;
+        }
+    }
+
+    private record ProtocolExport(ProtocolStmt protocolStmt, ModuleDetails module) implements LangExport {
+        @Override
+        public final String name() {
+            return protocolStmt.name.ident.name;
+        }
+    }
+
+    private record TypeExport(TypeStmt typeStmt, ModuleDetails module) implements LangExport {
+        @Override
+        public final String name() {
+            return typeStmt.name.typeIdent().name;
+        }
+    }
+
+    private record ModuleDetails(String id,
+                                 List<FileName> absolutePath,
+                                 List<FileName> qualifiedTorqFile,
+                                 List<FileName> torqPackage,
+                                 FileName torqFile,
+                                 ModuleStmt moduleStmt)
     {
+
+        @Override
+        public final boolean equals(Object other) {
+            if (other == this) return true;
+            if (other == null || other.getClass() != this.getClass()) {
+                return false;
+            }
+            var that = (ModuleDetails) other;
+            return Objects.equals(this.id, that.id);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(id);
+        }
+
+        @Override
+        public final String toString() {
+            return id;
+        }
+
     }
 
 }

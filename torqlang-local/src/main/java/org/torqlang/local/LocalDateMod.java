@@ -8,8 +8,14 @@
 package org.torqlang.local;
 
 import org.torqlang.klvm.*;
+import org.torqlang.lang.AbstractObjType;
+import org.torqlang.lang.Type;
+import org.torqlang.util.NeedsImpl;
+import org.torqlang.util.SourceSpan;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -18,24 +24,27 @@ final class LocalDateMod implements KernelModule {
     public static final Str LOCAL_DATE_STR = Str.of("LocalDate");
     public static final Ident LOCAL_DATE_IDENT = Ident.create(LOCAL_DATE_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private LocalDateMod() {
+        namesake = new LocalDateCls();
         exports = Rec.completeRecBuilder()
-            .addField(LOCAL_DATE_STR, LocalDateCls.SINGLETON)
+            .addField(LOCAL_DATE_STR, namesake)
             .build();
     }
 
-    public static Complete localDateCls() {
-        return LocalDateCls.SINGLETON;
+    public static LocalDateObj createObj(LocalDate date) {
+        return new LocalDateObj(date);
+    }
+
+    // TODO: Make this a $TYPE feature on LocalDateCls
+    public static Type localDateType() {
+        return LocalDateType.SINGLETON;
     }
 
     public static LocalDateMod singleton() {
         return LazySingleton.SINGLETON;
-    }
-
-    static LocalDateObj newObj(LocalDate date) {
-        return new LocalDateObj(date);
     }
 
     // Signatures:
@@ -56,12 +65,17 @@ final class LocalDateMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final LocalDateMod SINGLETON = new LocalDateMod();
     }
 
     static final class LocalDateCls implements CompleteObj {
-        private static final LocalDateCls SINGLETON = new LocalDateCls();
+
         private static final CompleteProc LOCAL_DATE_CLS_PARSE = LocalDateMod::clsParse;
 
         private LocalDateCls() {
@@ -142,6 +156,43 @@ final class LocalDateMod implements KernelModule {
         @Override
         public final String toString() {
             return toKernelString();
+        }
+    }
+
+    private static final class LocalDateType extends AbstractObjType implements ValueTool {
+
+        private static final LocalDateType SINGLETON = new LocalDateType(SourceSpan.emptySourceSpan());
+
+        public LocalDateType(SourceSpan sourceSpan) {
+            super(sourceSpan);
+        }
+
+        @Override
+        public final Object toNativeValue(Complete value) {
+            throw new NeedsImpl();
+        }
+
+        @Override
+        public final Complete toKernelValue(Object value) {
+            LocalDate localDate;
+            if (value instanceof String string) {
+                if (string.length() > 10) {
+                    LocalDateTime localDateTime = DateTimeFormatter.ISO_DATE_TIME.parse(string, LocalDateTime::from);
+                    localDate = localDateTime.toLocalDate();
+                } else {
+                    localDate = DateTimeFormatter.ISO_DATE.parse(string, LocalDate::from);
+                }
+            } else if (value instanceof LocalDate localDateFound) {
+                localDate = localDateFound;
+            } else {
+                throw new IllegalArgumentException("Cannot convert value to LocalDate: " + value);
+            }
+            return LocalDateMod.createObj(localDate);
+        }
+
+        @Override
+        public final Ident typeIdent() {
+            return LOCAL_DATE_IDENT;
         }
     }
 

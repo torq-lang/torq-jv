@@ -20,6 +20,10 @@ public final class Dec128AsType extends AbstractLang implements Dec128Type, NumA
         this.dec128 = dec128;
     }
 
+    public static Dec128AsType create(Dec128 dec128) {
+        return new Dec128AsType(dec128, SourceSpan.emptySourceSpan());
+    }
+
     @Override
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception

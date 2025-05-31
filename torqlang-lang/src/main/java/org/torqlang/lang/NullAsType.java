@@ -11,7 +11,9 @@ import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Null;
 import org.torqlang.util.SourceSpan;
 
-public final class NullAsType extends AbstractLang implements NullType, ScalarAsType {
+public final class NullAsType extends AbstractLang implements NullType, LabelAsType {
+
+    public static final NullAsType SINGLETON = new NullAsType(SourceSpan.emptySourceSpan());
 
     public NullAsType(SourceSpan sourceSpan) {
         super(sourceSpan);

@@ -57,17 +57,17 @@ public class TestAskIterateTimerTicks {
                                 end, $else)
                                 case $m of 'iterate' then
                                     local $v3, tick_count, timer_stream in
-                                        $select_apply(Cell, ['new'], 0, tick_count)
+                                        $select_apply(Cell, ['$new'], 0, tick_count)
                                         local $v4, $v6 in
                                             local $v5 in
-                                                $select_apply(Timer, ['new'], 1, 'microseconds', $v5)
+                                                $select_apply(Timer, ['$new'], 1, 'microseconds', $v5)
                                                 $spawn($v5, $v4)
                                             end
                                             $bind('request'#{'ticks': 5}, $v6)
-                                            $select_apply(Stream, ['new'], $v4, $v6, timer_stream)
+                                            $select_apply(Stream, ['$new'], $v4, $v6, timer_stream)
                                         end
                                         local $iter, $for in
-                                            $select_apply(ValueIter, ['new'], timer_stream, $iter)
+                                            $select_apply(ValueIter, ['$new'], timer_stream, $iter)
                                             $create_proc(proc () in // free vars: $for, $iter, tick_count
                                                 local tick, $v7 in
                                                     $iter(tick)
@@ -106,7 +106,7 @@ public class TestAskIterateTimerTicks {
                         $create_tuple('handlers'#[$v0, $v10], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('IterateTimerTicks'#{'new': $actor_ctor}, IterateTimerTicks)
+                $create_rec('IterateTimerTicks'#{'$new': $actor_ctor}, IterateTimerTicks)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

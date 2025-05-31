@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /*
- * Complete records (and tuples) are valid keys for Java hash maps.
+ * Complete structures are valid keys for Java hash maps.
  */
 public interface CompleteRec extends Complete, Rec {
 
@@ -31,7 +31,7 @@ public interface CompleteRec extends Complete, Rec {
 
     /*
      * Return true if the other object is complete and this object entails the other object. Native objects, such as
-     * Java hash maps, must utilize checkComplete() and isValidKey() before using Torqlang values as keys.
+     * Java hash maps, must utilize checkComplete() and isValidKey() before using Torq values as keys.
      */
     default boolean equalsComplete(Object other) {
         if (!(other instanceof Complete complete)) {
@@ -96,7 +96,7 @@ public interface CompleteRec extends Complete, Rec {
             memos = new IdentityHashMap<>();
         }
         memos.put(this, Value.PRESENT);
-        Map<Object, Object> map = new HashMap<>(fieldCount());
+        Map<Object, Object> fields = new HashMap<>(fieldCount());
         for (int i = 0; i < fieldCount(); i++) {
             CompleteField f = fieldAt(i);
             Object k = f.feature.toNativeValue();
@@ -106,12 +106,12 @@ public interface CompleteRec extends Complete, Rec {
             } else {
                 v = f.value.toNativeValue();
             }
-            map.put(k, v);
+            fields.put(k, v);
         }
         if (label().equals(DEFAULT_LABEL)) {
-            return map;
+            return fields;
         }
-        return Map.of(Rec.$LABEL, label().toNativeValue(), Rec.$REC, map);
+        return Map.of(Rec.$LABEL, label().toNativeValue(), Rec.$FIELDS, fields);
     }
 
     Complete valueAt(int index);

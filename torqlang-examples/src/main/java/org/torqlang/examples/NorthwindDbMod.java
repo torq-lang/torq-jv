@@ -8,6 +8,10 @@
 package org.torqlang.examples;
 
 import org.torqlang.klvm.*;
+import org.torqlang.lang.ArrayType;
+import org.torqlang.lang.RecType;
+import org.torqlang.lang.Type;
+import org.torqlang.lang.TypeApply;
 import org.torqlang.local.*;
 
 import java.util.List;
@@ -19,20 +23,18 @@ public final class NorthwindDbMod implements KernelModule {
     public static final Str NORTHWIND_DB_STR = Str.of("NorthwindDb");
     public static final Ident NORTHWIND_DB_IDENT = Ident.create(NORTHWIND_DB_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private NorthwindDbMod() {
+        namesake = new NorthwindDbCls();
         exports = Rec.completeRecBuilder()
-            .addField(NORTHWIND_DB_STR, NorthwindDbCls.SINGLETON)
+            .addField(NORTHWIND_DB_STR, namesake)
             .build();
     }
 
     public static NorthwindDb northwindDb() {
         return NorthwindDbCls.NORTHWIND_DB;
-    }
-
-    public static NorthwindDbCls northwindDbCls() {
-        return NorthwindDbCls.SINGLETON;
     }
 
     public static Executor northwindDbExecutor() {
@@ -54,6 +56,11 @@ public final class NorthwindDbMod implements KernelModule {
     @Override
     public final CompleteRec exports() {
         return exports;
+    }
+
+    @Override
+    public final Complete namesake() {
+        return namesake;
     }
 
     private static final class LazySingleton {
@@ -107,12 +114,18 @@ public final class NorthwindDbMod implements KernelModule {
                 CompleteRec originalMessage = (CompleteRec) id.originalMessage;
                 Str entity = (Str) originalMessage.findValue(NorthwindDbCls.ENTITY_STR);
                 String entityName = entity.value;
-                RecDesc entityDesc = NorthwindDescs.NORTHWIND_DESCS_BY_ENTITY.get(entityName);
+                RecType entityType = NorthwindTypes.NORTHWIND_TYPES_BY_COLL_NAME.get(entityName);
                 Complete responseMessage;
                 if (originalMessage.label().equals(NorthwindDbCls.FIND_ALL_STR)) {
-                    responseMessage = ValueTools.toKernelValue(envelope.message(), new ArrayDesc(entityDesc));
+                    Type arrayType;
+                    if (entityType != null) {
+                        arrayType = TypeApply.arrayOf(entityType);
+                    } else {
+                        arrayType = ArrayType.SINGLETON;
+                    }
+                    responseMessage = ValueTools.toKernelValue(envelope.message(), arrayType);
                 } else if (originalMessage.label().equals(NorthwindDbCls.FIND_BY_KEY_STR)) {
-                    responseMessage = ValueTools.toKernelValue(envelope.message(), entityDesc);
+                    responseMessage = ValueTools.toKernelValue(envelope.message(), entityType);
                 } else {
                     throw new IllegalArgumentException("Invalid response:" + envelope);
                 }
@@ -164,7 +177,6 @@ public final class NorthwindDbMod implements KernelModule {
         public static final NorthwindDb NORTHWIND_DB = new NorthwindDb(Address.create("northwind_db"),
             NORTHWIND_DB_SYSTEM, 4, 0);
 
-        private static final NorthwindDbCls SINGLETON = new NorthwindDbCls();
         private static final int NORTHWIND_DB_CTOR_ARG_COUNT = 1;
         private static final CompleteProc NORTHWIND_DB_CLS_NEW = NorthwindDbMod::clsNew;
 
@@ -173,7 +185,7 @@ public final class NorthwindDbMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return NORTHWIND_DB_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

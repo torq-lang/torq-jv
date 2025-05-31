@@ -7,5 +7,30 @@
 
 package org.torqlang.lang;
 
-public interface ObjType extends CompositeType {
+import org.torqlang.klvm.Ident;
+import org.torqlang.util.SourceSpan;
+
+public interface ObjType extends CompositeType, IdentAsType {
+
+    String NAME = "Obj";
+    Ident IDENT = Ident.create(NAME);
+
+    ObjType SINGLETON = new ObjTypeImpl(SourceSpan.emptySourceSpan());
+
+    static ObjType create(SourceSpan sourceSpan) {
+        return new ObjTypeImpl(sourceSpan);
+    }
+
+}
+
+final class ObjTypeImpl extends AbstractObjType {
+
+    ObjTypeImpl(SourceSpan sourceSpan) {
+        super(sourceSpan);
+    }
+
+    @Override
+    public final Ident typeIdent() {
+        return ObjType.IDENT;
+    }
 }

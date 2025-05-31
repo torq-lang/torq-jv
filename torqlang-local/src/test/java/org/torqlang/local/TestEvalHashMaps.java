@@ -27,14 +27,14 @@ public class TestEvalHashMaps {
                 y = ['one', 'two']
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.hashMapCls()))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .setSource(source)
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
-            $select_apply(HashMap, ['new'], x)
+            $select_apply(HashMap, ['$new'], x)
             local $v0 in
                 $bind(['one', 'two'], $v0)
                 $select_apply(x, ['put'], $v0, 'My key is a record!')
@@ -58,7 +58,7 @@ public class TestEvalHashMaps {
                 x.put(a, 'My key is circular!')
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.hashMapCls()))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("a"))
             .addVar(Ident.create("b"))
@@ -68,7 +68,7 @@ public class TestEvalHashMaps {
         String expected = """
             $create_rec({'next': b}, a)
             $create_rec({'next': a}, b)
-            $select_apply(HashMap, ['new'], x)
+            $select_apply(HashMap, ['$new'], x)
             $select_apply(x, ['put'], a, 'My key is circular!')""";
         assertEquals(expected, e.kernel().toString());
         assertInstanceOf(HashMapObj.class, e.varAtName("x").valueOrVarSet());
@@ -102,8 +102,8 @@ public class TestEvalHashMaps {
                 z = value_iter()
             end""";
         EvaluatorPerformed e = Evaluator.builder()
-            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.hashMapCls()))
-            .addVar(ValueIterMod.VALUE_ITER_IDENT, new Var(ValueIterMod.valueIterCls()))
+            .addVar(HashMapMod.HASH_MAP_IDENT, new Var(HashMapMod.singleton().namesake()))
+            .addVar(ValueIterMod.VALUE_ITER_IDENT, new Var(ValueIterMod.singleton().namesake()))
             .addVar(Ident.create("x"))
             .addVar(Ident.create("y"))
             .addVar(Ident.create("z"))
@@ -112,10 +112,10 @@ public class TestEvalHashMaps {
         assertEquals(source, e.stmtOrExpr().toString());
         String expected = """
             local hm, value_iter in
-                $select_apply(HashMap, ['new'], hm)
+                $select_apply(HashMap, ['$new'], hm)
                 $select_apply(hm, ['put'], '0-key', 'Zero')
                 $select_apply(hm, ['put'], '1-key', 'One')
-                $select_apply(ValueIter, ['new'], hm, value_iter)
+                $select_apply(ValueIter, ['$new'], hm, value_iter)
                 value_iter(x)
                 value_iter(y)
                 value_iter(z)

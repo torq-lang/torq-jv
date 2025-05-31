@@ -8,6 +8,6 @@
 package org.torqlang.klvm;
 
 public interface KernelPackage {
-    CompleteRec packageRec();
+    CompleteRec members();
     String path();
 }

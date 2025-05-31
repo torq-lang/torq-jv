@@ -18,16 +18,14 @@ final class ArrayListMod implements KernelModule {
     public static final Str ARRAY_LIST_STR = Str.of("ArrayList");
     public static final Ident ARRAY_LIST_IDENT = Ident.create(ARRAY_LIST_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private ArrayListMod() {
+        namesake = new ArrayListCls();
         exports = Rec.completeRecBuilder()
-            .addField(ARRAY_LIST_STR, ArrayListCls.SINGLETON)
+            .addField(ARRAY_LIST_STR, namesake)
             .build();
-    }
-
-    public static Complete arrayListCls() {
-        return ArrayListCls.SINGLETON;
     }
 
     public static ArrayListMod singleton() {
@@ -125,8 +123,13 @@ final class ArrayListMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     static final class ArrayListCls implements CompleteObj {
-        private static final ArrayListCls SINGLETON = new ArrayListCls();
+
         private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListMod::clsNew;
 
         private ArrayListCls() {
@@ -134,7 +137,7 @@ final class ArrayListMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return ARRAY_LIST_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

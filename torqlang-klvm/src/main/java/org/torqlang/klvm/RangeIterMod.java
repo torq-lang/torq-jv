@@ -14,16 +14,14 @@ public final class RangeIterMod implements KernelModule {
     public static final Str RANGE_ITER_STR = Str.of("RangeIter");
     public static final Ident RANGE_ITER_IDENT = Ident.create(RANGE_ITER_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private RangeIterMod() {
+        namesake = new RangeIterCls();
         exports = Rec.completeRecBuilder()
-            .addField(RANGE_ITER_STR, RangeIterCls.SINGLETON)
+            .addField(RANGE_ITER_STR, namesake)
             .build();
-    }
-
-    public static Complete rangeIterCls() {
-        return RangeIterCls.SINGLETON;
     }
 
     public static RangeIterMod singleton() {
@@ -50,12 +48,17 @@ public final class RangeIterMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final RangeIterMod SINGLETON = new RangeIterMod();
     }
 
     static final class RangeIterCls implements CompleteObj {
-        private static final RangeIterCls SINGLETON = new RangeIterCls();
+
         private static final CompleteProc RANGE_ITER_CLS_NEW = RangeIterMod::clsNew;
 
         private RangeIterCls() {
@@ -63,7 +66,7 @@ public final class RangeIterMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return RANGE_ITER_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

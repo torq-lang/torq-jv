@@ -1014,6 +1014,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
+    public final TypeSubst visitObjType(ObjType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final TypeSubst visitOrExpr(OrExpr lang, TypeScope scope) {
         throw new NeedsImpl();
     }

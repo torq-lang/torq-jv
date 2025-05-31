@@ -16,16 +16,14 @@ final class HashMapMod implements KernelModule {
     public static final Str HASH_MAP_STR = Str.of("HashMap");
     public static final Ident HASH_MAP_IDENT = Ident.create(HASH_MAP_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private HashMapMod() {
+        namesake = new HashMapCls();
         exports = Rec.completeRecBuilder()
-            .addField(HASH_MAP_STR, HashMapCls.SINGLETON)
+            .addField(HASH_MAP_STR, namesake)
             .build();
-    }
-
-    public static Complete hashMapCls() {
-        return HashMapCls.SINGLETON;
     }
 
     public static HashMapMod singleton() {
@@ -86,8 +84,13 @@ final class HashMapMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     static final class HashMapCls implements CompleteObj {
-        private static final HashMapCls SINGLETON = new HashMapCls();
+
         private static final CompleteProc HASH_MAP_CLS_NEW = HashMapMod::clsNew;
 
         private HashMapCls() {
@@ -95,7 +98,7 @@ final class HashMapMod implements KernelModule {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return HASH_MAP_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

@@ -14,16 +14,14 @@ public final class RecMod implements KernelModule {
     public static final Str REC_STR = Str.of("Rec");
     public static final Ident REC_IDENT = Ident.create(REC_STR.value);
 
+    private final Complete namesake;
     private final CompleteRec exports;
 
     private RecMod() {
+        namesake = new RecCls();
         exports = Rec.completeRecBuilder()
-            .addField(REC_STR, RecCls.SINGLETON)
+            .addField(REC_STR, namesake)
             .build();
-    }
-
-    public static Complete recCls() {
-        return RecCls.SINGLETON;
     }
 
     public static RecMod singleton() {
@@ -83,13 +81,16 @@ public final class RecMod implements KernelModule {
         return exports;
     }
 
+    @Override
+    public final Complete namesake() {
+        return namesake;
+    }
+
     private static final class LazySingleton {
         private static final RecMod SINGLETON = new RecMod();
     }
 
     private static final class RecCls implements CompleteObj {
-
-        private static final RecCls SINGLETON = new RecCls();
 
         private static final ObjProcTable<RecCls> clsProcTable = ObjProcTable.<RecCls>builder()
             .addEntry(CommonFeatures.ASSIGN, RecMod::clsAssign)

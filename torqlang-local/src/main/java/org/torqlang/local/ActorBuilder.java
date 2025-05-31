@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.torqlang.klvm.CommonFeatures.$NEW;
+
 /*
  * Note that as we progress in the builder process, we gain access to properties while loosing access to methods.
  *
@@ -191,7 +193,7 @@ public final class ActorBuilder implements ActorBuilderInit, ActorBuilderReady, 
             throw new IllegalStateException("Cannot configure at state: " + state);
         }
         // The actor record will contain values (not vars). Therefore, we can access the ActorCtor directly.
-        ActorCtor actorCtor = (ActorCtor) actorRec.findValue(Actor.NEW);
+        ActorCtor actorCtor = (ActorCtor) actorRec.findValue($NEW);
         Env env = Env.create(LocalActor.rootEnv(),
             List.of(
                 new EnvEntry(Ident.$ACTOR_CTOR, new Var(actorCtor)),

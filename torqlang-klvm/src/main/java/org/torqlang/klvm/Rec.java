@@ -22,7 +22,7 @@ public interface Rec extends Composite, FieldIterSource, ValueIterSource {
     Null DEFAULT_LABEL = Null.SINGLETON;
 
     String $LABEL = "$label";
-    String $REC = "$rec";
+    String $FIELDS = "$fields";
 
     static CompleteRecBuilder completeRecBuilder() {
         return new CompleteRecBuilder();

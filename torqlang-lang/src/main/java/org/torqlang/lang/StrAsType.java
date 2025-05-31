@@ -11,13 +11,17 @@ import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Str;
 import org.torqlang.util.SourceSpan;
 
-public final class StrAsType extends AbstractLang implements StrType, ScalarAsType {
+public final class StrAsType extends AbstractLang implements StrType, LabelAsType {
 
     public final Str str;
 
     public StrAsType(Str str, SourceSpan sourceSpan) {
         super(sourceSpan);
         this.str = str;
+    }
+
+    public static StrAsType create(Str str) {
+        return new StrAsType(str, SourceSpan.emptySourceSpan());
     }
 
     @Override

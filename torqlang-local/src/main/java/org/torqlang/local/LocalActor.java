@@ -903,7 +903,7 @@ final class LocalActor extends AbstractActor {
 
         @Override
         public final Value select(Feature feature) {
-            if (feature.equals(CommonFeatures.NEW)) {
+            if (feature.equals(CommonFeatures.$NEW)) {
                 return STREAM_CLS_NEW;
             }
             throw new FeatureNotFoundError(this, feature);

@@ -9,6 +9,7 @@ package org.torqlang.local;
 
 import org.junit.jupiter.api.Test;
 import org.torqlang.klvm.*;
+import org.torqlang.lang.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,71 +18,70 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.torqlang.klvm.Rec.$LABEL;
-import static org.torqlang.klvm.Rec.$REC;
 
 public class TestValueTools {
 
     @Test
     public void testRecords() {
 
-        Object v;
-        ValueDesc valueDesc;
+        Object value;
+        Type valueType;
         Object expected;
 
         // Covert list of many values to a kernel tuple
-        valueDesc = TupleDesc.of(NullDesc.BASIC, Int32Desc.BASIC, NullDesc.BASIC);
+        valueType = TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int32Type.SINGLETON, BoolType.SINGLETON));
         expected = Rec.completeTupleBuilder()
             .addValue(Str.of("zero"))
             .addValue(Int32.of(1))
             .addValue(Bool.TRUE)
             .build();
-        v = ValueTools.toKernelValue(List.of("zero", 1L, true), valueDesc);
-        assertEquals(expected, v);
+        value = ValueTools.toKernelValue(List.of("zero", 1L, true), valueType);
+        assertEquals(expected, value);
 
         // Covert list of Long to kernel array of Int32
-        valueDesc = ArrayDesc.of(Int32Desc.BASIC);
+        valueType = TypeApply.arrayOf(Int32Type.SINGLETON);
         expected = Rec.completeTupleBuilder()
             .addValue(Int32.of(0))
             .addValue(Int32.of(1))
             .addValue(Int32.of(2))
             .build();
-        v = ValueTools.toKernelValue(List.of(0L, 1L, 2L), valueDesc);
-        assertEquals(expected, v);
+        value = ValueTools.toKernelValue(List.of(0L, 1L, 2L), valueType);
+        assertEquals(expected, value);
 
         // Covert record of many values to a kernel record
-        valueDesc = RecDesc.of(
-            Str.of("zero"), StrDesc.BASIC,
-            Str.of("one"), Int32Desc.BASIC,
-            Str.of("two"), BoolDesc.BASIC
-        );
+        valueType = RecTypeExpr.createWithFields(List.of(
+            FieldType.create(StrAsType.create(Str.of("zero")), StrType.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("one")), Int32Type.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("two")), BoolType.SINGLETON)
+        ));
         expected = Rec.completeRecBuilder()
             .addField(Str.of("zero"), Str.of("zero"))
             .addField(Str.of("one"), Int32.of(1))
             .addField(Str.of("two"), Bool.TRUE)
             .build();
-        v = ValueTools.toKernelValue(
+        value = ValueTools.toKernelValue(
             Map.of(
                 "zero", "zero",
                 "one", 1L,
                 "two", true
             ),
-            valueDesc
+            valueType
         );
-        assertEquals(expected, v);
+        assertEquals(expected, value);
 
         // Covert record of many values and a nested record to a kernel record
-        RecDesc nestedValueSpec = RecDesc.of(
-            Str.of("zero"), StrDesc.BASIC,
-            Str.of("one"), Int32Desc.BASIC,
-            Str.of("two"), BoolDesc.BASIC
-        );
-        valueDesc = RecDesc.of(
-            Str.of("zero"), StrDesc.BASIC,
-            Str.of("one"), Int32Desc.BASIC,
-            Str.of("two"), BoolDesc.BASIC,
-            Str.of("three"), nestedValueSpec
-        );
+        RecType nestedRecType = RecTypeExpr.createWithFields(List.of(
+            FieldType.create(StrAsType.create(Str.of("zero")), StrType.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("one")), Int32Type.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("two")), BoolType.SINGLETON)
+        ));
+        valueType = RecTypeExpr.createWithFields(List.of(
+            FieldType.create(StrAsType.create(Str.of("zero")), StrType.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("one")), Int32Type.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("two")), BoolType.SINGLETON),
+            FieldType.create(StrAsType.create(Str.of("three")), nestedRecType)
+        ));
+
         CompleteRec nextedExpected = Rec.completeRecBuilder()
             .addField(Str.of("zero"), Str.of("zero"))
             .addField(Str.of("one"), Int32.of(1))
@@ -93,7 +93,7 @@ public class TestValueTools {
             .addField(Str.of("two"), Bool.TRUE)
             .addField(Str.of("three"), nextedExpected)
             .build();
-        v = ValueTools.toKernelValue(
+        value = ValueTools.toKernelValue(
             Map.of(
                 "zero", "zero",
                 "one", 1L,
@@ -104,171 +104,191 @@ public class TestValueTools {
                     "two", true
                 )
             ),
-            valueDesc
+            valueType
         );
-        assertEquals(expected, v);
+        assertEquals(expected, value);
 
         // Covert a labeled record
-
-        valueDesc = RecDesc.of(
-            Str.of("k"), Int32Desc.BASIC
+        valueType = RecTypeExpr.createWithLabelAndFields(
+            StrAsType.create(Str.of("my-label")),
+            List.of(FieldType.create(StrAsType.create(Str.of("k")), Int32Type.SINGLETON))
         );
         expected = Rec.completeRecBuilder()
             .setLabel(Str.of("my-label"))
             .addField(Str.of("k"), Int32.of(1))
             .build();
-        v = ValueTools.toKernelValue(
+        value = ValueTools.toKernelValue(
             Map.of(
                 "$label", "my-label",
-                "$rec", Map.of(
+                "$fields", Map.of(
                     "k",
                     1L
                 )
             ),
-            valueDesc
+            valueType
         );
-        assertEquals(expected, v);
-
-        // Covert a labeled record with an explicit record structure
-
-        valueDesc = RecDesc.of(
-            Str.of($REC), RecDesc.of(
-                Str.of("k"), Int32Desc.BASIC
-            )
-        );
-        expected = Rec.completeRecBuilder()
-            .setLabel(Str.of("my-label"))
-            .addField(Str.of("k"), Int32.of(1))
-            .build();
-        v = ValueTools.toKernelValue(
-            Map.of(
-                $LABEL, "my-label",
-                $REC, Map.of(
-                    "k",
-                    1L
-                )
-            ),
-            valueDesc
-        );
-        assertEquals(expected, v);
+        assertEquals(expected, value);
     }
 
     @Test
     public void testScalars() {
+        Object value;
 
-        Object v;
+        // Null
+
+        value = ValueTools.toKernelValue(null, NullType.SINGLETON);
+        assertEquals(Null.SINGLETON, value);
+
+        value = ValueTools.toKernelValue(null, NullAsType.SINGLETON);
+        assertEquals(Null.SINGLETON, value);
+
+        value = ValueTools.toKernelValue(JsonNull.SINGLETON, NullType.SINGLETON);
+        assertEquals(Null.SINGLETON, value);
+
+        value = ValueTools.toKernelValue(JsonNull.SINGLETON, NullAsType.SINGLETON);
+        assertEquals(Null.SINGLETON, value);
+
+        // Eof
+
+        value = ValueTools.toKernelValue(Eof.NATIVE_VALUE, EofType.SINGLETON);
+        assertEquals(Eof.SINGLETON, value);
+
+        value = ValueTools.toKernelValue(Eof.NATIVE_VALUE, EofAsType.SINGLETON);
+        assertEquals(Eof.SINGLETON, value);
 
         // Downcast a Long to an Int32
-        v = ValueTools.toKernelValue(3L, Int32Desc.BASIC);
-        assertEquals(Int32.of(3), v);
+
+        value = ValueTools.toKernelValue(3L, Int32Type.SINGLETON);
+        assertEquals(Int32.of(3), value);
+
+        value = ValueTools.toKernelValue(3L, Int32AsType.SINGLETON);
+        assertEquals(Int32.of(3), value);
 
         // Convert a string to a Dec128
-        v = ValueTools.toKernelValue("123456789012345.12345", Dec128Desc.BASIC);
-        assertEquals(Dec128.of("123456789012345.12345"), v);
+
+        value = ValueTools.toKernelValue("123456789012345.12345", Dec128Type.SINGLETON);
+        assertEquals(Dec128.of("123456789012345.12345"), value);
+
+        value = ValueTools.toKernelValue("123456789012345.12345", Dec128AsType.SINGLETON);
+        assertEquals(Dec128.of("123456789012345.12345"), value);
 
         // Convert a string to a LocalDate
-        v = ValueTools.toKernelValue("2024-11-03", DateDesc.BASIC);
-        assertEquals(LocalDateMod.newObj(LocalDate.parse("2024-11-03")), v);
+
+        value = ValueTools.toKernelValue("2024-11-03", LocalDateMod.localDateType());
+        assertEquals(LocalDateMod.createObj(LocalDate.parse("2024-11-03")), value);
 
         // Convert a string to a LocalDate while ignoring the time
-        v = ValueTools.toKernelValue("2024-11-03T08:10:30Z", DateDesc.BASIC);
-        assertEquals(LocalDateMod.newObj(LocalDate.parse("2024-11-03")), v);
+
+        value = ValueTools.toKernelValue("2024-11-03T08:10:30Z", LocalDateMod.localDateType());
+        assertEquals(LocalDateMod.createObj(LocalDate.parse("2024-11-03")), value);
     }
 
     @Test
     public void testUntyped() {
 
-        Object v;
+        Object value;
 
         // Null
 
-        v = ValueTools.toKernelValue(null);
-        assertEquals(Null.SINGLETON, v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertNull(v);
+        value = ValueTools.toKernelValue(null);
+        assertEquals(Null.SINGLETON, value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertNull(value);
+
+        value = ValueTools.toKernelValue(JsonNull.SINGLETON);
+        assertEquals(Null.SINGLETON, value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertNull(value);
+
+        // Eof
+
+        value = ValueTools.toKernelValue(Eof.NATIVE_VALUE);
+        assertEquals(Eof.SINGLETON, value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Eof.NATIVE_VALUE, value);
 
         // Boolean
 
-        v = ValueTools.toKernelValue(Boolean.TRUE);
-        assertEquals(Bool.TRUE, v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(Boolean.TRUE, v);
+        value = ValueTools.toKernelValue(Boolean.TRUE);
+        assertEquals(Bool.TRUE, value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Boolean.TRUE, value);
 
-        v = ValueTools.toKernelValue(Boolean.FALSE);
-        assertEquals(Bool.FALSE, v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(Boolean.FALSE, v);
+        value = ValueTools.toKernelValue(Boolean.FALSE);
+        assertEquals(Bool.FALSE, value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Boolean.FALSE, value);
 
         // Character and String
 
-        v = ValueTools.toKernelValue('a');
-        assertEquals(Char.of('a'), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals('a', v);
+        value = ValueTools.toKernelValue('a');
+        assertEquals(Char.of('a'), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals('a', value);
 
-        v = ValueTools.toKernelValue("abc");
-        assertEquals(Str.of("abc"), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals("abc", v);
+        value = ValueTools.toKernelValue("abc");
+        assertEquals(Str.of("abc"), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals("abc", value.toString());
 
         // Numbers
 
-        v = ValueTools.toKernelValue(3);
-        assertEquals(Int32.of(3), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(3, v);
+        value = ValueTools.toKernelValue(3);
+        assertEquals(Int32.of(3), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(3, value);
 
-        v = ValueTools.toKernelValue(3L);
-        assertEquals(Int64.of(3), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(3L, v);
+        value = ValueTools.toKernelValue(3L);
+        assertEquals(Int64.of(3), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(3L, value);
 
-        v = ValueTools.toKernelValue(3.0f);
-        assertEquals(Flt32.of(3), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(3.0f, v);
+        value = ValueTools.toKernelValue(3.0f);
+        assertEquals(Flt32.of(3), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(3.0f, value);
 
-        v = ValueTools.toKernelValue(3.0);
-        assertEquals(Flt64.of(3), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(3.0, v);
+        value = ValueTools.toKernelValue(3.0);
+        assertEquals(Flt64.of(3), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(3.0, value);
 
-        v = ValueTools.toKernelValue(new BigDecimal("3.0"));
-        assertEquals(Dec128.of(3), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(new BigDecimal("3.0"), v);
+        value = ValueTools.toKernelValue(new BigDecimal("3.0"));
+        assertEquals(Dec128.of(3), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(new BigDecimal("3.0"), value);
 
         // Records
 
-        v = ValueTools.toKernelValue(List.of());
-        assertEquals(Rec.completeTupleBuilder().build(), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(List.of(), v);
+        value = ValueTools.toKernelValue(List.of());
+        assertEquals(Rec.completeTupleBuilder().build(), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(List.of(), value);
 
-        v = ValueTools.toKernelValue(List.of(1));
-        assertEquals(Rec.completeTupleBuilder().addValue(Int32.of(1)).build(), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(List.of(1), v);
+        value = ValueTools.toKernelValue(List.of(1));
+        assertEquals(Rec.completeTupleBuilder().addValue(Int32.of(1)).build(), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(List.of(1), value);
 
-        v = ValueTools.toKernelValue(Map.of(Rec.$LABEL, "x", $REC, List.of(1)));
-        assertEquals(Rec.completeTupleBuilder().setLabel(Str.of("x")).addValue(Int32.of(1)).build(), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(Map.of(Rec.$LABEL, "x", $REC, List.of(1)), v);
+        value = ValueTools.toKernelValue(Map.of(Rec.$LABEL, "x", Rec.$FIELDS, List.of(1)));
+        assertEquals(Rec.completeTupleBuilder().setLabel(Str.of("x")).addValue(Int32.of(1)).build(), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Map.of(Rec.$LABEL, "x", Rec.$FIELDS, List.of(1)), value);
 
-        v = ValueTools.toKernelValue(Map.of());
-        assertEquals(Rec.completeRecBuilder().build(), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(Map.of(), v);
+        value = ValueTools.toKernelValue(Map.of());
+        assertEquals(Rec.completeRecBuilder().build(), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Map.of(), value);
 
-        v = ValueTools.toKernelValue(Map.of("k", 1));
-        assertEquals(Rec.completeRecBuilder().addField(Str.of("k"), Int32.of(1)).build(), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(Map.of("k", 1), v);
+        value = ValueTools.toKernelValue(Map.of("k", 1));
+        assertEquals(Rec.completeRecBuilder().addField(Str.of("k"), Int32.of(1)).build(), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Map.of("k", 1), value);
 
-        v = ValueTools.toKernelValue(Map.of(Rec.$LABEL, "x", $REC, Map.of("k", 1)));
-        assertEquals(Rec.completeRecBuilder().setLabel(Str.of("x")).addField(Str.of("k"), Int32.of(1)).build(), v);
-        v = ValueTools.toNativeValue((Complete) v);
-        assertEquals(Map.of(Rec.$LABEL, "x", $REC, Map.of("k", 1)), v);
+        value = ValueTools.toKernelValue(Map.of(Rec.$LABEL, "x", Rec.$FIELDS, Map.of("k", 1)));
+        assertEquals(Rec.completeRecBuilder().setLabel(Str.of("x")).addField(Str.of("k"), Int32.of(1)).build(), value);
+        value = ValueTools.toNativeValue((Complete) value);
+        assertEquals(Map.of(Rec.$LABEL, "x", Rec.$FIELDS, Map.of("k", 1)), value);
     }
 
 }

@@ -44,7 +44,7 @@ public class TestAskSumArrayList {
                         $import('system.util', ['ArrayList'])
                         local $v0 in
                             $bind([1, 2, 3, 4, 5], $v0)
-                            $select_apply(ArrayList, ['new'], $v0, one_thru_five)
+                            $select_apply(ArrayList, ['$new'], $v0, one_thru_five)
                         end
                         $create_proc(proc ($m) in // free vars: $respond, Cell, ValueIter, one_thru_five
                             local $else in
@@ -59,9 +59,9 @@ public class TestAskSumArrayList {
                                 end, $else)
                                 case $m of 'perform' then
                                     local $v4, sum in
-                                        $select_apply(Cell, ['new'], 0, sum)
+                                        $select_apply(Cell, ['$new'], 0, sum)
                                         local $iter, $for in
-                                            $select_apply(ValueIter, ['new'], one_thru_five, $iter)
+                                            $select_apply(ValueIter, ['$new'], one_thru_five, $iter)
                                             $create_proc(proc () in // free vars: $for, $iter, sum
                                                 local i, $v5 in
                                                     $iter(i)
@@ -100,7 +100,7 @@ public class TestAskSumArrayList {
                         $create_tuple('handlers'#[$v1, $v8], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('SumArrayList'#{'new': $actor_ctor}, SumArrayList)
+                $create_rec('SumArrayList'#{'$new': $actor_ctor}, SumArrayList)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();

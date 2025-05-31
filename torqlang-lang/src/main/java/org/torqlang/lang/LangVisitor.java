@@ -151,6 +151,8 @@ public interface LangVisitor<T, R> {
 
     R visitNullType(NullType lang, T state) throws Exception;
 
+    R visitObjType(ObjType lang, T state) throws Exception;
+
     R visitOrExpr(OrExpr lang, T state) throws Exception;
 
     R visitPackageStmt(PackageStmt lang, T state) throws Exception;

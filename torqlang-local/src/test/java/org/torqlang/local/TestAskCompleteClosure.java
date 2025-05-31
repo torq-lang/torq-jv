@@ -87,7 +87,7 @@ public class TestAskCompleteClosure {
                         $create_tuple('handlers'#[$v0, $v7], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('ConcurrentData'#{'new': $actor_ctor}, ConcurrentData)
+                $create_rec('ConcurrentData'#{'$new': $actor_ctor}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
@@ -134,7 +134,7 @@ public class TestAskCompleteClosure {
                 $create_actor_ctor(proc ($r) in // free vars: $act, $import, $respond
                     local Cell, next_value, next, $v2, $v9 in
                         $import('system.lang', ['Cell'])
-                        $select_apply(Cell, ['new'], 0, next_value)
+                        $select_apply(Cell, ['$new'], 0, next_value)
                         $create_proc(proc ($r) in // free vars: next_value
                             local answer in
                                 $get(next_value, answer)
@@ -192,7 +192,7 @@ public class TestAskCompleteClosure {
                         $create_tuple('handlers'#[$v2, $v9], $r)
                     end
                 end, $actor_ctor)
-                $create_rec('ConcurrentData'#{'new': $actor_ctor}, ConcurrentData)
+                $create_rec('ConcurrentData'#{'$new': $actor_ctor}, ConcurrentData)
             end""";
         assertEquals(expected, g.createActorRecInstr().toString());
         ActorRef actorRef = g.spawn().actorRef();
