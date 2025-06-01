@@ -59,6 +59,11 @@ public final class StrMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return STR_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final StrMod SINGLETON = new StrMod();
     }

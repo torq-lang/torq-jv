@@ -20,21 +20,16 @@ public interface EofType extends IdentAsType, ScalarType {
     static EofType create(SourceSpan sourceSpan) {
         return new EofTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return EofType.IDENT;
+    }
 }
 
 final class EofTypeImpl extends AbstractLang implements EofType {
 
     EofTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitEofType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return EofType.IDENT;
     }
 }

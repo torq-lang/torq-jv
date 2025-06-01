@@ -53,6 +53,11 @@ public final class ValueIterMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return VALUE_ITER_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final ValueIterMod SINGLETON = new ValueIterMod();
     }

@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Null;
 import org.torqlang.util.SourceSpan;
 
@@ -23,17 +22,11 @@ public final class NullAsType extends AbstractLang implements NullType, LabelAsT
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitNullAsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     @Override
-    public final Ident typeIdent() {
-        return NullType.IDENT;
-    }
-
-    @Override
-    public final Null typeValue() {
+    public final Null value() {
         return Null.SINGLETON;
     }
-
 }

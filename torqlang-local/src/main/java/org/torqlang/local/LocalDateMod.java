@@ -70,6 +70,11 @@ final class LocalDateMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return LOCAL_DATE_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final LocalDateMod SINGLETON = new LocalDateMod();
     }
@@ -125,7 +130,7 @@ final class LocalDateMod implements KernelModule {
         }
 
         @Override
-        public final String formatValue() {
+        public final String formatAsKernelString() {
             return state.toString();
         }
 
@@ -191,7 +196,7 @@ final class LocalDateMod implements KernelModule {
         }
 
         @Override
-        public final Ident typeIdent() {
+        public final Ident ident() {
             return LOCAL_DATE_IDENT;
         }
     }

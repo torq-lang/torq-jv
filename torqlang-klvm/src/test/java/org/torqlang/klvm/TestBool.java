@@ -145,8 +145,8 @@ public class TestBool {
         assertEquals("true", Bool.TRUE.toKernelString());
         assertEquals(Boolean.TRUE, Bool.TRUE.toNativeValue());
 
-        assertEquals("false", Bool.FALSE.formatValue());
-        assertEquals("true", Bool.TRUE.formatValue());
+        assertEquals("false", Bool.FALSE.formatAsKernelString());
+        assertEquals("true", Bool.TRUE.formatAsKernelString());
     }
 
 }

@@ -51,6 +51,11 @@ public final class CellMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return CELL_IDENT;
+    }
+
     static final class CellCls implements CompleteObj {
 
         private static final CompleteProc CELL_CLS_NEW = CellMod::clsNew;

@@ -5,8 +5,14 @@
  * If not, see <http://torq-lang.github.io/licensing/torq-lang-license-v1_0>.
  */
 
-package org.torqlang.local;
+package org.torqlang.util;
 
-public interface TorqCompilerCompiled {
-    TorqCompilerBundled bundle() throws Exception;
+/*
+ * Common message types.
+ */
+public enum MessageType {
+    ERROR,
+    WARN,
+    INFO,
+    TRACE,
 }

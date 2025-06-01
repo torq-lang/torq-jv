@@ -20,21 +20,16 @@ public interface Flt64Type extends IdentAsType, NumType {
     static Flt64Type create(SourceSpan sourceSpan) {
         return new Flt64TypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return Flt64Type.IDENT;
+    }
 }
 
 final class Flt64TypeImpl extends AbstractLang implements Flt64Type {
 
     Flt64TypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitFlt64Type(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return Flt64Type.IDENT;
     }
 }

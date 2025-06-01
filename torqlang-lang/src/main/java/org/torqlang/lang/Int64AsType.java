@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Int64;
 import org.torqlang.util.SourceSpan;
 
@@ -40,7 +39,7 @@ public final class Int64AsType extends AbstractLang implements Int64Type, NumAsT
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitInt64AsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     public final String intText() {
@@ -48,17 +47,11 @@ public final class Int64AsType extends AbstractLang implements Int64Type, NumAsT
     }
 
     @Override
-    public final Ident typeIdent() {
-        return Int64Type.IDENT;
-    }
-
-    @Override
-    public final Int64 typeValue() {
+    public final Int64 value() {
         if (intText != null) {
             int64 = NumAsExpr.parseAsInt32OrInt64(intText);
             intText = null;
         }
         return int64;
     }
-
 }

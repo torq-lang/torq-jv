@@ -3,7 +3,7 @@ actor EmployeesHandler() in
 
     import system.lang.{Int64, Rec, ValueIter}
     import system.util.{ArrayList, LocalDate}
-    import examples.NorthwindDb
+    import northwind.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': ['employees'], 'query': query, 'context': context} -> Array[Employee] in
         var northwind_db = spawn(new NorthwindDb())

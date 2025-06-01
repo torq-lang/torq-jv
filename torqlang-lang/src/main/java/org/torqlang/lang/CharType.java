@@ -20,21 +20,16 @@ public interface CharType extends IdentAsType, NumType {
     static CharType create(SourceSpan sourceSpan) {
         return new CharTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return CharType.IDENT;
+    }
 }
 
 final class CharTypeImpl extends AbstractLang implements CharType {
 
     CharTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitCharType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return CharType.IDENT;
     }
 }

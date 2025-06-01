@@ -7,6 +7,41 @@
 
 package org.torqlang.lang;
 
+/*
+ * Many specific types are visited using generic methods. All the methods in the first table below are replaced by the
+ * methods in the second table:
+ *
+ *     SPECIFIC METHODS
+ *     Type                AsType              AsExpr              AsPat
+ *     ------------------  ------------------  ------------------  ------------------
+ *     visitAnyType
+ *     visitArrayType
+ *     visitBoolType      visitBoolAsType      visitBoolAsExpr     visitBoolAsPat
+ *     visitCharType      visitCharAsType      visitCharAsExpr
+ *     visitDec128Type    visitDec128AsType    visitDec128AsExpr
+ *     visitEofType       visitEofAsType       visitEofAsExpr      visitEofAsPat
+ *     visitFlt32Type     visitFlt32AsType     [1]
+ *     visitFlt64Type     visitFlt64AsType     visitFlt64AsExpr
+ *     visitInt32Type     visitInt32AsType     [1]
+ *     visitInt64Type     visitInt64AsType     visitInt64AsExpr    visitInt64AsPat
+ *     visitNullType      visitNullAsType      visitNullAsExpr     visitNullAsPat
+ *     visitStrType       visitStrAsType       visitStrAsExpr      visitStrAsPat
+ *     visitTokenType [2]
+ *
+ *     GENERAL METHODS
+ *     Type                AsType              AsExpr              AsPat
+ *     ------------------  ------------------  ------------------  ------------------
+ *     visitIdentAsType    visitScalarAsType   visitScalarAsExpr   visitFeatureAsPat [3]
+ *
+ *     [1] 32-bit values are carried by the tool chain as subtypes of 64-bit values until the concrete value
+ *         is needed.
+ *
+ *     [2] Tokens are unforgeable so there are no "as" methods to express its value.
+ *
+ *     [3] Currently, Int64 is a subtype of Feature in the KLVM, and Int32 is a subtype of Int64 according to the
+ *         Liskov Substitution Principle (LSP). In spite of this, our validation process only allows 32-bit integers as
+ *         features because most containers, such as arrays, only allow a 32-bit range of values.
+ */
 public interface LangVisitor<T, R> {
 
     R visitActExpr(ActExpr lang, T state) throws Exception;
@@ -17,23 +52,11 @@ public interface LangVisitor<T, R> {
 
     R visitAndExpr(AndExpr lang, T state) throws Exception;
 
-    R visitAnyType(AnyType lang, T state) throws Exception;
-
     R visitApplyLang(ApplyLang lang, T state) throws Exception;
-
-    R visitArrayType(ArrayType lang, T state) throws Exception;
 
     R visitAskStmt(AskStmt lang, T state) throws Exception;
 
     R visitBeginLang(BeginLang lang, T state) throws Exception;
-
-    R visitBoolAsExpr(BoolAsExpr lang, T state) throws Exception;
-
-    R visitBoolAsPat(BoolAsPat lang, T state) throws Exception;
-
-    R visitBoolAsType(BoolAsType lang, T state) throws Exception;
-
-    R visitBoolType(BoolType lang, T state) throws Exception;
 
     R visitBreakStmt(BreakStmt lang, T state) throws Exception;
 
@@ -43,45 +66,17 @@ public interface LangVisitor<T, R> {
 
     R visitCatchClause(CatchClause lang, T state) throws Exception;
 
-    R visitCharAsExpr(CharAsExpr lang, T state) throws Exception;
-
-    R visitCharAsType(CharAsType lang, T state) throws Exception;
-
-    R visitCharType(CharType lang, T state) throws Exception;
-
     R visitContinueStmt(ContinueStmt lang, T state) throws Exception;
-
-    R visitDec128AsExpr(Dec128AsExpr lang, T state) throws Exception;
-
-    R visitDec128AsType(Dec128AsType lang, T state) throws Exception;
-
-    R visitDec128Type(Dec128Type lang, T state) throws Exception;
 
     R visitDotSelectExpr(DotSelectExpr lang, T state) throws Exception;
 
-    R visitEofAsExpr(EofAsExpr lang, T state) throws Exception;
-
-    R visitEofAsPat(EofAsPat lang, T state) throws Exception;
-
-    R visitEofAsType(EofAsType lang, T state) throws Exception;
-
-    R visitEofType(EofType lang, T state) throws Exception;
+    R visitFeatureAsPat(FeatureAsPat lang, T state) throws Exception;
 
     R visitFieldExpr(FieldExpr lang, T state) throws Exception;
 
     R visitFieldPat(FieldPat lang, T state) throws Exception;
 
     R visitFieldType(FieldType lang, T state) throws Exception;
-
-    R visitFlt32AsType(Flt32AsType lang, T state) throws Exception;
-
-    R visitFlt32Type(Flt32Type lang, T state) throws Exception;
-
-    R visitFlt64AsExpr(Flt64AsExpr lang, T state) throws Exception;
-
-    R visitFlt64AsType(Flt64AsType lang, T state) throws Exception;
-
-    R visitFlt64Type(Flt64Type lang, T state) throws Exception;
 
     R visitForStmt(ForStmt lang, T state) throws Exception;
 
@@ -115,18 +110,6 @@ public interface LangVisitor<T, R> {
 
     R visitInitVarDecl(InitVarDecl lang, T state) throws Exception;
 
-    R visitInt32AsType(Int32AsType lang, T state) throws Exception;
-
-    R visitInt32Type(Int32Type lang, T state) throws Exception;
-
-    R visitInt64AsExpr(Int64AsExpr lang, T state) throws Exception;
-
-    R visitInt64AsType(Int64AsType lang, T state) throws Exception;
-
-    R visitInt64Type(Int64Type lang, T state) throws Exception;
-
-    R visitInt64AsPat(Int64AsPat lang, T state) throws Exception;
-
     R visitIntersectionProtocol(IntersectionProtocol lang, T state) throws Exception;
 
     R visitIntersectionType(IntersectionType lang, T state) throws Exception;
@@ -142,14 +125,6 @@ public interface LangVisitor<T, R> {
     R visitModuleStmt(ModuleStmt lang, T state) throws Exception;
 
     R visitNewExpr(NewExpr lang, T state) throws Exception;
-
-    R visitNullAsExpr(NullAsExpr lang, T state) throws Exception;
-
-    R visitNullAsPat(NullAsPat lang, T state) throws Exception;
-
-    R visitNullAsType(NullAsType lang, T state) throws Exception;
-
-    R visitNullType(NullType lang, T state) throws Exception;
 
     R visitObjType(ObjType lang, T state) throws Exception;
 
@@ -191,6 +166,10 @@ public interface LangVisitor<T, R> {
 
     R visitReturnStmt(ReturnStmt lang, T state) throws Exception;
 
+    R visitScalarAsExpr(ScalarAsExpr lang, T state) throws Exception;
+
+    R visitScalarAsType(ScalarAsType lang, T state) throws Exception;
+
     R visitSelectAndApplyLang(SelectAndApplyLang lang, T state) throws Exception;
 
     R visitSeqLang(SeqLang lang, T state) throws Exception;
@@ -201,21 +180,11 @@ public interface LangVisitor<T, R> {
 
     R visitSpawnExpr(SpawnExpr lang, T state) throws Exception;
 
-    R visitStrAsExpr(StrAsExpr lang, T state) throws Exception;
-
-    R visitStrAsPat(StrAsPat lang, T state) throws Exception;
-
-    R visitStrAsType(StrAsType lang, T state) throws Exception;
-
-    R visitStrType(StrType lang, T state) throws Exception;
-
     R visitSumExpr(SumExpr lang, T state) throws Exception;
 
     R visitTellStmt(TellStmt lang, T state) throws Exception;
 
     R visitThrowLang(ThrowLang lang, T state) throws Exception;
-
-    R visitTokenType(TokenType lang, T state) throws Exception;
 
     R visitTryLang(TryLang lang, T state) throws Exception;
 
@@ -228,6 +197,8 @@ public interface LangVisitor<T, R> {
     R visitTupleTypeExpr(TupleTypeExpr lang, T state) throws Exception;
 
     R visitTypeApply(TypeApply lang, T state) throws Exception;
+
+    R visitTypeDecl(TypeDecl lang, T state) throws Exception;
 
     R visitTypeParam(TypeParam lang, T state) throws Exception;
 

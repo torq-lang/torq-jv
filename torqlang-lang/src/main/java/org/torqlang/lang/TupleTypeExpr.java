@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 import java.util.List;
@@ -36,10 +35,5 @@ public final class TupleTypeExpr extends AbstractLang implements TupleType {
         throws Exception
     {
         return visitor.visitTupleTypeExpr(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return TupleType.IDENT;
     }
 }

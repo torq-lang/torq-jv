@@ -7,7 +7,7 @@
 
 package org.torqlang.klvm;
 
-public interface Feature extends Comparable<Feature>, Complete, FeatureOrVar, FeatureOrIdent, FeatureOrIdentPtn {
+public interface Feature extends Scalar, FeatureOrVar, FeatureOrIdent, FeatureOrIdentPtn, Comparable<Feature> {
 
     default int compareTo(Feature other) {
         return FeatureComparator.SINGLETON.compare(this, other);

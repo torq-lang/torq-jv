@@ -185,17 +185,17 @@ public class TestFlt32 {
     public void testToValues() {
 
         assertEquals("3.0", THREE.toString());
-        assertEquals("3.0", THREE.formatValue());
+        assertEquals("3.0f", THREE.formatAsKernelString());
         assertEquals(3.0f, THREE.toNativeValue());
         assertEquals("3.0f", THREE.toKernelString());
 
         assertEquals("5.0", FIVE.toString());
-        assertEquals("5.0", FIVE.formatValue());
+        assertEquals("5.0f", FIVE.formatAsKernelString());
         assertEquals(5.0f, FIVE.toNativeValue());
         assertEquals("5.0f", FIVE.toKernelString());
 
         assertEquals("7.0", SEVEN.toString());
-        assertEquals("7.0", SEVEN.formatValue());
+        assertEquals("7.0f", SEVEN.formatAsKernelString());
         assertEquals(7.0f, SEVEN.toNativeValue());
         assertEquals("7.0f", SEVEN.toKernelString());
 

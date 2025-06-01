@@ -185,17 +185,17 @@ public class TestFlt64 {
     public void testToValues() {
 
         assertEquals("3.0", THREE.toString());
-        assertEquals("3.0", THREE.formatValue());
+        assertEquals("3.0", THREE.formatAsKernelString());
         assertEquals(3.0, THREE.toNativeValue());
         assertEquals("3.0", THREE.toKernelString());
 
         assertEquals("5.0", FIVE.toString());
-        assertEquals("5.0", FIVE.formatValue());
+        assertEquals("5.0", FIVE.formatAsKernelString());
         assertEquals(5.0, FIVE.toNativeValue());
         assertEquals("5.0", FIVE.toKernelString());
 
         assertEquals("7.0", SEVEN.toString());
-        assertEquals("7.0", SEVEN.formatValue());
+        assertEquals("7.0", SEVEN.formatAsKernelString());
         assertEquals(7.0, SEVEN.toNativeValue());
         assertEquals("7.0", SEVEN.toKernelString());
 

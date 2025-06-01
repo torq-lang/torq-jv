@@ -7,8 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.util.EscapeChar;
-
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,7 +16,10 @@ import java.util.Map;
 
 public final class JsonFormatter {
 
-    public static final JsonFormatter DEFAULT = new JsonFormatter();
+    public static final JsonFormatter SINGLETON = new JsonFormatter();
+
+    private JsonFormatter() {
+    }
 
     public final String format(Object jsonValue) {
         try (StringWriter sw = new StringWriter()) {
@@ -31,29 +32,9 @@ public final class JsonFormatter {
         }
     }
 
-    private void quote(String source, StringWriter sw) {
-        sw.append('"');
-        for (int i = 0; i < source.length(); i++) {
-            char c = source.charAt(i);
-            //noinspection UnnecessaryUnicodeEscape
-            if (c < '\u0020') {
-                EscapeChar.apply(c, sw);
-            } else {
-                if (c == '\\') {
-                    sw.write("\\\\");
-                } else if (c == '"') {
-                    sw.write("\\\"");
-                } else {
-                    sw.write(c);
-                }
-            }
-        }
-        sw.write('"');
-    }
-
     private void format(Object jsonValue, StringWriter sw) {
         if (jsonValue instanceof String jsonString) {
-            quote(jsonString, sw);
+            Json.quote(jsonString, sw);
         } else if (jsonValue instanceof Number jsonNumber) {
             formatNumber(jsonNumber, sw);
         } else if (jsonValue instanceof Boolean jsonBoolean) {
@@ -117,7 +98,7 @@ public final class JsonFormatter {
         while (i.hasNext()) {
             Map.Entry<?, ?> e = i.next();
             String k = (String) e.getKey();
-            quote(k, sw);
+            Json.quote(k, sw);
             sw.write(':');
             format(e.getValue(), sw);
             if (i.hasNext()) {
@@ -128,7 +109,7 @@ public final class JsonFormatter {
     }
 
     private void formatUsingToString(Object obj, StringWriter sw) {
-        quote(obj.toString(), sw);
+        Json.quote(obj.toString(), sw);
     }
 
 }

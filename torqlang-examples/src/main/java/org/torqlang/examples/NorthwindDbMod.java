@@ -63,12 +63,18 @@ public final class NorthwindDbMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return NORTHWIND_DB_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final NorthwindDbMod SINGLETON = new NorthwindDbMod();
     }
 
     /*
-     * Using an ActorRef as a protocol adapter is a repeating pattern.
+     * Using an ActorRef as a protocol adapter is a repeating pattern. Note that the adaptation is performed in the
+     * caller thread. In the case below, the Torq actor converts requests and the Java actor converts responses.
      */
     @SuppressWarnings("ClassCanBeRecord")
     private static final class NorthwindDbAdapter implements ActorRef {
@@ -168,14 +174,16 @@ public final class NorthwindDbMod implements KernelModule {
         static final Str FIND_BY_KEY_STR = Str.of("findByKey");
         static final Str KEY_STR = Str.of("key");
 
-        static final Executor NORTHWIND_DB_EXECUTOR = new AffinityExecutor("NorthwindDb", 4);
+        static final int CONCURRENCY = 4;
+
+        static final Executor NORTHWIND_DB_EXECUTOR = new AffinityExecutor("NorthwindDb", CONCURRENCY);
         static final ActorSystem NORTHWIND_DB_SYSTEM = ActorSystem.builder()
             .setName("NorthwindDb")
             .setExecutor(NORTHWIND_DB_EXECUTOR)
             .build();
 
         public static final NorthwindDb NORTHWIND_DB = new NorthwindDb(Address.create("northwind_db"),
-            NORTHWIND_DB_SYSTEM, 4, 0);
+            NORTHWIND_DB_SYSTEM, CONCURRENCY, 0);
 
         private static final int NORTHWIND_DB_CTOR_ARG_COUNT = 1;
         private static final CompleteProc NORTHWIND_DB_CLS_NEW = NorthwindDbMod::clsNew;

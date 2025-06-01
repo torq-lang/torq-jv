@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.BinarySearchTools;
 import org.torqlang.util.SourceSpan;
 
@@ -50,10 +49,5 @@ public final class RecTypeExpr extends AbstractLang implements RecType {
         } else {
             return fields.get(index).value;
         }
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return RecType.IDENT;
     }
 }

@@ -53,15 +53,15 @@ public class TestNull {
         Map<Value, String> hm = new HashMap<>();
         hm.put(Null.SINGLETON, "null");
         assertEquals(1, hm.size());
-        assertEquals(hm.get(Null.SINGLETON), "null");
-        assertEquals(hm.remove(Null.SINGLETON), "null");
+        assertEquals("null", hm.get(Null.SINGLETON));
+        assertEquals("null", hm.remove(Null.SINGLETON));
         assertEquals(0, hm.size());
     }
 
     @Test
     public void testToValues() {
         assertEquals("null", Null.SINGLETON.toString());
-        assertEquals("null", Null.SINGLETON.formatValue());
+        assertEquals("null", Null.SINGLETON.formatAsKernelString());
         assertNull(Null.SINGLETON.toNativeValue());
         assertEquals("null", Null.SINGLETON.toKernelString());
     }

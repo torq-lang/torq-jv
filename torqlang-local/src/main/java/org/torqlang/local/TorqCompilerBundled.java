@@ -7,6 +7,10 @@
 
 package org.torqlang.local;
 
-public interface TorqCompilerBundled {
+import org.torqlang.util.Message;
 
+import java.util.List;
+
+public interface TorqCompilerBundled {
+    List<Message> messages();
 }

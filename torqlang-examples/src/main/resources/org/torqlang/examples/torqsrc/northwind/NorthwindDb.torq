@@ -2,6 +2,7 @@ package northwind
 
 import northwind.{Customer, Employee, Order, Product, Supplier}
 
+meta#{'export'}
 protocol NorthwindDb = {
     ask 'findAll'#{'entity': 'customers', 'criteria': criteria} -> Array[Customer],
     ask 'findByKey'#{'entity': 'customers', 'key': key} -> Customer,

@@ -11,6 +11,7 @@ import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public interface AnyType extends IdentAsType {
+
     String NAME = "Any";
     Ident IDENT = Ident.create(NAME);
 
@@ -19,6 +20,11 @@ public interface AnyType extends IdentAsType {
     static AnyType create(SourceSpan sourceSpan) {
         return new AnyTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return AnyType.IDENT;
+    }
 }
 
 final class AnyTypeImpl extends AbstractLang implements AnyType {
@@ -26,15 +32,4 @@ final class AnyTypeImpl extends AbstractLang implements AnyType {
     AnyTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
     }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitAnyType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return AnyType.IDENT;
-    }
-
 }

@@ -197,12 +197,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitBool(Bool kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        return null;
-    }
-
-    @Override
     public final Void visitCaseElseInstr(CaseElseInstr instr, FormatterState state) throws Exception {
         state.write("case ");
         accept(instr.x, state.inline());
@@ -243,13 +237,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         nextLevelState.writeNewLineAndIndent();
         accept(instr.caseInstr, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
-        return null;
-    }
-
-    @Override
-    public Void visitChar(Char kernel, FormatterState state) throws Exception {
-        state.write('&');
-        state.write(kernel.formatValue());
         return null;
     }
 
@@ -314,13 +301,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitDec128(Dec128 kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        state.write('m');
-        return null;
-    }
-
-    @Override
     public final Void visitDisentailsInstr(DisentailsInstr instr, FormatterState state) throws Exception {
         formatBinaryInstr($NE, instr.a, instr.b, instr.x, state);
         return null;
@@ -355,12 +335,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitEof(Eof kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        return null;
-    }
-
-    @Override
     public final Void visitFailedValue(FailedValue kernel, FormatterState state) throws Exception {
         state.write("FailedValue(error=");
         if (kernel.error() == null) {
@@ -385,19 +359,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         accept(kernel.feature, state.inline());
         state.write(": ");
         accept(kernel.value, state.inline());
-        return null;
-    }
-
-    @Override
-    public Void visitFlt32(Flt32 kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        state.write('f');
-        return null;
-    }
-
-    @Override
-    public Void visitFlt64(Flt64 kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
         return null;
     }
 
@@ -478,19 +439,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
         nextLevelState.writeNewLineAndIndent();
         accept(instr.consequent, nextLevelState);
         state.writeAfterNewLineAndIdent("end");
-        return null;
-    }
-
-    @Override
-    public Void visitInt32(Int32 kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        return null;
-    }
-
-    @Override
-    public Void visitInt64(Int64 kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        state.write('L');
         return null;
     }
 
@@ -581,14 +529,8 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitNull(Null kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
-        return null;
-    }
-
-    @Override
     public final Void visitObj(Obj kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
+        state.write(kernel.formatAsKernelString());
         return null;
     }
 
@@ -764,6 +706,12 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
+    public final Void visitScalar(Scalar kernel, FormatterState state) throws Exception {
+        state.write(kernel.formatAsKernelString());
+        return null;
+    }
+
+    @Override
     public final Void visitSelectAndApplyInstr(SelectAndApplyInstr instr, FormatterState state) throws Exception {
         state.write($SELECT_APPLY);
         state.write('(');
@@ -807,11 +755,12 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
 
     @Override
     public final Void visitSeqInstr(SeqInstr instr, FormatterState state) throws Exception {
-        for (InstrList.Entry current = instr.seq.firstEntry(); current != null; current = current.next()) {
-            if (current.prev() != null) {
+        List<Instr> list = instr.list;
+        for (int i = 0; i < list.size(); i++) {
+            if (i > 0) {
                 state.writeNewLineAndIndent();
             }
-            accept(current.instr(), state);
+            accept(list.get(i), state);
         }
         return null;
     }
@@ -845,12 +794,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     }
 
     @Override
-    public final Void visitStr(Str kernel, FormatterState state) throws Exception {
-        state.write(Str.quote(kernel.value, '\''));
-        return null;
-    }
-
-    @Override
     public final Void visitSubtractInstr(SubtractInstr instr, FormatterState state) throws Exception {
         formatBinaryInstr($SUB, instr.a, instr.b, instr.x, state);
         return null;
@@ -860,12 +803,6 @@ public final class KernelFormatter implements KernelVisitor<FormatterState, Void
     public final Void visitThrowInstr(ThrowInstr instr, FormatterState state) throws Exception {
         state.write("throw ");
         accept(instr.error, state.inline());
-        return null;
-    }
-
-    @Override
-    public final Void visitToken(Token kernel, FormatterState state) throws Exception {
-        state.write(kernel.formatValue());
         return null;
     }
 

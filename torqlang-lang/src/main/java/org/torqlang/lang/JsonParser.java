@@ -25,10 +25,6 @@ public class JsonParser {
         return new JsonParser(source).parse();
     }
 
-    public static <T> T parseAndCast(String source) {
-        return new JsonParser(source).parseAndCast();
-    }
-
     private void nextToken() {
         currentToken = lexer.nextToken();
     }
@@ -42,14 +38,9 @@ public class JsonParser {
         return answer;
     }
 
-    @SuppressWarnings("unchecked")
-    public final <T> T parseAndCast() {
-        return (T) parse();
-    }
-
     private Object parseAny() {
         if (currentToken.type() == JsonLexerTokenType.STRING) {
-            String answer = unquote(currentToken);
+            String answer = Json.unquote(currentToken.source(), currentToken.begin(), currentToken.end());
             nextToken(); // accept string
             return answer;
         }
@@ -105,7 +96,7 @@ public class JsonParser {
             if (currentToken.type() != JsonLexerTokenType.STRING) {
                 throw new IllegalArgumentException("String expected - " + currentToken);
             }
-            String key = unquote(currentToken);
+            String key = Json.unquote(currentToken.source(), currentToken.begin(), currentToken.end());
             nextToken(); // accept key
             if (!currentToken.isColonChar()) {
                 throw new IllegalArgumentException(": expected - " + currentToken);
@@ -119,52 +110,6 @@ public class JsonParser {
         }
         nextToken(); // accept '}'
         return answer;
-    }
-
-    private String unquote(JsonLexerToken stringToken) {
-        String source = stringToken.source();
-        int begin = stringToken.begin() + 1;
-        int end = stringToken.end() - 1;
-        StringBuilder sb = new StringBuilder((end - begin) * 2);
-        int i = begin;
-        while (i < end) {
-            char c1 = source.charAt(i);
-            if (c1 == '\\') {
-                char c2 = source.charAt(i + 1);
-                if (c2 != 'u') {
-                    if (c2 == 't') {
-                        c1 = '\t';
-                    } else if (c2 == 'b') {
-                        c1 = '\b';
-                    } else if (c2 == 'n') {
-                        c1 = '\n';
-                    } else if (c2 == 'r') {
-                        c1 = '\r';
-                    } else if (c2 == 'f') {
-                        c1 = '\f';
-                    } else if (c2 == '\\') {
-                        c1 = '\\';
-                    } else if (c2 == '/') {
-                        c1 = '/';
-                    } else if (c2 == '"') {
-                        c1 = '"';
-                    } else {
-                        throw new IllegalArgumentException("Invalid escape sequence: " + c1 + c2);
-                    }
-                    sb.append(c1);
-                    i += 2;
-                } else {
-                    int code = Integer.parseInt("" + source.charAt(i + 2) + source.charAt(i + 3) +
-                        source.charAt(i + 4) + source.charAt(i + 5), 16);
-                    sb.append(Character.toChars(code));
-                    i += 6;
-                }
-            } else {
-                sb.append(c1);
-                i++;
-            }
-        }
-        return sb.toString();
     }
 
 }

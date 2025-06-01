@@ -47,51 +47,6 @@ public final class Parser {
         return seq.get(0).adjoin(last(seq));
     }
 
-    private static String unquoteString(SourceString source, int begin, int end) {
-        begin = begin + 1;
-        end = end - 1;
-        StringBuilder sb = new StringBuilder((end - begin) * 2);
-        int i = begin;
-        while (i < end) {
-            char c1 = source.charAt(i);
-            if (c1 == '\\') {
-                char c2 = source.charAt(i + 1);
-                if (c2 != 'u') {
-                    if (c2 == 'r') {
-                        c1 = '\r';
-                    } else if (c2 == 'n') {
-                        c1 = '\n';
-                    } else if (c2 == 't') {
-                        c1 = '\t';
-                    } else if (c2 == 'f') {
-                        c1 = '\f';
-                    } else if (c2 == 'b') {
-                        c1 = '\b';
-                    } else if (c2 == '\\') {
-                        c1 = '\\';
-                    } else if (c2 == '\'') {
-                        c1 = '\'';
-                    } else if (c2 == '"') {
-                        c1 = '"';
-                    } else {
-                        throw new IllegalArgumentException("Invalid escape sequence: " + c1 + c2);
-                    }
-                    sb.append(c1);
-                    i += 2;
-                } else {
-                    int code = Integer.parseInt("" + source.charAt(i + 2) + source.charAt(i + 3) +
-                        source.charAt(i + 4) + source.charAt(i + 5), 16);
-                    sb.append(Character.toChars(code));
-                    i += 6;
-                }
-            } else {
-                sb.append(c1);
-                i++;
-            }
-        }
-        return sb.toString();
-    }
-
     private LexerToken acceptEndToken() {
         LexerToken current = currentToken;
         if (!current.isKeyword(END_VALUE)) {
@@ -1054,7 +1009,7 @@ public final class Parser {
         }
         if (current.isStr()) {
             nextToken(); // accept STR token
-            String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
+            String substring = Str.unquote(current.source(), current.sourceBegin(), current.sourceEnd());
             return new StrAsExpr(Str.of(substring), current);
         }
         if (current.isIdent()) {
@@ -1209,7 +1164,7 @@ public final class Parser {
         }
         if (current.isStr()) {
             LexerToken next = nextToken(); // accept Str token
-            String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
+            String substring = Str.unquote(current.source(), current.sourceBegin(), current.sourceEnd());
             StrAsPat strAsPat = new StrAsPat(Str.of(substring), current);
             if (next.isOneCharSymbol(HASH_TAG_CHAR)) {
                 return parseStructPat(strAsPat);
@@ -1916,21 +1871,14 @@ public final class Parser {
         if (!current.isIdent()) {
             throw new ParserError(IDENT_EXPECTED, current);
         }
-        IdentAsType name = IdentAsType.create(tokenToIdent(current), current);
-        current = nextToken(); // accept IDENT token
-        List<TypeParam> typeParams;
-        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
-            typeParams = parseTypeParamList();
-            current = currentToken;
-        } else {
-            typeParams = List.of();
-        }
+        TypeDecl typeDecl = parseTypeDecl();
+        current = currentToken;
         if (!current.isOneCharSymbol(EQUAL_OPER_CHAR)) {
             throw new ParserError(EQUAL_EXPECTED, current);
         }
         nextToken(); // accept '=' token
         Type body = parseTypeExpr();
-        return new TypeStmt(name, typeParams, body, typeToken.adjoin(body));
+        return new TypeStmt(typeDecl, body, typeToken.adjoin(body));
     }
 
     /*
@@ -1981,6 +1929,23 @@ public final class Parser {
         return args;
     }
 
+    private TypeDecl parseTypeDecl() {
+        LexerToken current = currentToken;
+        IdentAsType name = IdentAsType.create(tokenToIdent(current), current);
+        current = nextToken(); // accept IDENT token
+        List<TypeParam> typeParams;
+        if (current.isOneCharSymbol(L_BRACKET_CHAR)) {
+            typeParams = parseTypeParamList();
+        } else {
+            typeParams = List.of();
+        }
+        SourceSpan typeDeclSpan = name;
+        if (!typeParams.isEmpty()) {
+            typeDeclSpan = name.adjoin(last(typeParams));
+        }
+        return new TypeDecl(name, typeParams, typeDeclSpan);
+    }
+
     private Type parseTypeExpr() {
         LexerToken current = currentToken;
         if (current.isIdent(Type.ACTOR_REF)) {
@@ -2001,10 +1966,9 @@ public final class Parser {
         LexerToken current = nextToken(); // accept '[' token
         List<TypeParam> typeParams = new ArrayList<>();
         while (current.isIdent()) {
-            LexerToken identToken = current;
-            Ident paramIdent = tokenToIdent(identToken);
-            SourceSpan endSourceSpan = identToken;
-            current = nextToken(); // accept IDENT token
+            TypeDecl typeDecl = parseTypeDecl();
+            SourceSpan paramSpan = typeDecl;
+            current = currentToken;
             TypeOper constraintOper = typeOperFor(current);
             Type constraintArg = null;
             if (constraintOper != null) {
@@ -2013,9 +1977,9 @@ public final class Parser {
                 if (constraintArg == null) {
                     throw new ParserError(TYPE_EXPECTED, current);
                 }
-                endSourceSpan = constraintArg;
+                paramSpan = typeDecl.adjoin(constraintArg);
             }
-            typeParams.add(new TypeParam(paramIdent, constraintOper, constraintArg, identToken.adjoin(endSourceSpan)));
+            typeParams.add(new TypeParam(typeDecl, constraintOper, constraintArg, paramSpan));
             if (!current.isOneCharSymbol(COMMA_CHAR)) {
                 break;
             }
@@ -2064,7 +2028,7 @@ public final class Parser {
                 } else if (current.isKeyword(EOF_VALUE)) {
                     typeExpr = new EofAsType(current);
                 } else if (current.isStr()) {
-                    String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
+                    String substring = Str.unquote(current.source(), current.sourceBegin(), current.sourceEnd());
                     typeExpr = new StrAsType(Str.of(substring), current);
                 } else if (current.isInt()) {
                     String symbolText = current.substring();
@@ -2151,7 +2115,7 @@ public final class Parser {
         }
         if (current.isStr()) {
             LexerToken next = nextToken(); // accept STR token
-            String substring = unquoteString(current.source(), current.sourceBegin(), current.sourceEnd());
+            String substring = Str.unquote(current.source(), current.sourceBegin(), current.sourceEnd());
             StrAsExpr strAsExpr = new StrAsExpr(Str.of(substring), current);
             if (next.isOneCharSymbol(HASH_TAG_CHAR)) {
                 return parseStructExpr(strAsExpr);

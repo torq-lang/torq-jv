@@ -20,21 +20,16 @@ public interface BoolType extends IdentAsType, ScalarType {
     static BoolType create(SourceSpan sourceSpan) {
         return new BoolTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return BoolType.IDENT;
+    }
 }
 
 final class BoolTypeImpl extends AbstractLang implements BoolType {
 
     BoolTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitBoolType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return BoolType.IDENT;
     }
 }

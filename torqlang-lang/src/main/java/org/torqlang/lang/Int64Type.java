@@ -20,21 +20,16 @@ public interface Int64Type extends IdentAsType, NumType {
     static Int64Type create(SourceSpan sourceSpan) {
         return new Int64TypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return Int64Type.IDENT;
+    }
 }
 
 final class Int64TypeImpl extends AbstractLang implements Int64Type {
 
     Int64TypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitInt64Type(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return Int64Type.IDENT;
     }
 }

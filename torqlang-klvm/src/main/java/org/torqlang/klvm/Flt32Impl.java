@@ -28,7 +28,7 @@ final class Flt32Impl implements Flt32 {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFlt32(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -169,8 +169,9 @@ final class Flt32Impl implements Flt32 {
         return value;
     }
 
-    public final String formatValue() {
-        return Float.toString(value);
+    @Override
+    public final String formatAsKernelString() {
+        return value + "f";
     }
 
     @Override
@@ -313,7 +314,7 @@ final class Flt32Impl implements Flt32 {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return "" + value;
     }
 
 }

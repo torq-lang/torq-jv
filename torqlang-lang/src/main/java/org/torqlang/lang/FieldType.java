@@ -29,7 +29,7 @@ public final class FieldType extends AbstractLang {
     }
 
     public static int compareFeatures(FieldType a, FieldType b) {
-        return FeatureComparator.SINGLETON.compare(a.feature.typeValue(), b.feature.typeValue());
+        return FeatureComparator.SINGLETON.compare(a.feature.value(), b.feature.value());
     }
 
     public static List<FieldType> nullSafeSort(List<FieldType> fields) {

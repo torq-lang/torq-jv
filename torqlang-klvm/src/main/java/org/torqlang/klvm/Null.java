@@ -19,7 +19,7 @@ public final class Null implements Literal {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitNull(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -28,7 +28,7 @@ public final class Null implements Literal {
     }
 
     @Override
-    public final String formatValue() {
+    public final String formatAsKernelString() {
         return NULL_NAME;
     }
 
@@ -44,7 +44,7 @@ public final class Null implements Literal {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return NULL_NAME;
     }
 
 }

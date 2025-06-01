@@ -21,16 +21,15 @@ public interface ObjType extends CompositeType, IdentAsType {
         return new ObjTypeImpl(sourceSpan);
     }
 
+    @Override
+    default Ident ident() {
+        return ObjType.IDENT;
+    }
 }
 
 final class ObjTypeImpl extends AbstractObjType {
 
     ObjTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return ObjType.IDENT;
     }
 }

@@ -86,6 +86,11 @@ public final class RecMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return REC_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final RecMod SINGLETON = new RecMod();
     }

@@ -61,6 +61,11 @@ public class TestStr {
         s = Str.of("test \u0001 string");
         assertEquals("test \u0001 string", s.toString());
 
+        s = Str.of("test \u0001 string");
+        String kernelString = s.toKernelString();
+        assertEquals("'test \\u0001 string'", kernelString);
+        assertEquals(s.value, Str.unquote(kernelString, 0, kernelString.length()));
+
         Exception exc = assertThrows(NullPointerException.class, () -> Str.of(null));
         assertEquals("value", exc.getMessage());
     }
@@ -166,20 +171,23 @@ public class TestStr {
         assertInstanceOf(ObjProcBinding.class, value);
     }
 
+    /*
+     * See FormatAsKernelString for a description of these common scalar conversions.
+     */
     @Test
     public void testToValues() {
         assertEquals("THREE", THREE.toString());
-        assertEquals("THREE", THREE.formatValue());
+        assertEquals("'THREE'", THREE.formatAsKernelString());
         assertEquals("THREE", THREE.toNativeValue());
         assertEquals("'THREE'", THREE.toKernelString());
 
         assertEquals("FIVE", FIVE.toString());
-        assertEquals("FIVE", FIVE.formatValue());
+        assertEquals("'FIVE'", FIVE.formatAsKernelString());
         assertEquals("FIVE", FIVE.toNativeValue());
         assertEquals("'FIVE'", FIVE.toKernelString());
 
         assertEquals("SEVEN", SEVEN.toString());
-        assertEquals("SEVEN", SEVEN.formatValue());
+        assertEquals("'SEVEN'", SEVEN.formatAsKernelString());
         assertEquals("SEVEN", SEVEN.toNativeValue());
         assertEquals("'SEVEN'", SEVEN.toKernelString());
     }

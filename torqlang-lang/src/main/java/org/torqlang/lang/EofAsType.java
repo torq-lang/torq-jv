@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.Eof;
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class EofAsType extends AbstractLang implements EofType, LabelAsType {
@@ -23,17 +22,11 @@ public final class EofAsType extends AbstractLang implements EofType, LabelAsTyp
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitEofAsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     @Override
-    public final Ident typeIdent() {
-        return EofType.IDENT;
-    }
-
-    @Override
-    public final Eof typeValue() {
+    public final Eof value() {
         return Eof.SINGLETON;
     }
-
 }

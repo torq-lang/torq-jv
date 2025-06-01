@@ -23,7 +23,7 @@ public final class CharAsExpr extends AbstractLang implements NumAsExpr, MetaVal
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitCharAsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     public final Char charNum() {

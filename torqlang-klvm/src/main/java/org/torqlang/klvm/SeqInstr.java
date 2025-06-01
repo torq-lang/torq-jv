@@ -7,17 +7,20 @@
 
 package org.torqlang.klvm;
 
+import org.torqlang.util.ListTools;
 import org.torqlang.util.SourceSpan;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class SeqInstr extends AbstractInstr {
 
-    public final InstrList seq;
+    public final List<Instr> list;
 
-    public SeqInstr(Iterable<Instr> instrs, SourceSpan sourceSpan) {
+    public SeqInstr(List<Instr> list, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.seq = new InstrList(instrs);
+        this.list = ListTools.nullSafeCopyOf(list);
     }
 
     @Override
@@ -29,17 +32,27 @@ public final class SeqInstr extends AbstractInstr {
 
     @Override
     public final void captureLexicallyFree(Set<Ident> knownBound, Set<Ident> lexicallyFree) {
-        Instr.captureLexicallyFree(seq, knownBound, lexicallyFree);
+        /*
+         * Capture the lexically free identifiers from a collection of instructions. Free identifiers are captured from
+         * each peer instruction by resetting the knownBound set to the original set passed to this method.
+         *
+         * instrs         collection of instructions from which we are collecting free identifiers
+         * knownBound     identifiers known so far to be bound in the closure
+         * lexicallyFree  free identifiers captured so far in the closure
+         */
+        for (Instr instr : list) {
+            instr.captureLexicallyFree(new HashSet<>(knownBound), lexicallyFree);
+        }
     }
 
     @Override
     public void compute(Env env, Machine machine) {
-        machine.pushStackEntries(seq, env);
+        machine.pushStackEntries(list, env);
     }
 
     @Override
     public void pushStackEntries(Machine machine, Env env) {
-        machine.pushStackEntries(this.seq, env);
+        machine.pushStackEntries(this.list, env);
     }
 
 }

@@ -42,7 +42,7 @@ final class SystemLangPackage implements KernelPackage {
     }
 
     @Override
-    public final String path() {
+    public final String qualifier() {
         return "system.lang";
     }
 

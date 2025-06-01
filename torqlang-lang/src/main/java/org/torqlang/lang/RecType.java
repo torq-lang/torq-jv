@@ -19,6 +19,11 @@ public interface RecType extends StructType, IdentAsType {
     static RecType create(SourceSpan sourceSpan) {
         return new RecTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return RecType.IDENT;
+    }
 }
 
 final class RecTypeImpl extends AbstractLang implements RecType {
@@ -30,10 +35,5 @@ final class RecTypeImpl extends AbstractLang implements RecType {
     @Override
     public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
         return visitor.visitRecType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return RecType.IDENT;
     }
 }

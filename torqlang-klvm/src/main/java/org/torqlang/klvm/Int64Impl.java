@@ -40,7 +40,7 @@ final class Int64Impl implements Int64 {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitInt64(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -181,8 +181,9 @@ final class Int64Impl implements Int64 {
         return (float) value;
     }
 
-    public final String formatValue() {
-        return Long.toString(value);
+    @Override
+    public final String formatAsKernelString() {
+        return value + "L";
     }
 
     @Override
@@ -324,7 +325,7 @@ final class Int64Impl implements Int64 {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return "" + value;
     }
 
 }

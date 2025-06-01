@@ -27,7 +27,7 @@ import java.util.Set;
  *     minuend - subtrahend - difference
  *     multiplicand * multiplier = product
  */
-public interface Num extends Complete {
+public interface Num extends Scalar {
 
     String NOT_A_DEC_128 = "Not a Dec128";
     String NOT_A_NUM = "Not a Num";
@@ -100,8 +100,6 @@ public interface Num extends Complete {
     }
 
     float floatValue();
-
-    String formatValue();
 
     @Override
     default Bool greaterThan(Value operand) {

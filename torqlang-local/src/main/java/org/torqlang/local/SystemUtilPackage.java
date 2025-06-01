@@ -34,7 +34,7 @@ final class SystemUtilPackage implements KernelPackage {
     }
 
     @Override
-    public final String path() {
+    public final String qualifier() {
         return "system.util";
     }
 

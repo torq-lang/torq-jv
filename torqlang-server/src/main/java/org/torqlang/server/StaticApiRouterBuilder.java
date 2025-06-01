@@ -11,7 +11,6 @@ import org.torqlang.local.ActorImage;
 import org.torqlang.local.ActorRef;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public final class StaticApiRouterBuilder {
@@ -19,20 +18,31 @@ public final class StaticApiRouterBuilder {
     private final List<ApiRoute> routes = new ArrayList<>();
 
     public final StaticApiRouterBuilder addRoute(String pathExpr, ActorImage actorImage, ApiDesc desc) {
-        ApiPath path = new ApiPath(pathExpr);
-        routes.add(new ApiRoute(path, actorImage, desc));
+        ApiPath path = ApiPath.parse(pathExpr);
+        routes.add(ApiRoute.create(path, actorImage, desc));
+        return this;
+    }
+
+    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorImage actorImage, ApiDesc desc, RateLimiter rateLimiter) {
+        ApiPath path = ApiPath.parse(pathExpr);
+        routes.add(ApiRoute.create(path, actorImage, desc, rateLimiter));
         return this;
     }
 
     public final StaticApiRouterBuilder addRoute(String pathExpr, ActorRef actorRef, ApiDesc desc) {
-        ApiPath path = new ApiPath(pathExpr);
-        routes.add(new ApiRoute(path, actorRef, desc));
+        ApiPath path = ApiPath.parse(pathExpr);
+        routes.add(ApiRoute.create(path, actorRef, desc));
+        return this;
+    }
+
+    public final StaticApiRouterBuilder addRoute(String pathExpr, ActorRef actorRef, ApiDesc desc, RateLimiter rateLimiter) {
+        ApiPath path = ApiPath.parse(pathExpr);
+        routes.add(ApiRoute.create(path, actorRef, desc, rateLimiter));
         return this;
     }
 
     public final ApiRouter build() {
-        routes.sort(Comparator.comparing(a -> a.path));
-        return new StaticApiRouter(routes.toArray(new ApiRoute[0]));
+        return new StaticApiRouter(routes);
     }
 
 }

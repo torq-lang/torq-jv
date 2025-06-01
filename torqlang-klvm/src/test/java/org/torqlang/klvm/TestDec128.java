@@ -228,17 +228,17 @@ public class TestDec128 {
     public void testToValues() {
 
         assertEquals("3", THREE.toString());
-        assertEquals("3", THREE.formatValue());
+        assertEquals("3m", THREE.formatAsKernelString());
         assertEquals(BigDecimal.valueOf(3), THREE.toNativeValue());
         assertEquals("3m", THREE.toKernelString());
 
         assertEquals("5", FIVE.toString());
-        assertEquals("5", FIVE.formatValue());
+        assertEquals("5m", FIVE.formatAsKernelString());
         assertEquals(BigDecimal.valueOf(5), FIVE.toNativeValue());
         assertEquals("5m", FIVE.toKernelString());
 
         assertEquals("7", SEVEN.toString());
-        assertEquals("7", SEVEN.formatValue());
+        assertEquals("7m", SEVEN.formatAsKernelString());
         assertEquals(BigDecimal.valueOf(7), SEVEN.toNativeValue());
         assertEquals("7m", SEVEN.toKernelString());
 

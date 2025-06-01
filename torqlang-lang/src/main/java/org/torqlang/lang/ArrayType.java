@@ -11,6 +11,7 @@ import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public interface ArrayType extends StructType, IdentAsType {
+
     String NAME = "Array";
     Ident IDENT = Ident.create(NAME);
 
@@ -19,21 +20,16 @@ public interface ArrayType extends StructType, IdentAsType {
     static ArrayType create(SourceSpan sourceSpan) {
         return new ArrayTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return ArrayType.IDENT;
+    }
 }
 
 final class ArrayTypeImpl extends AbstractLang implements ArrayType {
 
     ArrayTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitArrayType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return ArrayType.IDENT;
     }
 }

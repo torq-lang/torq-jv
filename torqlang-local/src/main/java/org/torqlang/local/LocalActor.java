@@ -728,23 +728,29 @@ final class LocalActor extends AbstractActor {
     }
 
     protected final Envelope[] selectNext(Mailbox mailbox) {
-        Envelope first = mailbox.remove();
-        if (first == null) {
+        Envelope envelope = mailbox.remove();
+        if (envelope == null) {
             // Although there are no messages in the mailbox, we are executable because we contain selectable
             // responses. Therefore, return an empty batch of envelopes. (see isExecutable)
             return new Envelope[0];
         }
-        if (!first.isResponse()) {
-            return new Envelope[]{first};
+        // Process requests or notifications one at a time
+        if (!envelope.isResponse()) {
+            return new Envelope[]{envelope};
         }
-        ArrayList<Envelope> responses = new ArrayList<>();
-        responses.add(first);
-        Envelope nextEnvelope = mailbox.peek();
-        while (nextEnvelope != null && nextEnvelope.isResponse()) {
-            responses.add(mailbox.remove());
-            nextEnvelope = mailbox.peek();
+        // Process multiple adjacent responses if possible
+        Envelope peekNext = mailbox.peek();
+        if (peekNext == null || !peekNext.isResponse()) {
+            return new Envelope[]{envelope};
         }
-        return responses.toArray(new Envelope[0]);
+        // We have at least two responses, so accumulate multiple responses
+        ArrayList<Envelope> list = new ArrayList<>();
+        list.add(envelope);
+        do {
+            list.add(mailbox.remove());
+            peekNext = mailbox.peek();
+        } while (peekNext != null && peekNext.isResponse());
+        return list.toArray(new Envelope[0]);
     }
 
     private void sendResponse(List<CompleteOrIdent> ys, Env env, Machine machine) throws WaitVarException {

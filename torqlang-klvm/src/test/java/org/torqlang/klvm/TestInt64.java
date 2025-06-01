@@ -197,17 +197,17 @@ public class TestInt64 {
     public void testToValues() {
 
         assertEquals("3", THREE.toString());
-        assertEquals("3", THREE.formatValue());
+        assertEquals("3L", THREE.formatAsKernelString());
         assertEquals(3L, THREE.toNativeValue());
         assertEquals("3L", THREE.toKernelString());
 
         assertEquals("5", FIVE.toString());
-        assertEquals("5", FIVE.formatValue());
+        assertEquals("5L", FIVE.formatAsKernelString());
         assertEquals(5L, FIVE.toNativeValue());
         assertEquals("5L", FIVE.toKernelString());
 
         assertEquals("7", SEVEN.toString());
-        assertEquals("7", SEVEN.formatValue());
+        assertEquals("7L", SEVEN.formatAsKernelString());
         assertEquals(7L, SEVEN.toNativeValue());
         assertEquals("7L", SEVEN.toKernelString());
 

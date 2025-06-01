@@ -28,7 +28,7 @@ final class Flt64Impl implements Flt64 {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFlt64(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -169,7 +169,8 @@ final class Flt64Impl implements Flt64 {
         return (float) value;
     }
 
-    public final String formatValue() {
+    @Override
+    public final String formatAsKernelString() {
         return Double.toString(value);
     }
 
@@ -313,7 +314,7 @@ final class Flt64Impl implements Flt64 {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return "" + value;
     }
 
 }

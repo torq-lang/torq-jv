@@ -35,7 +35,7 @@ actor SuppliersApiHandler() in
 
     import system.lang.{Int64, Rec, ValueIter}
     import system.util.{ArrayList, LocalDate}
-    import examples.NorthwindDb
+    import northwind.NorthwindDb
 
     meta#{'export'}
     handle ask 'GET'#{'headers': headers, 'path': ['suppliers'], 'query': query, 'context': context} ->

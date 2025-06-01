@@ -40,5 +40,5 @@ public interface ActorSystem {
 
     String name();
 
-    CompleteRec packageAt(String path);
+    CompleteRec packageAt(String qualifier);
 }

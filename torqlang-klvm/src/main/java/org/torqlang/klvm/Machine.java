@@ -7,6 +7,8 @@
 
 package org.torqlang.klvm;
 
+import java.util.List;
+
 public final class Machine {
 
     private final Object owner;
@@ -94,9 +96,9 @@ public final class Machine {
         return entry;
     }
 
-    public final void pushStackEntries(InstrList instrList, Env env) {
-        for (InstrList.Entry current = instrList.lastEntry(); current != null; current = current.prev()) {
-            stack = new Stack(current.instr(), env, stack);
+    public final void pushStackEntries(List<Instr> instrs, Env env) {
+        for (int i = instrs.size() - 1; i >= 0; i--) {
+            stack = new Stack(instrs.get(i), env, stack);
         }
     }
 

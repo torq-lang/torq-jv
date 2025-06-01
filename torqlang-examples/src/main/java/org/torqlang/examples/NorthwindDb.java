@@ -40,11 +40,13 @@ public final class NorthwindDb extends AbstractActor {
         Address writerAddress = Address.create(address, "writer");
         // ID = 1
         writer = new NorthwindWriter(1, writerAddress, system, cache, readLatency);
+        logger().info("Writer created: " + writerAddress);
         readers = new NorthwindReader[concurrency - 2];
         for (int i = 0; i < readers.length; i++) {
             Address readerAddress = Address.create(address, "reader" + i);
             // IDs = 2 through (concurrency - 1)
             readers[i] = new NorthwindReader(i + 2, readerAddress, system, cache, readLatency);
+            logger().info("Reader created: " + readerAddress);
         }
     }
 

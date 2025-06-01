@@ -172,19 +172,19 @@ public class TestChar {
     public void testToValues() {
 
         assertEquals("A", A.toString());
-        assertEquals("A", A.formatValue());
+        assertEquals("&'A'", A.formatAsKernelString());
         assertEquals(Character.valueOf('A'), A.toNativeValue());
-        assertEquals("&A", A.toKernelString());
+        assertEquals("&'A'", A.toKernelString());
 
         assertEquals("C", C.toString());
-        assertEquals("C", C.formatValue());
+        assertEquals("&'C'", C.formatAsKernelString());
         assertEquals(Character.valueOf('C'), C.toNativeValue());
-        assertEquals("&C", C.toKernelString());
+        assertEquals("&'C'", C.toKernelString());
 
         assertEquals("E", E.toString());
-        assertEquals("E", E.formatValue());
+        assertEquals("&'E'", E.formatAsKernelString());
         assertEquals(Character.valueOf('E'), E.toNativeValue());
-        assertEquals("&E", E.toKernelString());
+        assertEquals("&'E'", E.toKernelString());
 
         Char c;
 

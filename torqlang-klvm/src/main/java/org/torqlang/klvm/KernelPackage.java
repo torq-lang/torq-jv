@@ -9,5 +9,5 @@ package org.torqlang.klvm;
 
 public interface KernelPackage {
     CompleteRec members();
-    String path();
+    String qualifier();
 }

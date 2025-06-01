@@ -21,7 +21,7 @@ public final class Eof implements Literal {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitEof(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -30,8 +30,8 @@ public final class Eof implements Literal {
     }
 
     @Override
-    public final String formatValue() {
-        return "eof";
+    public final String formatAsKernelString() {
+        return EOF_NAME;
     }
 
     @Override
@@ -46,7 +46,7 @@ public final class Eof implements Literal {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return EOF_NAME;
     }
 
 }

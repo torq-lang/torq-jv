@@ -197,17 +197,17 @@ public class TestInt32 {
     public void testToValues() {
 
         assertEquals("3", THREE.toString());
-        assertEquals("3", THREE.formatValue());
+        assertEquals("3", THREE.formatAsKernelString());
         assertEquals(3, THREE.toNativeValue());
         assertEquals("3", THREE.toKernelString());
 
         assertEquals("5", FIVE.toString());
-        assertEquals("5", FIVE.formatValue());
+        assertEquals("5", FIVE.formatAsKernelString());
         assertEquals(5, FIVE.toNativeValue());
         assertEquals("5", FIVE.toKernelString());
 
         assertEquals("7", SEVEN.toString());
-        assertEquals("7", SEVEN.formatValue());
+        assertEquals("7", SEVEN.formatAsKernelString());
         assertEquals(7, SEVEN.toNativeValue());
         assertEquals("7", SEVEN.toKernelString());
 

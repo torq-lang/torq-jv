@@ -31,7 +31,7 @@ public final class Int64AsPat extends AbstractLang implements FeatureAsPat {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitInt64AsPat(this, state);
+        return visitor.visitFeatureAsPat(this, state);
     }
 
     public final Int64 int64() {

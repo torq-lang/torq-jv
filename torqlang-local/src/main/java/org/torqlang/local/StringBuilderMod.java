@@ -38,6 +38,11 @@ final class StringBuilderMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return STRING_BUILDER_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final StringBuilderMod SINGLETON = new StringBuilderMod();
     }

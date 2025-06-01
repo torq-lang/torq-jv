@@ -20,7 +20,7 @@ public final class EofAsPat extends AbstractLang implements LiteralAsPat {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitEofAsPat(this, state);
+        return visitor.visitFeatureAsPat(this, state);
     }
 
     @Override

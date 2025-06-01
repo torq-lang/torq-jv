@@ -25,13 +25,23 @@ public final class SystemSourceBroker {
                     new Entry(new FileName(FileType.FOLDER, "torqsrc"), List.of(
                         new Entry(new FileName(FileType.FOLDER, "system"), List.of(
                             new Entry(new FileName(FileType.FOLDER, "lang"), List.of(
+                                new Entry(new FileName(FileType.SOURCE, "Cell.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "FieldIter.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "Int32.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "Int64.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "RangeIter.torq"), null),
                                 new Entry(new FileName(FileType.SOURCE, "Rec.torq"), null),
-                                new Entry(new FileName(FileType.SOURCE, "Str.torq"), null)
+                                new Entry(new FileName(FileType.SOURCE, "Str.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "Token.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "ValueIter.torq"), null)
                             )),
                             new Entry(new FileName(FileType.FOLDER, "util"), List.of(
                                 new Entry(new FileName(FileType.SOURCE, "ArrayList.torq"), null),
                                 new Entry(new FileName(FileType.SOURCE, "HashMap.torq"), null),
-                                new Entry(new FileName(FileType.SOURCE, "Message.torq"), null)
+                                new Entry(new FileName(FileType.SOURCE, "LocalDate.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "Message.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "StringBuilder.torq"), null),
+                                new Entry(new FileName(FileType.SOURCE, "Timer.torq"), null)
                             ))
                         ))
                     ))

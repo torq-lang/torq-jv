@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.Char;
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class CharAsType extends AbstractLang implements CharType, NumAsType {
@@ -28,17 +27,11 @@ public final class CharAsType extends AbstractLang implements CharType, NumAsTyp
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitCharAsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     @Override
-    public final Ident typeIdent() {
-        return CharType.IDENT;
-    }
-
-    @Override
-    public final Char typeValue() {
+    public final Char value() {
         return charNum;
     }
-
 }

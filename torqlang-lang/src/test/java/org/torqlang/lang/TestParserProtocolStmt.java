@@ -95,7 +95,7 @@ public class TestParserProtocolStmt {
             assertEquals("HelloWorld", protocolStmt.name.ident.name);
             assertEquals(1, protocolStmt.typeParams.size());
             TypeParam typeParam = protocolStmt.typeParams.get(0);
-            assertEquals("T", typeParam.ident.name);
+            assertEquals("T", typeParam.name().ident().name);
             assertInstanceOf(ProtocolStruct.class, protocolStmt.body);
             ProtocolStruct protocolStruct = (ProtocolStruct) protocolStmt.body;
             assertEquals(1, protocolStruct.handlers.size());
@@ -115,7 +115,7 @@ public class TestParserProtocolStmt {
             IdentAsPat identPat = (IdentAsPat) fieldPat.value;
             assertEquals("sender", identPat.ident.name);
             assertFalse(identPat.escaped);
-            assertEquals("T", asIdentAsType(identPat.type).typeIdent().name);
+            assertEquals("T", asIdentAsType(identPat.type).ident().name);
         } catch (Exception exc) {
             printWithSourceAndRethrow(exc, 5, 50, 50);
         }

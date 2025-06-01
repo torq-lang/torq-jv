@@ -12,7 +12,7 @@ import org.torqlang.klvm.*;
 public interface FeatureAsType extends ScalarAsType {
 
     static int compare(FeatureAsType a, FeatureAsType b) {
-        return FeatureComparator.SINGLETON.compare(a.typeValue(), b.typeValue());
+        return FeatureComparator.SINGLETON.compare(a.value(), b.value());
     }
 
     static FeatureAsType create(Feature feature) {
@@ -34,5 +34,5 @@ public interface FeatureAsType extends ScalarAsType {
         throw new IllegalArgumentException("Feature not valid as a type: " + feature);
     }
 
-    Feature typeValue();
+    Feature value();
 }

@@ -7,9 +7,9 @@
 
 package org.torqlang.examples;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NorthwindCache {
-    Map<String, NorthwindColl> data = new HashMap<>();
+    Map<String, NorthwindColl> data = new ConcurrentHashMap<>();
 }

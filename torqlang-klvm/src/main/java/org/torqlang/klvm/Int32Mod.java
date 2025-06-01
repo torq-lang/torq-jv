@@ -51,6 +51,11 @@ public final class Int32Mod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return INT32_IDENT;
+    }
+
     private static final class Int32Cls implements CompleteObj {
 
         private static final CompleteProc INT32_CLS_PARSE = Int32Mod::clsParse;

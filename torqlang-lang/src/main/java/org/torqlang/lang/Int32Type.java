@@ -20,21 +20,16 @@ public interface Int32Type extends IdentAsType, NumType {
     static Int32Type create(SourceSpan sourceSpan) {
         return new Int32TypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return Int32Type.IDENT;
+    }
 }
 
 final class Int32TypeImpl extends AbstractLang implements Int32Type {
 
     Int32TypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitInt32Type(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return Int32Type.IDENT;
     }
 }

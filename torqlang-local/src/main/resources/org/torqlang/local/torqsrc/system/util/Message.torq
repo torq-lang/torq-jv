@@ -6,5 +6,5 @@ type Message = {
     'type': 'ERROR' | 'INFO' | 'WARN',
     'message': Str,
     'details': Str,
-    'trace_id': Str,
+    'traceId': Str,
 }

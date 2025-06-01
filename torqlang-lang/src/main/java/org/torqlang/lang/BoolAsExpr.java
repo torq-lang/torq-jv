@@ -24,7 +24,7 @@ public final class BoolAsExpr extends AbstractLang implements ScalarAsExpr, Labe
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitBoolAsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     @Override

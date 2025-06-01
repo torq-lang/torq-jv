@@ -51,6 +51,11 @@ final class IntPublisherMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return INT_PUBLISHER_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final IntPublisherMod SINGLETON = new IntPublisherMod();
     }

@@ -24,24 +24,25 @@ import static org.torqlang.klvm.CommonFeatures.$NEW;
  *
  * BASIC PROCESSING:
  *
- * -- A node generates its kernel instructions into the given target scope.
+ * -- A node generates its kernel instructions into the offered target scope.
  * -- If a node traverses other nodes, it creates and offers a child scope when it traverses them.
  *
  * EXPRESSION NODES:
  *
- * -- A child node always returns a value or identifier so that the caller can use the value or identifier as an
- *    argument.
- * -- If a child node is a sub-expression, the parent node may offer an identifier. If offered an identifier, the child
- *    node binds its result to the offered identifier and clears the offering by calling
- *    `LocalTarget.clearOfferedIdent()`. If not offered an identifier, the child node creates an identifier and adds it
- *    to the target scope. Finally, the child node returns either the offered identifier or created identifier.
- * -- If a child node is an identifier or value and is offered an identifier, it binds itself to the offered
- *    identifier and returns either the offered identifier or itself.
+ * -- An expression node always returns a value or identifier so that the caller can use the value or identifier as an
+ *    argument. In essence, an expression node is transformed into a value or identifier.
+ * -- If an expression node is a sub-expression, the parent node may offer an identifier through the child scope. If
+ *    offered an identifier, the child node binds its result to the offered identifier and clears the offering by
+ *    calling `LocalTarget.clearOfferedIdent()`. If not offered an identifier, the child node creates an identifier and
+ *    adds it to the target scope. Finally, the child node returns either the offered identifier or created identifier.
+ * -- If a child node is an identifier or value and is offered an identifier, it binds itself to the offered identifier
+ *    and returns either the offered identifier or itself, respectively.
  *
  * STATEMENT NODES:
- * -- Statement nodes are not offered identifiers because they are not "values".
+ * -- A statement node always returns null because it cannot represent a value or identifier. Likewise, a statement
+ *    node is not offered an identifier because it cannot bind a value to an offering.
  * -- Body sequences are visited such that only the last entry in the sequence can be offered an identifier. If the
- *    body is an expression, it is offered an identifier. Otherwise, no identifier is offered.
+ *    body is an expression, only the last entry is offered an identifier.
  *
  * Ident and Value Expression Processing
  * =====================================
@@ -508,11 +509,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitAnyType(AnyType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitApplyLang(ApplyLang lang, LocalTarget target) throws Exception {
         Ident exprIdent = target.isExprTarget() ? acceptOfferedIdentOrNextSystemVarIdent(target) : null;
         LocalTarget childTarget = target.asExprTargetWithNewScope();
@@ -530,11 +526,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitArrayType(ArrayType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitAskStmt(AskStmt lang, LocalTarget target) throws Exception {
         Ident exprIdent = allocateNextSystemVarIdent();
         LocalTarget askTarget = target.asAskTargetWithNewScope(exprIdent);
@@ -548,31 +539,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     @Override
     public final CompleteOrIdent visitBeginLang(BeginLang lang, LocalTarget target) throws Exception {
         return buildBodyInstrs(lang.body.list, target);
-    }
-
-    @Override
-    public final CompleteOrIdent visitBoolAsExpr(BoolAsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.bool;
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.bool, lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitBoolAsPat(BoolAsPat lang, LocalTarget target) {
-        throw new IllegalStateException("BoolAsPat visited directly");
-    }
-
-    @Override
-    public final CompleteOrIdent visitBoolAsType(BoolAsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitBoolType(BoolType lang, LocalTarget target) {
-        throw new NeedsImpl();
     }
 
     @Override
@@ -606,26 +572,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitCharAsExpr(CharAsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.value();
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.value(), lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitCharAsType(CharAsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitCharType(CharType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitContinueStmt(ContinueStmt lang, LocalTarget target) {
         if (!target.isContinueAllowed()) {
             throw new ContinueNotAllowedError(lang);
@@ -633,26 +579,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         target.setContinueUsed();
         target.addInstr(new JumpThrowInstr(CONTINUE_ID, lang));
         return null;
-    }
-
-    @Override
-    public final CompleteOrIdent visitDec128AsExpr(Dec128AsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.dec128();
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.dec128(), lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitDec128AsType(Dec128AsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitDec128Type(Dec128Type lang, LocalTarget target) {
-        throw new NeedsImpl();
     }
 
     @Override
@@ -672,28 +598,8 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitEofAsExpr(EofAsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.value();
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.value(), lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitEofAsPat(EofAsPat lang, LocalTarget target) {
-        throw new IllegalStateException("EofAsPat visited directly");
-    }
-
-    @Override
-    public final CompleteOrIdent visitEofAsType(EofAsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitEofType(EofType lang, LocalTarget target) {
-        throw new NeedsImpl();
+    public final CompleteOrIdent visitFeatureAsPat(FeatureAsPat lang, LocalTarget target) {
+        throw new IllegalStateException("FeatureAsPat visited directly");
     }
 
     @Override
@@ -708,36 +614,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitFieldType(FieldType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitFlt32AsType(Flt32AsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitFlt32Type(Flt32Type lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitFlt64AsExpr(Flt64AsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.flt64();
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.flt64(), lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitFlt64AsType(Flt64AsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitFlt64Type(Flt64Type lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 
@@ -938,41 +814,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitInt32AsType(Int32AsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitInt32Type(Int32Type lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitInt64AsExpr(Int64AsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.int64();
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.int64(), lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitInt64AsPat(Int64AsPat lang, LocalTarget target) {
-        throw new IllegalStateException("IntAsPat visited directly");
-    }
-
-    @Override
-    public final CompleteOrIdent visitInt64AsType(Int64AsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitInt64Type(Int64Type lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitLocalLang(LocalLang lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNull(target);
         LocalTarget childTarget;
@@ -1066,8 +907,31 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitModuleStmt(ModuleStmt lang, LocalTarget target) {
-        throw new NeedsImpl();
+    public final CompleteOrIdent visitModuleStmt(ModuleStmt lang, LocalTarget target) throws Exception {
+        for (StmtOrExpr stmtOrExpr : lang.body) {
+            if (stmtOrExpr instanceof ImportStmt importStmt) {
+                importStmt.accept(this, target);
+            } else if (stmtOrExpr instanceof ActorStmt actorStmt) {
+                actorStmt.accept(this, target);
+            } else if (stmtOrExpr instanceof FuncStmt funcStmt) {
+                funcStmt.accept(this, target);
+            } else if (stmtOrExpr instanceof ProcStmt procStmt) {
+                procStmt.accept(this, target);
+            } else if (stmtOrExpr instanceof TypeStmt typeStmt) {
+                Ident typeIdent = typeStmt.name().ident();
+                target.addIdentDef(new IdentDef(typeIdent));
+                OpaqueType opaqueType = OpaqueType.create(typeStmt);
+                target.addInstr(new BindCompleteToIdentInstr(opaqueType, typeIdent, typeStmt));
+            } else if (stmtOrExpr instanceof ProtocolStmt protocolStmt) {
+                Ident protocolIdent = protocolStmt.name.ident;
+                target.addIdentDef(new IdentDef(protocolIdent));
+                OpaqueProtocol opaqueProtocol = OpaqueProtocol.create(protocolStmt);
+                target.addInstr(new BindCompleteToIdentInstr(opaqueProtocol, protocolIdent, protocolStmt));
+            } else {
+                throw new IllegalArgumentException("Not a valid module entry");
+            }
+        }
+        return null;
     }
 
     @Override
@@ -1075,7 +939,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         TypeApply typeApply = lang.typeApply;
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
         LocalTarget childTarget = target.asExprTargetWithNewScope();
-        CompleteOrIdent cls = typeApply.name.typeIdent();
+        CompleteOrIdent cls = typeApply.name.ident();
         List<FeatureOrIdent> path = List.of($NEW);
         List<CompleteOrIdent> ys = new ArrayList<>();
         for (StmtOrExpr arg : lang.args) {
@@ -1085,31 +949,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(new SelectAndApplyInstr(cls, path, ys, lang));
         target.addInstr(childTarget.build());
         return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitNullAsExpr(NullAsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.value();
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.value(), lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitNullAsPat(NullAsPat lang, LocalTarget target) {
-        throw new IllegalStateException("NullAsPat visited directly");
-    }
-
-    @Override
-    public final CompleteOrIdent visitNullAsType(NullAsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitNullType(NullType lang, LocalTarget target) {
-        throw new NeedsImpl();
     }
 
     @Override
@@ -1154,7 +993,7 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitPackageStmt(PackageStmt lang, LocalTarget target) {
-        throw new NeedsImpl();
+        throw new IllegalStateException("PackageStmt visited directly");
     }
 
     @Override
@@ -1321,6 +1160,21 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
+    public final CompleteOrIdent visitScalarAsExpr(ScalarAsExpr lang, LocalTarget target) {
+        Ident exprIdent = acceptOfferedIdentOrNull(target);
+        if (exprIdent == null) {
+            return lang.value();
+        }
+        target.addInstr(BindInstr.create(exprIdent, lang.value(), lang));
+        return exprIdent;
+    }
+
+    @Override
+    public final CompleteOrIdent visitScalarAsType(ScalarAsType lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
     public final CompleteOrIdent visitSelectAndApplyLang(SelectAndApplyLang lang, LocalTarget target)
         throws Exception
     {
@@ -1398,31 +1252,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
     }
 
     @Override
-    public final CompleteOrIdent visitStrAsExpr(StrAsExpr lang, LocalTarget target) {
-        Ident exprIdent = acceptOfferedIdentOrNull(target);
-        if (exprIdent == null) {
-            return lang.str;
-        }
-        target.addInstr(BindInstr.create(exprIdent, lang.str, lang));
-        return exprIdent;
-    }
-
-    @Override
-    public final CompleteOrIdent visitStrAsPat(StrAsPat lang, LocalTarget target) {
-        throw new IllegalStateException("StrAsPat visited directly");
-    }
-
-    @Override
-    public final CompleteOrIdent visitStrAsType(StrAsType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final CompleteOrIdent visitStrType(StrType lang, LocalTarget target) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final CompleteOrIdent visitSumExpr(SumExpr lang, LocalTarget target) throws Exception {
         Ident exprIdent = acceptOfferedIdentOrNextSystemVarIdent(target);
         LocalTarget childTarget = target.asExprTargetWithNewScope();
@@ -1455,11 +1284,6 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
         childTarget.addInstr(new ThrowInstr(arg, lang));
         target.addInstr(childTarget.build());
         return null;
-    }
-
-    @Override
-    public final CompleteOrIdent visitTokenType(TokenType lang, LocalTarget target) {
-        throw new NeedsImpl();
     }
 
     @Override
@@ -1577,6 +1401,11 @@ public final class Generator implements LangVisitor<LocalTarget, CompleteOrIdent
 
     @Override
     public final CompleteOrIdent visitTypeApply(TypeApply lang, LocalTarget target) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final CompleteOrIdent visitTypeDecl(TypeDecl lang, LocalTarget target) {
         throw new NeedsImpl();
     }
 

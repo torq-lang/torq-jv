@@ -30,7 +30,7 @@ public final class Dec128AsExpr extends AbstractLang implements NumAsExpr, MetaV
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitDec128AsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     public final Dec128 dec128() {

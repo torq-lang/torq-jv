@@ -20,21 +20,16 @@ public interface Dec128Type extends IdentAsType, NumType {
     static Dec128Type create(SourceSpan sourceSpan) {
         return new Dec128TypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return Dec128Type.IDENT;
+    }
 }
 
 final class Dec128TypeImpl extends AbstractLang implements Dec128Type {
 
     Dec128TypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitDec128Type(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return Dec128Type.IDENT;
     }
 }

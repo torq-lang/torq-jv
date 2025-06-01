@@ -24,7 +24,7 @@ public final class Bool implements Literal {
 
     @Override
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitBool(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -39,7 +39,7 @@ public final class Bool implements Literal {
     }
 
     @Override
-    public final String formatValue() {
+    public final String formatAsKernelString() {
         return value ? "true" : "false";
     }
 
@@ -97,7 +97,7 @@ public final class Bool implements Literal {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return "" + value;
     }
 
 }

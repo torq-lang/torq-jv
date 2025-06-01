@@ -16,6 +16,7 @@ import org.torqlang.local.*;
 import org.torqlang.server.ApiDesc;
 import org.torqlang.server.ApiHandler;
 import org.torqlang.server.ApiRouter;
+import org.torqlang.server.RateLimiter;
 import org.torqlang.util.FileName;
 import org.torqlang.util.FileType;
 import org.torqlang.util.SourceFileBroker;
@@ -36,14 +37,22 @@ public final class NorthwindHandlerFactoryForActors {
 
         SourceFileBroker sourceBroker = ExamplesSourceBroker.createResourcesBrokerForActors();
 
+        // ------------
+        // Actor System
+        // ------------
+
         CompleteRec examplesMod = Rec.completeRecBuilder()
             .addField(NorthwindDbMod.NORTHWIND_DB_STR, NorthwindDbMod.singleton().namesake())
             .build();
 
         ActorSystem system = ActorSystem.builder()
             .addDefaultPackages()
-            .addPackage("examples", examplesMod)
+            .addPackage("northwind", examplesMod)
             .build();
+
+        // ---------
+        // Customers
+        // ---------
 
         ApiDesc customerApiDesc = ApiDesc.builder()
             .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
@@ -61,6 +70,10 @@ public final class NorthwindHandlerFactoryForActors {
             .setSystem(system)
             .actorImage(customersHandlerSource.content());
 
+        // ---------
+        // Employees
+        // ---------
+
         ApiDesc employeeApiDesc = ApiDesc.builder()
             .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
@@ -76,6 +89,10 @@ public final class NorthwindHandlerFactoryForActors {
         ActorImage employeesHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(employeesHandlerSource.content());
+
+        // ------
+        // Orders
+        // ------
 
         ApiDesc orderApiDesc = ApiDesc.builder()
             .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
@@ -98,6 +115,10 @@ public final class NorthwindHandlerFactoryForActors {
             .setSystem(system)
             .actorImage(ordersHandlerSource.content());
 
+        // --------
+        // Products
+        // --------
+
         ApiDesc productApiDesc = ApiDesc.builder()
             .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
             .setContextProvider(NorthwindHandlerFactoryForActors::emptyContextProvider)
@@ -113,6 +134,10 @@ public final class NorthwindHandlerFactoryForActors {
         ActorImage productsHandlerImage = Actor.builder()
             .setSystem(system)
             .actorImage(productsHandlerSource.content());
+
+        // ---------
+        // Suppliers
+        // ---------
 
         ApiDesc supplierApiDesc = ApiDesc.builder()
             .setPathType(TupleTypeExpr.createWithValues(List.of(StrType.SINGLETON, Int64Type.SINGLETON)))
@@ -130,19 +155,32 @@ public final class NorthwindHandlerFactoryForActors {
             .setSystem(system)
             .actorImage(suppliersHandlerSource.content());
 
+        // -----------
+        // API Handler
+        // -----------
+
+        /*
+         * This API system is rate limited to a total of 12,000 transactions per second. Order list query has its own
+         * rate limiter because its throughput is much lower than the others as it returns 48 records where each record
+         * is joined to a customer and an employee for a total of 97 queries per request. The other API routes share
+         * the remaining rate limit set to 10,000 transactions per second.
+         */
+        RateLimiter sharedTenThousandLimit = RateLimiter.create(10_000);
+        RateLimiter ordersTwoThousandLimit = RateLimiter.create(2_000);
+
         return ApiHandler.builder()
             .setRouter(ApiRouter.staticBuilder()
-                .addRoute("/customers", customersHandlerImage, customersApiDesc)
-                .addRoute("/customers/{id}", customersHandlerImage, customerApiDesc)
-                .addRoute("/employees", employeesHandlerImage, employeesApiDesc)
-                .addRoute("/employees/{id}", employeesHandlerImage, employeeApiDesc)
-                .addRoute("/orders", ordersHandlerImage, ordersApiDesc)
-                .addRoute("/orders/{id}", ordersHandlerImage, orderApiDesc)
-                .addRoute("/orders/{id}/details", ordersHandlerImage, orderDetailsApiDesc)
-                .addRoute("/products", productsHandlerImage, productsApiDesc)
-                .addRoute("/products/{id}", productsHandlerImage, productApiDesc)
-                .addRoute("/suppliers", suppliersHandlerImage, suppliersApiDesc)
-                .addRoute("/suppliers/{id}", suppliersHandlerImage, supplierApiDesc)
+                .addRoute("/customers", customersHandlerImage, customersApiDesc, sharedTenThousandLimit)
+                .addRoute("/customers/{id}", customersHandlerImage, customerApiDesc, sharedTenThousandLimit)
+                .addRoute("/employees", employeesHandlerImage, employeesApiDesc, sharedTenThousandLimit)
+                .addRoute("/employees/{id}", employeesHandlerImage, employeeApiDesc, sharedTenThousandLimit)
+                .addRoute("/orders", ordersHandlerImage, ordersApiDesc, ordersTwoThousandLimit)
+                .addRoute("/orders/{id}", ordersHandlerImage, orderApiDesc, sharedTenThousandLimit)
+                .addRoute("/orders/{id}/details", ordersHandlerImage, orderDetailsApiDesc, sharedTenThousandLimit)
+                .addRoute("/products", productsHandlerImage, productsApiDesc, sharedTenThousandLimit)
+                .addRoute("/products/{id}", productsHandlerImage, productApiDesc, sharedTenThousandLimit)
+                .addRoute("/suppliers", suppliersHandlerImage, suppliersApiDesc, sharedTenThousandLimit)
+                .addRoute("/suppliers/{id}", suppliersHandlerImage, supplierApiDesc, sharedTenThousandLimit)
                 .build())
             .build();
     }

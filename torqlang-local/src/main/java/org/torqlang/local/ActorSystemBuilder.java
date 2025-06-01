@@ -16,7 +16,7 @@ import java.util.concurrent.Executor;
 public final class ActorSystemBuilder {
 
     private final Map<Address, ActorRefObj> actorsByAddress = new HashMap<>();
-    private final Map<String, CompleteRec> packagesByPath = new HashMap<>();
+    private final Map<String, CompleteRec> packagesByQualifier = new HashMap<>();
     private String name;
     private Executor executor;
 
@@ -30,26 +30,26 @@ public final class ActorSystemBuilder {
     }
 
     public final ActorSystemBuilder addDefaultPackages() {
-        packagesByPath.putAll(DefaultPackages.singleton().packagesByPath());
+        packagesByQualifier.putAll(DefaultPackages.singleton().packagesByQualifier());
         return this;
     }
 
     public ActorSystemBuilder addPackage(String path, CompleteRec packageRec) {
-        if (packagesByPath.containsKey(path)) {
+        if (packagesByQualifier.containsKey(path)) {
             throw new IllegalArgumentException("Package already exists:" + path);
         }
-        packagesByPath.put(path, packageRec);
+        packagesByQualifier.put(path, packageRec);
         return this;
     }
 
     public final ActorSystem build() {
-        Map<String, CompleteRec> effectivePackagesByPath;
-        if (packagesByPath.isEmpty()) {
-            effectivePackagesByPath = DefaultPackages.singleton().packagesByPath();
+        Map<String, CompleteRec> effectivePackagesByQualifier;
+        if (packagesByQualifier.isEmpty()) {
+            effectivePackagesByQualifier = DefaultPackages.singleton().packagesByQualifier();
         } else {
-            effectivePackagesByPath = packagesByPath;
+            effectivePackagesByQualifier = packagesByQualifier;
         }
-        return new BasicActorSystem(name, executor, actorsByAddress, effectivePackagesByPath);
+        return new BasicActorSystem(name, executor, actorsByAddress, effectivePackagesByQualifier);
     }
 
     public final Executor executor() {
@@ -60,8 +60,8 @@ public final class ActorSystemBuilder {
         return name;
     }
 
-    public final Map<String, CompleteRec> packagesByPath() {
-        return Map.copyOf(packagesByPath);
+    public final Map<String, CompleteRec> packagesByQualifier() {
+        return Map.copyOf(packagesByQualifier);
     }
 
     public final ActorSystemBuilder setExecutor(Executor executor) {

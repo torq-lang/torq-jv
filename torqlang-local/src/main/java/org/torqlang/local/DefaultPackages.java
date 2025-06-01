@@ -14,21 +14,21 @@ import java.util.Map;
 
 public final class DefaultPackages {
 
-    private final Map<String, CompleteRec> packagesByPath;
+    private final Map<String, CompleteRec> packagesByQualifier;
 
     private DefaultPackages() {
         Map<String, CompleteRec> workingMap = new HashMap<>();
-        workingMap.put(SystemLangPackage.singleton().path(), SystemLangPackage.singleton().members());
-        workingMap.put(SystemUtilPackage.singleton().path(), SystemUtilPackage.singleton().members());
-        this.packagesByPath = Map.copyOf(workingMap);
+        workingMap.put(SystemLangPackage.singleton().qualifier(), SystemLangPackage.singleton().members());
+        workingMap.put(SystemUtilPackage.singleton().qualifier(), SystemUtilPackage.singleton().members());
+        this.packagesByQualifier = Map.copyOf(workingMap);
     }
 
     public static DefaultPackages singleton() {
         return LazySingleton.SINGLETON;
     }
 
-    public final Map<String, CompleteRec> packagesByPath() {
-        return packagesByPath;
+    public final Map<String, CompleteRec> packagesByQualifier() {
+        return packagesByQualifier;
     }
 
     private static final class LazySingleton {

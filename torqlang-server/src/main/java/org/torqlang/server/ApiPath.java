@@ -14,9 +14,14 @@ public final class ApiPath implements Comparable<ApiPath> {
 
     public final List<String> segs;
 
-    public ApiPath(String path) {
+    private ApiPath(List<String> segs) {
+        this.segs = segs;
+    }
+
+    public static ApiPath parse(String path) {
+        List<String> segs;
         if (path.equals("/")) {
-            this.segs = List.of();
+            segs = List.of();
         } else {
             if (path.isEmpty() || path.charAt(0) != '/') {
                 throw new IllegalArgumentException("Does not begin with a '/': " + path);
@@ -25,8 +30,9 @@ public final class ApiPath implements Comparable<ApiPath> {
                 throw new IllegalArgumentException("Cannot end with a '/': " + path);
             }
             List<String> segsParsed = List.of(path.split("/"));
-            this.segs = segsParsed.subList(1, segsParsed.size());
+            segs = segsParsed.subList(1, segsParsed.size());
         }
+        return new ApiPath(segs);
     }
 
     private static int compareSeg(String seg, String targetSeg) {

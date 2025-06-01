@@ -20,7 +20,7 @@ public final class NullAsExpr extends AbstractLang implements ScalarAsExpr, Labe
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitNullAsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     @Override

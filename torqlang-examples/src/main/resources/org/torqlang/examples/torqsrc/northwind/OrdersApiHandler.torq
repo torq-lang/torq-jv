@@ -68,7 +68,7 @@ meta#{'export': 'api-handler'}
 actor OrdersApiHandler() implements OrdersApi in
     import system.lang.{Int64, Rec, ValueIter}
     import system.util.{ArrayList, LocalDate}
-    import examples.NorthwindDb
+    import northwind.NorthwindDb
 
     meta#{'export', 'response-codes': {'Array[OrderWithCustomerAndEmployee]': 200, 'Message': 400}}
     handle ask 'GET'#{'headers': headers, 'path': ['orders'], 'query': query, 'context': context, ...} ->

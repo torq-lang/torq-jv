@@ -128,6 +128,11 @@ final class ArrayListMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return ARRAY_LIST_IDENT;
+    }
+
     static final class ArrayListCls implements CompleteObj {
 
         private static final CompleteProc ARRAY_LIST_CLS_NEW = ArrayListMod::clsNew;

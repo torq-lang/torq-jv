@@ -65,6 +65,11 @@ final class TimerMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return TIMER_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final TimerMod SINGLETON = new TimerMod();
     }

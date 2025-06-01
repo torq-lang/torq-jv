@@ -7,15 +7,15 @@
 
 package org.torqlang.local;
 
+import org.torqlang.util.MessageType;
 import org.torqlang.util.SourceFileBroker;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public interface TorqCompilerReady {
-    TorqCompilerReady setMessageListener(Consumer<String> messageListener);
-
     TorqCompilerReady setWorkspace(List<SourceFileBroker> fileBrokers);
 
     TorqCompilerParsed parse() throws Exception;
+
+    TorqCompilerReady setLoggingLevel(MessageType loggingLevel);
 }

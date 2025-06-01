@@ -7,6 +7,11 @@
 
 package org.torqlang.local;
 
+import org.torqlang.util.Message;
+
+import java.util.List;
+
 public interface TorqCompilerParsed {
     TorqCompilerCollected collect() throws Exception;
+    List<Message> messages();
 }

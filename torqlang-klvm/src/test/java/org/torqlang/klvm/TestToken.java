@@ -69,7 +69,7 @@ public class TestToken {
     @Test
     public void testToValues() {
         assertTrue(t1.toString().startsWith("$token"));
-        assertTrue(t1.formatValue().startsWith("$token"));
+        assertTrue(t1.formatAsKernelString().startsWith("$token"));
         assertTrue(t1.toNativeValue().startsWith("org.torqlang.klvm.Token."));
         assertTrue(t1.toKernelString().startsWith("$token"));
     }
@@ -81,15 +81,15 @@ public class TestToken {
         hm.put(t2, "2");
         hm.put(t3, "3");
         assertEquals(3, hm.size());
-        assertEquals(hm.get(t1), "1");
-        assertEquals(hm.get(t2), "2");
-        assertEquals(hm.get(t3), "3");
-        assertNotEquals(hm.get(t1), "2");
-        assertEquals(hm.remove(t1), "1");
+        assertEquals("1", hm.get(t1));
+        assertEquals("2", hm.get(t2));
+        assertEquals("3", hm.get(t3));
+        assertNotEquals("2", hm.get(t1));
+        assertEquals("1", hm.remove(t1));
         assertEquals(2, hm.size());
-        assertEquals(hm.remove(t2), "2");
+        assertEquals("2", hm.remove(t2));
         assertEquals(1, hm.size());
-        assertEquals(hm.remove(t3), "3");
+        assertEquals("3", hm.remove(t3));
         assertEquals(0, hm.size());
     }
 

@@ -10,5 +10,10 @@ package org.torqlang.lang;
 import org.torqlang.klvm.Complete;
 
 public interface ScalarAsType extends Type {
-    Complete typeValue();
+    @Override
+    default <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
+        return visitor.visitScalarAsType(this, state);
+    }
+
+    Complete value();
 }

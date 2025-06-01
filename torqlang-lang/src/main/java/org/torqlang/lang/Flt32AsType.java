@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.Flt32;
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class Flt32AsType extends AbstractLang implements Flt32Type, NumAsType {
@@ -28,17 +27,11 @@ public final class Flt32AsType extends AbstractLang implements Flt32Type, NumAsT
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFlt32AsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     @Override
-    public final Ident typeIdent() {
-        return Flt32Type.IDENT;
-    }
-
-    @Override
-    public final Flt32 typeValue() {
+    public final Flt32 value() {
         return flt32;
     }
-
 }

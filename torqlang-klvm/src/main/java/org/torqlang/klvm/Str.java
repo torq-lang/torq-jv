@@ -8,6 +8,7 @@
 package org.torqlang.klvm;
 
 import org.torqlang.util.EscapeChar;
+import org.torqlang.util.SourceString;
 
 import java.util.Set;
 
@@ -26,6 +27,28 @@ public final class Str implements Literal {
         this.value = value;
     }
 
+    private static char decodeChar(char encodedChar) {
+        if (encodedChar == 'r') {
+            return '\r';
+        } else if (encodedChar == 'n') {
+            return '\n';
+        } else if (encodedChar == 't') {
+            return '\t';
+        } else if (encodedChar == 'f') {
+            return '\f';
+        } else if (encodedChar == 'b') {
+            return '\b';
+        } else if (encodedChar == '\\') {
+            return '\\';
+        } else if (encodedChar == '\'') {
+            return '\'';
+        } else if (encodedChar == '"') {
+            return '"';
+        } else {
+            throw new IllegalArgumentException("Invalid escape sequence: \\" + encodedChar);
+        }
+    }
+
     public static Str of(String value) {
         return new Str(value);
     }
@@ -40,16 +63,17 @@ public final class Str implements Literal {
         sb.append(delimiter);
         for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
-            //noinspection UnnecessaryUnicodeEscape
-            if (c < '\u0020') {
+            if (c < ' ') {
+                // These characters are less than unicode \\u0020 and are encoded as their well known escaped literal
+                // \r, \n, \t, \f, \b or simply encoded as a unicode literal \uFFFF where FFFF is the value less
+                // than 0020.
                 EscapeChar.apply(c, sb);
             } else {
                 if (c == '\\') {
                     sb.append("\\\\");
-                } else if (c == '\'') {
-                    sb.append("\\'");
-                } else if (c == '"') {
-                    sb.append("\\\"");
+                } else if (c == delimiter) {
+                    sb.append("\\");
+                    sb.append(delimiter);
                 } else {
                     sb.append(c);
                 }
@@ -58,9 +82,63 @@ public final class Str implements Literal {
         sb.append(delimiter);
     }
 
+    public static String unquote(SourceString source, int begin, int end) {
+        begin = begin + 1;
+        end = end - 1;
+        StringBuilder sb = new StringBuilder((end - begin) * 2);
+        int i = begin;
+        while (i < end) {
+            char c1 = source.charAt(i);
+            if (c1 == '\\') {
+                char c2 = source.charAt(i + 1);
+                if (c2 == 'u') {
+                    int code = Integer.parseInt("" + source.charAt(i + 2) + source.charAt(i + 3) +
+                        source.charAt(i + 4) + source.charAt(i + 5), 16);
+                    sb.append(Character.toChars(code));
+                    i += 6;
+                } else {
+                    c1 = decodeChar(c2);
+                    sb.append(c1);
+                    i += 2;
+                }
+            } else {
+                sb.append(c1);
+                i++;
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String unquote(String source, int begin, int end) {
+        begin = begin + 1;
+        end = end - 1;
+        StringBuilder sb = new StringBuilder((end - begin) * 2);
+        int i = begin;
+        while (i < end) {
+            char c1 = source.charAt(i);
+            if (c1 == '\\') {
+                char c2 = source.charAt(i + 1);
+                if (c2 == 'u') {
+                    int code = Integer.parseInt("" + source.charAt(i + 2) + source.charAt(i + 3) +
+                        source.charAt(i + 4) + source.charAt(i + 5), 16);
+                    sb.append(Character.toChars(code));
+                    i += 6;
+                } else {
+                    c1 = decodeChar(c2);
+                    sb.append(c1);
+                    i += 2;
+                }
+            } else {
+                sb.append(c1);
+                i++;
+            }
+        }
+        return sb.toString();
+    }
+
     @Override
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitStr(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -99,8 +177,8 @@ public final class Str implements Literal {
     }
 
     @Override
-    public final String formatValue() {
-        return value;
+    public final String formatAsKernelString() {
+        return Str.quote(value, '\'');
     }
 
     @Override
@@ -157,7 +235,7 @@ public final class Str implements Literal {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return value;
     }
 
 }

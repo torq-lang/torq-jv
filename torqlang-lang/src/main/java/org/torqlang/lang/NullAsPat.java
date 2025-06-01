@@ -20,7 +20,7 @@ public final class NullAsPat extends AbstractLang implements LiteralAsPat {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitNullAsPat(this, state);
+        return visitor.visitFeatureAsPat(this, state);
     }
 
     @Override

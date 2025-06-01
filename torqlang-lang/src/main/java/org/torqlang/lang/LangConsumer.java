@@ -56,23 +56,11 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
-    public final Void visitAnyType(AnyType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
     public final Void visitApplyLang(ApplyLang lang, Consumer<Lang> state) throws Exception {
         lang.proc.accept(this, state);
         for (StmtOrExpr sox : lang.args) {
             sox.accept(this, state);
         }
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitArrayType(ArrayType lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
     }
@@ -90,30 +78,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     @Override
     public final Void visitBeginLang(BeginLang lang, Consumer<Lang> state) throws Exception {
         lang.body.accept(this, state);
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitBoolAsExpr(BoolAsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitBoolAsPat(BoolAsPat lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitBoolAsType(BoolAsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitBoolType(BoolType lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
     }
@@ -154,24 +118,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
         return null;
     }
 
-    @Override
-    public final Void visitCharAsExpr(CharAsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitCharAsType(CharAsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitCharType(CharType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
     private void visitConditionally(Lang lang, Consumer<Lang> state) throws Exception {
         if (lang != null) {
             lang.accept(this, state);
@@ -185,24 +131,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
-    public final Void visitDec128AsExpr(Dec128AsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitDec128AsType(Dec128AsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitDec128Type(Dec128Type lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
     public final Void visitDotSelectExpr(DotSelectExpr lang, Consumer<Lang> state) throws Exception {
         lang.recExpr.accept(this, state);
         lang.featureExpr.accept(this, state);
@@ -211,25 +139,7 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
-    public final Void visitEofAsExpr(EofAsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitEofAsPat(EofAsPat lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitEofAsType(EofAsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitEofType(EofType lang, Consumer<Lang> state) {
+    public final Void visitFeatureAsPat(FeatureAsPat lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
     }
@@ -254,36 +164,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     public final Void visitFieldType(FieldType lang, Consumer<Lang> state) throws Exception {
         lang.feature.accept(this, state);
         lang.value.accept(this, state);
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitFlt32AsType(Flt32AsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitFlt32Type(Flt32Type lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitFlt64AsExpr(Flt64AsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitFlt64AsType(Flt64AsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitFlt64Type(Flt64Type lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
     }
@@ -422,42 +302,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
-    public final Void visitInt32AsType(Int32AsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitInt32Type(Int32Type lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitInt64AsExpr(Int64AsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitInt64AsType(Int64AsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitInt64Type(Int64Type lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitInt64AsPat(Int64AsPat lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
     public final Void visitIntersectionProtocol(IntersectionProtocol lang, Consumer<Lang> state) throws Exception {
         lang.arg1.accept(this, state);
         lang.arg2.accept(this, state);
@@ -525,30 +369,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
         for (StmtOrExpr arg : lang.args) {
             arg.accept(this, state);
         }
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitNullAsExpr(NullAsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitNullAsPat(NullAsPat lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitNullAsType(NullAsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitNullType(NullType lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
     }
@@ -721,6 +541,18 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
+    public final Void visitScalarAsExpr(ScalarAsExpr lang, Consumer<Lang> state) {
+        state.accept(lang);
+        return null;
+    }
+
+    @Override
+    public final Void visitScalarAsType(ScalarAsType lang, Consumer<Lang> state) {
+        state.accept(lang);
+        return null;
+    }
+
+    @Override
     public final Void visitSelectAndApplyLang(SelectAndApplyLang lang, Consumer<Lang> state) throws Exception {
         lang.selectExpr.accept(this, state);
         for (StmtOrExpr sox : lang.args) {
@@ -763,30 +595,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
-    public final Void visitStrAsExpr(StrAsExpr lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitStrAsPat(StrAsPat lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitStrAsType(StrAsType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitStrType(StrType lang, Consumer<Lang> state) {
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
     public final Void visitSumExpr(SumExpr lang, Consumer<Lang> state) throws Exception {
         lang.arg1.accept(this, state);
         lang.arg2.accept(this, state);
@@ -806,12 +614,6 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     @Override
     public final Void visitThrowLang(ThrowLang lang, Consumer<Lang> state) throws Exception {
         lang.arg.accept(this, state);
-        state.accept(lang);
-        return null;
-    }
-
-    @Override
-    public final Void visitTokenType(TokenType lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
     }
@@ -874,6 +676,16 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
     }
 
     @Override
+    public final Void visitTypeDecl(TypeDecl lang, Consumer<Lang> state) throws Exception {
+        lang.name.accept(this, state);
+        for (TypeParam p : lang.typeParams) {
+            p.accept(this, state);
+        }
+        state.accept(lang);
+        return null;
+    }
+
+    @Override
     public final Void visitTypeParam(TypeParam lang, Consumer<Lang> state) {
         state.accept(lang);
         return null;
@@ -881,10 +693,7 @@ public class LangConsumer implements LangVisitor<Consumer<Lang>, Void> {
 
     @Override
     public final Void visitTypeStmt(TypeStmt lang, Consumer<Lang> state) throws Exception {
-        lang.name.accept(this, state);
-        for (TypeParam p : lang.typeParams) {
-            p.accept(this, state);
-        }
+        lang.typeDecl.accept(this, state);
         lang.body.accept(this, state);
         state.accept(lang);
         return null;

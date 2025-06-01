@@ -19,21 +19,16 @@ public interface TokenType extends IdentAsType {
     static TokenType create(SourceSpan sourceSpan) {
         return new TokenTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return TokenType.IDENT;
+    }
 }
 
 final class TokenTypeImpl extends AbstractLang implements TokenType {
 
     TokenTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitTokenType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return TokenType.IDENT;
     }
 }

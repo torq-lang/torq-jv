@@ -11,28 +11,35 @@ import org.torqlang.local.ActorImage;
 import org.torqlang.local.ActorRef;
 import org.torqlang.local.Address;
 
+@SuppressWarnings("ClassCanBeRecord")
 public final class ApiRoute {
 
     public final ApiPath path;
     public final ApiTarget target;
     public final ApiDesc desc;
+    public final RateLimiter rateLimiter;
 
-    public ApiRoute(ApiPath path, ApiTarget target, ApiDesc desc) {
+    public ApiRoute(ApiPath path, ApiTarget target, ApiDesc desc, RateLimiter rateLimiter) {
         this.path = path;
         this.target = target;
         this.desc = desc;
+        this.rateLimiter = rateLimiter;
     }
 
-    public ApiRoute(ApiPath path, ActorImage actorImage, ApiDesc desc) {
-        this(path, ApiTarget.create(toAddress(path), actorImage), desc);
+    public static ApiRoute create(ApiPath path, ActorImage actorImage, ApiDesc desc) {
+        return new ApiRoute(path, ApiTarget.create(toAddress(path), actorImage), desc, null);
     }
 
-    public ApiRoute(ApiPath path, Address address, ActorImage actorImage, ApiDesc desc) {
-        this(path, ApiTarget.create(address, actorImage), desc);
+    public static ApiRoute create(ApiPath path, ActorImage actorImage, ApiDesc desc, RateLimiter rateLimiter) {
+        return new ApiRoute(path, ApiTarget.create(toAddress(path), actorImage), desc, rateLimiter);
     }
 
-    public ApiRoute(ApiPath path, ActorRef actorRef, ApiDesc desc) {
-        this(path, ApiTarget.create(actorRef), desc);
+    public static ApiRoute create(ApiPath path, ActorRef actorRef, ApiDesc desc) {
+        return new ApiRoute(path, ApiTarget.create(actorRef), desc, null);
+    }
+
+    public static ApiRoute create(ApiPath path, ActorRef actorRef, ApiDesc desc, RateLimiter rateLimiter) {
+        return new ApiRoute(path, ApiTarget.create(actorRef), desc, rateLimiter);
     }
 
     public static Address toAddress(ApiPath path) {

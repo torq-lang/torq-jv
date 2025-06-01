@@ -15,6 +15,9 @@ public interface Kernel {
 
     <T, R> R accept(KernelVisitor<T, R> visitor, T state) throws Exception;
 
+    /*
+     * See FormatAsKernelString
+     */
     default String toKernelString() {
         return KernelFormatter.DEFAULT.format(this);
     }

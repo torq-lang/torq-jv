@@ -20,21 +20,16 @@ public interface StrType extends IdentAsType, ScalarType {
     static StrType create(SourceSpan sourceSpan) {
         return new StrTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return StrType.IDENT;
+    }
 }
 
 final class StrTypeImpl extends AbstractLang implements StrType {
 
     StrTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitStrType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return StrType.IDENT;
     }
 }

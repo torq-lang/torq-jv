@@ -20,7 +20,7 @@ public final class EofAsExpr extends AbstractLang implements ScalarAsExpr, Label
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitEofAsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     @Override

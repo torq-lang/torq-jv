@@ -89,6 +89,11 @@ final class HashMapMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return HASH_MAP_IDENT;
+    }
+
     static final class HashMapCls implements CompleteObj {
 
         private static final CompleteProc HASH_MAP_CLS_NEW = HashMapMod::clsNew;

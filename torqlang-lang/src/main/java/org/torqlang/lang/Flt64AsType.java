@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.Flt64;
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class Flt64AsType extends AbstractLang implements Flt64Type, NumAsType {
@@ -38,7 +37,7 @@ public final class Flt64AsType extends AbstractLang implements Flt64Type, NumAsT
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFlt64AsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     public final String fltText() {
@@ -46,17 +45,11 @@ public final class Flt64AsType extends AbstractLang implements Flt64Type, NumAsT
     }
 
     @Override
-    public final Ident typeIdent() {
-        return Flt64Type.IDENT;
-    }
-
-    @Override
-    public final Flt64 typeValue() {
+    public final Flt64 value() {
         if (fltText != null) {
             flt64 = (Flt64) NumAsExpr.parseAsFlt32OrFlt64OrDec128(fltText);
             fltText = null;
         }
         return flt64;
     }
-
 }

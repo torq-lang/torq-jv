@@ -53,6 +53,11 @@ public final class RangeIterMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return RANGE_ITER_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final RangeIterMod SINGLETON = new RangeIterMod();
     }

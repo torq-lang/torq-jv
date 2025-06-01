@@ -35,7 +35,7 @@ public final class Token implements Literal {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitToken(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -56,7 +56,7 @@ public final class Token implements Literal {
     }
 
     @Override
-    public final String formatValue() {
+    public final String formatAsKernelString() {
         return "$token(" + id + ")";
     }
 
@@ -77,7 +77,8 @@ public final class Token implements Literal {
 
     @Override
     public final String toString() {
-        return formatValue();
+        // A token doesn't have a close Java representation so we use its kernel representation
+        return formatAsKernelString();
     }
 
 }

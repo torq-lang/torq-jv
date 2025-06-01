@@ -175,7 +175,7 @@ public final class ValueTools {
         TupleTypeExpr tupleTypeExpr = null;
         if (type != null) {
             if (type instanceof TypeApply typeApply) {
-                if (typeApply.name.typeIdent().equals(ArrayType.IDENT)) {
+                if (typeApply.name.ident().equals(ArrayType.IDENT)) {
                     arrayElementType = typeApply.typeArgs.get(0);
                 } else {
                     throw new IllegalArgumentException("Cannot convert to kernel value: " + values);

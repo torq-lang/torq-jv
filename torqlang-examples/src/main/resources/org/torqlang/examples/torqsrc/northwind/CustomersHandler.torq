@@ -1,9 +1,9 @@
 
 actor CustomersHandler() in
 
-    import examples.NorthwindDb
     import system.lang.{Int64, Rec, ValueIter}
     import system.util.{ArrayList, LocalDate}
+    import northwind.NorthwindDb
 
     handle ask 'GET'#{'headers': headers, 'path': ['customers'], 'query': query, 'context': context} -> Array[Customer] in
         var northwind_db = spawn(new NorthwindDb())

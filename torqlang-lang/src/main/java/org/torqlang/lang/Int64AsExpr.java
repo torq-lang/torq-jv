@@ -31,7 +31,7 @@ public final class Int64AsExpr extends AbstractLang implements NumAsExpr, Featur
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitInt64AsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     public final Int64 int64() {

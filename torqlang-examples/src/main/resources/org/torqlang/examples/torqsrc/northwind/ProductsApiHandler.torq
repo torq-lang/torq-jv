@@ -30,7 +30,7 @@ actor ProductsApiHandler() implements ProductsApi in
 
     import system.lang.{Int64, Rec, ValueIter}
     import system.util.{ArrayList, LocalDate}
-    import examples.NorthwindDb
+    import northwind.NorthwindDb
 
     meta#{'export'}
     handle ask 'GET'#{'headers': headers, 'path': ['products'], 'query': query, 'context': context} ->

@@ -9,7 +9,7 @@ package org.torqlang.klvm;
 
 import java.util.Set;
 
-public interface Obj extends Composite {
+public interface Obj extends Composite, FormatAsKernelString {
 
     @Override
     default <T, R> R accept(KernelVisitor<T, R> visitor, T state)
@@ -31,7 +31,8 @@ public interface Obj extends Composite {
         return false;
     }
 
-    default String formatValue() {
+    @Override
+    default String formatAsKernelString() {
         return getClass().getName();
     }
 

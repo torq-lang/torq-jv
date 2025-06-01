@@ -15,6 +15,8 @@ import org.torqlang.local.Actor;
 import org.torqlang.local.ActorImage;
 import org.torqlang.local.ActorSystem;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -44,61 +46,61 @@ public class TestStaticApiRouter {
 
         StaticApiRouter router;
 
-        router = new StaticApiRouter(new ApiRoute[0]);
-        assertNull(router.findRoute(new ApiPath("/orders")));
+        router = new StaticApiRouter(List.of());
+        assertNull(router.findRoute(ApiPath.parse("/orders")));
 
-        router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/orders"), testActorImage, emptyApiDesc)
-        });
-        assertNotNull(router.findRoute(new ApiPath("/orders")));
-        assertNull(router.findRoute(new ApiPath("/orders/1")));
-        assertNull(router.findRoute(new ApiPath("/shippers")));
+        router = new StaticApiRouter(List.of(
+            ApiRoute.create(ApiPath.parse("/orders"), testActorImage, emptyApiDesc)
+        ));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders")));
+        assertNull(router.findRoute(ApiPath.parse("/orders/1")));
+        assertNull(router.findRoute(ApiPath.parse("/shippers")));
 
-        router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/orders"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders/{id}"), testActorImage, emptyApiDesc)
-        });
-        assertNotNull(router.findRoute(new ApiPath("/orders")));
-        assertNull(router.findRoute(new ApiPath("/shippers")));
-        assertNotNull(router.findRoute(new ApiPath("/orders/1")));
-        assertNull(router.findRoute(new ApiPath("/orders/1/releases")));
+        router = new StaticApiRouter(List.of(
+            ApiRoute.create(ApiPath.parse("/orders"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders/{id}"), testActorImage, emptyApiDesc)
+        ));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders")));
+        assertNull(router.findRoute(ApiPath.parse("/shippers")));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders/1")));
+        assertNull(router.findRoute(ApiPath.parse("/orders/1/releases")));
 
-        router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/inventory"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders"), testActorImage, emptyApiDesc)
-        });
-        assertNotNull(router.findRoute(new ApiPath("/inventory")));
-        assertNull(router.findRoute(new ApiPath("/shippers")));
-        assertNull(router.findRoute(new ApiPath("/inventory/1")));
-        assertNotNull(router.findRoute(new ApiPath("/orders")));
+        router = new StaticApiRouter(List.of(
+            ApiRoute.create(ApiPath.parse("/inventory"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders"), testActorImage, emptyApiDesc)
+        ));
+        assertNotNull(router.findRoute(ApiPath.parse("/inventory")));
+        assertNull(router.findRoute(ApiPath.parse("/shippers")));
+        assertNull(router.findRoute(ApiPath.parse("/inventory/1")));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders")));
 
-        router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/inventory"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/inventory/{id}"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders/{id}"), testActorImage, emptyApiDesc)
-        });
-        assertNotNull(router.findRoute(new ApiPath("/orders")));
-        assertNotNull(router.findRoute(new ApiPath("/inventory")));
-        assertNull(router.findRoute(new ApiPath("/shippers")));
-        assertNotNull(router.findRoute(new ApiPath("/inventory/1")));
-        assertNull(router.findRoute(new ApiPath("/inventory/1/locations")));
-        assertNotNull(router.findRoute(new ApiPath("/orders/1")));
-        assertNull(router.findRoute(new ApiPath("/orders/1/releases")));
+        router = new StaticApiRouter(List.of(
+            ApiRoute.create(ApiPath.parse("/inventory"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/inventory/{id}"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders/{id}"), testActorImage, emptyApiDesc)
+        ));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders")));
+        assertNotNull(router.findRoute(ApiPath.parse("/inventory")));
+        assertNull(router.findRoute(ApiPath.parse("/shippers")));
+        assertNotNull(router.findRoute(ApiPath.parse("/inventory/1")));
+        assertNull(router.findRoute(ApiPath.parse("/inventory/1/locations")));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders/1")));
+        assertNull(router.findRoute(ApiPath.parse("/orders/1/releases")));
 
-        router = new StaticApiRouter(new ApiRoute[]{
-            new ApiRoute(new ApiPath("/orders"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders/{id}"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders/{id}/releases"), testActorImage, emptyApiDesc),
-            new ApiRoute(new ApiPath("/orders/{id}/releases/{id}"), testActorImage, emptyApiDesc)
-        });
-        assertNotNull(router.findRoute(new ApiPath("/orders")));
-        assertNotNull(router.findRoute(new ApiPath("/orders/1")));
-        assertNotNull(router.findRoute(new ApiPath("/orders/1/releases")));
-        assertNotNull(router.findRoute(new ApiPath("/orders/1/releases/1")));
-        assertNull(router.findRoute(new ApiPath("/shippers")));
-        assertNull(router.findRoute(new ApiPath("/orders/1/customer")));
-        assertNull(router.findRoute(new ApiPath("/orders/1/customer/address")));
+        router = new StaticApiRouter(List.of(
+            ApiRoute.create(ApiPath.parse("/orders"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders/{id}"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders/{id}/releases"), testActorImage, emptyApiDesc),
+            ApiRoute.create(ApiPath.parse("/orders/{id}/releases/{id}"), testActorImage, emptyApiDesc)
+        ));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders")));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders/1")));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders/1/releases")));
+        assertNotNull(router.findRoute(ApiPath.parse("/orders/1/releases/1")));
+        assertNull(router.findRoute(ApiPath.parse("/shippers")));
+        assertNull(router.findRoute(ApiPath.parse("/orders/1/customer")));
+        assertNull(router.findRoute(ApiPath.parse("/orders/1/customer/address")));
     }
 
 }

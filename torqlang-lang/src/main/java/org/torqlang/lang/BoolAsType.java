@@ -8,7 +8,6 @@
 package org.torqlang.lang;
 
 import org.torqlang.klvm.Bool;
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class BoolAsType extends AbstractLang implements BoolType, LabelAsType {
@@ -28,17 +27,11 @@ public final class BoolAsType extends AbstractLang implements BoolType, LabelAsT
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitBoolAsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     @Override
-    public final Ident typeIdent() {
-        return BoolType.IDENT;
-    }
-
-    @Override
-    public final Bool typeValue() {
+    public final Bool value() {
         return bool;
     }
-
 }

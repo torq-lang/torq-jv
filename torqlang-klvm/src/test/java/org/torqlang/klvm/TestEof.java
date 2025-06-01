@@ -61,7 +61,7 @@ public class TestEof {
     @Test
     public void testToValues() {
         assertEquals("eof", Eof.SINGLETON.toString());
-        assertEquals("eof", Eof.SINGLETON.formatValue());
+        assertEquals("eof", Eof.SINGLETON.formatAsKernelString());
         assertEquals("org.torqlang.klvm.Eof.CAFE0E0F", Eof.SINGLETON.toNativeValue());
         assertEquals("eof", Eof.SINGLETON.toKernelString());
     }

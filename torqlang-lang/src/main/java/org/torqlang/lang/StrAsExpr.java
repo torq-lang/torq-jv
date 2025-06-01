@@ -24,7 +24,7 @@ public final class StrAsExpr extends AbstractLang implements ScalarAsExpr, Label
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitStrAsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     @Override

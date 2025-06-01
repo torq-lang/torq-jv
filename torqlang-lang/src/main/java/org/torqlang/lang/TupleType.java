@@ -19,6 +19,11 @@ public interface TupleType extends StructType, IdentAsType {
     static TupleType create(SourceSpan sourceSpan) {
         return new TupleTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return TupleType.IDENT;
+    }
 }
 
 final class TupleTypeImpl extends AbstractLang implements TupleType {
@@ -30,10 +35,5 @@ final class TupleTypeImpl extends AbstractLang implements TupleType {
     @Override
     public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
         return visitor.visitTupleType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return TupleType.IDENT;
     }
 }

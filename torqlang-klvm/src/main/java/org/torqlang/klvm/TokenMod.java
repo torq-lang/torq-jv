@@ -50,6 +50,11 @@ public final class TokenMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return TOKEN_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final TokenMod SINGLETON = new TokenMod();
     }

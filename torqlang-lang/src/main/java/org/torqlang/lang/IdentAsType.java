@@ -16,28 +16,25 @@ public interface IdentAsType extends Type {
         return new IdentAsTypeImpl(ident, sourceSpan);
     }
 
-    Ident typeIdent();
+    Ident ident();
+
+    @Override
+    default <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
+        return visitor.visitIdentAsType(this, state);
+    }
 }
 
 class IdentAsTypeImpl extends AbstractLang implements IdentAsType {
 
-    public final Ident typeIdent;
+    public final Ident ident;
 
-    IdentAsTypeImpl(Ident typeIdent, SourceSpan sourceSpan) {
+    IdentAsTypeImpl(Ident ident, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.typeIdent = typeIdent;
+        this.ident = ident;
     }
 
     @Override
-    public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
-        throws Exception
-    {
-        return visitor.visitIdentAsType(this, state);
+    public final Ident ident() {
+        return ident;
     }
-
-    @Override
-    public final Ident typeIdent() {
-        return typeIdent;
-    }
-
 }

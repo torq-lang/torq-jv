@@ -7,7 +7,6 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Str;
 import org.torqlang.util.SourceSpan;
 
@@ -28,16 +27,11 @@ public final class StrAsType extends AbstractLang implements StrType, LabelAsTyp
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitStrAsType(this, state);
+        return visitor.visitScalarAsType(this, state);
     }
 
     @Override
-    public final Ident typeIdent() {
-        return StrType.IDENT;
-    }
-
-    @Override
-    public final Str typeValue() {
+    public final Str value() {
         return str;
     }
 

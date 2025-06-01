@@ -45,7 +45,7 @@ public class TestEvalLiteralExprs {
             .setSource(source)
             .perform();
         assertEquals(source, e.stmtOrExpr().toString());
-        String expected = "$bind(&c, x)";
+        String expected = "$bind(&'c', x)";
         assertEquals(expected, e.kernel().toString());
         assertEquals(Char.of('c'), e.varAtName("x").valueOrVarSet());
     }

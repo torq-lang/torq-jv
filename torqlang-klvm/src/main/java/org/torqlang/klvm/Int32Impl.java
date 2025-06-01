@@ -42,7 +42,7 @@ final class Int32Impl implements Int32 {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitInt32(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -183,7 +183,8 @@ final class Int32Impl implements Int32 {
         return value;
     }
 
-    public final String formatValue() {
+    @Override
+    public final String formatAsKernelString() {
         return Integer.toString(value);
     }
 
@@ -324,7 +325,7 @@ final class Int32Impl implements Int32 {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return "" + value;
     }
 
 }

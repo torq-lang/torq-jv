@@ -27,15 +27,11 @@ public interface KernelVisitor<T, R> {
 
     R visitBindIdentToIdentInstr(BindIdentToIdentInstr kernel, T state) throws Exception;
 
-    R visitBool(Bool kernel, T state) throws Exception;
-
     R visitCaseElseInstr(CaseElseInstr kernel, T state) throws Exception;
 
     R visitCaseInstr(CaseInstr kernel, T state) throws Exception;
 
     R visitCatchInstr(CatchInstr kernel, T state) throws Exception;
-
-    R visitChar(Char kernel, T state) throws Exception;
 
     R visitClosure(Closure kernel, T state) throws Exception;
 
@@ -49,8 +45,6 @@ public interface KernelVisitor<T, R> {
 
     R visitDebugInstr(DebugInstr kernel, T state) throws Exception;
 
-    R visitDec128(Dec128 kernel, T state) throws Exception;
-
     R visitDisentailsInstr(DisentailsInstr kernel, T state) throws Exception;
 
     R visitDivideInstr(DivideInstr kernel, T state) throws Exception;
@@ -59,17 +53,11 @@ public interface KernelVisitor<T, R> {
 
     R visitEnv(Env kernel, T state) throws Exception;
 
-    R visitEof(Eof kernel, T state) throws Exception;
-
     R visitFailedValue(FailedValue kernel, T state) throws Exception;
 
     R visitFieldDef(FieldDef kernel, T state) throws Exception;
 
     R visitFieldPtn(FieldPtn kernel, T state) throws Exception;
-
-    R visitFlt32(Flt32 kernel, T state) throws Exception;
-
-    R visitFlt64(Flt64 kernel, T state) throws Exception;
 
     R visitGetCellValueInstr(GetCellValueInstr kernel, T state) throws Exception;
 
@@ -86,10 +74,6 @@ public interface KernelVisitor<T, R> {
     R visitIfElseInstr(IfElseInstr kernel, T state) throws Exception;
 
     R visitIfInstr(IfInstr kernel, T state) throws Exception;
-
-    R visitInt32(Int32 kernel, T state) throws Exception;
-
-    R visitInt64(Int64 kernel, T state) throws Exception;
 
     R visitJumpCatchInstr(JumpCatchInstr kernel, T state) throws Exception;
 
@@ -108,8 +92,6 @@ public interface KernelVisitor<T, R> {
     R visitNegateInstr(NegateInstr kernel, T state) throws Exception;
 
     R visitNotInstr(NotInstr kernel, T state) throws Exception;
-
-    R visitNull(Null kernel, T state) throws Exception;
 
     R visitObj(Obj kernel, T state) throws Exception;
 
@@ -131,6 +113,8 @@ public interface KernelVisitor<T, R> {
 
     R visitResolvedRecPtn(ResolvedRecPtn kernel, T state) throws Exception;
 
+    R visitScalar(Scalar kernel, T state) throws Exception;
+
     R visitSelectAndApplyInstr(SelectAndApplyInstr kernel, T state) throws Exception;
 
     R visitSelectInstr(SelectInstr kernel, T state) throws Exception;
@@ -143,13 +127,9 @@ public interface KernelVisitor<T, R> {
 
     R visitStack(Stack kernel, T state) throws Exception;
 
-    R visitStr(Str kernel, T state) throws Exception;
-
     R visitSubtractInstr(SubtractInstr kernel, T state) throws Exception;
 
     R visitThrowInstr(ThrowInstr kernel, T state) throws Exception;
-
-    R visitToken(Token kernel, T state) throws Exception;
 
     R visitTryInstr(TryInstr kernel, T state) throws Exception;
 

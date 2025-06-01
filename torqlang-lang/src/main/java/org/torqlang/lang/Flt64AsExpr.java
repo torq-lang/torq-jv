@@ -29,7 +29,7 @@ public final class Flt64AsExpr extends AbstractLang implements NumAsExpr, MetaVa
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitFlt64AsExpr(this, state);
+        return visitor.visitScalarAsExpr(this, state);
     }
 
     public final Flt64 flt64() {

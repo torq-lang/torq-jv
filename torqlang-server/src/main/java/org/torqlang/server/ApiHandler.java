@@ -48,11 +48,18 @@ public final class ApiHandler extends Handler.Abstract.NonBlocking {
         // retrieve the text asynchronously.
         final String method = request.getMethod();
         final String pathInContext = URLDecoder.decode(Request.getPathInContext(request), StandardCharsets.UTF_8);
-        final ApiPath path = new ApiPath(pathInContext);
+        final ApiPath path = ApiPath.parse(pathInContext);
         final ApiRoute route = router.findRoute(path);
         if (route == null) {
             Response.writeError(request, response, callback, HttpStatus.NOT_FOUND_404);
             return true;
+        }
+        if (route.rateLimiter != null) {
+            // Checking if the rate is exceeded also records rate usage
+            if (route.rateLimiter.rateExceeded()) {
+                Response.writeError(request, response, callback, HttpStatus.TOO_MANY_REQUESTS_429);
+                return true;
+            }
         }
         final CompleteTuple pathTuple = route.desc.toPathTuple(path);
         final CompleteRec headersRec = route.desc.toHeadersRec(request.getHeaders());

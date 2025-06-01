@@ -10,4 +10,5 @@ package org.torqlang.klvm;
 public interface KernelModule {
     CompleteRec exports();
     Complete namesake();
+    Ident namesakeIdent();
 }

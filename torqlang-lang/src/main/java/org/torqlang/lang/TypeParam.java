@@ -7,17 +7,16 @@
 
 package org.torqlang.lang;
 
-import org.torqlang.klvm.Ident;
 import org.torqlang.util.SourceSpan;
 
 public final class TypeParam extends AbstractLang {
-    public final Ident ident;
+    public final TypeDecl typeDecl;
     public final TypeOper constraintOper;
     public final Type constraintArg;
 
-    public TypeParam(Ident ident, TypeOper constraintOper, Type constraintArg, SourceSpan sourceSpan) {
+    public TypeParam(TypeDecl typeDecl, TypeOper constraintOper, Type constraintArg, SourceSpan sourceSpan) {
         super(sourceSpan);
-        this.ident = ident;
+        this.typeDecl = typeDecl;
         this.constraintOper = constraintOper;
         this.constraintArg = constraintArg;
     }
@@ -25,5 +24,9 @@ public final class TypeParam extends AbstractLang {
     @Override
     public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
         return visitor.visitTypeParam(this, state);
+    }
+
+    public final IdentAsType name() {
+        return typeDecl.name;
     }
 }

@@ -147,27 +147,27 @@ public class TestJsonParser {
     @SuppressWarnings("rawtypes")
     @Test
     public void testParseAndCast() {
-        long zero = JsonParser.parseAndCast("0");
+        long zero = Json.parseAndCast("0");
         assertEquals(0L, zero);
-        long one = JsonParser.parseAndCast("1");
+        long one = Json.parseAndCast("1");
         assertEquals(1L, one);
-        long negativeOne = JsonParser.parseAndCast("-1");
+        long negativeOne = Json.parseAndCast("-1");
         assertEquals(-1L, negativeOne);
-        double doubleZero = JsonParser.parseAndCast("0.0");
+        double doubleZero = Json.parseAndCast("0.0");
         assertEquals(0.0, doubleZero, 0.0001);
-        double doubleOne = JsonParser.parseAndCast("1.0");
+        double doubleOne = Json.parseAndCast("1.0");
         assertEquals(1.0, doubleOne, 0.0001);
-        boolean booleanFalse = JsonParser.parseAndCast("false");
+        boolean booleanFalse = Json.parseAndCast("false");
         assertFalse(booleanFalse);
-        boolean booleanTrue = JsonParser.parseAndCast("true");
+        boolean booleanTrue = Json.parseAndCast("true");
         assertTrue(booleanTrue);
-        Object jsonNull = JsonParser.parseAndCast("null");
+        Object jsonNull = Json.parseAndCast("null");
         assertEquals(JsonNull.SINGLETON, jsonNull);
-        String myString = JsonParser.parseAndCast("\"my-string\"");
+        String myString = Json.parseAndCast("\"my-string\"");
         assertEquals("my-string", myString);
-        List emptyList = JsonParser.parseAndCast("[]");
+        List emptyList = Json.parseAndCast("[]");
         assertEquals(List.of(), emptyList);
-        Map emptyObject = JsonParser.parseAndCast("{}");
+        Map emptyObject = Json.parseAndCast("{}");
         assertEquals(Map.of(), emptyObject);
     }
 

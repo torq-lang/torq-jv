@@ -23,7 +23,7 @@ public final class BoolAsPat extends AbstractLang implements LiteralAsPat {
     public final <T, R> R accept(LangVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitBoolAsPat(this, state);
+        return visitor.visitFeatureAsPat(this, state);
     }
 
     @Override

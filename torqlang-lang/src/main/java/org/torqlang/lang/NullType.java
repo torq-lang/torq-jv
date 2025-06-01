@@ -20,21 +20,16 @@ public interface NullType extends IdentAsType, ScalarType {
     static NullType create(SourceSpan sourceSpan) {
         return new NullTypeImpl(sourceSpan);
     }
+
+    @Override
+    default Ident ident() {
+        return NullType.IDENT;
+    }
 }
 
 final class NullTypeImpl extends AbstractLang implements NullType {
 
     NullTypeImpl(SourceSpan sourceSpan) {
         super(sourceSpan);
-    }
-
-    @Override
-    public <T, R> R accept(LangVisitor<T, R> visitor, T state) throws Exception {
-        return visitor.visitNullType(this, state);
-    }
-
-    @Override
-    public final Ident typeIdent() {
-        return NullType.IDENT;
     }
 }

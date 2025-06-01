@@ -9,7 +9,6 @@ package org.torqlang.lang;
 
 import org.torqlang.klvm.Ident;
 import org.torqlang.klvm.Int32;
-import org.torqlang.klvm.Int64;
 import org.torqlang.util.ListTools;
 import org.torqlang.util.NeedsImpl;
 
@@ -359,7 +358,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             // TODO: This must work with type expressions beyond identifiers
             PolyInfr declaredType;
             if (type instanceof IdentAsType identAsType) {
-                declaredType = typeEnv.get(identAsType.typeIdent());
+                declaredType = typeEnv.get(identAsType.ident());
             } else {
                 throw new NeedsImpl();
             }
@@ -401,11 +400,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitAnyType(AnyType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final TypeSubst visitApplyLang(ApplyLang lang, TypeScope scope) throws Exception {
         lang.setTypeScope(scope);
         return visitFuncApp(lang, scope.typeEnv(),
@@ -413,11 +407,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
             lang.args,
             scope.monoType()
         );
-    }
-
-    @Override
-    public final TypeSubst visitArrayType(ArrayType lang, TypeScope scope) {
-        throw new NeedsImpl();
     }
 
     @Override
@@ -434,35 +423,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         //      determining a jump-point type. For example, return statements.
         TypeEnv nestedTypeEnv = TypeEnv.create(scope.typeEnv());
         return lang.body.accept(this, new TypeScope(nestedTypeEnv, scope.monoType()));
-    }
-
-    /*
-     * [con]
-     *     Γ ⊢ () : ι
-     *
-     * [con]
-     *     M(Γ, (), ρ) =
-     *         U(ρ, ι)
-     */
-    @Override
-    public final TypeSubst visitBoolAsExpr(BoolAsExpr lang, TypeScope scope) {
-        lang.setTypeScope(scope);
-        return unify(lang, scope.monoType(), ScalarInfr.BOOL);
-    }
-
-    @Override
-    public final TypeSubst visitBoolAsPat(BoolAsPat lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitBoolAsType(BoolAsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitBoolType(BoolType lang, TypeScope scope) {
-        throw new NeedsImpl();
     }
 
     @Override
@@ -486,37 +446,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitCharAsExpr(CharAsExpr lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitCharAsType(CharAsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitCharType(CharType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
     public final TypeSubst visitContinueStmt(ContinueStmt lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitDec128AsExpr(Dec128AsExpr lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitDec128AsType(Dec128AsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitDec128Type(Dec128Type lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -526,22 +456,7 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
     }
 
     @Override
-    public final TypeSubst visitEofAsExpr(EofAsExpr lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitEofAsPat(EofAsPat lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitEofAsType(EofAsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitEofType(EofType lang, TypeScope scope) {
+    public final TypeSubst visitFeatureAsPat(FeatureAsPat lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -557,31 +472,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitFieldType(FieldType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitFlt32AsType(Flt32AsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitFlt32Type(Flt32Type lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitFlt64AsExpr(Flt64AsExpr lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitFlt64AsType(Flt64AsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitFlt64Type(Flt64Type lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -904,55 +794,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         return TypeSubst.combine(unifySubst, result);
     }
 
-    /*
-     * [con]
-     *     Γ ⊢ () : ι
-     *
-     * [con]
-     *     M(Γ, (), ρ) =
-     *         U(ρ, ι)
-     */
-    private TypeSubst visitInt(Lang lang, Int64 int64, TypeScope scope) {
-        lang.setTypeScope(scope);
-        TypeSubst result;
-        if (int64 instanceof Int32) {
-            result = unify(lang, scope.monoType(), ScalarInfr.INT32);
-        } else {
-            result = unify(lang, scope.monoType(), ScalarInfr.INT64);
-        }
-        return result;
-    }
-
-    @Override
-    public final TypeSubst visitInt32AsType(Int32AsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitInt32Type(Int32Type lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitInt64AsExpr(Int64AsExpr lang, TypeScope scope) {
-        return visitInt(lang, lang.int64(), scope);
-    }
-
-    @Override
-    public final TypeSubst visitInt64AsPat(Int64AsPat lang, TypeScope scope) {
-        return visitInt(lang, lang.int64(), scope);
-    }
-
-    @Override
-    public final TypeSubst visitInt64AsType(Int64AsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitInt64Type(Int64Type lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
     @Override
     public final TypeSubst visitIntersectionProtocol(IntersectionProtocol lang, TypeScope scope) {
         throw new NeedsImpl();
@@ -990,26 +831,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitNewExpr(NewExpr lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitNullAsExpr(NullAsExpr lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitNullAsPat(NullAsPat lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitNullAsType(NullAsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitNullType(NullType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -1116,6 +937,52 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         throw new NeedsImpl();
     }
 
+    /*
+     * [con]
+     *     Γ ⊢ () : ι
+     *
+     * [con]
+     *     M(Γ, (), ρ) =
+     *         U(ρ, ι)
+     */
+    @Override
+    public final TypeSubst visitScalarAsExpr(ScalarAsExpr lang, TypeScope scope) {
+        lang.setTypeScope(scope);
+        if (lang instanceof BoolAsExpr) {
+            //        lang.setTypeScope(scope);
+            //        return unify(lang, scope.monoType(), ScalarInfr.BOOL);
+            return unify(lang, scope.monoType(), ScalarInfr.BOOL);
+        } else if (lang instanceof Int64AsExpr int64AsExpr) {
+            //        lang.setTypeScope(scope);
+            //        TypeSubst result;
+            //        if (int64 instanceof Int32) {
+            //            result = unify(lang, scope.monoType(), ScalarInfr.INT32);
+            //        } else {
+            //            result = unify(lang, scope.monoType(), ScalarInfr.INT64);
+            //        }
+            //        return result;
+            if (int64AsExpr.int64() instanceof Int32) {
+                return unify(lang, scope.monoType(), ScalarInfr.INT32);
+            } else {
+                return unify(lang, scope.monoType(), ScalarInfr.INT64);
+            }
+        } else if (lang instanceof StrAsExpr strAsExpr) {
+            //        lang.setTypeScope(scope);
+            //        TypeEnv thisTypeEnv = scope.typeEnv();
+            //        TypeSubst result = unify(lang, scope.monoType(), ScalarInfr.STR);
+            //        result.apply(thisTypeEnv);
+            //        return result;
+            return unify(lang, scope.monoType(), ScalarInfr.STR);
+        } else {
+            throw new NeedsImpl();
+        }
+    }
+
+    @Override
+    public final TypeSubst visitScalarAsType(ScalarAsType lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
     @Override
     public final TypeSubst visitSelectAndApplyLang(SelectAndApplyLang lang, TypeScope scope) {
         throw new NeedsImpl();
@@ -1162,30 +1029,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
         throw new NeedsImpl();
     }
 
-    @Override
-    public final TypeSubst visitStrAsExpr(StrAsExpr lang, TypeScope scope) {
-        lang.setTypeScope(scope);
-        TypeEnv thisTypeEnv = scope.typeEnv();
-        TypeSubst result = unify(lang, scope.monoType(), ScalarInfr.STR);
-        result.apply(thisTypeEnv);
-        return result;
-    }
-
-    @Override
-    public final TypeSubst visitStrAsPat(StrAsPat lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitStrAsType(StrAsType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitStrType(StrType lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
     /*
      * [app]
      *     M(Γ, e1 e2, ρ) =
@@ -1210,11 +1053,6 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitThrowLang(ThrowLang lang, TypeScope scope) {
-        throw new NeedsImpl();
-    }
-
-    @Override
-    public final TypeSubst visitTokenType(TokenType lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 
@@ -1245,6 +1083,11 @@ public class Validator implements LangVisitor<TypeScope, TypeSubst> {
 
     @Override
     public final TypeSubst visitTypeApply(TypeApply lang, TypeScope scope) {
+        throw new NeedsImpl();
+    }
+
+    @Override
+    public final TypeSubst visitTypeDecl(TypeDecl lang, TypeScope scope) {
         throw new NeedsImpl();
     }
 

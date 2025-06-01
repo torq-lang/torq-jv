@@ -53,6 +53,11 @@ public final class FieldIterMod implements KernelModule {
         return namesake;
     }
 
+    @Override
+    public final Ident namesakeIdent() {
+        return FIELD_ITER_IDENT;
+    }
+
     private static final class LazySingleton {
         private static final FieldIterMod SINGLETON = new FieldIterMod();
     }

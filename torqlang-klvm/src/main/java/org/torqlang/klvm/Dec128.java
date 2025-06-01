@@ -62,7 +62,7 @@ public final class Dec128 implements Num {
     public final <T, R> R accept(KernelVisitor<T, R> visitor, T state)
         throws Exception
     {
-        return visitor.visitDec128(this, state);
+        return visitor.visitScalar(this, state);
     }
 
     @Override
@@ -203,8 +203,9 @@ public final class Dec128 implements Num {
         return value.floatValue();
     }
 
-    public final String formatValue() {
-        return value().toString();
+    @Override
+    public final String formatAsKernelString() {
+        return value().toString() + "m";
     }
 
     @Override
@@ -349,7 +350,7 @@ public final class Dec128 implements Num {
 
     @Override
     public final String toString() {
-        return formatValue();
+        return "" + value;
     }
 
     public final BigDecimal value() {
